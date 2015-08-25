@@ -1,0 +1,215 @@
+<form id="vehinfo" method="post">
+<table class="basetable" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="tl"><label>号牌号码：</label></td >
+		<td class="tc">
+			<input name="sf" required="true" sid="sf"  class="easyui-combobox" style="width: 40px;">&nbsp;&nbsp;
+			<input class="easyui-textbox" sid="hphm" value="J" style="width: 60px;" name="hphm" required="true">
+		</td>
+		<td class="tl"><label>号牌种类：</label>
+		</td>
+			<td class="tc"><input class="easyui-combobox" data-options="data:comm.getBaseParames('hpzl'),	valueField: 'id',
+		textField: 'value'" sid="hpzl" name="hpzl" style="width: 120px;" prompt='请选择号牌种类' required="true">
+		</td>
+		<td class="tl"><label>车辆识别代号：</label></td>
+		<td class="tc">
+			<input class="easyui-textbox" style="width: 120px;" sid="clsbdh" name="clsbdh" prompt='请输入车辆识别代号' required="true">
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:30px" onclick="veh.getVehinfo()"></a>
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>车辆型号：</label></td>
+		<td class="tc">
+			<input class="easyui-textbox" name="clxh" style="width: 120px;" prompt='请输入车辆型号' required="true">
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:30px"></a>
+		</td>
+		<td class="tl"><label>检验类别：</label></td >
+		<td class="tc">
+			<input id="jylb" name="jylb" class="easyui-combobox" style="width: 120px" required="true">
+		</td>
+		<td class="tl"><label>车辆所属类别：</label>
+		</td>
+			<td class="tc"><input id="clsslb" name="clsslb" class="easyui-combobox" style="width: 120px" required="true">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>车辆类型：</label>
+		</td>
+			<td class="tc"><input data-options="data:comm.getBaseParames('cllx'),	valueField: 'id',
+		textField: 'value'"  name="cllx" class="easyui-combobox" style="width: 120px" required="true">
+		</td>
+		<td class="tl"><label>出厂日期：</label></td>
+		<td class="tc">
+			<input class="easyui-datebox" style="width: 120px;" prompt='请选择出厂日期' name="ccrq" required="true">
+		</td>
+		
+		<td class="tl"><label>前照灯制：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox"  name="qzdz" style="width: 120px;" required="true">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>轴数：</label></td>
+		<td class="tc">
+			<input class="easyui-numberbox" style="width: 120px;" prompt='请输入轴数' name="zs" required="true">
+		</td>
+		<td class="tl"><label>总质量：</label></td >
+		<td class="tc">
+			<input  name="zzl" class="easyui-numberbox" prompt='请输入总质量' style="width: 120px" required="true">
+		</td>
+		<td class="tl"><label>整备质量：</label>
+		</td>
+			<td class="tc"><input  name="zbzl" prompt='请输入整备质量'  class="easyui-numberbox" style="width: 120px" required="true">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>车外廓长：</label></td>
+		<td class="tc">
+			<input class="easyui-numberbox" style="width: 120px;" prompt='请输入车外廓长' name="cwkc" required="true">
+		</td>
+		<td class="tl"><label>车外廓宽：</label></td >
+		<td class="tc">
+			<input  name="cwkk" class="easyui-numberbox" style="width: 120px" prompt='请输入车外廓宽' required="true" >
+		</td>
+		<td class="tl"><label>车外廓高：</label>
+		</td>
+			<td class="tc"><input  name="cwkg" class="easyui-numberbox" style="width: 120px" prompt='请输入车外廓高' required="true">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>车辆用途：</label></td>
+		<td class="tc">
+			<input class="easyui-combobox" style="width: 120px;" prompt='请选择车辆用途' name="clyt">
+		</td>
+		<td class="tl"><label>用途属性：</label></td >
+		<td class="tc">
+			<input  name="ytsx" class="easyui-combobox" style="width: 120px" prompt='用途属性' >
+		</td>
+		<td class="tl"><label>使用性质：</label></td >
+		<td class="tc">
+			<label></label><input  data-options="data:comm.getBaseParames('syxz'),	valueField: 'id',
+		textField: 'value'" class="easyui-combobox" prompt='请选择使用性质' name="syxz" style="width: 120px;" required="true">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>车辆品牌：</label></td>
+		<td class="tc" colspan="5">
+			<input class="easyui-textbox" style="width: 600px;" prompt='请输入车辆品牌' name="clpp1" required="true">
+		</td>
+	</tr>
+</table>
+<div class="line_01">以下信息非必填项</div>
+
+<table  class="basetable" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="tl"><label>发动机号：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-textbox"  name="fdjh" >
+		</td>
+		<td class="tl"><label>车身颜色：</label></td >
+		<td class="tc">
+			<label></label><input data-options="data:comm.getBaseParames('csys'),	valueField: 'id',
+		textField: 'value'" class="easyui-combobox"  name="csys">
+		</td>
+		<td class="tl"><label>燃料种类：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox"  name="rlzl">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>初次登记日期：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-datebox"  name="ccdjrq" >
+		</td>
+		<td class="tl"><label>最近定检日期：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-datebox"   name="jyrq">
+		</td>
+		<td class="tl"><label>检验有效期止：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-datebox" name="jyyxqz">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>保险终止日期：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-datebox"  name="bxzzrq" >
+		</td>
+		<td class="tl"><label>功率：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox"  name="gl">
+		</td>
+		<td class="tl"><label>轴距：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox"  name="zj">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>前轮距：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-datebox"  name="qlj" >
+		</td>
+		<td class="tl"><label>后轮距：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox"  name="hlj">
+		</td>
+		<td class="tl"><label>驻车轴位：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox"  name="zczw">
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>主轴数：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-numberbox"  name="zzs" >
+		</td>
+		<td class="tl"><label>制动力源：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox"  name="zzly">
+		</td>
+		<td class="tl"><label>驱动形式：</label></td >
+		<td class="tc">
+			<input  name="qdxs" class="easyui-combobox" style="width: 120px">
+		</td>	</tr>
+	
+	<tr>
+		<td class="tl"><label>远光单独调整：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-combobox"  name="ygddtz" >
+		</td>
+		<td class="tl"><label>前轴悬架形式：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox"  name="zxzxjxs">
+		</td>
+		<td class="tl"><label>里程表读数：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox"  name="lcbds">
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<td class="tl"><label>机动车所有人：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-textbox"  name="syr" >
+		</td>
+		<td class="tl"><label>送检人姓名：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox"  name="sjr">
+		</td>
+		<td class="tl"><label>送检人身份证号：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox"  name="sjrsfzh">
+		</td>
+	</tr>
+</table>
+</form>
