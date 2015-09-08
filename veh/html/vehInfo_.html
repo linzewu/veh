@@ -3,33 +3,36 @@
 	<tr>
 		<td class="tl"><label>号牌号码：</label></td >
 		<td class="tc">
-			<input name="sf" required="true" sid="sf"  class="easyui-combobox" style="width: 40px;">&nbsp;&nbsp;
+			<input name="sf" required="true" sid="sf" data-options="data:comm.getBaseParames('sf'),valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;">&nbsp;&nbsp;
 			<input class="easyui-textbox" sid="hphm" value="J" style="width: 60px;" name="hphm" required="true">
 		</td>
 		<td class="tl"><label>号牌种类：</label>
 		</td>
 			<td class="tc"><input class="easyui-combobox" data-options="data:comm.getBaseParames('hpzl'),	valueField: 'id',
-		textField: 'value'" sid="hpzl" name="hpzl" style="width: 120px;" prompt='请选择号牌种类' required="true">
+		textField: 'value'" sid="hpzl" name="hpzl" style="width: 155px;" prompt='请选择号牌种类' required="true">
 		</td>
 		<td class="tl"><label>车辆识别代号：</label></td>
 		<td class="tc">
-			<input class="easyui-textbox" style="width: 120px;" sid="clsbdh" name="clsbdh" prompt='请输入车辆识别代号' required="true">
+			<input class="easyui-textbox" style="width: 155px;" sid="clsbdh" name="clsbdh" prompt='请输入车辆识别代号' required="true">
 			<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:30px" onclick="veh.getVehinfo()"></a>
 		</td>
 	</tr>
 	<tr>
 		<td class="tl"><label>车辆型号：</label></td>
 		<td class="tc">
-			<input class="easyui-textbox" name="clxh" style="width: 120px;" prompt='请输入车辆型号' required="true">
+			<input class="easyui-textbox" name="clxh" style="width: 155px;" prompt='请输入车辆型号' required="true">
 			<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:30px"></a>
 		</td>
 		<td class="tl"><label>检验类别：</label></td >
 		<td class="tc">
-			<input id="jylb" name="jylb" class="easyui-combobox" style="width: 120px" required="true">
+			<input id="jylb" name="jylb"  prompt='请选择检验类别' data-options="data:comm.getBaseParames('jylb'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 155px" required="true" value="01">
 		</td>
 		<td class="tl"><label>车辆所属类别：</label>
 		</td>
-			<td class="tc"><input id="clsslb" name="clsslb" class="easyui-combobox" style="width: 120px" required="true">
+			<td class="tc"><input id="clsslb" data-options="data:comm.getBaseParames('clsslb'),	valueField: 'id',
+		textField: 'value'"  name="clsslb" class="easyui-combobox" prompt='请选择车辆所属类别' style="width: 155px" required="true">
 		</td>
 	</tr>
 	
@@ -37,69 +40,68 @@
 		<td class="tl"><label>车辆类型：</label>
 		</td>
 			<td class="tc"><input data-options="data:comm.getBaseParames('cllx'),	valueField: 'id',
-		textField: 'value'"  name="cllx" class="easyui-combobox" style="width: 120px" required="true">
+		textField: 'value'" prompt='请选择车辆类型'  name="cllx" class="easyui-combobox" style="width: 155px" required="true">
 		</td>
 		<td class="tl"><label>出厂日期：</label></td>
 		<td class="tc">
-			<input class="easyui-datebox" style="width: 120px;" prompt='请选择出厂日期' name="ccrq" required="true">
+			<input class="easyui-datebox" style="width: 155px;" prompt='请选择出厂日期' name="ccrq" required="true">
 		</td>
-		
-		<td class="tl"><label>前照灯制：</label></td >
+		<td class="tl"><label>初次登记日期：</label></td>
 		<td class="tc">
-			<label></label><input class="easyui-combobox"  name="qzdz" style="width: 120px;" required="true">
+			<label></label><input class="easyui-datebox" prompt='请输入登记日期'  name="ccdjrq" style="width: 155px;" required="true">
 		</td>
 	</tr>
 	
 	<tr>
 		<td class="tl"><label>轴数：</label></td>
 		<td class="tc">
-			<input class="easyui-numberbox" style="width: 120px;" prompt='请输入轴数' name="zs" required="true">
+			<input class="easyui-numberbox" style="width: 155px;" prompt='请输入轴数' name="zs" required="true">
 		</td>
 		<td class="tl"><label>总质量：</label></td >
 		<td class="tc">
-			<input  name="zzl" class="easyui-numberbox" prompt='请输入总质量' style="width: 120px" required="true">
+			<input  name="zzl" class="easyui-numberbox" prompt='请输入总质量' style="width: 155px" required="true">
 		</td>
 		<td class="tl"><label>整备质量：</label>
 		</td>
-			<td class="tc"><input  name="zbzl" prompt='请输入整备质量'  class="easyui-numberbox" style="width: 120px" required="true">
+			<td class="tc"><input  name="zbzl" prompt='请输入整备质量'  class="easyui-numberbox" style="width: 155px" required="true">
 		</td>
 	</tr>
 	
 	<tr>
 		<td class="tl"><label>车外廓长：</label></td>
 		<td class="tc">
-			<input class="easyui-numberbox" style="width: 120px;" prompt='请输入车外廓长' name="cwkc" required="true">
+			<input class="easyui-numberbox" style="width: 155px;" prompt='请输入车外廓长' name="cwkc" required="true">
 		</td>
 		<td class="tl"><label>车外廓宽：</label></td >
 		<td class="tc">
-			<input  name="cwkk" class="easyui-numberbox" style="width: 120px" prompt='请输入车外廓宽' required="true" >
+			<input  name="cwkk" class="easyui-numberbox" style="width: 155px" prompt='请输入车外廓宽' required="true" >
 		</td>
 		<td class="tl"><label>车外廓高：</label>
 		</td>
-			<td class="tc"><input  name="cwkg" class="easyui-numberbox" style="width: 120px" prompt='请输入车外廓高' required="true">
+			<td class="tc"><input  name="cwkg" class="easyui-numberbox" style="width: 155px" prompt='请输入车外廓高' required="true">
 		</td>
 	</tr>
 	
 	<tr>
-		<td class="tl"><label>车辆用途：</label></td>
+		<td class="tl"><label>前照灯制：</label></td >
 		<td class="tc">
-			<input class="easyui-combobox" style="width: 120px;" prompt='请选择车辆用途' name="clyt">
+			<label></label><input class="easyui-combobox" prompt='请选择前照灯制'   data-options="data:comm.getBaseParames('qzdz'),	valueField: 'id',
+		textField: 'value'" name="qzdz" style="width: 155px;" required="true">
 		</td>
-		<td class="tl"><label>用途属性：</label></td >
+		<td class="tl"><label>核定载客：</label></td >
 		<td class="tc">
-			<input  name="ytsx" class="easyui-combobox" style="width: 120px" prompt='用途属性' >
+			<label></label><input class="easyui-numberbox" prompt='请输入核定载客'  name="hdzk" style="width: 155px;" required="true">
 		</td>
 		<td class="tl"><label>使用性质：</label></td >
 		<td class="tc">
 			<label></label><input  data-options="data:comm.getBaseParames('syxz'),	valueField: 'id',
-		textField: 'value'" class="easyui-combobox" prompt='请选择使用性质' name="syxz" style="width: 120px;" required="true">
+		textField: 'value'" class="easyui-combobox" prompt='请选择使用性质' name="syxz" style="width: 155px;" required="true">
 		</td>
 	</tr>
-	
 	<tr>
 		<td class="tl"><label>车辆品牌：</label></td>
 		<td class="tc" colspan="5">
-			<input class="easyui-textbox" style="width: 600px;" prompt='请输入车辆品牌' name="clpp1" required="true">
+			<input class="easyui-textbox" style="width: 400px;" prompt='请输入车辆品牌' name="clpp1" required="true">
 		</td>
 	</tr>
 </table>
@@ -118,14 +120,15 @@
 		</td>
 		<td class="tl"><label>燃料种类：</label></td >
 		<td class="tc">
-			<label></label><input class="easyui-combobox"  name="rlzl">
+			<label></label><input data-options="data:comm.getBaseParames('rlzl'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox"  name="rlzl">
 		</td>
 	</tr>
 	
 	<tr>
-		<td class="tl"><label>初次登记日期：</label></td>
+		<td class="tl"><label>机动车所有人：</label></td>
 		<td class="tc">
-			<label></label><input class="easyui-datebox"  name="ccdjrq" >
+			<label></label><input class="easyui-textbox"  name="syr" >
 		</td>
 		<td class="tl"><label>最近定检日期：</label></td >
 		<td class="tc">
@@ -178,17 +181,20 @@
 		</td>
 		<td class="tl"><label>驱动形式：</label></td >
 		<td class="tc">
-			<input  name="qdxs" class="easyui-combobox" style="width: 120px">
+			<input  name="qdxs" data-options="data:comm.getBaseParames('qdxs'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 155px">
 		</td>	</tr>
 	
 	<tr>
 		<td class="tl"><label>远光单独调整：</label></td>
 		<td class="tc">
-			<label></label><input class="easyui-combobox"  name="ygddtz" >
+			<label></label><input data-options="data:comm.getBaseParames('ygddtz'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox"  name="ygddtz" >
 		</td>
 		<td class="tl"><label>前轴悬架形式：</label></td >
 		<td class="tc">
-			<label></label><input class="easyui-combobox"  name="zxzxjxs">
+			<label></label><input  data-options="data:comm.getBaseParames('zxzxjxs'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox"  name="zxzxjxs">
 		</td>
 		<td class="tl"><label>里程表读数：</label></td >
 		<td class="tc">
@@ -196,20 +202,16 @@
 		</td>
 	</tr>
 	
-	
 	<tr>
-		<td class="tl"><label>机动车所有人：</label></td>
+		<td class="tl"><label>车辆用途：</label></td>
 		<td class="tc">
-			<label></label><input class="easyui-textbox"  name="syr" >
+			<input class="easyui-combobox" style="width: 155px;" prompt='请选择车辆用途' name="clyt">
 		</td>
-		<td class="tl"><label>送检人姓名：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-textbox"  name="sjr">
-		</td>
-		<td class="tl"><label>送检人身份证号：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-textbox"  name="sjrsfzh">
+		<td class="tl"><label>用途属性：</label></td >
+		<td class="tc" colspan="3">
+			<input  name="ytsx" class="easyui-combobox" style="width: 155px" prompt='用途属性' >
 		</td>
 	</tr>
+	
 </table>
 </form>

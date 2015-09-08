@@ -16,6 +16,7 @@ import com.xs.common.Constant;
 import com.xs.common.MyJSONUtil;
 import com.xs.veh.entity.User;
 import com.xs.veh.manager.UserManager;
+import com.xs.veh.util.PageInfo;
 
 @Controller
 @RequestMapping(value="/user")
@@ -40,6 +41,19 @@ public class UserController {
 					requestContext.getMessage(Constant.LOGIN_FAILED));
 		}
 
+	}
+	
+	@RequestMapping(value="getUsers",method=RequestMethod.POST)
+	public @ResponseBody Map getUsers(User user,PageInfo pageInfo){
+		
+		 Map json = MyJSONUtil.toMyJSON(userManager.getUsers(user, pageInfo), userManager.getUserCount(user, pageInfo));
+		
+		return json;
+	}
+	
+	@RequestMapping(value="save",method=RequestMethod.POST)
+	public @ResponseBody Map saveUser(User user){
+		return null;
 	}
 
 }

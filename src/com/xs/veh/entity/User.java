@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "T_User")
 @JsonIgnoreProperties(value ={"password"})
-
 @NamedQueries({
 	@NamedQuery(name = "User.login", query = "from User u where u.userName=:userName and u.password=:password") 
 })

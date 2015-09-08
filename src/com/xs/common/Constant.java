@@ -16,6 +16,10 @@ public class Constant {
 	
 	public static final String LOGIN_FAILED="loginFailed";
 	
+	public static final String TOTAL="total";
+	
+	public static final String ROWS="rows";
+	
 	
 	
 

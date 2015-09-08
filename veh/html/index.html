@@ -17,16 +17,15 @@
 	<div data-options="region:'north'" style="height:60px;border: 0"></div>
     <div data-options="region:'south'" style="height:30px;"></div>
     <div data-options="region:'center',border: 0">
-    	<div class="easyui-tabs" data-options="fit:true,justified:true,plain:true,tabHeight:38">
+    	<div class="easyui-tabs" data-options="fit:true,justified:true,plain:false,tabHeight:38,border:0">
 		    <div title="机动车检测登陆" data-options="href:'vehlogin.html'"></div>
-		    <div title="主控程序" >
+		    <div title="主控程序"  >
 		        tab2
 		    </div>
 		    <div title="机动车检测报告">
 		        tab3
 		    </div>
-		    <div title="系统管理">
-		        tab3
+		    <div title="系统管理" data-options="href:'system.html',onLoad:system.initEvents">
 		    </div>
 		</div>
 	</div>
