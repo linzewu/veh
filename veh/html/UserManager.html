@@ -1,0 +1,22 @@
+<script type="text/javascript">
+	var gu  = gridUtil.createNew("#userManager");
+	console.log(gu)
+</script>
+<table id="userManager" class="easyui-datagrid"
+	data-options="url:'/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:userManagerToolbar">
+	<thead>
+		<tr>
+			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:''}}}">用户名</th>
+			<th data-options="field:'realName',width:100,editor:{type:'textbox',options:{required:true}}">姓名</th>
+			<th data-options="field:'idCard',width:100,editor:{type:'textbox',options:{required:true,validType:{idCardVad:''}}}">身份证</th>
+			<th data-options="field:'roleId',width:100,editor:{type:'combobox',options:{required:true}}">角色</th>
+		</tr>
+	</thead>
+</table>
+<div id="userManagerToolbar">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="gu.append()">添加用户</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="gu.accept()">保存</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="gu.reject()">取消编辑</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="gu.editData()">修改用户</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="gu.remove()">删除用户</a>
+</div>
