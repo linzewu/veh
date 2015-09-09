@@ -164,7 +164,6 @@ var veh = {
 		}
 	},
 	setVehB0 : function() {
-
 		// var zs = $("input[numberboxname=zs]").numberbox("getValue");
 		var ccdjrq = $("input[textboxname=ccdjrq]").datebox("getValue");
 		var hdzk = $("input[textboxname=hdzk]").numberbox("getValue");
@@ -328,31 +327,62 @@ var comm = {
 }
 
 var gridUtil = {
-	createNew : function(grid) {
+	createNew : function(grid,options) {
 		var g = {};
 		g.editIndex = null;
 
-		g.endEditing = function() {
+		g.endEditing = function(callback) {
 
 			if (g.editIndex == null) {
-				return true;
+				if(callback){
+					callback.call();
+				}
+				return
 			}
+			
 			if ($(grid).datagrid('validateRow', g.editIndex)) {
+				
+				$.messager.progress({"title":"数据保存中！"});
+				
 				$(grid).datagrid('endEdit', g.editIndex);
-				$(grid).datagrid("getRows")[g.editIndex]._isOver_=1;
-				g.editIndex = null;
-				return true;
-			} else {
-				return false;
+				
+				var rows=$(grid).datagrid("getRows");
+				
+				console.log(rows[g.editIndex])
+				
+				$.post(options["url"]+"/save",rows[g.editIndex],function(rd){
+					$.messager.progress("close");
+					if(rd.state==1){
+						g.editIndex = null;
+						rows[g.editIndex]=rd.data;
+						if(callback){
+							callback.call();
+						}
+					}else{
+						console.log("错误信息：")
+						console.log(rd)
+						var errors="";
+						$.each(rd.errors,function(i,n){
+							errors+=(i+1)+"、"+n.defaultMessage+"<br>";
+						});
+						
+						$.messager.alert("保存错误",errors,"error");
+						$(grid).datagrid('beginEdit', g.editIndex);
+					}
+				});
+				
 			}
 		};
 		g.append = function() {
-			if (g.endEditing()) {
-				$(grid).datagrid('appendRow', {_isOver_:0});
+			
+			g.endEditing(function(){
+				$(grid).datagrid('appendRow', {});
 				g.editIndex = $(grid).datagrid('getRows').length - 1;
 				$(grid).datagrid('selectRow', g.editIndex).datagrid(
 						'beginEdit', g.editIndex);
-			}
+			});
+			
+			
 		};
 		g.remove = function() {
 			var row = $(grid).datagrid("getSelected");
@@ -382,15 +412,15 @@ var gridUtil = {
 
 		};
 		g.accept = function() {
-			if (g.endEditing()) {
+			g.endEditing(function(){
 				$(grid).datagrid('acceptChanges');
-			}
+			})
 		};
 		g.reject = function() {
 			if(g.editIndex!=null){
 				$(grid).datagrid('cancelEdit', g.editIndex);
 				
-				if($(grid).datagrid("getRows")[g.editIndex]._isOver_==0){
+				if($(grid).datagrid("getRows")[g.editIndex][options["idField"]]==null){
 					$(grid).datagrid(
 							'deleteRow', g.editIndex);
 				}
@@ -405,11 +435,12 @@ var gridUtil = {
 				return;
 			}
 			var index = $(grid).datagrid("getRowIndex", row);
-			if (g.editIndex != index) {
-				if (g.endEditing()) {
+			
+			if(g.editIndex != index) {
+				g.endEditing(function(){
 					$(grid).datagrid('beginEdit',index);
 					g.editIndex = index;
-				}
+				});
 			}
 		}
 
@@ -426,13 +457,12 @@ var system = {
 		target : "#systemContex"
 	} ],
 	initEvents : function() {
-		console.log(system.menus)
+//		console.log(system.menus)
 		comm.createMume("sysMune", system.menus);
 	}
 }
 
-$
-		.extend(
+$.extend(
 				$.fn.validatebox.defaults.rules,
 				{
 					userVad : {
@@ -446,7 +476,6 @@ $
 						validator : function(value, param) {
 							// 15位和18位身份证号码的正则表达式
 							var regIdCard = /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
-
 							// 如果通过该验证，说明身份证格式正确，但准确性还需计算
 							if (regIdCard.test(value)) {
 								if (value.length == 18) {

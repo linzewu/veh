@@ -50,7 +50,7 @@ function login() {
 		return;
 	}
 	
-	webix.ajax().post("../user/login",{userName:userName,password:password}, function(text, data){
+	$.post("../user/login",{userName:userName,password:password}, function(text, data){
 		var jdata = data.json();
 		console.log(jdata)
 		if(jdata.state=1){

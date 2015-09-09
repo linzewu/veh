@@ -1,9 +1,8 @@
 <script type="text/javascript">
-	var gu  = gridUtil.createNew("#userManager");
-	console.log(gu)
+	var gu  = gridUtil.createNew("#userManager",{idField:"id",url:"/veh/user"});
 </script>
 <table id="userManager" class="easyui-datagrid"
-	data-options="url:'/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:userManagerToolbar">
+	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:userManagerToolbar">
 	<thead>
 		<tr>
 			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:''}}}">用户名</th>

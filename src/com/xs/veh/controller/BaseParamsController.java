@@ -14,7 +14,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xs.common.Constant;
-import com.xs.common.MyJSONUtil;
+import com.xs.common.ResultHandler;
 import com.xs.veh.entity.BaseParams;
 
 @Controller
@@ -49,8 +49,8 @@ public class BaseParamsController {
 		List<BaseParams> bps = (List<BaseParams>) servletContext
 				.getAttribute("bps");
 
-		return MyJSONUtil.toMyJSON(1,
-				requestContext.getMessage(Constant.SUCCESS), bps);
+		return ResultHandler.toMyJSON(1,
+				requestContext.getMessage(Constant.ConstantKey.SUCCESS), bps);
 	}
 
 }

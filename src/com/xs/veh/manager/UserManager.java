@@ -14,6 +14,7 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
+import com.xs.common.Constant;
 import com.xs.veh.entity.User;
 import com.xs.veh.util.PageInfo;
 
@@ -54,7 +55,9 @@ public class UserManager {
 					paramType.add(StandardBasicTypes.STRING);
 
 				}
-				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray());
+				
+				
+				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray(new Type[paramType.size()]));
 				return pageInfo.toPage(query).list();
 			}
 		});
@@ -80,18 +83,41 @@ public class UserManager {
 					paramType.add(StandardBasicTypes.STRING);
 
 				}
-				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray());
-				return (Integer)pageInfo.toPage(query).uniqueResult();
+				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray(new Type[paramType.size()]));
+				return ((Long)pageInfo.toPage(query).uniqueResult()).intValue();
 			}
 		});
 
 		return count;
 	}
 	
-	public void saveUser(User user){
+	public User saveUser(User user){
 		
-		this.hibernateTemplate.merge(user);
+		if(user.getId()==null){
+			user.setPassword(Constant.initPassword);
+		}else{
+			User oldUser=this.hibernateTemplate.load(User.class, user.getId());
+			user.setPassword(oldUser.getPassword());
+		}
+		return this.hibernateTemplate.merge(user);
 		
 	}
+	
+	public User queryUserByUserName(User user){
+		
+		StringBuffer sb=new StringBuffer("from User where userName=?");
+		
+		List<User> users;
+		
+		if(user.getId()!=null){
+			sb.append(" and id!=?");
+			users=(List<User> )this.hibernateTemplate.find(sb.toString(), user.getUserName(),user.getId());
+		}else{
+			users=(List<User> )this.hibernateTemplate.find(sb.toString(), user.getUserName());
+		}
+		
+		return users==null?null:users.get(0);
+	}
+	
 
 }
