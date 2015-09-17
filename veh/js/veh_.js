@@ -290,10 +290,23 @@ var comm = {
 		}
 		return array;
 	},
+	
+	getParamNameByValue:function(type,value){
+		for ( var i in bps) {
+			var bp = bps[i];
+			if (bp.type == type && bp.paramValue==value) {
+				 return bp.paramName;
+			}
+		}
+		return value;
+	},
 	toPage : function(target, title, url, param) {
+		
+		
 		$(target).panel({
 			"title" : title
 		});
+		
 		if (param) {
 			$(target).panel({
 				"queryParams" : param
@@ -304,25 +317,31 @@ var comm = {
 	createMume : function(id, data) {
 		var ul = $("#" + id);
 		ul.empty();
-		for ( var i in data) {
-			var li = $("<li><a href=\"javascript:void(0)\"><img></a></li>");
-			li.find("img").attr("src", data[i].icon);
-			li.find("a").append(data[i].title);
-			if (data[i].callbak) {
-				li.find("a").bind("click", data[i].callbak)
+		
+		$.each(data,function(i,n){
+			
+			var li = $("<li><a id='_menu"+i+"' href=\"javascript:void(0)\"><img></a></li>");
+			
+			li.find("img").attr("src", n.icon);
+			li.find("a").append(n.title);
+			if (n.callbak) {
+				li.find("a").bind("click", n.callbak)
 			} else {
+				
 				li.find("a").bind(
 						"click",
 						function() {
-							comm.toPage(data[i].target, data[i].title,
-									data[i].href, data[i].param);
-						})
+							comm.toPage(n.target, n.title,
+									n.href, n.param);
+						});
 			}
 			ul.append(li);
+			
 			if (i == 0) {
 				li.find("a").click();
 			}
-		}
+		});
+		
 	}
 }
 
@@ -394,9 +413,6 @@ var gridUtil = {
 				$.messager.confirm("请确认","您目前正在编辑数据，是否先取消编辑",function(r){
 					if(r){
 						g.reject();
-//						$(grid).datagrid('cancelEdit', g.editIndex).datagrid(
-//								'deleteRow', g.editIndex);
-//						g.editIndex = null;
 					}
 				});
 				return;
@@ -404,9 +420,15 @@ var gridUtil = {
 			$.messager.confirm("请确认","您确认删除该数据？",function(r){
 				if (r) {
 					var rowIndex = $(grid).datagrid("getRowIndex", row);
-					console.log(rowIndex)
-					$(grid).datagrid('deleteRow', rowIndex);
-					g.editIndex = null;
+					
+					$.messager.progress({"title":"处理删除中。。。"});
+					
+					$.post(options["url"]+"/delete",row,function(rd){
+						$.messager.progress("close");
+						$.messager.alert("提示","删除成功");
+						$(grid).datagrid('deleteRow', rowIndex);
+						g.editIndex = null;
+					})
 				}
 			});
 
@@ -450,14 +472,23 @@ var gridUtil = {
 }
 
 var system = {
-	menus : [ {
+	menus : [{
+		"icon" : "/veh/images/system.png",
+		"title" : "系统参数",
+		href : "/veh/html/systemInfo.html",
+		target : "#systemContex"
+	}, {
 		"icon" : "/veh/images/user.png",
 		"title" : "用户管理",
 		href : "/veh/html/UserManager.html",
 		target : "#systemContex"
-	} ],
+	},{
+		"icon" : "/veh/images/device.png",
+		"title" : "设备管理",
+		href : "/veh/html/DeviceManager.html",
+		target : "#systemContex"
+	}],
 	initEvents : function() {
-//		console.log(system.menus)
 		comm.createMume("sysMune", system.menus);
 	}
 }

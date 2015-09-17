@@ -34,10 +34,10 @@ public class VehManager {
 	
 	
 	
-	@Value("#{rca[jkxlh]}")
+	@Value("${jkxlh}")
 	private String jkxlh;
 	
-	@Value("#{rca[jyjgbh]}")
+	@Value("${jyjgbh}")
 	private String jyjgbh;
 	
 	

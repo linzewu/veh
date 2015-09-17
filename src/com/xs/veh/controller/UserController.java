@@ -64,16 +64,27 @@ public class UserController {
 		
 	}
 
-	@RequestMapping(value = "validateUserName", method = RequestMethod.POST)
-	public @ResponseBody String validateUserName(User user) {
+	@RequestMapping(value = "validateUserName")
+	public @ResponseBody boolean validateUserName(User user) {
 		
 		User querUser = this.userManager.queryUserByUserName(user);
 		if(querUser==null){
-			return "true";
+			return true;
 		}else{
-			return "false";
+			return false;
 		}
 
+	}
+	
+	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
+	public @ResponseBody void resetPassword(User user){
+		this.userManager.resetPassword(user);
+	}
+	
+	
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	public @ResponseBody void delete(User user){
+		this.userManager.deleteUser(user);
 	}
 
 }

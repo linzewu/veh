@@ -116,8 +116,21 @@ public class UserManager {
 			users=(List<User> )this.hibernateTemplate.find(sb.toString(), user.getUserName());
 		}
 		
-		return users==null?null:users.get(0);
+		return users==null||users.size()==0?null:users.get(0);
 	}
 	
+	
+	public void resetPassword(User user){
+		
+		User oldUser=  this.hibernateTemplate.load(User.class, user.getId());
+		oldUser.setPassword(Constant.initPassword);
+		this.hibernateTemplate.update(oldUser);
+	}
+	
+	public void deleteUser(User user){
+		
+		this.hibernateTemplate.delete(user);
+		
+	}
 
 }

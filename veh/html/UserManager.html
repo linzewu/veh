@@ -1,14 +1,44 @@
 <script type="text/javascript">
 	var gu  = gridUtil.createNew("#userManager",{idField:"id",url:"/veh/user"});
+	
+	function userBeginEidt(index,row){
+		
+		if(row.id){
+			var ed = $('#userManager').datagrid('getEditor', {index:index,field:'userName'});
+			$(ed.target).textbox('disable');
+			$(ed.target).textbox('disableValidation');
+		}
+	}
+	function roleFormatter(value,row,index){
+		return  comm.getParamNameByValue('role',value);
+	}
+	
+	function resetPassword(grid){
+		var row = $(grid).datagrid("getSelected");
+		if (!row) {
+			$.messager.alert("提示", "请选择重置密码的用户！")
+			return;
+		}else{
+			$.messager.confirm("请确认","您是否确认重置该用户的密码为初始密码，初始密码是：888888",function(r){
+				
+					$.messager.progress({"title":"处理中.."});
+					$.post("/veh/user/resetPassword",{id:row.id},function(){
+						$.messager.progress("close");
+						$.messager.alert("提示","密码重置成功");
+					});
+				});
+		}
+	}
+	
 </script>
 <table id="userManager" class="easyui-datagrid"
-	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:userManagerToolbar">
-	<thead>
+	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:userManagerToolbar,onBeginEdit:userBeginEidt">
+	<thead> 
 		<tr>
-			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:''}}}">用户名</th>
+			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:'',remote:['/veh/user/validateUserName','userName']}}}">用户名</th>
 			<th data-options="field:'realName',width:100,editor:{type:'textbox',options:{required:true}}">姓名</th>
 			<th data-options="field:'idCard',width:100,editor:{type:'textbox',options:{required:true,validType:{idCardVad:''}}}">身份证</th>
-			<th data-options="field:'roleId',width:100,editor:{type:'combobox',options:{required:true}}">角色</th>
+			<th data-options="field:'roleId',width:100,formatter:roleFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('role'),valueField: 'id',textField: 'value'}}">角色</th>
 		</tr>
 	</thead>
 </table>
@@ -18,4 +48,6 @@
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="gu.reject()">取消编辑</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="gu.editData()">修改用户</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="gu.remove()">删除用户</a>
+	
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true" onclick="resetPassword('#userManager')">重置密码</a>
 </div>

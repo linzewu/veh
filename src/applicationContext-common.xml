@@ -16,16 +16,15 @@
 	default-lazy-init="false">
 
 
-	<context:property-placeholder location="classpath:db.properties" />
-
-	<bean id="rca"
+	<context:property-placeholder location="classpath:rca.properties"  />
+<!-- 	<bean id="rca"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
 			<list>
 				<value>classpath:rca.properties</value>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 
 	<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> 
 		<property name="jndiName"> <value>java:comp/env/jdbc/anjiannew</value> </property> 
@@ -82,8 +81,8 @@
 			<tx:method name="save*" propagation="REQUIRED" />
 			<tx:method name="update*" propagation="REQUIRED" />
 			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="reset*" propagation="REQUIRED" />
 			<tx:method name="batchUpdate" propagation="REQUIRED" />
-
 			<tx:method name="*" read-only="true" />
 		</tx:attributes>
 	</tx:advice>

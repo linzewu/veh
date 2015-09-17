@@ -1,0 +1,10 @@
+
+ <script>
+        var sysColumns = [[
+            {field:'name',title:'属性',width:30},
+               {field:'value',title:'值',width:70}
+        ]];
+</script>
+    
+<table   class="easyui-propertygrid" style="width:300px"
+        data-options="showGroup:true,scrollbarSize:0,fit:true,columns:sysColumns,url:'/veh/sys/getInfo'"></table>
