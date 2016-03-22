@@ -42,8 +42,6 @@ public class ResultHandler {
 
 	public static Map<String,Object> resultHandle(BindingResult result,Object data,String message) {
 		Map<String,Object> myJson = new HashMap<String,Object>();
-		
-		
 		if (result.hasErrors()) {
 			List<ObjectError> list = result.getAllErrors();
 			myJson.put(Constant.ConstantKey.MESSAGE, Constant.ConstantMessage.VALIDATE_ERROR);

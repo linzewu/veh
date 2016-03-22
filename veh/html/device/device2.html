@@ -1,0 +1,355 @@
+<form id="form-gdkg" class="device-form">
+<div style="margin:0 auto;width:96%;padding-top: 10px;">
+	<div class="easyui-panel" title="基本信息" 
+			data-options="href:'/veh/html/device/device-common.html',onLoad:deviceInfoLoad"
+	        style="padding:10px;background:#fafafa;height:220px;width:100%;">
+	</div>
+	<div class="easyui-tabs" style="width:98%;">
+		<div title="通讯协议"   
+		        style="padding:10px;background:#fafafa;height:330px;width:100%;">
+			<table class="simpletable" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td class="simpletable-l" style="width: 15%;"><label>协议类型：</label></td>
+					<td class="simpletable-r" style="width: 35%;"><input id="device90-xylx" name="xylx" data-options="required:true,data:comm.getBaseParames('protocol'),valueField: 'id',textField: 'value'" class="easyui-combobox"></td>
+					<td class="simpletable-l" style="width: 15%;"><label>带回车符：</label></td>
+					<td class="simpletable-r" style="width: 35%;"><label for="device90-dhcf0">是</label><input type="radio" id="device90-dhcf0" name="dhcf" value="0" checked="checked">&nbsp;&nbsp;&nbsp;&nbsp;
+						<label for="device90-dhcf1">否</label><input type="radio" id="device90-dhcf1" name="dhcf"  value="1">&nbsp;&nbsp;&nbsp;&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td class="simpletable-l"><label>解码器：</label></td>
+					<td class="simpletable-r" colspan="3"><input id="device90-decode" name="deviceDecode" data-options="required:true,data:comm.getBaseParames('deviceDecode'),valueField: 'id',textField: 'value'" class="easyui-combobox"></td>
+				</tr>
+				<tr>
+					<td colspan="4" class="simpletable-l" style="padding: 10px 0 10px 10px">
+						<div class="easyui-tabs" style="width: 680px;">
+							<div title="控制协议">
+								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>二灯制</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-edz" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>四灯制</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-sdz" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>单测远光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-dcyg" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>单测近光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-dcjg" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>远近光均测</label></td>
+										<td class="simpletable-r"  colspan="3">
+											<input class="easyui-textbox" name="s-yjgjc" required="true">
+										</td>
+										
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>先测远灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-xcyg" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>先测近灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-xcjg" required="true">
+										</td>
+										
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>需要调整远光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-xytzyg">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>不需要调整远光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-bxytzyg">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>需要调整近光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-xytzjg">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>不需要调整近光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-bxytzjg">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>原地测量</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-ydcl">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>全程测量</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-qccl" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>测左灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-czd" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>测右灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-cyd" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>退出调整</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-tctz">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>退出测量</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-tccl" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>原地测远光副灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-ydcygfd">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>原地测量近光</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-ydcjg">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>只测右灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-zcyd" required="true"><label>测完归位</label>
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>只测左灯</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-zczd" required="true"><label>测完归位</label>
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>仅一灯测量</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-zcyd" required="true">(摩托车)
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>取仪器状态</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="t-qyqzt" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>取左辅灯数据</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="g-qzfdsj" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>取右辅灯数据</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="g-qyfdsj" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>取左主灯数据</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="g-qzzdsj" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>取右主灯数据</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="g-qyzdsj" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>取当前数据</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="g-qdqsj" required="true">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>取全部测量数据</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="q-qqbsj" required="true">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>停止</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-tz">
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>仪器归位</label></td>
+										<td class="simpletable-r" style="width:35%">
+											<input class="easyui-textbox" name="s-yqgw" required="true">
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div title="开关及输出">
+								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>到位开关1</label></td>
+										<td class="simpletable-r" style="width: 35%">
+											<input class="easyui-combobox" name="kzsb-dwkg1" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
+											<input class="easyui-combobox" name="kzsb-xhw1" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
+										</td>
+										<td class="simpletable-l" style="width: 15%"><label>到位开关2</label></td>
+										<td class="simpletable-r" style="width: 35%">
+											<input class="easyui-combobox" name="kzsb-dwkg2" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
+											<input class="easyui-combobox" name="kzsb-xhw2" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>显示屏</label></td>
+										<td class="simpletable-r" colspan="3">
+											<input class="easyui-combobox" name="kzsb-xsp"  data-options=" valueField: 'id',textField: 'name',data:getXsp()" >
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div title="开机设置"  style="height: 200px;" id="panel-st">
+								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>靠位方向</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-kwfx">(左靠位\右靠位)
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>归位高度</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-kwgd">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>远近光切换时间</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-yjgqhsj">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>主副灯切换时间</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-zfdqhsj">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>数据单位</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-sjdw">
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>模式</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-ms">(非双灯同检\双灯同检 )
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>灯型切换同步</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-dxqhtb">(双灯同检参数，严格同步\不需同步)
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>保存参数</label></td>
+										<td class="simpletable-r">
+											<input class="easyui-textbox" name="s-bc">
+											&nbsp;&nbsp;&nbsp;&nbsp;
+											<a href="#" class="easyui-linkbutton" onclick="appSetting()">应用</a>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="simpletable-r" colspan="4" style="text-align: center;">
+						<a href="#" class="easyui-linkbutton" onclick="saveGdkg()" data-options="iconCls:'icon-save'">保存</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div title="控制台"   
+		        style="padding:10px;background:#fafafa;height:330px;width:100%;" id="panel-consoel">
+			<table class="simpletable" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td class="simpletable-l" style="width: 15%"><label>端口状态：</label></td>
+					<td class="simpletable-r" style="width: 85%" colspan="3"><span id="isOpen"></span>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="#" class="easyui-linkbutton" onclick="getState()">刷新状态</a>
+					</td>
+				</tr>
+				<tr>
+					<td class="simpletable-l"><label>控制台：</label></td>
+					<td class="simpletable-r" colspan="3">
+						<input class="easyui-textbox" id="device_console"  data-options="multiline:true,editable:false" style="width: 400px;height: 140px;">
+						<a href="#" class="easyui-linkbutton" onclick="getRtx()">获取报文</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton" onclick="lightTest()">测试</a>
+					</td>
+				</tr>
+				<tr>
+					<td class="simpletable-l" colspan="4" style="text-align: center;">
+						<a href="#" class="easyui-linkbutton" onclick="deviceLightStart()">启动设备</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton" onclick="deviceStop()">停止设备</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+
+function lightTest(){
+	var row = $("#deviceManager").datagrid("getSelected");
+	var call=function(data){
+		$.messager.alert("提示",data.message);
+	}
+	
+	$.post("/veh/device/deviceLightTest",{'id':row.id},call,"json");
+}
+
+
+
+function appSetting(){
+	var row = $("#deviceManager").datagrid("getSelected");
+	var call=function(data){
+		$.messager.alert("提示",data.message);
+	}
+	
+	$.messager.confirm("确认","切勿频繁发送，否则会缩短芯片寿命。是否继续？",function(r){
+		if(r){
+			$.post("/veh/device/deviceLightSetting",{'id':row.id},call,"json");
+		}
+	});
+}
+
+function getState(){
+	var row = $("#deviceManager").datagrid("getSelected");
+	var call=function(data){
+		if(data.isOpen){
+			$("#isOpen").html("打开");
+		}else{
+			$("#isOpen").html("关闭");
+		}
+	}
+	$.post("/veh/device/getState",{'id':row.id},call,"json");
+}
+
+
+function deviceLightStart(){
+	
+	var row = $("#deviceManager").datagrid("getSelected");
+	var call=function(data){
+		$.messager.alert("提示",data.message);
+		getState();
+	}
+	$.post("/veh/device/deviceLightStart",{'id':row.id},call,"json");
+}
+
+$(function(){
+	getState();
+});
+</script>

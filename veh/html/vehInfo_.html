@@ -1,11 +1,11 @@
-<form id="vehinfo" method="post">
+
 <table class="basetable" cellspacing="0" cellpadding="0">
 	<tr>
 		<td class="tl"><label>号牌号码：</label></td >
 		<td class="tc">
 			<input name="sf" required="true" sid="sf" data-options="data:comm.getBaseParames('sf'),valueField: 'id',
 		textField: 'value'"  class="easyui-combobox" style="width: 40px;">&nbsp;&nbsp;
-			<input class="easyui-textbox" sid="hphm" value="J" style="width: 60px;" name="hphm" required="true">
+			<input class="easyui-textbox" sid="hphm" value="J" style="width: 60px;" name="hphm" required="true" data-options="onChange:veh.uphphm,validType:'length[5,6]'">
 		</td>
 		<td class="tl"><label>号牌种类：</label>
 		</td>
@@ -158,7 +158,7 @@
 	<tr>
 		<td class="tl"><label>前轮距：</label></td>
 		<td class="tc">
-			<label></label><input class="easyui-datebox"  name="qlj" >
+			<label></label><input class="easyui-numberbox"  name="qlj" >
 		</td>
 		<td class="tl"><label>后轮距：</label></td >
 		<td class="tc">
@@ -212,6 +212,5 @@
 			<input  name="ytsx" class="easyui-combobox" style="width: 155px" prompt='用途属性' >
 		</td>
 	</tr>
-	
 </table>
-</form>
+<input name="jyxm" id="str_jyxm" type="hidden">

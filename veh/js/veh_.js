@@ -2,7 +2,218 @@ document
 		.write("<script language='javascript' src='/veh/bps/all.js' ></script>");
 
 var veh = {
-	getVehinfo : function() {
+	clone:function(){
+		var row = $("#checkedVehList").datagrid("getSelected");
+		if(!row){
+			$.messager.alert("提示","请选择车辆！");
+			return;
+		}else{
+			var temp =row;
+			temp['hphm']='';
+			temp['ccrq']='';
+			temp['ccdjrq']='';
+			temp['jyyxqz']='';
+			temp['bxzzrq']='';
+			temp['jyrq']='';
+			
+			$("#vehinfo").form("load",temp);
+		}
+	},
+	loadVehCheckInfo:function(index,row){
+		$("#win_form_veh").form("clear");
+		$("#win_checke_veh_info").window("open");
+		if(row){
+			var ss=row;
+			ss['sf']=ss['hphm'].substring(0,1);
+			ss['hphm']=ss['hphm'].substring(1);
+			$("#win_form_veh").form("load",ss);
+			
+			var jyxmArry = row.jyxm.split(",");
+			$(".mainConsole_checkeItem").empty();
+			$.each(jyxmArry,function(i,n){
+				var itemName=comm.getParamNameByValue('jyxm',n);
+				var li ="<li><a href=\"#\" class=\"easyui-linkbutton c6\" >"+itemName+"</a></li>";
+				$(".vehCheckeItem").append(li);
+				$.parser.parse('.vehCheckeItem');
+			});
+		}
+	},
+	uphphm:function(n,o){
+		$(this).textbox("setValue",n.toUpperCase());
+	},
+	vehCheckingQuery:function(){
+		var hpzl = $("#quer_checking_hpzl").combobox("getValue");
+		var hphm = $("#quer_checking_hphm").val();
+		var param={};
+		if(hphm&&$.trim(hphm)!=""){
+			param.hphm=hphm;
+		}
+		if(hpzl&&$.trim(hpzl)!=""){
+			param.hpzl=hpzl;
+		}
+		param.statusArry="0,1";
+		$("#checkingVehList").datagrid("reload",param);
+	},
+	vehCheckedQuery:function(){
+		var hpzl = $("#quer_checked_hpzl").combobox("getValue");
+		var hphm = $("#quer_checked_hphm").val();
+		var param={};
+		if(hphm&&$.trim(hphm)!=""){
+			param.hphm=hphm;
+		}
+		if(hpzl&&$.trim(hpzl)!=""){
+			param.hpzl=hpzl;
+		}
+		param.statusArry="2";
+		$("#checkedVehList").datagrid("reload",param);
+	}
+	,login:function(){
+		
+		var flag = $("#vehinfo").form("validate");
+		if(flag){
+			var xms = $(".panel_cyxm :checked").length;
+			 var jcxdh= $("#_jcxdh").combobox("getValue");
+			 if(jcxdh==""){
+				 $.messager.alert("提示","请选择检测线！");
+				 return false;
+			 }
+			 if(xms<=0){
+				 $.messager.alert("提示","请选择检验项目！");
+				 return false;
+			 }else{
+				 $.messager.progress({
+						title:"提示",
+						msg:"数据保存中。。。"
+				 });
+				 var str_jyxm="";
+				 $.each($(".panel_cyxm :checked"),function(i,n){
+					 str_jyxm+=","+$(n).val();
+				 });
+				 if(str_jyxm.length>0){
+					 str_jyxm=str_jyxm.substring(1, str_jyxm.length);
+				 }
+				 console.log(str_jyxm);
+				// $("#str_jyxm").val(str_jyxm);
+				 
+				 var param=$("#vehinfo").serializeJson();
+				 param['hphm'] = param['sf']+param['hphm'];
+				 param['jcxdh']=jcxdh;
+				 param['jyxm']=str_jyxm;
+				 
+				 $.post("/veh/veh/vehLogin",param,function(data){
+					 	data=$.parseJSON(data);
+						var head = null;
+						var body = null;
+						console.log(data);
+						if ($.isArray(data)) {
+							head = data[0];
+						} else {
+							head = data["head"];
+							body = data["body"]
+						}
+						if (head["code"] == 1){
+							$("#vehinfo").form("clear");
+							$(":checkbox[name=jyxm]").prop("checked",false);
+							$("#checkingVehList").datagrid("reload");
+							$.messager.alert("提示","车辆登录成功。");
+						}
+					},"json").error(function(msg){
+						$.messager.progress("close");
+						console.log(msg);
+						if(msg.status==500){
+							$.messager.alert("错误","服务器响应错误！","error");
+							return;
+						}
+						if(msg.status==400){
+							$.messager.alert("错误","无法访问该资源！","error");
+							return;
+						}
+						$.messager.alert("错误","请求失败！","error");
+						
+					}).complete(function(){
+						$.messager.progress("close");
+					});
+			 }
+		}
+	},
+	lsLogin:function(){
+		var flag = $("#vehinfo").form("validate");
+		if(flag){
+			 var xms = $(".panel_lsxm :checked").length;
+			 if(xms<=0){
+				 $.messager.alert("提示","请选择路试项目！");
+				 return false;
+			 }else{
+				 $.messager.progress({
+						title:"提示",
+						msg:"数据加载中。。。"
+					});
+				 var str_jyxm="";
+				 $.each($(".panel_lsxm :checked"),function(i,n){
+					 str_jyxm+=","+$(n).val();
+				 });
+				 if(str_jyxm.length>0){
+					 str_jyxm=str_jyxm.substring(1, str_jyxm.length);
+				 }
+				 console.log(str_jyxm);
+				 //$("#str_jyxm").val(str_jyxm);
+				var param=$("#vehinfo").serializeJson();
+				param['hphm'] = param['sf']+param['hphm'];
+				param['jyxm']=str_jyxm;
+				console.log(param);
+				$.post("/veh/veh/vehLogin",param,function(data){
+					data=$.parseJSON(data);
+					var head = null;
+					var body = null;
+					console.log(data);
+					if ($.isArray(data)) {
+						head = data[0];
+					} else {
+						head = data["head"];
+						body = data["body"]
+					}
+					if (head["code"] == 1){
+						$("#vehinfo").form("clear");
+						$(":checkbox[name=jyxm]").prop("checked",false);
+						$("#checkingVehList").datagrid("reload");
+						$.messager.alert("提示","车辆登录成功。");
+					}
+				},"json").error(function(msg){
+					$.messager.progress("close");
+					console.log(msg);
+					if(msg.status==500){
+						$.messager.alert("错误","服务器响应错误！","error");
+						return;
+					}
+					if(msg.status==400){
+						$.messager.alert("错误","无法访问该资源！","error");
+						return;
+					}
+					$.messager.alert("错误","请求失败！","error");
+					
+				}).complete(function(){
+					$.messager.progress("close");
+				});
+			 }
+		}
+	},
+	vehUnlogin:function(){
+		var row = $("#checkingVehList").datagrid("getSelected");
+		if(row){
+			$.messager.progress({
+				title:'提示',
+				msg:"正在注销登陆。。。"
+			});
+			$.post("/veh/veh/vheUnLogin",row,function(data){
+			},"json").complete(function(data){
+				$.messager.progress("close");
+				 $("#checkingVehList").datagrid("reload");
+			}).error(veh.error);
+		}else{
+			$.messager.alert("提示","请选择车辆。");
+		}
+	}
+	,getVehinfo : function() {
 		var sf = $("input[sid=sf]").combobox("getText");
 		var hphm = sf + $("input[sid=hphm]").textbox("getValue");
 		var hpzl = $("input[sid=hpzl]").combobox("getValue");
@@ -109,12 +320,10 @@ var veh = {
 	},
 
 	getVehCheckItem : function() {
-
 		var param = {
 			"jylb" : "01",
 			"syxz" : ""
 		}
-
 		this.ajaxVeh("/veh/veh/getVehCheckItem", param, function(data) {
 			data = $.parseJSON(data);
 			console.log(data);
@@ -127,6 +336,8 @@ var veh = {
 	setVehB16 : function(zs) {
 		for (var i = 1; i <= 6; i++) {
 			if (i <= zs) {
+				$(":checkbox[name=jyxm][value=B" + i + "]").prop("disabled",
+						false);
 				$(":checkbox[name=jyxm][value=B" + i + "]").prop("checked",
 						true);
 			} else {
@@ -436,6 +647,7 @@ var gridUtil = {
 		g.accept = function() {
 			g.endEditing(function(){
 				$(grid).datagrid('acceptChanges');
+				$(grid).datagrid("reload");
 			})
 		};
 		g.reject = function() {
@@ -494,55 +706,106 @@ var system = {
 }
 
 $.extend(
-				$.fn.validatebox.defaults.rules,
-				{
-					userVad : {
-						validator : function(value, param) {
-							var reg = /^[a-zA-Z\d]\w{3,11}[a-zA-Z\d]$/;
-							return reg.test(value);
-						},
-						message : '用户名包含4到12位数字、字母'
-					},
-					idCardVad : {
-						validator : function(value, param) {
-							// 15位和18位身份证号码的正则表达式
-							var regIdCard = /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
-							// 如果通过该验证，说明身份证格式正确，但准确性还需计算
-							if (regIdCard.test(value)) {
-								if (value.length == 18) {
-									var idCardWi = new Array(7, 9, 10, 5, 8, 4,
-											2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2); // 将前17位加权因子保存在数组里
-									var idCardY = new Array(1, 0, 10, 9, 8, 7,
-											6, 5, 4, 3, 2); // 这是除以11后，可能产生的11位余数、验证码，也保存成数组
-									var idCardWiSum = 0; // 用来保存前17位各自乖以加权因子后的总和
-									for (var i = 0; i < 17; i++) {
-										idCardWiSum += value
-												.substring(i, i + 1)
-												* idCardWi[i];
-									}
-									var idCardMod = idCardWiSum % 11;// 计算出校验码所在数组的位置
-									var idCardLast = value.substring(17);// 得到最后一位身份证号码
-									// 如果等于2，则说明校验码是10，身份证号码最后一位应该是X
-									if (idCardMod == 2) {
-										if (idCardLast == "X"
-												|| idCardLast == "x") {
-											return true;
-										} else {
-											return false;
-										}
-									} else {
-										// 用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
-										if (idCardLast == idCardY[idCardMod]) {
-											return true;
-										} else {
-											return false;
-										}
-									}
-								}
+	$.fn.validatebox.defaults.rules,
+	{
+		userVad : {
+			validator : function(value, param) {
+				var reg = /^[a-zA-Z\d]\w{3,11}[a-zA-Z\d]$/;
+				return reg.test(value);
+			},
+			message : '用户名包含4到12位数字、字母'
+		},
+		idCardVad : {
+			validator : function(value, param) {
+				// 15位和18位身份证号码的正则表达式
+				var regIdCard = /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
+				// 如果通过该验证，说明身份证格式正确，但准确性还需计算
+				if (regIdCard.test(value)) {
+					if (value.length == 18) {
+						var idCardWi = new Array(7, 9, 10, 5, 8, 4,
+								2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2); // 将前17位加权因子保存在数组里
+						var idCardY = new Array(1, 0, 10, 9, 8, 7,
+								6, 5, 4, 3, 2); // 这是除以11后，可能产生的11位余数、验证码，也保存成数组
+						var idCardWiSum = 0; // 用来保存前17位各自乖以加权因子后的总和
+						for (var i = 0; i < 17; i++) {
+							idCardWiSum += value
+									.substring(i, i + 1)
+									* idCardWi[i];
+						}
+						var idCardMod = idCardWiSum % 11;// 计算出校验码所在数组的位置
+						var idCardLast = value.substring(17);// 得到最后一位身份证号码
+						// 如果等于2，则说明校验码是10，身份证号码最后一位应该是X
+						if (idCardMod == 2) {
+							if (idCardLast == "X"
+									|| idCardLast == "x") {
+								return true;
 							} else {
 								return false;
 							}
-						},
-						message : '身份证号码错误'
+						} else {
+							// 用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
+							if (idCardLast == idCardY[idCardMod]) {
+								return true;
+							} else {
+								return false;
+							}
+						}
 					}
-				});
+				} else {
+					return false;
+				}
+			},
+			message : '身份证号码错误'
+		}
+	});
+
+var mainConsole={
+	loadVehCheckInfo:function(index,row){
+		if(row){
+			$.messager.progress({"title":"正在加载过程数据..."});
+			$.post("/veh/veh/getVehCheckeProcess",{'jylsh':row.jylsh},function(data){
+				if($.isArray(data)){
+					$(".mainConsole_checkeItem").empty();
+					$.each(data,function(i,n){
+						var itemName=comm.getParamNameByValue('jyxm',n.jyxm);
+						var li;
+						if(n.status==0){
+							li ="<li><a href=\"#\" class=\"easyui-linkbutton c2\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(未检)</a></li>";
+						}else if(n.status==1){
+							li ="<li><a href=\"#\" class=\"easyui-linkbutton c6\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(检验中)</a></li>";
+						}else if(n.status==2){
+							li ="<li><a href=\"#\" class=\"easyui-linkbutton c1\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(已检)</a></li>";
+						}else if(n.status==3){
+							li ="<li><a href=\"#\" class=\"easyui-linkbutton c5\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(复检)</a></li>";
+						}
+						$(".mainConsole_checkeItem").append(li);
+						$.parser.parse('.mainConsole_checkeItem');
+					});
+				}
+			},"json").error(function(){
+				$.messager.alert("提示","数据发送失败","error")
+			}).complete(function(){
+				$.messager.progress("close");
+			});
+		}
+	},
+	loadCheckItemInfo:function(jylsh,jyxm){
+		var center  = $("#layout-jyxm").layout("panel","center");
+		var url;
+		var title;
+		switch (jyxm) {
+		case 'R1':
+			url="/veh/html/roadTest.html";
+			title="路试信息";
+			break;
+		}
+		if(url){
+			center.panel("refresh",url);
+			if(title){
+				center.panel("setTitle",title);
+			}
+		}
+		
+	}
+
+}

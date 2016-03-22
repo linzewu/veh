@@ -1,0 +1,27 @@
+
+<div class="easyui-layout" fit="true" >
+	<div data-options="region:'west'" title="在检车辆信息" style="width: 300px;">
+		<table class="easyui-datagrid" id="checkingVeh" 
+			data-options="pagination:true,pageSize:20,onDblClickRow:mainConsole.loadVehCheckInfo,toolbar:'#checkingVehTool',border:0,fitColumns:true,singleSelect:true,fit:true,url:'/veh/veh/getVehChecking',queryParams:{statusArry:'0,1'}">
+			<thead>
+				<tr>
+					<th data-options="field:'jylsh',width:100">检验流水号</th>
+					<th data-options="field:'hphm',width:60">号牌号码</th>
+					<th data-options="field:'hpzl',width:40">号牌种类</th>
+					<!-- <th data-options="field:'clsbdh',width:100">车辆识别代号</th> -->
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<div data-options="region:'center',border:0">
+		<div class="easyui-layout" fit="true" id="layout-jyxm">
+			<div data-options="region:'north',title:'检验项目'" style="height: 110px;">
+				<ul class="mainConsole_checkeItem"></ul>
+			</div>
+			<div data-options="region:'center',title:'检验信息',border:0" ></div>	
+		</div>
+	</div>
+</div>
+<div id="checkingVehTool">
+<label>号牌号码：</label><input class="easyui-textbox" value="苏J"><a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search'" >查询</a>
+</div>

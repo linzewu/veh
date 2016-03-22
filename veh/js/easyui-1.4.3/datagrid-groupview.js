@@ -89,7 +89,6 @@ var groupview = $.extend({}, $.fn.datagrid.defaults.view, {
 	onBeforeRender: function(target, rows){
 		var state = $.data(target, 'datagrid');
 		var opts = state.options;
-		
 		initCss();
 		
 		var groups = [];
@@ -134,9 +133,9 @@ var groupview = $.extend({}, $.fn.datagrid.defaults.view, {
 			return null;
 		}
 		function initCss(){
-			if (!$('#datagrid-group-style').length){
+			if (!$('#datagrid-group-style_').length){
 				$('head').append(
-					'<style id="datagrid-group-style">' +
+					'<style id="datagrid-group-style_">' +
 					'.datagrid-group{height:'+opts.groupHeight+'px;overflow:hidden;font-weight:bold;border-bottom:1px solid #ccc;}' +
 					'.datagrid-group-title,.datagrid-group-expander{display:inline-block;vertical-align:bottom;height:100%;line-height:'+opts.groupHeight+'px;padding:0 4px;}' +
 					'.datagrid-group-expander{width:'+opts.expanderWidth+'px;text-align:center;padding:0}' +

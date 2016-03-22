@@ -1,5 +1,6 @@
 package com.xs.veh.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -7,15 +8,23 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Scope("prototype")
 @Component("vehCheckLogin")
 @Entity
 @Table(name = "TM_VehCheckLogin")
-public class VehCheckLogin extends BaseEntity {
+@JsonIgnoreProperties(value ={"hibernateLazyInitializer","handler","fieldHandler"})
+public class VehCheckLogin extends BaseEntity implements Serializable {
 
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8255217792287102494L;
 	/** 检验流水号 */
 	@Column(length = 17,nullable=false)
 	private String jylsh;
@@ -48,15 +57,23 @@ public class VehCheckLogin extends BaseEntity {
 	private String syxz;
 	/** 初次登记日期 */
 	@Column
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
 	private Date ccdjrq;
 	/** 最近定检日期 */
 	@Column
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
 	private Date jyrq;
 	/** 检验有效期止 */
 	@Column
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
 	private Date jyyxqz;
 	/** 保险终止日期 */
 	@Column
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
 	private Date bxzzrq;
 	/** 燃料种类 */
 	@Column(length = 3)
@@ -84,6 +101,8 @@ public class VehCheckLogin extends BaseEntity {
 	private Integer zbzl;
 	/** 出厂日期 */
 	@Column(nullable=false)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
 	private Date ccrq;
 	/** 驱动形式(驱动轴位) */
 	@Column(length = 5)
@@ -124,6 +143,8 @@ public class VehCheckLogin extends BaseEntity {
 	private String bhgx;
 	/** 登录时间 */
 	@Column
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date dlsj;
 	/** 检验次数 */
 	@Column(length = 2)
@@ -197,6 +218,18 @@ public class VehCheckLogin extends BaseEntity {
 	/** 送检人身份证号 */
 	@Column(length = 30)
 	private String sjrsfzh;
+	
+	@Column
+	private Integer hdzk;
+	
+
+	public Integer getHdzk() {
+		return hdzk;
+	}
+
+	public void setHdzk(Integer hdzk) {
+		this.hdzk = hdzk;
+	}
 
 	public String getJylsh() {
 		return jylsh;

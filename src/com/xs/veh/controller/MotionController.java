@@ -41,8 +41,8 @@ public class MotionController {
 	}
 	
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	public @ResponseBody void delete(Device device){
-		this.deviceManager.deleteUser(device);
+	public @ResponseBody void delete(DeviceMotion deviceMotion){
+		this.deviceManager.deleteDeviceMotion(deviceMotion);
 	}
 
 	

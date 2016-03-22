@@ -18,7 +18,7 @@
 	<mvc:resources location="/css/" mapping="/css/**" />
 	<mvc:resources location="/codebase/" mapping="/codebase/**" />
 	<mvc:resources location="/datas/" mapping="/datas/**" />
-	<mvc:resources location="/html/" mapping="/html/*" />
+	<mvc:resources location="/html/" mapping="/html/**" />
 	<mvc:resources location="/pages/" mapping="/pages/*" />
 
 
@@ -42,7 +42,6 @@
 
 
 	<mvc:annotation-driven validator="validator">
-	    
 		<mvc:message-converters register-defaults="true">
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
 				<constructor-arg value="UTF-8" />
@@ -54,7 +53,7 @@
 				</property>
 			</bean>
 			<bean
-				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 	

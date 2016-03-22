@@ -8,49 +8,168 @@
 		return  comm.getParamNameByValue('lineType',value);
 	}
 	
+	function workPointFormatter(value,row,index){
+		return  comm.getParamNameByValue('workPoint',value);
+	}
+	function switchTypeFormatter(value,row,index){
+		return  comm.getParamNameByValue('switch',value);
+	}
+	
 	var motion=gridUtil.createNew("#motionManager",{idField:"id",url:"/veh/motion"});
+	var sw=gridUtil.createNew("#switchManager",{idField:"id",url:"/veh/switch"});
+	
+	function createLine(){
+		$.messager.confirm("请确认","您是否创建新的一条检测线？",function(r){
+			if(r){
+				$.messager.progress({
+					title:'数据加载中',
+					msg:'请等待...'
+				});
+				$.post("/veh/device/createLinkDevice",{},function(data){
+					$.messager.alert("提示",data.message,"info");
+				},"json").error(function(e){
+					console.log(e);
+					$.messager.alert("错误","系统错误","error");
+				}).complete(function(){
+					$.messager.progress("close");
+				});
+			}
+		});
+	}
+	
+	function openDeviceInfo(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var url ="/veh/html/device/";
+		
+		if(row){
+			url+="device"+row.type+".html?"+new Date().getTime();
+			$("#deviceInfo_win").window('open');
+			$("#deviceInfo_win").window('setTitle',comm.getParamNameByValue('deviceType',row.type));
+			$("#deviceInfo_win").window('refresh', url);
+		}else{
+			$.messager.alert("提示","请选择设备","info");
+		}
+	}
+	
+	function deviceInfoLoad(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		if(row.qtxx!=""){
+			var data=$.parseJSON(row.qtxx);
+			$(".device-form").form("load",data);
+		}
+	}
+	
+	function saveGdkg(){
+		var flag = $("#form-gdkg").form("validate");
+		if(!flag){
+			return;
+		}
+		$("#device_console").textbox("setValue","");
+		var row = $("#deviceManager").datagrid("getSelected");
+		var json = $("#form-gdkg").serializeJson();
+		var qtxx = JSON.stringify(json);
+		json.qtxx=qtxx;
+		json.id=row.id;
+		json.type=row.type;
+		json.jcxxh=row.jcxxh;
+		$.post("/veh/device/save",json,function(data){
+			$("#deviceInfo_win").window("close");
+			$("#deviceManager").datagrid("reload");
+			$.messager.alert("提示","修改成功，参数修改后请在控制台重启生效");
+		},"json");
+	}
+	
+	function getRtx(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			if(data&&data!=""){
+				var value = $("#device_console").textbox("getValue");
+				value+=data+"\n";
+				$("#device_console").textbox("setValue",value);
+			}
+		}
+		$.post("/veh/device/getRtx",{'id':row.id},call);
+	}
+	
+	function deviceStop(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/deviceStop",{'id':row.id},call,"json");
+	}
+	
+	function getGdkg(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var rows = $("#deviceManager").datagrid("getRows");
+		var array=[];
+		$.each(rows,function(i,n){
+			if(n.jcxxh==row.jcxxh&&n.type==90){
+				console.log(n)
+				array.push({"name":n.name,"id":+n.id,"kggs":n.qtxx.kggs})
+			}
+		});
+		return array;
+	}
+	
+	//获取信号
+	function getGdkgXh(){
+		var array=[];
+		
+		for(var i=0;i<8;i++){
+			var name ="信号"+(i+1);
+			array.push({"name":name,"id":i});
+		}
+		return array;
+	}
+	
+	//显示屏
+	function getXsp(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var rows = $("#deviceManager").datagrid("getRows");
+		var array=[];
+		$.each(rows,function(i,n){
+			if(n.jcxxh==row.jcxxh&&n.type==91){
+				console.log(n)
+				array.push({"name":n.name,"id":+n.id})
+			}
+		});
+		return array;
+	}
+	
 	
 </script>
 
 <div class="easyui-tabs" data-options="fit:true">
-	<div data-options="title:'协议管理'">
-		<table id="motionManager" class="easyui-datagrid"
-			data-options="url:'/veh/motion/getMotions',fitColumns:true,singleSelect:true,fit:true,toolbar:motionManagerToolbar">
-			<thead> 
-				<tr>
-					<th data-options="field:'type',width:100,formatter:deviceFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('deviceType'),valueField: 'id',textField: 'value'}}">设备类型</th>
-					<th data-options="field:'actionName',width:100,editor:{type:'textbox',options:{required:true}}">动作名称</th>
-					<th data-options="field:'protocol',width:100,editor:{type:'textbox',options:{required:true}}">协议内容</th>
-				</tr>
-			</thead>
-		</table>
-		<div id="motionManagerToolbar">
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="motion.append()">添加协议</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="motion.accept()">保存</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="motion.reject()">取消编辑</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="motion.editData()">修改协议</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="motion.remove()">删除协议</a>
-		</div>
-	</div>
 	<div data-options="title:'设备管理'">
 		<table id="deviceManager" class="easyui-datagrid"
-			data-options="url:'/veh/device/getDevices',fitColumns:true,singleSelect:true,fit:true,toolbar:deviceManagerToolbar">
+			data-options="url:'/veh/device/getDevices',fitColumns:true,singleSelect:true,fit:true,toolbar:'#deviceManagerToolbar', view:groupview,
+                groupField:'jcxxh',
+                groupFormatter:lineFormatter,
+                rownumbers:true,
+                collapsible:false">
 			<thead> 
 				<tr>
 					<th data-options="field:'type',width:100,formatter:deviceFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('deviceType'),valueField: 'id',textField: 'value'}}">设备类型</th>
-					<th data-options="field:'line',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">线别</th>
-					<th data-options="field:'ip',width:100,editor:{type:'textbox',options:{required:true}}">IP地址</th>
-					<th data-options="field:'port',width:100,editor:{type:'textbox',options:{required:true}}">通讯端口</th>
+					<th data-options="field:'jcxxh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">线别</th>
+					<th data-options="field:'sbcs',width:100">设备厂商</th>
+					<th data-options="field:'sbxh',width:100">设备型号</th>
 				</tr>
 			</thead>
 		</table>
 		<div id="deviceManagerToolbar">
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="device.append()">添加设备</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="createLine()">添加检测线</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="device.accept()">保存</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="device.reject()">取消编辑</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="device.editData()">修改设备</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="device.reject()">取消</a>
+			<!-- <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="device.editData()">编辑设备</a> -->
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="openDeviceInfo()">编辑设备</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="device.remove()">删除设备</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-debug',plain:true" onclick="testMotion()">设备测试</a>
 		</div>
 	</div>
+</div>
+<div id="deviceInfo_win" class="easyui-window" title="设备详细信息" style="width:800px;height:600px"
+        data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:false,collapsible:false,minimizable:false">
 </div>

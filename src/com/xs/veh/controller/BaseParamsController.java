@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,8 +21,11 @@ import com.xs.veh.entity.BaseParams;
 @Controller
 @RequestMapping(value = "/bps")
 public class BaseParamsController {
+	
+	private static Logger logger = Logger.getLogger(BaseParamsController.class);  
 
-	@RequestMapping(value = "all.js",produces = "application/javascript; charset=utf-8")
+	@RequestMapping(value = "all.js")
+	//@RequestMapping(value = "all.js", produces = {"text/javascript;charset=UTF-8"})
 	public @ResponseBody String getBaseParamsOfJS(HttpServletRequest request)
 			throws JsonProcessingException {
 		
@@ -35,6 +39,7 @@ public class BaseParamsController {
 				ObjectMapper();
 
 		String js = " var bps=" + objectMapper.writeValueAsString(bps);
+		logger.debug(js);
 		return js;
 	}
 

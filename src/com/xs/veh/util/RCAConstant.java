@@ -38,13 +38,33 @@ public class RCAConstant {
 	
 	public static final String V18C46="18C46";
 	
+	public static final String V18C72="18C72";
+	
 	public  static final String ITEM_F1="F1";
 	
 	public static final String ROAD="路试";
 	
-	 public static final String XTLB = "18";
+	public static final String XTLB = "18";
+	
+	/**
+	 * 已登录
+	 */
+	public static final Integer LOGGED =0;
+	
+	/**
+	 * 未开始
+	 */
+	public static final Integer UNCHECK=0;
+	
+	/**
+	 * 检验中
+	 */
+	public static final Integer CHECKING=1;
+	
+	/**
+	 * 检验完成
+	 */
+	public static final Integer CHECKED=2;
 	
 	
-	
-
 }

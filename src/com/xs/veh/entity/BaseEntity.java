@@ -31,6 +31,18 @@ public abstract class BaseEntity {
 	
 	@Column(length=20)
 	private String updateTime;
+	
+	@Column
+	private Integer status;
+	
+	
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
 	public String getCreateUser() {
 		return createUser;

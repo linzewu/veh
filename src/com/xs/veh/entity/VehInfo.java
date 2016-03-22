@@ -1,5 +1,6 @@
 package com.xs.veh.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -16,8 +17,13 @@ import org.springframework.stereotype.Component;
 @Component("vehInfo")
 @Entity
 @Table(name = "TM_VehInfo")
-public class VehInfo {
+public class VehInfo extends BaseEntity implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3077135966542772509L;
+
 	@Id
 	@GenericGenerator(name = "idGenerator", strategy = "identity")
 	@GeneratedValue(generator = "idGenerator")

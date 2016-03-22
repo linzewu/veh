@@ -16,15 +16,10 @@
 	default-lazy-init="false">
 
 
-	<context:property-placeholder location="classpath:rca.properties"  />
-<!-- 	<bean id="rca"
-		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-		<property name="locations">
-			<list>
-				<value>classpath:rca.properties</value>
-			</list>
-		</property>
-	</bean> -->
+	<context:property-placeholder location="classpath:rca.properties" />
+	<!-- <bean id="rca" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+		<property name="locations"> <list> <value>classpath:rca.properties</value> 
+		</list> </property> </bean> -->
 
 	<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> 
 		<property name="jndiName"> <value>java:comp/env/jdbc/anjiannew</value> </property> 
@@ -76,12 +71,14 @@
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="create*" propagation="REQUIRED" />
 			<tx:method name="edit*" propagation="REQUIRED" />
 			<tx:method name="remove*" propagation="REQUIRED" />
 			<tx:method name="save*" propagation="REQUIRED" />
 			<tx:method name="update*" propagation="REQUIRED" />
 			<tx:method name="delete*" propagation="REQUIRED" />
 			<tx:method name="reset*" propagation="REQUIRED" />
+			<tx:method name="vehLogin" propagation="REQUIRED" />
 			<tx:method name="batchUpdate" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true" />
 		</tx:attributes>
@@ -113,4 +110,16 @@
 		<property name="useCodeAsDefaultMessage" value="true" />
 	</bean>
 
+	<!-- 配置线程池 -->
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 线程池维护线程的最少数量 -->
+		<property name="corePoolSize" value="5" />
+		<!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="keepAliveSeconds" value="30000" />
+		<!-- 线程池维护线程的最大数量 -->
+		<property name="maxPoolSize" value="500" />
+		<!-- 线程池所使用的缓冲队列 -->
+		<property name="queueCapacity" value="200" />
+	</bean>
 </beans>

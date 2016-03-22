@@ -24,7 +24,7 @@ public class BaseParamsUtil {
 		
 		for(BaseParams bp:bps){
 			
-			if(bp.getType().equals(type)){
+			if(type.equals(bp.getType())){
 				types.add(bp);
 			}
 			
