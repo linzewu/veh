@@ -1,4 +1,4 @@
-package com.xs.veh.network;
+package com.xs.veh.network.data;
 
 public class SpeedData {
 	

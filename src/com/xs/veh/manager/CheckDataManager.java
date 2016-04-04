@@ -7,10 +7,10 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.veh.network.BrakRollerData;
-import com.xs.veh.network.LightData;
-import com.xs.veh.network.SideslipData;
-import com.xs.veh.network.SpeedData;
-import com.xs.veh.network.WeighData;
+import com.xs.veh.network.data.LightData;
+import com.xs.veh.network.data.SideslipData;
+import com.xs.veh.network.data.SpeedData;
+import com.xs.veh.network.data.WeighData;
 
 @Service("checkDataManager")
 public class CheckDataManager {

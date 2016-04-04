@@ -49,8 +49,15 @@ public class DeviceBrakRoller extends SimpleRead {
 
 	@Resource(name = "taskExecutor")
 	private ThreadPoolTaskExecutor executor;
-	
-	
+
+	private DeviceSignal signal;
+
+	private Integer s1;
+
+	public boolean getSignal() {
+		
+		return this.signal.getSignal(s1);
+	}
 
 	public ThreadPoolTaskExecutor getExecutor() {
 		return executor;
@@ -75,7 +82,6 @@ public class DeviceBrakRoller extends SimpleRead {
 	public void setCheckDataManager(CheckDataManager checkDataManager) {
 		this.checkDataManager = checkDataManager;
 	}
-
 
 	public BrakRollerData getBrakRollerData() {
 		return brakRollerData;
@@ -122,7 +128,7 @@ public class DeviceBrakRoller extends SimpleRead {
 				}
 				byte[] endodedData = new byte[length];
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
-				
+
 				dbrd.device2pc(endodedData);
 
 			} catch (Exception e) {
@@ -131,7 +137,6 @@ public class DeviceBrakRoller extends SimpleRead {
 			break;
 		}
 	}
-
 
 	@Override
 	public void run() {
@@ -143,7 +148,6 @@ public class DeviceBrakRoller extends SimpleRead {
 		}
 	}
 
-
 	public void startCheck() throws SystemException, IOException, InterruptedException {
 
 		dbrd.startCheck();
@@ -154,12 +158,21 @@ public class DeviceBrakRoller extends SimpleRead {
 		// 初始化制动设备
 		dbrd = (DeviceBrakRollerDecode) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		
+		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
+		
+		s1=this.getQtxxObject().getInt("kzsb-xhw");
+
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		// 加载挂载设备
 		if (temp != null) {
 			Integer deviceid = Integer.parseInt(temp);
 			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
 		}
+		
+		if(dwkg!=null){
+			signal=(DeviceSignal)servletContext.getAttribute(dwkg + "_" + Device.KEY);
+		}
+		
 		dbrd.init(this);
 	}
 

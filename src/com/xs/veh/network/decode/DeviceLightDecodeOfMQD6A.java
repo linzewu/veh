@@ -11,8 +11,8 @@ import com.xs.common.CharUtil;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceLight;
 import com.xs.veh.network.DeviceLightDecode;
-import com.xs.veh.network.LightData;
 import com.xs.veh.network.SimpleRead.ProtocolType;
+import com.xs.veh.network.data.LightData;
 
 import net.sf.json.JSONObject;
 
@@ -294,8 +294,6 @@ public class DeviceLightDecodeOfMQD6A extends DeviceLightDecode {
 
 		qsml = deviceLight.getQtxxObject().getString("g-qyzdsj");
 		getMainBeamData(qsml);
-		
-		
 		
 	//	this.checkDataManager.lightSave
 		

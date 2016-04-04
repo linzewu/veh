@@ -3,6 +3,8 @@ package com.xs.veh.network;
 import java.io.IOException;
 import java.util.Map;
 
+import com.xs.veh.network.data.LightData;
+
 /**
  * 灯光仪解码器接口
  * 

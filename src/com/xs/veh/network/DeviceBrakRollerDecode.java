@@ -16,7 +16,7 @@ public abstract class DeviceBrakRollerDecode {
 	public abstract void device2pc(byte[] data) throws IOException;
 	
 	public abstract void init(DeviceBrakRoller deviceBrakRoller);
-
+	
 	public DeviceBrakRoller getDeviceBrakRoller() {
 		return deviceBrakRoller;
 	}

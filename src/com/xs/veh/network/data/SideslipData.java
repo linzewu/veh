@@ -1,4 +1,4 @@
-package com.xs.veh.network;
+package com.xs.veh.network.data;
 
 import java.util.List;
 
@@ -22,6 +22,11 @@ public class SideslipData {
 
 	public void setDatas(List<Float> datas) {
 		this.datas = datas;
+	}
+
+	@Override
+	public String toString() {
+		return "SideslipData [sideslip=" + sideslip + ", datas=" + datas + "]";
 	}
 	
 	

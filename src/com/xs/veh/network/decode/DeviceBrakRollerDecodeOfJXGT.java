@@ -11,9 +11,9 @@ import com.xs.common.exception.SystemException;
 import com.xs.veh.network.BrakRollerData;
 import com.xs.veh.network.DeviceBrakRoller;
 import com.xs.veh.network.DeviceBrakRoller.BrakRollerDataType;
+import com.xs.veh.network.SimpleRead.ProtocolType;
 import com.xs.veh.network.DeviceBrakRollerDecode;
 import com.xs.veh.network.DeviceDisplay;
-import com.xs.veh.network.SimpleRead.ProtocolType;
 
 public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 
@@ -30,10 +30,15 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 	// 制动力检测结束
 	private String zdjcjs;
 
+	// 取检测结果
 	private String qjcjg;
 
 	// 到位延时
 	private String dwysqdsj;
+
+	private String jsqss;
+
+	private String jsqxj;
 
 	// 左轮抱死
 	private String zlbs;
@@ -47,13 +52,9 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 
 	// 右传感器错误
 	private String ycgqcw;
-	
-	
 
+	private boolean checkingFlage = false;
 
-	public boolean isSuccess(String ml, String rtx) {
-		return false;
-	}
 
 	public BrakRollerDataType getDataType(byte[] data) {
 
@@ -128,6 +129,8 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 	}
 
 	public ProtocolType getProtocolType(byte[] data) {
+		
+		//logger.info("数据：" + CharUtil.byte2HexOfString(data));
 
 		int f = CharUtil.byteToInt(data[0]);
 
@@ -142,7 +145,6 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 		}
 
 		if (data.length == 16 && f == 0xFF && e == 0xEE) {
-			System.out.println("检测结果");
 			return ProtocolType.DATA;
 		}
 
@@ -180,10 +182,9 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 	}
 
 	public void setCurrentData(byte[] data) {
-		
-		List<Integer> leftData = brakRollerData.getRigthData();
-		List<Integer> rigthData = brakRollerData.getLeftData();
-		
+
+		List<Integer> leftData = brakRollerData.getLeftData();
+		List<Integer> rigthData = brakRollerData.getRigthData();
 
 		for (int index = 0; index < data.length; index++) {
 
@@ -208,105 +209,151 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 	@Override
 	public void startCheck() throws SystemException, IOException, InterruptedException {
 
-		String ksjc = (String) deviceBrakRoller.getQtxxObject().get("t-ksjc");
-		String ybql = (String) deviceBrakRoller.getQtxxObject().get("t-ybql");
-		String dwysqdsj = (String) deviceBrakRoller.getQtxxObject().get("s-dwysqdsj");
-		// String zdljcsj = (String) this.getQtxxObject().get("s-zdljcsj");
-		String qjcjg = (String) deviceBrakRoller.getQtxxObject().get("g-qjcjg");
+		try {
+			String ksjc = (String) deviceBrakRoller.getQtxxObject().get("t-ksjc");
+			String ybql = (String) deviceBrakRoller.getQtxxObject().get("t-ybql");
+			String dwysqdsj = (String) deviceBrakRoller.getQtxxObject().get("s-dwysqdsj");
+			// String zdljcsj = (String) this.getQtxxObject().get("s-zdljcsj");
+			String qjcjg = (String) deviceBrakRoller.getQtxxObject().get("g-qjcjg");
 
-		if (ksjc == null || ybql == null || qjcjg == null) {
-			throw new SystemException("滚筒制动启动错误，通讯协议不全");
-		}
-
-		// 仪表清0
-		deviceBrakRoller.sendMessage(ybql);
-		// 清理数据
-		deviceBrakRoller.clearDate();
-		
-		brakRollerData = new BrakRollerData();
-
-		// 发送到位延时时间
-		deviceBrakRoller.sendMessage(dwysqdsj);
-
-		// 开始检测
-		deviceBrakRoller.sendMessage(ksjc);
-
-		// 等待检测数据返回
-		while (true) {
-			if (this.getBrakRollerData().getZzdl() != null && this.getBrakRollerData().getYzdl() != null) {
-				break;
+			if (ksjc == null || ybql == null || qjcjg == null) {
+				throw new SystemException("滚筒制动启动错误，通讯协议不全");
 			}
-			Thread.sleep(300);
+
+			checkingFlage = true;
+
+			// 仪表清0
+			deviceBrakRoller.sendMessage(ybql);
+			Thread.sleep(200);
+			// 清理数据
+			deviceBrakRoller.clearDate();
+			brakRollerData = new BrakRollerData();
+
+			// 发送到位延时时间
+			deviceBrakRoller.sendMessage(dwysqdsj);
+			Thread.sleep(200);
+
+			deviceBrakRoller.getDisplay().sendMessage("苏J00001", DeviceDisplay.SP);
+			deviceBrakRoller.getDisplay().sendMessage("一轴制动请到位", DeviceDisplay.XP);
+
+			// 等待到位
+			int i = 0;
+			while (true) {
+				if (deviceBrakRoller.getSignal()) {
+					deviceBrakRoller.getDisplay().sendMessage("苏J00001", DeviceDisplay.SP);
+					deviceBrakRoller.getDisplay().sendMessage("一轴已到位", DeviceDisplay.XP);
+					i++;
+				} else {
+					deviceBrakRoller.getDisplay().sendMessage("苏J00001", DeviceDisplay.SP);
+					deviceBrakRoller.getDisplay().sendMessage("一轴制动请到位", DeviceDisplay.XP);
+					i = 0;
+				}
+
+				if (i >= 6) {
+					break;
+				}
+
+				Thread.sleep(500);
+			}
+
+			// 举升下降
+			deviceBrakRoller.sendMessage(jsqxj);
+			Thread.sleep(4000);
+
+			// 开始检测
+			deviceBrakRoller.sendMessage(ksjc);
+
+			// 等待检测数据返回
+			while (true) {
+				if (this.getBrakRollerData().getZzdl() != null && this.getBrakRollerData().getYzdl() != null) {
+					break;
+				}
+				Thread.sleep(300);
+			}
+			// 保存检测数据、计算检测结果
+			deviceBrakRoller.getCheckDataManager().saveBrakRoller(brakRollerData);
+
+			checkingFlage = false;
+			
+			deviceBrakRoller.getDisplay().sendMessage("苏J00001", DeviceDisplay.SP);
+			deviceBrakRoller.getDisplay().sendMessage("一轴制动检测结束", DeviceDisplay.XP);
+			logger.info("检测结束");
+		} finally {
+			this.deviceBrakRoller.sendMessage(jsqss);
 		}
-		// 保存检测数据、计算检测结果
-		deviceBrakRoller.getCheckDataManager().saveBrakRoller(brakRollerData);
-		
-		//FF08EE06
+
+		// FF08EE06
 
 	}
 
 	@Override
 	public void device2pc(byte[] endodedData) throws IOException {
-		ProtocolType protocolType = getProtocolType(endodedData);
 
-		if (protocolType == ProtocolType.DATA || protocolType == ProtocolType.DATA_AND_NOTICE) {
+		if (checkingFlage) {
+			ProtocolType protocolType = getProtocolType(endodedData);
 
-			byte[] data = endodedData;
+			if (protocolType == ProtocolType.DATA || protocolType == ProtocolType.DATA_AND_NOTICE) {
 
-			if (protocolType == ProtocolType.DATA_AND_NOTICE) {
-				data = getData(endodedData);
+				byte[] data = endodedData;
+
+				if (protocolType == ProtocolType.DATA_AND_NOTICE) {
+					data = getData(endodedData);
+				}
+
+				BrakRollerDataType dataType = getDataType(data);
+
+				if (dataType == BrakRollerDataType.L_DATA) {
+					setCurrentData(data);
+				} else if (dataType == BrakRollerDataType.R_DATA) {
+					setCurrentData(data);
+				} else if (dataType == BrakRollerDataType.RESULT_DATA) {
+					setCheckedData(data, brakRollerData);
+				}
 			}
 
-			BrakRollerDataType dataType = getDataType(data);
+			if (protocolType == ProtocolType.NOTICE || protocolType == ProtocolType.DATA_AND_NOTICE) {
 
-			if (dataType == BrakRollerDataType.L_DATA) {
-				setCurrentData(data);
-			} else if (dataType == BrakRollerDataType.R_DATA) {
-				setCurrentData(data);
-			} else if (dataType == BrakRollerDataType.RESULT_DATA) {
-				setCheckedData(data, brakRollerData);
-			}
-		}
+				byte[] notice = endodedData;
 
-		if (protocolType == ProtocolType.NOTICE || protocolType == ProtocolType.DATA_AND_NOTICE) {
+				if (protocolType == ProtocolType.DATA_AND_NOTICE) {
+					logger.info("通知及数据一起：" + CharUtil.byte2HexOfString(endodedData));
+					notice = getNotice(endodedData);
+				}
+				
 
-			byte[] notice = endodedData;
+				String ml = CharUtil.byte2HexOfString(notice);
 
-			if (protocolType == ProtocolType.DATA_AND_NOTICE) {
-				notice = getNotice(endodedData);
-			}
-
-			String ml = CharUtil.byte2HexOfString(notice);
-
-			if (endodedData.length == 4) {
 				logger.info("仪表返回命令：" + ml);
-			}
 
-			if (ml.equalsIgnoreCase(qdzdj)) {
-				deviceBrakRoller.getDisplay().sendMessage("检测开始", DeviceDisplay.SP);
-				deviceBrakRoller.getDisplay().sendMessage("请放手刹", DeviceDisplay.XP);
-				return;
-			}
-			if (ml.equalsIgnoreCase(jczzl)) {
-				ds("开始检测阻滞力", 3, null);
-				return;
-			}
+				if (ml.equalsIgnoreCase(qdzdj)) {
+					deviceBrakRoller.getDisplay().sendMessage("检测开始", DeviceDisplay.SP);
+					deviceBrakRoller.getDisplay().sendMessage("请放手刹", DeviceDisplay.XP);
+					return;
+				}
+				if (ml.equalsIgnoreCase(jczzl)) {
+					ds("开始检测阻滞力", 3, null);
+					return;
+				}
 
-			if (ml.equalsIgnoreCase(jczdl)) {
-				System.err.println("检测制动力命令：" + jczdl);
-				ds("开始检测制动力", 5, "请踩刹车");
-				return;
-			}
-			// 制动检测结束
-			if (ml.equalsIgnoreCase(zdjcjs)) {
-				// 发送取数数据
-				deviceBrakRoller.sendMessage(qjcjg);
-				logger.info("发送取数据命令");
-			}
+				if (ml.equalsIgnoreCase(jczdl)) {
+					deviceBrakRoller.getDisplay().sendMessage("请踩刹车", DeviceDisplay.XP);
+					ds("开始检测制动力", 5, null);
+					return;
+				}
+				// 制动检测结束
+				
+				if (ml.equalsIgnoreCase(zdjcjs) || ml.equalsIgnoreCase(zlbs) || ml.equalsIgnoreCase(ylbs)
+						|| ml.equalsIgnoreCase(zylbs)) {
+					// 发送取数数据
+					deviceBrakRoller.sendMessage(qjcjg);
+					logger.info("发送取数据命令");
+				}
 
+			}
 		}
+
 	}
-	
+
 	// 倒数计时线程
 	public void ds(final String title, final Integer ms, final String afterTitle) {
 		deviceBrakRoller.getExecutor().execute(new Runnable() {
@@ -330,8 +377,8 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 
 	@Override
 	public void init(DeviceBrakRoller deviceBrakRoller) {
-		
-		this.deviceBrakRoller=deviceBrakRoller;
+
+		this.deviceBrakRoller = deviceBrakRoller;
 		qdzdj = (String) deviceBrakRoller.getQtxxObject().get("r-qdzdj");
 		qdydj = (String) deviceBrakRoller.getQtxxObject().get("r-qdydj");
 		jczdl = (String) deviceBrakRoller.getQtxxObject().get("r-jczdl");
@@ -340,20 +387,23 @@ public class DeviceBrakRollerDecodeOfJXGT extends DeviceBrakRollerDecode {
 		qjcjg = (String) deviceBrakRoller.getQtxxObject().get("g-qjcjg");
 		dwysqdsj = (String) deviceBrakRoller.getQtxxObject().get("s-dwysqdsj");
 
+		jsqss = (String) deviceBrakRoller.getQtxxObject().get("t-jsqss");
+
+		jsqxj = (String) deviceBrakRoller.getQtxxObject().get("t-jsqxj");
 		// 检测结束 左轮抱死
 		zlbs = (String) deviceBrakRoller.getQtxxObject().get("r-zdjcjs-zbs");
 		// 检测结束 右轮抱死
 		ylbs = (String) deviceBrakRoller.getQtxxObject().get("r-zdjcjs-ybs");
 
 		// 检测结束 左右轮抱死
-		zylbs = (String) deviceBrakRoller.getQtxxObject().get("r--zybs");
+		zylbs = (String) deviceBrakRoller.getQtxxObject().get("r-zdjcjs-zybs");
 
 		// 左边第三滚速度传感器有问题
 		zcgqcw = (String) deviceBrakRoller.getQtxxObject().get("r-zsdcgq");
 
 		// 左边第三滚速度传感器有问题
 		ycgqcw = (String) deviceBrakRoller.getQtxxObject().get("r-ysdcgq");
-		
+
 	}
 
 }

@@ -126,11 +126,5 @@ public class DeviceSignal extends SimpleRead {
 		return signal==0?true:false;
 		
 	}
-	
-	public static void main(String[] age){
-		
-		System.out.println("abc".substring(1, 1));
-		
-	}
 
 }

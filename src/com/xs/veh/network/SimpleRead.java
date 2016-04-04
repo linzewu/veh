@@ -19,7 +19,6 @@ import gnu.io.UnsupportedCommOperationException;
 import net.sf.json.JSONObject;
 
 public abstract class SimpleRead implements SerialPortEventListener, Runnable {
-
 	public enum ProtocolType {
 		/**
 		 * 数据
