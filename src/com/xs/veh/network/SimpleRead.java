@@ -28,7 +28,7 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 		 * 通知型命令
 		 */
 		NOTICE,
-		
+
 		DATA_AND_NOTICE
 	}
 
@@ -73,8 +73,6 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 	public Device getDevice() {
 		return device;
 	}
-
-	
 
 	public void setDevice(Device device) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		this.device = device;
@@ -145,7 +143,6 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 		}
 	}
 
-
 	public abstract void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 
 	public void sendMessage(String message) throws IOException {
@@ -155,7 +152,7 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 		if (dhcf == 0) {
 			message += "\r\n";
 		}
-		//logger.info(message);
+		// logger.info(message);
 		if (xylx == 0) {
 			outputStream.write(message.getBytes());
 		} else {
@@ -170,8 +167,6 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 	public void sendHead(String head) throws IOException {
 
 		Integer xylx = Integer.parseInt(qtxxObject.get("xylx").toString());
-/*		logger.info(xylx);
-		logger.info(head);*/
 		if (xylx == 0) {
 			outputStream.write(head.getBytes());
 		} else {

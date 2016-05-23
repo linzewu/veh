@@ -3,13 +3,11 @@ package com.xs.veh.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xs.veh.network.IDeviceSignalDecode;
 
 @Scope("prototype")
 @Component("device")
@@ -18,16 +16,32 @@ import com.xs.veh.network.IDeviceSignalDecode;
 @JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "fieldHandler", "decode" })
 public class Device extends BaseEntity {
 
+	/**
+	 * 制动设备
+	 */
 	public final static Integer ZDJCSB = 1;
 
+	/**
+	 * 灯光设备
+	 */
 	public final static Integer DGJCSB = 2;
 
+	/**
+	 * 速度设备
+	 */
 	public final static Integer SDJCSB = 3;
 
+	/**
+	 * 侧滑设备
+	 */
 	public final static Integer CHJCSB = 4;
 
+	/**
+	 * 称重设备
+	 */
 	public final static Integer CZJCSB = 5;
 
+	
 	public final static Integer GDKG = 90;
 
 	public final static Integer XSP = 91;

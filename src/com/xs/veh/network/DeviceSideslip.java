@@ -1,7 +1,6 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -10,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.xs.common.CharUtil;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.SideslipData;
 
@@ -25,11 +25,9 @@ import gnu.io.SerialPortEvent;
  */
 @Service("deviceSideslip")
 @Scope("prototype")
-public class DeviceSideslip extends SimpleRead {
+public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 
-	private DeviceSideslipDecode sd;
-
-	private SideslipData sideslipData;
+	private AbstractDeviceSideslip sd;
 
 	private DeviceDisplay display;
 
@@ -103,12 +101,10 @@ public class DeviceSideslip extends SimpleRead {
 			}
 			break;
 		}
-
 	}
 
 	@Override
 	public void run() {
-
 	}
 
 	@Override
@@ -123,20 +119,21 @@ public class DeviceSideslip extends SimpleRead {
 		if (dwkg != null) {
 			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
 		}
-		sd = (DeviceSideslipDecode) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		sd = (AbstractDeviceSideslip) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		
 		sd.init(this);
 
 	}
 
 	/**
-	 * 
+	 * 侧滑
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws SystemException
 	 */
-	public void checkStart() throws IOException, InterruptedException {
-		sd.startCheck();
+	public void startCheck(VehCheckLogin vehCheckLogin , VehFlow vehFlow) throws IOException, InterruptedException {
+		SideslipData sideslipData  = sd.startCheck(vehFlow);
+		sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
 		this.checkDataManager.saveSideslipData(sideslipData);
 	}
 

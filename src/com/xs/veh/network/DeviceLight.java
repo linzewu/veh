@@ -1,43 +1,39 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TooManyListenersException;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.xs.common.CharUtil;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
-import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehFlow;
+import com.xs.veh.network.data.LightData;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPortEvent;
 import gnu.io.UnsupportedCommOperationException;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Service("deviceLight")
 @Scope("prototype")
-public class DeviceLight extends SimpleRead {
-
+public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	@Autowired
 	private ServletContext servletContext;
 
 	private DeviceDisplay display;
-	
 
 	public DeviceDisplay getDisplay() {
 		return display;
@@ -47,27 +43,14 @@ public class DeviceLight extends SimpleRead {
 		this.display = display;
 	}
 
-
 	// 灯光仪解码器
-	private DeviceLightDecode dld;
+	private AbstractDeviceLight dld;
 
-	@Resource(name = "checkDataManager")
-	private CheckDataManager checkDataManager;
+	@Resource(name = "hibernateTemplate")
+	private HibernateTemplate hibernateTemplate;
 
 	@Resource(name = "taskExecutor")
 	private ThreadPoolTaskExecutor executor;
-
-	private DeviceSignal deviceSignal1;
-
-	private DeviceSignal deviceSignal2;
-
-	private Integer s1;
-
-	private Integer s2;
-	
-
-	
-	
 
 	public DeviceLight() {
 	}
@@ -117,7 +100,6 @@ public class DeviceLight extends SimpleRead {
 		}
 	}
 
-
 	@Override
 	public void run() {
 
@@ -127,81 +109,44 @@ public class DeviceLight extends SimpleRead {
 		this.dld.sysSetting();
 	}
 
-
 	/**
-	 * 灯光开始测试
 	 * 
-	 * @param setting
-	 *            测试参数
-	 * @param clzd
-	 *            测量左灯 命令 ，不测则给null
-	 * @param clyd
-	 *            测量右灯 命令 ，不测则给null
-	 * @return
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws ClassNotFoundException
+	 * @param vehCheckLogin
+	 * @param vheFlows
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @throws SystemException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
 	 */
-	public void startCheck(Map<String, String> setting, String clzd, String clyd)
-			throws IOException, InterruptedException  {
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
+			throws IOException, InterruptedException {
 
-		// 等待到位
-		int i = 0;
-		getDisplay().sendMessage("苏J00001", DeviceDisplay.SP);
-		getDisplay().sendMessage("请至停止线", DeviceDisplay.XP);
-		while (true) {
-			if (deviceSignal1.getSignal(s1) && !deviceSignal2.getSignal(s2)) {
-				i++;
-				if (i == 1) {
-					this.display.sendMessage("苏J00001", DeviceDisplay.SP);
-					this.display.sendMessage("停止", DeviceDisplay.XP);
-				}
-			}
+		dld.createNewList();
+		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
 
-			if (!deviceSignal1.getSignal(s1)) {
-				this.display.sendMessage("苏J00001", DeviceDisplay.SP);
-				this.display.sendMessage("请至停止线", DeviceDisplay.XP);
-				i = 0;
-			} else if (deviceSignal2.getSignal(s2)) {
-				this.display.sendMessage("苏J00001", DeviceDisplay.SP);
-				this.display.sendMessage("退后", DeviceDisplay.XP);
-				i = 0;
-			}
-			if (i >= 6) {
-				break;
-			}
-			Thread.sleep(500);
+		for (LightData data : datas) {
+			data.setBaseDeviceData(vehCheckLogin, 1, "");
+			hibernateTemplate.save(data);
 		}
-		
-		dld.clear();
-		dld.startCheck(clzd, clyd);
+
+		// 判定车是否离开 如果没有离开，则等待是否复位 ，如果离开则结束检测
+		while (dld.deviceSignal1.getSignal(dld.s1) && dld.deviceSignal1.getSignal(dld.s2)) {
+			Thread.sleep(300);
+			// 判定是否复位
+			// 如果复位 判定灯光仪是否已经归为 归为则开始复位检测
+		}
 	}
 
-	/**
-	 * 创建测试数据
-	 * 
-	 * @return
-	 */
-	public Map<String, String> createSettingData() {
-		return dld.createSettingData();
-	}
-
-	
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		// 初始化灯光仪解码器
-		dld = (DeviceLightDecode) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		dld = (AbstractDeviceLight) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		JSONObject qtxx = this.getQtxxObject();
 		String temp = (String) qtxx.get("kzsb-xsp");
 		String dwkg1 = (String) qtxx.get("kzsb-dwkg1");
 		String dwkg2 = (String) qtxx.get("kzsb-dwkg2");
-		s1 = Integer.valueOf(qtxx.getString("kzsb-xhw1"));
-		s2 = Integer.valueOf(qtxx.getString("kzsb-xhw2"));
+
+		dld.s1 = Integer.valueOf(qtxx.getString("kzsb-xhw1"));
+
+		dld.s2 = Integer.valueOf(qtxx.getString("kzsb-xhw2"));
 
 		// 加载挂载设备
 		if (temp != null) {
@@ -210,14 +155,22 @@ public class DeviceLight extends SimpleRead {
 		}
 		// 型号开关
 		if (dwkg1 != null) {
-			deviceSignal1 = (DeviceSignal) servletContext.getAttribute(dwkg1 + "_" + Device.KEY);
+			dld.deviceSignal1 = (DeviceSignal) servletContext.getAttribute(dwkg1 + "_" + Device.KEY);
 		}
 		if (dwkg2 != null) {
-			deviceSignal2 = (DeviceSignal) servletContext.getAttribute(dwkg2 + "_" + Device.KEY);
+			dld.deviceSignal2 = (DeviceSignal) servletContext.getAttribute(dwkg2 + "_" + Device.KEY);
 		}
-		
+
 		dld.setDeviceLight(this);
 	}
-	
+
+	@Override
+	@Deprecated
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow)
+			throws SystemException, IOException, InterruptedException {
+		List<VehFlow> vehFlows = new ArrayList<VehFlow>();
+		vehFlows.add(vehFlow);
+		this.startCheck(vehCheckLogin, vehFlows);
+	}
 
 }

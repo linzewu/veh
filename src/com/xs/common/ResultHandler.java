@@ -54,5 +54,20 @@ public class ResultHandler {
 		}
 		return myJson;
 	}
+	
+	public static Map<String,Object> toMessage(Message message) {
+		
+		Map<String,Object> myJson = new HashMap<String,Object>();
+		myJson.put(Constant.ConstantKey.MESSAGE, message.getMessage());
+		
+		if(message.getState().equals(Message.STATE_ERROR)){
+			myJson.put(Constant.ConstantKey.STATE,Constant.ConstantState.STATE_ERROR);
+		}
+		if(message.getState().equals(Message.STATE_SUCCESS)){
+			myJson.put(Constant.ConstantKey.STATE,Constant.ConstantState.STATE_SUCCESS);
+		}
+		return myJson;
+	}
+
 
 }

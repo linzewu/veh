@@ -47,6 +47,7 @@
 		<property name="packagesToScan">
 			<list>
 				<value>com.xs.veh.entity</value>
+				<value>com.xs.veh.network.data</value>
 			</list>
 		</property>
 	</bean>
@@ -80,6 +81,10 @@
 			<tx:method name="reset*" propagation="REQUIRED" />
 			<tx:method name="vehLogin" propagation="REQUIRED" />
 			<tx:method name="batchUpdate" propagation="REQUIRED" />
+			<tx:method name="start*" propagation="REQUIRED" />
+			<tx:method name="stop*" propagation="REQUIRED" />
+			<tx:method name="upLine" propagation="REQUIRED" />
+			<tx:method name="check" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true" />
 		</tx:attributes>
 	</tx:advice>

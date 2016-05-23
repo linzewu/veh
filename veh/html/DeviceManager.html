@@ -1,11 +1,21 @@
 <script type="text/javascript">
 	var device  = gridUtil.createNew("#deviceManager",{idField:"id",url:"/veh/device"});
 	
+	var workpointManager  = gridUtil.createNew("#workpointManager",{idField:"id",url:"/veh/workpoint"});
+	
 	function deviceFormatter(value,row,index){
 		return  comm.getParamNameByValue('deviceType',value);
 	}
 	function lineFormatter(value,row,index){
 		return  comm.getParamNameByValue('lineType',value);
+	}
+	
+	function isUseFormatter(value,row,index){
+		return  comm.getParamNameByValue('isUse',value);
+	}
+	
+	function gwztFormatter(value,row,index){
+		return  comm.getParamNameByValue('gwzt',value);
 	}
 	
 	function workPointFormatter(value,row,index){
@@ -138,7 +148,32 @@
 		return array;
 	}
 	
-	
+	workpointManager.start=function(){
+		var row = $("#workpointManager").datagrid("getSelected");
+		if(!row){
+			$.messager.alert("提示","请选择工位！");
+			return;
+		}else{
+			if(row.gwzt==1){
+				$.messager.alert("提示","该工位已启用！");
+				return;
+			}
+			if(row.gwzt==0){
+				
+				$.post("/veh/workpoint/start",{
+					id:row.id
+				},function(data){
+					$.messager.alert("提示",data.message,"info");
+					$("#workpointManager").datagrid("reload");
+				}).error(function(e){
+					$.messager.alert("错误","请求错误:"+e.status,"error");
+				});
+				
+				return;
+			}
+		}
+		
+	}
 </script>
 
 <div class="easyui-tabs" data-options="fit:true">
@@ -151,6 +186,7 @@
                 collapsible:false">
 			<thead> 
 				<tr>
+					<th data-options="field:'name',width:100">设备名称</th>
 					<th data-options="field:'type',width:100,formatter:deviceFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('deviceType'),valueField: 'id',textField: 'value'}}">设备类型</th>
 					<th data-options="field:'jcxxh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">线别</th>
 					<th data-options="field:'sbcs',width:100">设备厂商</th>
@@ -166,7 +202,28 @@
 			<!-- <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="device.editData()">编辑设备</a> -->
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="openDeviceInfo()">编辑设备</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="device.remove()">删除设备</a>
-			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-debug',plain:true" onclick="testMotion()">设备测试</a>
+		</div>
+	</div>
+	<div data-options="title:'检测工位'">
+		<table id="workpointManager" class="easyui-datagrid" data-options="url:'/veh/workpoint/getWorkPoints',fitColumns:true,singleSelect:true,fit:true,toolbar:'#workpointManagerToolbar'">
+			<thead> 
+				<tr>
+					<th data-options="field:'jcxdh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">检测线</th>
+					<th data-options="field:'name',width:100,editor:{type:'textbox',options:{required:true}}">工位名称</th>
+					<th data-options="field:'sort',width:100,editor:{type:'numberbox',options:{required:true}}">工位顺序</th>
+					<th data-options="field:'gwzt',width:100,formatter:gwztFormatter">状态</th>
+					<th data-options="field:'isUse',width:100,formatter:isUseFormatter">在检\空闲</th>
+					<th data-options="field:'hphm',width:100">在检号牌</th>
+				</tr>
+			</thead>
+		</table>
+		<div id="workpointManagerToolbar">
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="workpointManager.append()">添加工位</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="workpointManager.editData()">修改工位</a> 
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="workpointManager.remove()">删除工位</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="workpointManager.reject()">取消</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="workpointManager.accept()">保存</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="workpointManager.start()">启动</a>
 		</div>
 	</div>
 </div>

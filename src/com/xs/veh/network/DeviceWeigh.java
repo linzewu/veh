@@ -7,10 +7,13 @@ import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.WeighData;
 
@@ -23,15 +26,15 @@ import gnu.io.SerialPortEvent;
  */
 @Service("deviceWeigh")
 @Scope("prototype")
-public class DeviceWeigh extends SimpleRead {
+public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 
-	private DeviceWeighDecode dw;
-
-	private WeighData weighData;
+	private AbstractDeviceWeigh dw;
 
 	private DeviceDisplay display;
 
 	private DeviceSignal signal;
+	
+	private Integer s1;
 
 	@Autowired
 	private ServletContext servletContext;
@@ -41,6 +44,19 @@ public class DeviceWeigh extends SimpleRead {
 
 	@Resource(name = "taskExecutor")
 	private ThreadPoolTaskExecutor executor;
+	
+	@Resource(name = "hibernateTemplate")
+	private HibernateTemplate hibernateTemplate;
+	
+	
+
+	public Integer getS1() {
+		return s1;
+	}
+
+	public void setS1(Integer s1) {
+		this.s1 = s1;
+	}
 
 	public DeviceDisplay getDisplay() {
 		return display;
@@ -105,7 +121,10 @@ public class DeviceWeigh extends SimpleRead {
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
-		dw = (DeviceWeighDecode) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		s1=getQtxxObject().getInt("kzsb-xhw");
+		
+		
+		dw = (AbstractDeviceWeigh) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		// 加载挂载设备
 		if (temp != null) {
 			Integer deviceid = Integer.parseInt(temp);
@@ -115,16 +134,29 @@ public class DeviceWeigh extends SimpleRead {
 			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
 		}
 		dw.init(this);
-
 	}
 
 	/**
-	 * 
+	 * 称重
+	 * @param vehCheckLogin
+	 * @param vehFlow
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void checkStart() throws IOException, InterruptedException {
-
+	public void startCheck(VehCheckLogin vehCheckLogin , VehFlow vehFlow) throws IOException, InterruptedException {
+		WeighData weighData = dw.startCheck(vehFlow);
+		
+		Thread.sleep(2000);
+		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
+		boolean flag=true;
+		
+		while(flag){
+			flag = this.signal.getSignal(s1);
+			Thread.sleep(200);
+		}
+		
+		weighData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
+		this.hibernateTemplate.save(weighData);
 	}
 
 }

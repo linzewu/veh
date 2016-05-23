@@ -60,8 +60,6 @@ public class UserController {
 		}else{
 			return ResultHandler.resultHandle(result,null ,null);
 		}
-		
-		
 	}
 
 	@RequestMapping(value = "validateUserName")

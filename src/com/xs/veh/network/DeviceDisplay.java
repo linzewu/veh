@@ -6,24 +6,26 @@ import java.util.TooManyListenersException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehFlow;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPortEvent;
 import gnu.io.UnsupportedCommOperationException;
 
-
 @Service("deviceDisplay")
 @Scope("prototype")
 public class DeviceDisplay extends SimpleRead {
-	
-	public final static Integer SP=0;
-	
-	public final static Integer XP=1;
-	
-	public DeviceDisplay(){}
-	
+
+	public final static Integer SP = 0;
+
+	public final static Integer XP = 1;
+
+	public DeviceDisplay() {
+	}
 
 	public DeviceDisplay(Device device) throws NoSuchPortException, TooManyListenersException, PortInUseException,
 			UnsupportedCommOperationException, IOException {
@@ -43,34 +45,29 @@ public class DeviceDisplay extends SimpleRead {
 		return null;
 	}
 
-	
-	public void sendMessage(String message,int ph) throws IOException {
-		
-		Integer dhcf =Integer.parseInt(this.getQtxxObject().get("dhcf").toString());
-		
+	public void sendMessage(String message, int ph) throws IOException {
+
+		Integer dhcf = Integer.parseInt(this.getQtxxObject().get("dhcf").toString());
+
 		String xy = null;
 		if (ph == 1) {
 			xy = (String) this.getQtxxObject().get("xpxy");
 		} else {
 			xy = (String) this.getQtxxObject().get("spxy");
 		}
-		
+
 		this.sendHead(xy);
-		
-		if(dhcf==0){
-			message+="\r\n";
+
+		if (dhcf == 0) {
+			message += "\r\n";
 		}
 		this.outputStream.write(message.getBytes("GBK"));
 	}
 
-
 	@Override
 	public void init() {
-		//没有返回值不启用监听器
+		// 没有返回值不启用监听器
 		this.setAddListener(false);
-		
-	}
-	
-	
 
+	}
 }

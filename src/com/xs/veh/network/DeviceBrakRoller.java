@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 import com.xs.common.CharUtil;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.network.data.BrakRollerData;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -24,7 +27,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 @Service("deviceBrakRoller")
 @Scope("prototype")
-public class DeviceBrakRoller extends SimpleRead {
+public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 	public DeviceBrakRoller() {
 	}
@@ -35,7 +38,7 @@ public class DeviceBrakRoller extends SimpleRead {
 
 	private static Logger logger = Logger.getLogger(DeviceBrakRoller.class);
 
-	private DeviceBrakRollerDecode dbrd;
+	private AbstractDeviceBrakRoller dbrd;
 
 	private DeviceDisplay display;
 
@@ -140,23 +143,29 @@ public class DeviceBrakRoller extends SimpleRead {
 
 	@Override
 	public void run() {
-		try {
+		/*try {
 			System.out.println("制动开始");
 			startCheck();
 		} catch (SystemException | IOException | InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
-	public void startCheck() throws SystemException, IOException, InterruptedException {
-
-		dbrd.startCheck();
+	public synchronized void startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws SystemException, IOException, InterruptedException {
+		
+		BrakRollerData brakRollerData = dbrd.startCheck(vehFlow);
+		this.checkDataManager.saveBrakRoller(brakRollerData);
+		while(this.getSignal()){
+			Thread.sleep(200);
+			//等待是否复位
+			
+		}
 	}
 
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		// 初始化制动设备
-		dbrd = (DeviceBrakRollerDecode) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		dbrd = (AbstractDeviceBrakRoller) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		
 		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
 		

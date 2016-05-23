@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
-import com.xs.veh.network.BrakRollerData;
+import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
@@ -39,7 +39,7 @@ public class CheckDataManager {
 
 	public void saveBrakRoller(BrakRollerData brakRollerData) {
 		
-		System.out.println("制动数据"+brakRollerData);
+		
 
 	}
 	

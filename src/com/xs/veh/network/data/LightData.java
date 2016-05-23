@@ -1,53 +1,82 @@
 package com.xs.veh.network.data;
 
-public class LightData {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Scope("prototype")
+@Component("lightData")
+@Entity
+@Table(name = "TM_LightData")
+public class LightData extends BaseDeviceData {
 	
-	public static final char GX_Y='Y';
+	/**
+	 * 光型 远
+	 */
+	public static final char GX_YGD='Y';
 	
-	public static final char GX_J='J';
+	/**
+	 * 光型 近
+	 */
+	public static final char GX_JGD='J';
 	
+	/**
+	 * 灯型 主灯
+	 */
 	public static final Integer DX_ZD=0;
 	
+	/**
+	 * 灯型 副灯
+	 */
 	public static final Integer DX_FD=1;
+	
+	/**
+	 * 位置 左
+	 */
+	public static final char WZ_Z='L';
+	
+	/**
+	 * 位置 右
+	 */
+	public static final char WZ_Y='R';
 	
 
 	/**
 	 * 水平偏差
 	 */
+	@Column(length=32)
 	private String sppc;
 
 	/**
 	 * 垂直偏差
 	 */
+	@Column(length=32)
 	private String czpc;
 
 	/**
 	 * 光强
 	 */
+	@Column(length=32)
 	private String gq;
 
 	/**
 	 * 登高
 	 */
+	@Column(length=32)
 	private String dg;
 	
-
+	@Column
 	private char wz;
 
+	@Column
 	private char gx;
 
+	@Column
 	private Integer dx;
 	
-	private Integer state;
-
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
-
 	@Override
 	public String toString() {
 		return "LightData [sppc=" + sppc + ", czpc=" + czpc + ", gq=" + gq + ", dg=" + dg + ", wz=" + wz + ", gx=" + gx

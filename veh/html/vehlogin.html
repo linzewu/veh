@@ -1,7 +1,7 @@
 <div class="easyui-layout" data-options="fit:true">
 	<div data-options="region:'east',border: 0" style="width: 350px;">
 		<div class="easyui-tabs" data-options="fit:true,justified:true,border: 0">
-			<div title="查验中车辆">
+			<div title="查验中车辆信息">
 				<table class="easyui-datagrid" id="checkingVehList"
 					data-options="url:'/veh/veh/getVehChecking',fitColumns:true,singleSelect:true,fit:true,pagination:true,pageSize:20,toolbar:'#checkingVehToolbar',footer:'#checkingVehFooter',queryParams:{statusArry:'0,1'},onDblClickRow:veh.loadVehCheckInfo">
 					<thead>
@@ -14,7 +14,7 @@
 					</thead>
 				</table>
 			</div>
-			<div title="查验已完成">
+			<div title="查验结束车辆信息">
 				<table class="easyui-datagrid" id="checkedVehList"
 					data-options="url:'/veh/veh/getVehChecking',fitColumns:true,singleSelect:true,fit:true,queryParams:{statusArry:'2'},pagination:true,pageSize:20,toolbar:'#checkedVehToolbar',footer:'#checkedVehFooter',onDblClickRow:veh.loadVehCheckInfo">
 					<thead>
@@ -31,7 +31,7 @@
 	<div data-options="region:'center',border: 0">
 		<form id="vehinfo" method="post" style="height: 100%;width: 100%;">
 		<div class="easyui-layout" data-options="fit:true">
-			<div data-options="region:'center',title:'车辆基本信息',href:'vehInfo_.html',onLoad:veh.intiEvents" style="padding: 10px;">
+			<div data-options="region:'center',title:'车辆基本信息',href:'vehInfo_.html',onLoad:veh.intiEvents" id="panel-vheInfo" style="padding: 10px;">
 			</div>
 			<div data-options="region:'south',border:0" style="height: 160px;" >
 				<div class="easyui-tabs" data-options="fit:true">
@@ -58,7 +58,12 @@
 								<td><span><label for="i_ywd">右外灯:</label><input id="i_ywd" name="jyxm" type="checkbox" value="H4"></span></td>
 								<td><span><label for="i_csb">车速表:</label><input id="i_csb" name="jyxm" type="checkbox" value="S1"></span></td>
 								<td ><span><label for="i_ch">侧滑:</label><input id="i_ch" name="jyxm" type="checkbox" value="A1"></span></td>
-								<td colspan="2" style="text-align: left;padding-left: 52px;" ><label>检测线&nbsp;&nbsp;:&nbsp;</label><input class="easyui-combobox" data-options="data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'" value="1" style="width: 80px;" name="jcxdh" id="_jcxdh" ></td>
+								<td  style="" >
+									<label>检测线:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="editable:false,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'" value="1" style="width: 55px;" name="jcxdh" id="_jcxdh" >
+								</td>
+								<td  style="" >
+									<label>检测类型:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="readonly:true,editable:false,data:comm.getBaseParames('flowType'),valueField: 'id',textField: 'value'" value="0" style="width: 55px;" name="checkType" id="_checkType" >
+								</td>
 							</tr>
 						</table>
 						<div style="text-align: center;">
@@ -97,7 +102,7 @@
 	</div>
 </div>
 <div id="checkingVehFooter">
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="veh.vehUnlogin()">登陆注销</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="veh.vehUnlogin()">退办</a>
 </div>
 
 <div id="checkedVehToolbar">

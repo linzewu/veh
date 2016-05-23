@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.veh.entity.VehCheckLogin;
-import com.xs.veh.entity.VehCheckeProcess;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
+import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.util.RCAConstant;
 
@@ -38,6 +39,12 @@ public class VehController {
 
 	@Value("${jyjgbh}")
 	private String jyjgbh;
+	
+	@Value("${sf}")
+	private String sf;
+	
+	@Value("${cs}")
+	private String cs;
 	
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
@@ -71,26 +78,25 @@ public class VehController {
 	}
 
 	@RequestMapping(value = "getVehCheckeProcess", method = RequestMethod.POST)
-	public @ResponseBody List<VehCheckeProcess> getVehCheckeProcess(String jylsh) {
-		List<VehCheckeProcess> vcps = vehManager.getVehCheckPrcoessByJylsh(jylsh);
+	public @ResponseBody List<VehCheckProcess> getVehCheckeProcess(String jylsh) {
+		List<VehCheckProcess> vcps = vehManager.getVehCheckPrcoessByJylsh(jylsh);
 		return vcps;
 	}
 
 	@RequestMapping(value = "getVehChecking", method = RequestMethod.POST)
 	public @ResponseBody List<VehCheckLogin> getVehChecking(Integer page, Integer rows, VehCheckLogin vehCheckLogin,@RequestParam(required=false) String statusArry) {
 		
-		Integer[] status =null;
+		Integer[] jczt =null;
 		if(statusArry!=null&&!"".equals(statusArry.trim())){
 			String[] ss = statusArry.split(",");
-			status=new Integer[ss.length];
+			jczt=new Integer[ss.length];
 			int i=0;
 			for(String s: ss){
-				status[i]=Integer.parseInt(s);
+				jczt[i]=Integer.parseInt(s);
 				i++;
 			}
 		}
-		
-		List<VehCheckLogin> vcps = vehManager.getVehChecking(page,rows,vehCheckLogin,status);
+		List<VehCheckLogin> vcps = vehManager.getVehChecking(page,rows,vehCheckLogin,jczt);
 		return vcps;
 	}
 
@@ -102,7 +108,12 @@ public class VehController {
 		vehCheckLogin.setJylsh(jylsh.trim());
 		vehCheckLogin.setJyjgbh(jyjgbh);
 		vehCheckLogin.setJycs(1);
-		vehCheckLogin.setStatus(RCAConstant.LOGGED);
+		
+		vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_DL);
+		vehCheckLogin.setVehsxzt(VehCheckLogin.SXZT_WSX);
+		vehCheckLogin.setVehwjzt(VehCheckLogin.WJZT_WKS);
+		
+		
 		JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
 		return json.toString();
 	}
@@ -118,10 +129,16 @@ public class VehController {
 	@RequestMapping(value = "vheUnLogin", method = RequestMethod.POST)
 	public @ResponseBody String vehDelete(Integer id)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
-		return this.vehManager.deleteVeh(id).toString();
+		return this.vehManager.unLoginVeh(id).toString();
 	}
 	
-	
-	
+	@RequestMapping(value = "getDefaultConfig", method = RequestMethod.POST)
+	public @ResponseBody String getDefaultConfig(VehCheckLogin vehCheckLogin, VehInfo vehInfo){
+		
+		JSONObject json=new JSONObject();
+		json.put("sf", sf);
+		json.put("cs", cs);
+		return json.toString();
+	}
 
 }

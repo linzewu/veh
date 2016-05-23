@@ -40,11 +40,4 @@ public class SwitchController {
 		
 	}
 	
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	public @ResponseBody void delete(Switch8 switch8){
-		this.deviceManager.deleteSwitch8(switch8);
-	}
-
-	
-
 }

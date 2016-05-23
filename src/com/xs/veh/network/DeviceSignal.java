@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.CharUtil;
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehFlow;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -18,7 +21,6 @@ import net.sf.json.JSONObject;
 
 /**
  * 信号设备 光电开关
- * 
  * @author linze
  *
  */
@@ -27,7 +29,7 @@ import net.sf.json.JSONObject;
 @Scope("prototype")
 public class DeviceSignal extends SimpleRead {
 
-	public IDeviceSignalDecode dsd;
+	public AbstractDeviceSignal dsd;
 	
 	protected String rtx;
 
@@ -109,10 +111,15 @@ public class DeviceSignal extends SimpleRead {
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		// 初始化光电解码器
-		dsd = (IDeviceSignalDecode) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		dsd = (AbstractDeviceSignal) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 
 	}
 	
+	/**
+	 *  
+	 * @param index 开完位置
+	 * @return  0是true 其他false
+	 */
 	public boolean getSignal(Integer index){
 		
 		String temp =this.getRtx();
@@ -126,5 +133,4 @@ public class DeviceSignal extends SimpleRead {
 		return signal==0?true:false;
 		
 	}
-
 }

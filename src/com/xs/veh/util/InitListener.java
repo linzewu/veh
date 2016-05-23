@@ -1,11 +1,9 @@
 package com.xs.veh.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -13,7 +11,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -22,6 +19,7 @@ import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.Device;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.DeviceManager;
+import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.DeviceBrakRoller;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceLight;
@@ -53,11 +51,25 @@ public class InitListener implements ServletContextListener {
 	private DeviceManager deviceManager;
 
 	private ThreadPoolTaskExecutor executor;
+	
+	private WorkPointManager workPointManager;
+	
+	private BaseParamsManager baseParamsManager;
 
 	/**
 	 * Default constructor.
 	 */
 	public InitListener() {
+	}
+	
+	private void init(ServletContext servletContext){
+		
+		this.servletContext = servletContext;
+		wac = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+		baseParamsManager = (BaseParamsManager) wac.getBean("baseParamsManager");
+		deviceManager = (DeviceManager) wac.getBean("deviceManager");
+		executor = (ThreadPoolTaskExecutor) wac.getBean("taskExecutor");
+		workPointManager = (WorkPointManager) wac.getBean("workPointManager");
 	}
 
 	/**
@@ -66,19 +78,16 @@ public class InitListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent contextEvent) {
 
 		try {
-			servletContext = contextEvent.getServletContext();
-			wac = WebApplicationContextUtils.getWebApplicationContext(contextEvent.getServletContext());
-			BaseParamsManager baseParamsManager = (BaseParamsManager) wac.getBean("baseParamsManager");
-
-			deviceManager = (DeviceManager) wac.getBean("deviceManager");
-
-			executor = (ThreadPoolTaskExecutor) wac.getBean("taskExecutor");
+			init(contextEvent.getServletContext());
+			
 			// 加载参数表
 			List<BaseParams> bps = baseParamsManager.getBaseParams();
 			servletContext.setAttribute("bps", bps);
-
 			// 打开所有设备
 			 openDevice();
+			 //启动工位线程
+			 workPointManager.startAllWorkPonit();
+			 
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -206,7 +215,6 @@ public class InitListener implements ServletContextListener {
 						| TooManyListenersException e) {
 					log.error("速度设备打开异常", e);
 				}
-
 				servletContext.setAttribute(device.getThredKey(), dl);
 			}
 		}

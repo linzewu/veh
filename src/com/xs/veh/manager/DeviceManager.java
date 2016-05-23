@@ -29,36 +29,36 @@ public class DeviceManager {
 		if (temp == null || temp.isEmpty()) {
 			return null;
 		}
-		
-		
+
 		Integer maxLine = (Integer) temp.get(0);
-		
-		if(maxLine==null){
-			maxLine=0;
+
+		if (maxLine == null) {
+			maxLine = 0;
 		}
-		
+
 		return maxLine;
 	}
 
-	public void createLinkDevice() throws SystemException{
+	public void createLinkDevice() throws SystemException {
 		Integer jcxxh = this.getMaxLine();
-		if(jcxxh==null){
+		if (jcxxh == null) {
 			throw new SystemException(ResultHandler.toMyJSON(500, "获取检测线最大序号错误").toString());
 		}
-		jcxxh=jcxxh+1;
-		if(defaultDevice==null||defaultDevice.trim().equals("")){
+		jcxxh = jcxxh + 1;
+		if (defaultDevice == null || defaultDevice.trim().equals("")) {
 			throw new SystemException(ResultHandler.toMyJSON(500, "检测线默认设备模板未定义！").toString());
 		}
-		String[] devices=defaultDevice.split(",");
-		for(String type:devices){
-			Device device=new Device();
-			device.setType(Integer.parseInt(type));;
+		String[] devices = defaultDevice.split(",");
+		for (String type : devices) {
+			Device device = new Device();
+			device.setType(Integer.parseInt(type));
+			;
 			device.setJcxxh(jcxxh);
 			this.hibernateTemplate.save(device);
 		}
 	}
-	
-	public List<Device> getDevicesOfType(){
+
+	public List<Device> getDevicesOfType() {
 		List<Device> devices = (List<Device>) this.hibernateTemplate.find("From Device order by type desc");
 		return devices;
 	}
@@ -69,11 +69,23 @@ public class DeviceManager {
 
 		return devices;
 	}
+
+	public List<Device> getDevices(Integer jcxxh) {
+
+		List<Device> devices = (List<Device>) this.hibernateTemplate
+				.find("From Device where jcxxh=? and type<? order by jcxxh asc", jcxxh,90);
+
+		return devices;
+	}
 	
-	public Device getDevice(Integer id){
-		
+	public List<Device> getDevicesDisplay(Integer jcxxh) {
+		List<Device> devices = (List<Device>) this.hibernateTemplate
+				.find("From Device where jcxxh=? and type = ? ", jcxxh,91);
+		return devices;
+	}
+
+	public Device getDevice(Integer id) {
 		return this.hibernateTemplate.get(Device.class, id);
-		
 	}
 
 	public Device saveDevice(Device device) {
@@ -116,11 +128,6 @@ public class DeviceManager {
 
 		return this.hibernateTemplate.merge(switch8);
 
-	}
-
-	public void deleteSwitch8(Switch8 switch8) {
-
-		this.hibernateTemplate.delete(switch8);
 	}
 
 }

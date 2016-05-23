@@ -104,7 +104,6 @@ var veh = {
 					 	data=$.parseJSON(data);
 						var head = null;
 						var body = null;
-						console.log(data);
 						if ($.isArray(data)) {
 							head = data[0];
 						} else {
@@ -112,10 +111,14 @@ var veh = {
 							body = data["body"]
 						}
 						if (head["code"] == 1){
-							$("#vehinfo").form("clear");
+						//	$("#vehinfo").form("clear");
+							$("#panel-vheInfo").panel("refresh");
+						//	veh.setDefaultConfig();
 							$(":checkbox[name=jyxm]").prop("checked",false);
 							$("#checkingVehList").datagrid("reload");
 							$.messager.alert("提示","车辆登录成功。");
+						}else{
+							$.messager.alert("提示",head.message,"error");
 						}
 					},"json").error(function(msg){
 						$.messager.progress("close");
@@ -129,7 +132,6 @@ var veh = {
 							return;
 						}
 						$.messager.alert("错误","请求失败！","error");
-						
 					}).complete(function(){
 						$.messager.progress("close");
 					});
@@ -174,6 +176,7 @@ var veh = {
 					}
 					if (head["code"] == 1){
 						$("#vehinfo").form("clear");
+						veh.setDefaultConfig();
 						$(":checkbox[name=jyxm]").prop("checked",false);
 						$("#checkingVehList").datagrid("reload");
 						$.messager.alert("提示","车辆登录成功。");
@@ -198,17 +201,22 @@ var veh = {
 		}
 	},
 	vehUnlogin:function(){
+		
 		var row = $("#checkingVehList").datagrid("getSelected");
 		if(row){
-			$.messager.progress({
-				title:'提示',
-				msg:"正在注销登陆。。。"
+			$.messager.confirm("请确认","您是否要退办："+row.hphm,function(r){
+				if(r){
+					$.messager.progress({
+						title:'提示',
+						msg:"正在退办车辆。。。"
+					});
+					$.post("/veh/veh/vheUnLogin",row,function(data){
+					},"json").complete(function(data){
+						$.messager.progress("close");
+						 $("#checkingVehList").datagrid("reload");
+					}).error(veh.error);
+				}
 			});
-			$.post("/veh/veh/vheUnLogin",row,function(data){
-			},"json").complete(function(data){
-				$.messager.progress("close");
-				 $("#checkingVehList").datagrid("reload");
-			}).error(veh.error);
 		}else{
 			$.messager.alert("提示","请选择车辆。");
 		}
@@ -241,10 +249,8 @@ var veh = {
 		var tempCount = 0;
 
 		var callback = function(data) {
-
 			var head = null;
 			var body = null;
-
 			data = $.parseJSON(data);
 
 			console.log(data);
@@ -253,7 +259,6 @@ var veh = {
 			} else {
 				head = data["head"];
 				body = data["body"]
-
 			}
 
 			if (head["code"] == 1) {
@@ -296,7 +301,6 @@ var veh = {
 				}
 			}
 		};
-
 		this.ajaxVeh("/veh/veh/getVehInfo", param, callback);
 	},
 	ajaxVeh : function(url, param, success) {
@@ -483,7 +487,16 @@ var veh = {
 								|| row[opts.textField].indexOf(q) >= 0;
 					}
 				});
-
+		veh.setDefaultConfig();
+	},
+	setDefaultConfig:function(){
+		$.post("/veh/veh/getDefaultConfig",function(data){
+			data=$.parseJSON(data);
+			$("input[sid=sf]").combobox("setValue",data.sf);
+			$("input[sid=hphm]").textbox("setValue",data.cs);
+		},"json").error(function(e){
+			$.messager.alert("获取默认配置错误","错误类型:"+e.status);
+		});
 	}
 }
 
@@ -512,12 +525,7 @@ var comm = {
 		return value;
 	},
 	toPage : function(target, title, url, param) {
-		
-		
-		$(target).panel({
-			"title" : title
-		});
-		
+		$(target).panel("setTitle",title);
 		if (param) {
 			$(target).panel({
 				"queryParams" : param
@@ -538,7 +546,6 @@ var comm = {
 			if (n.callbak) {
 				li.find("a").bind("click", n.callbak)
 			} else {
-				
 				li.find("a").bind(
 						"click",
 						function() {
@@ -604,7 +611,6 @@ var gridUtil = {
 			}
 		};
 		g.append = function() {
-			
 			g.endEditing(function(){
 				$(grid).datagrid('appendRow', {});
 				g.editIndex = $(grid).datagrid('getRows').length - 1;
@@ -614,7 +620,7 @@ var gridUtil = {
 			
 			
 		};
-		g.remove = function() {
+		g.remove = function(call) {
 			var row = $(grid).datagrid("getSelected");
 			if (!row) {
 				$.messager.alert("提示", "请选择要删除的数据！")
@@ -639,6 +645,10 @@ var gridUtil = {
 						$.messager.alert("提示","删除成功");
 						$(grid).datagrid('deleteRow', rowIndex);
 						g.editIndex = null;
+					}).complete(function(){
+						if(call){
+							call.call();
+						}
 					})
 				}
 			});
@@ -677,7 +687,6 @@ var gridUtil = {
 				});
 			}
 		}
-
 		return g;
 	}
 
@@ -698,6 +707,11 @@ var system = {
 		"icon" : "/veh/images/device.png",
 		"title" : "设备管理",
 		href : "/veh/html/DeviceManager.html",
+		target : "#systemContex"
+	},{
+		"icon" : "/veh/images/Workflow.png",
+		"title" : "检测流程",
+		href : "/veh/html/flowConfig.html",
 		target : "#systemContex"
 	}],
 	initEvents : function() {

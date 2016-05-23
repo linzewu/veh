@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.common.BaseParamsUtil;
+import com.xs.common.ResultHandler;
 import com.xs.common.WindowsInfoUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.SystemInfo;
+import com.xs.veh.manager.BaseParamsManager;
 
 @Controller
 @RequestMapping(value = "/sys")
@@ -25,6 +29,12 @@ public class SystemController {
 
 	@Resource(name = "systemInfo")
 	private SystemInfo systemInfo;
+	
+	@Resource(name = "baseParamsManager")
+	private BaseParamsManager baseParamsManager;
+	
+	@Autowired
+	private ServletContext servletContext;
 
 	public static final String SETTING = "配置信息";
 
@@ -127,6 +137,13 @@ public class SystemController {
 		
 		rows.add(sm6);
 
+	}
+	
+	@RequestMapping(value = "sysParamReload", method = RequestMethod.POST)
+	public @ResponseBody Map<String, Object> sysParamReload() {
+		List<BaseParams> bps = baseParamsManager.getBaseParams();
+		servletContext.setAttribute("bps", bps);
+		return ResultHandler.toSuccessJSON("系统参数刷新成功");
 	}
 
 }

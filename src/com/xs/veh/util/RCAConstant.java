@@ -46,25 +46,4 @@ public class RCAConstant {
 	
 	public static final String XTLB = "18";
 	
-	/**
-	 * 已登录
-	 */
-	public static final Integer LOGGED =0;
-	
-	/**
-	 * 未开始
-	 */
-	public static final Integer UNCHECK=0;
-	
-	/**
-	 * 检验中
-	 */
-	public static final Integer CHECKING=1;
-	
-	/**
-	 * 检验完成
-	 */
-	public static final Integer CHECKED=2;
-	
-	
 }

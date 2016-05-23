@@ -12,18 +12,18 @@
 <script type="text/javascript" src="/veh/js/easyui-1.4.3/datagrid-groupview.js"></script>
 <script type="text/javascript" src="/veh/js/veh_.js"></script>
 <script type="text/javascript" src="/veh/js/common.js"></script>
+  <script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
 <title>机动车查验系统</title>
 </head>
 <body class="easyui-layout">
-	<div data-options="region:'north'" style="height:60px;border: 0"></div>
-    <div data-options="region:'south'" style="height:30px;"></div>
-    <div data-options="region:'center',border: 0">
-    	<div class="easyui-tabs" data-options="fit:true,justified:true,plain:false,tabHeight:38,border:0">
+	<div data-options="region:'north'" class="header">
+		<div style="float: left;	margin: 0 0 0 30px;"><img alt="" src="/veh/images/logo.png" style="border: 0 ;margin: 0" ></div>
+		<div class="header-title" style="float: left;">盐城市机动车安全检验系统  </div>
+	</div>
+    <div data-options="region:'center'">
+    	<div class="easyui-tabs" data-options="fit:true,justified:true,plain:false,tabHeight:34,tabPosition:'top',pill:true">
 		    <div title="机动车检测登陆" data-options="href:'vehlogin.html'"></div>
-		    <div title="主控程序"  data-options="href:'main_console.html'"></div>
-		    <div title="机动车检测报告">
-		        tab3
-		    </div>
+		    <div title="机动车检测报告"  data-options="href:'main_console.html'"></div>
 		    <div title="系统管理" data-options="href:'system.html',onLoad:system.initEvents">
 		    </div>
 		</div>

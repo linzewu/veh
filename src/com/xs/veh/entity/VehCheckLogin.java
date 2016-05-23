@@ -18,18 +18,63 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Component("vehCheckLogin")
 @Entity
 @Table(name = "TM_VehCheckLogin")
-@JsonIgnoreProperties(value ={"hibernateLazyInitializer","handler","fieldHandler"})
+@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "fieldHandler" })
 public class VehCheckLogin extends BaseEntity implements Serializable {
 
 	/**
-	 * 
+	 * 已登录
 	 */
+	public static final Integer JCZT_DL = 0;
+	/**
+	 * 检验中
+	 */
+	public static final Integer JCZT_JYZ = 1;
+	/**
+	 * 检验结束
+	 */
+	public static final Integer JCZT_JYJS = 2;
+
+	/**
+	 * 退办
+	 */
+	public static final Integer JCZZT_TB = 3;
+
+	/**
+	 * 未上线
+	 */
+	public static final Integer SXZT_WSX = 0;
+
+	/**
+	 * 检验中
+	 */
+	public static final Integer SXZT_JCZ = 1;
+
+	/**
+	 * 检验结束
+	 */
+	public static final Integer SXZT_JYJS = 2;
+
+	/**
+	 * 未开始
+	 */
+	public static final Integer WJZT_WKS = 0;
+
+	/**
+	 * 检验中
+	 */
+	public static final Integer WJZT_JYZ = 1;
+
+	/**
+	 * 检验结束
+	 */
+	public static final Integer WJZT_JYJS = 2;
+
 	private static final long serialVersionUID = -8255217792287102494L;
 	/** 检验流水号 */
-	@Column(length = 17,nullable=false)
+	@Column(length = 17, nullable = false)
 	private String jylsh;
 	/** 检验机构编号 */
-	@Column(length = 10,nullable=false)
+	@Column(length = 10, nullable = false)
 	private String jyjgbh;
 	/** 检测线代号 */
 	@Column(length = 2)
@@ -44,7 +89,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column(length = 15)
 	private String hphm;
 	/** 车辆识别代号 */
-	@Column(length = 25,nullable=false)
+	@Column(length = 25, nullable = false)
 	private String clsbdh;
 	/** 发动机/电动机号码 */
 	@Column(length = 30)
@@ -57,23 +102,23 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	private String syxz;
 	/** 初次登记日期 */
 	@Column
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date ccdjrq;
 	/** 最近定检日期 */
 	@Column
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date jyrq;
 	/** 检验有效期止 */
 	@Column
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date jyyxqz;
 	/** 保险终止日期 */
 	@Column
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date bxzzrq;
 	/** 燃料种类 */
 	@Column(length = 3)
@@ -82,7 +127,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column(length = 5, precision = 1)
 	private Float gl;
 	/** 轴数 */
-	@Column(length = 1,nullable=false)
+	@Column(length = 1, nullable = false)
 	private Integer zs;
 	/** 轴距 */
 	@Column(length = 5)
@@ -94,20 +139,20 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column(length = 4)
 	private Integer hlj;
 	/** 总质量 */
-	@Column(length = 8,nullable=false)
+	@Column(length = 8, nullable = false)
 	private Integer zzl;
 	/** 整备质量 */
-	@Column(length = 8,nullable=false)
+	@Column(length = 8, nullable = false)
 	private Integer zbzl;
 	/** 出厂日期 */
-	@Column(nullable=false)
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+	@Column(nullable = false)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date ccrq;
 	/** 驱动形式(驱动轴位) */
 	@Column(length = 5)
 	private String qdxs;
-	
+
 	/** 驻车轴数 */
 	@Column(length = 1)
 	private Integer zczs;
@@ -133,7 +178,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column(length = 8)
 	private Integer lcbds;
 	/** 检验项目 */
-	@Column(length = 100,nullable=false)
+	@Column(length = 100, nullable = false)
 	private String jyxm;
 	/** 检验类别 */
 	@Column(length = 2)
@@ -143,8 +188,8 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	private String bhgx;
 	/** 登录时间 */
 	@Column
-	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date dlsj;
 	/** 检验次数 */
 	@Column(length = 2)
@@ -218,10 +263,62 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	/** 送检人身份证号 */
 	@Column(length = 30)
 	private String sjrsfzh;
-	
+
 	@Column
 	private Integer hdzk;
-	
+
+	/**
+	 * 检测状态
+	 */
+	@Column
+	private Integer vehjczt;
+
+	/**
+	 * 上线状态
+	 */
+	@Column
+	private Integer vehsxzt;
+
+	/**
+	 * 外检状态
+	 */
+	@Column
+	private Integer vehwjzt;
+
+	@Column
+	private Integer checkType;
+
+	public Integer getCheckType() {
+		return checkType;
+	}
+
+	public void setCheckType(Integer checkType) {
+		this.checkType = checkType;
+	}
+
+	public Integer getVehjczt() {
+		return vehjczt;
+	}
+
+	public Integer getVehsxzt() {
+		return vehsxzt;
+	}
+
+	public Integer getVehwjzt() {
+		return vehwjzt;
+	}
+
+	public void setVehjczt(Integer vehjczt) {
+		this.vehjczt = vehjczt;
+	}
+
+	public void setVehsxzt(Integer vehsxzt) {
+		this.vehsxzt = vehsxzt;
+	}
+
+	public void setVehwjzt(Integer vehwjzt) {
+		this.vehwjzt = vehwjzt;
+	}
 
 	public Integer getHdzk() {
 		return hdzk;

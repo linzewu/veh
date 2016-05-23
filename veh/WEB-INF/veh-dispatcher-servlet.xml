@@ -25,7 +25,7 @@
 
 	<!-- 自动加载构建bean -->
 	<context:component-scan base-package="com.xs.veh.controller" />
-
+	<context:property-placeholder location="classpath:rca.properties" />
 
 	<!-- <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"> 
 		<property name="messageConverters"> <list> <ref bean="stringHttpMessageConverter" 
