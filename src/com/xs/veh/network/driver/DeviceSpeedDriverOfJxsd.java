@@ -1,13 +1,12 @@
 package com.xs.veh.network.driver;
 
-import java.io.IOException;
-
 import com.xs.common.CharUtil;
-import com.xs.veh.network.DeviceDisplay;
-import com.xs.veh.network.DeviceSpeed;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.AbstractDeviceSpeed;
+import com.xs.veh.network.DeviceDisplay;
+import com.xs.veh.network.DeviceSpeed;
 import com.xs.veh.network.SimpleRead.ProtocolType;
 import com.xs.veh.network.data.SpeedData;
 
@@ -20,13 +19,21 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 	private String end;
 
 	private String qs;
-
-	private boolean checkingFlag;
+	
+	private boolean checkingFlag=false;
 
 	public ProtocolType getProtocolType(byte[] bs) {
+		
+		int end=CharUtil.byteToInt(bs[bs.length-1]);
+		int end3=CharUtil.byteToInt(bs[bs.length-3]);
+		
 		if (bs.length == 3 && CharUtil.byteToInt(bs[0]) == 0xFF) {
 			return ProtocolType.NOTICE;
-		} else {
+		}else if(bs.length>3&&end==0xEE&&end3==0xFF){
+			return ProtocolType.NOTICE;
+		}else if(bs.length == 6&& CharUtil.byteToInt(bs[0]) == 0xFF){
+			return ProtocolType.DATA_AND_NOTICE;
+		}else {
 			return ProtocolType.DATA;
 		}
 	}
@@ -37,12 +44,12 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 
 		String speed = CharUtil.bcd2Str(temp);
 
-		speedData.setSpeed(Float.parseFloat(speed));
+		speedData.setSpeed(CheckDataManager.MathRound(Float.parseFloat(speed)/10f));
 
 	}
 
 	@Override
-	public SpeedData startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws IOException, InterruptedException {
+	public SpeedData startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
 		// 开始新的一次检测
 		createNew();
 		// 显示屏显示信息
@@ -83,28 +90,59 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 	}
 
 	private void createNew() {
-		this.checkingFlag = true;
 		this.speedData = new SpeedData();
+		checkingFlag=false;
 	}
 
 	@Override
-	public void device2pc(byte[] endodedData) throws IOException {
+	public void device2pc(byte[] endodedData) throws Exception {
+		
+		
 		System.out.println("数据：" + CharUtil.byte2HexOfString(endodedData));
-
 		ProtocolType type = getProtocolType(endodedData);
-		// 响应数据的处理方法
-		if (type == ProtocolType.DATA && !this.checkingFlag) {
-			setData(endodedData, speedData);
-
-		}
-
-		// 响应通知的方法
-		if (type == ProtocolType.NOTICE) {
+		
+		if(type == ProtocolType.DATA_AND_NOTICE){
+			
+			byte[] temp1=new byte[3];
+			System.arraycopy(endodedData,0, temp1, 0, temp1.length);
 			String ml = CharUtil.byte2HexOfString(endodedData);
-			System.out.println("命令：" + ml);
 			if (ml.equals(end)) {
 				deviceSpeed.sendMessage(qs);
-				this.checkingFlag = false;
+			}
+			if(checkingFlag){
+				byte[] temp2=new byte[3];
+				System.arraycopy(endodedData,3, temp2, 0, temp2.length);
+				setData(temp2, speedData);
+				checkingFlag=false;
+			}
+		}
+		
+		// 响应数据的处理方法
+		if (type == ProtocolType.DATA &&checkingFlag) {
+			setData(endodedData, speedData);
+			checkingFlag=false;
+		}
+		// 响应通知的方法
+		if (type == ProtocolType.NOTICE) {
+			
+			String ml = null;;
+			
+			int last=CharUtil.byteToInt(endodedData[endodedData.length-1]);
+			int last3=CharUtil.byteToInt(endodedData[endodedData.length-3]);
+			
+			if(endodedData.length > 3 &&last==0xEE&&last3==0xFF){
+				byte[] temp=new byte[3];
+				System.arraycopy(endodedData,3, temp, 0, temp.length);
+				ml = CharUtil.byte2HexOfString(temp);
+			}else{
+				ml = CharUtil.byte2HexOfString(endodedData);
+			}
+			
+			System.out.println("命令：" + ml);
+			if (ml.equals(end)) {
+				System.out.println("发送取速命令");
+				deviceSpeed.sendMessage(qs);
+				checkingFlag=true;
 			}
 		}
 	}

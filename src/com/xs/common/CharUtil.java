@@ -112,9 +112,7 @@ public class CharUtil {
 	}
 
 	public static String byte2HexOfString(byte[] b) {
-
 		StringBuffer sb = new StringBuffer();
-
 		for (int i = 0; i < b.length; i++) {
 			String hex = Integer.toHexString(b[i] & 0xFF);
 			if (hex.length() == 1) {
@@ -122,9 +120,21 @@ public class CharUtil {
 			}
 			sb.append(hex.toUpperCase());
 		}
-
 		return sb.toString();
 	}
+	
+	public static String byte2HexOfString(Byte[] b) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < b.length; i++) {
+			String hex = Integer.toHexString(b[i] & 0xFF);
+			if (hex.length() == 1) {
+				hex = '0' + hex;
+			}
+			sb.append(hex.toUpperCase());
+		}
+		return sb.toString();
+	}
+	
 
 	/**
 	 * @函数功能: BCD码转为10进制串(阿拉伯数据)

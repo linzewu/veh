@@ -1,5 +1,6 @@
 package com.xs.veh.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,8 +24,14 @@ import com.xs.veh.entity.BaseParams;
 @RequestMapping(value = "/bps")
 public class BaseParamsController {
 	
-	private static Logger logger = Logger.getLogger(BaseParamsController.class);  
-
+	private static Logger logger = Logger.getLogger(BaseParamsController.class); 
+	
+	@Value("${jyjgmc}")
+	private String jyjgmc;
+	
+	@Value("${sqrqz}")
+	private String sqrqz;
+	
 	@RequestMapping(value = "all.js")
 	//@RequestMapping(value = "all.js", produces = {"text/javascript;charset=UTF-8"})
 	public @ResponseBody String getBaseParamsOfJS(HttpServletRequest request)
@@ -38,9 +46,18 @@ public class BaseParamsController {
 		ObjectMapper objectMapper = new 
 				ObjectMapper();
 
-		String js = " var bps=" + objectMapper.writeValueAsString(bps);
-		logger.debug(js);
-		return js;
+		String js = " var bps=" + objectMapper.writeValueAsString(bps)+";\r\n";
+		
+		Map param=new HashMap();
+		
+		param.put("jyjgmc", jyjgmc);
+		
+		param.put("sqrqz", sqrqz);
+		
+		String vehComm= " var vehComm=" + objectMapper.writeValueAsString(param)+";\r\n";
+		
+		
+		return js+vehComm;
 	}
 
 	@RequestMapping(value = "all.json")

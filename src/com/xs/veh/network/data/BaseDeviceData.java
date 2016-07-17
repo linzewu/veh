@@ -8,39 +8,49 @@ import com.xs.veh.entity.VehCheckLogin;
 
 @MappedSuperclass
 public abstract class BaseDeviceData extends BaseEntity {
-	
+
+	// 判定结果 未检
+	public static final Integer PDJG_WJ = 0;
+
+	// 合格
+	public static final Integer PDJG_HG = 1;
+
+	// 不合格
+	public static final Integer PDJG_BHG = 2;
+
 	/**
 	 * 数据状态，正常
 	 */
-	public static final Integer SJZT_ZC=0;
-	
+	public static final Integer SJZT_ZC = 0;
+
 	/**
 	 * 数据状态，作废
 	 */
-	public static final Integer SJZT_ZF=1;
-	
-	@Column(length=25)
+	public static final Integer SJZT_ZF = 1;
+
+	@Column(length = 25)
 	private String jylsh;
-	
-	@Column(length=20)
+
+	@Column(length = 20)
 	private String hphm;
-	
-	@Column(length=10)
+
+	@Column(length = 10)
 	private String hpzl;
-	
+
 	@Column
 	private Integer jycs;
-	
-	@Column(length=20)
+
+	@Column(length = 20)
 	private String jyxm;
-	
+
 	@Column
 	private Integer sjzt;
-	
+
 	@Column
 	private Integer dxcs;
 	
-	
+	@Column
+	private Integer zpd;
 
 	public Integer getDxcs() {
 		return dxcs;
@@ -98,14 +108,25 @@ public abstract class BaseDeviceData extends BaseEntity {
 		this.sjzt = sjzt;
 	}
 	
-	public void setBaseDeviceData(VehCheckLogin vehCheckLoginInfo,Integer dxcs,String jyxm){
-		this.hphm=vehCheckLoginInfo.getHphm();
-		this.jycs=vehCheckLoginInfo.getJycs();
-		this.hpzl=vehCheckLoginInfo.getHpzl();
-		this.jylsh=vehCheckLoginInfo.getJylsh();
-		this.dxcs=dxcs;
-		this.jyxm=jyxm;
-		this.sjzt =BrakRollerData.SJZT_ZC;
+
+	public Integer getZpd() {
+		return zpd;
+	}
+
+	public void setZpd(Integer zpd) {
+		this.zpd = zpd;
+	}
+	
+	public abstract void setZpd();
+
+	public void setBaseDeviceData(VehCheckLogin vehCheckLoginInfo, Integer dxcs, String jyxm) {
+		this.hphm = vehCheckLoginInfo.getHphm();
+		this.jycs = vehCheckLoginInfo.getJycs();
+		this.hpzl = vehCheckLoginInfo.getHpzl();
+		this.jylsh = vehCheckLoginInfo.getJylsh();
+		this.dxcs = dxcs;
+		this.jyxm = jyxm;
+		this.sjzt = BrakRollerData.SJZT_ZC;
 	}
 
 }

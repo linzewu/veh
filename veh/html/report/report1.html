@@ -21,9 +21,10 @@ overflow: hidden;
 }
 
 </style>
-
+<div style="text-align: center;margin-top: 10px;"><a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_area1'))">打印</a></div>
+<div id="print_area1">
 <div id="report">
-	<DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 20px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px">阜宁县机动车辆检测中心有限公司机动车安全技术检验表（仪器设备检验部分） </DIV>
+	<DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 20px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px"><span id="report1_jyjgmc"></span>机动车安全技术检验表（仪器设备检验部分） </DIV>
 	<TABLE cellSpacing=0 cellPadding=0 border=0 >
 		<TBODY>
 			<TR>
@@ -31,63 +32,63 @@ overflow: hidden;
 			</TR>
 			<TR>
 				<TD class=l width="15%">检验流水号</TD>
-				<TD class=r width="18%">05804515081400053</TD>
+				<TD class=r width="18%" name="report-baseInfo-jylsh"></TD>
 				<TD class=l width="15%">引&nbsp;&nbsp;车&nbsp;&nbsp;员</TD>
-				<TD class=r width="19%">邓明东</TD>
+				<TD class=r width="19%" name="report-baseInfo-ycy"></TD>
 				<TD class=l width="15%">检&nbsp;验&nbsp;日&nbsp;期</TD>
-				<TD class=r colSpan=2>2015-08-14</TD>
+				<TD class=r colSpan=2 name="report-baseInfo-jyrq"></TD>
 			</TR>
 			<TR>
 				<TD class=l>检&nbsp;验&nbsp;类&nbsp;别</TD>
-				<TD class=r>在用车检验（定检）</TD>
+				<TD class=r name="report-baseInfo-jylb"></TD>
 				<TD class=l>检&nbsp;验&nbsp;项&nbsp;目</TD>
-				<TD class=r>B1,B2,B3,B4,B0,H1,H2,H3,H4,S1,A1,F1,C1,DC</TD>
+				<TD class=r name="report-baseInfo-jyxm"></TD>
 				<TD class=l>登&nbsp;&nbsp;录&nbsp;&nbsp;员</TD>
-				<TD class=r colSpan=2>王旭</TD>
+				<TD class=r colSpan=2 name="report-baseInfo-dly"></TD>
 			</TR>
 			<TR>
 				<TD class=l>号牌（自编）号</TD>
-				<TD class=r>苏JZ3675</TD>
+				<TD class=r name="report-baseInfo-hphm"></TD>
 				<TD class=l>所&nbsp;&nbsp;有&nbsp;&nbsp;人</TD>
-				<TD class=r colSpan=4>阜宁县蒲南中心幼儿园</TD>
+				<TD class=r colSpan=4 name="report-baseInfo-syr"></TD>
 			</TR>
 			<TR>
 				<TD class=l>号&nbsp;牌&nbsp;种&nbsp;类</TD>
-				<TD class=r>大型汽车</TD>
+				<TD class=r name="report-baseInfo-hpzl"></TD>
 				<TD class=l>车&nbsp;辆&nbsp;类&nbsp;型</TD>
-				<TD class=r>中型专用校车</TD>
+				<TD class=r name="report-baseInfo-cllx"></TD>
 				<TD class=l>品&nbsp;牌&nbsp;/&nbsp;型&nbsp;号</TD>
-				<TD class=r colSpan=2>中通/LCK6551D3X</TD>
+				<TD class=r colSpan=2><span name="report-baseInfo-clpp1"></span>/<span name="report-baseInfo-clxh"></span></TD>
 			</TR>
 			<TR>
 				<TD class=l>车辆识别代号</TD>
-				<TD class=r colSpan=3>LJ16AC3CXC2010084</TD>
+				<TD class=r colSpan=3 name="report-baseInfo-clsbdh"></TD>
 				<TD class=l>发&nbsp;动&nbsp;机&nbsp;号</TD>
-				<TD class=r colSpan=2>C4634018</TD>
+				<TD class=r colSpan=2 name="report-baseInfo-fdjh"></TD>
 			</TR>
 			<TR>
 				<TD class=l>初次登记日期</TD>
-				<TD class=r>2012-08-18</TD>
+				<TD class=r name="report-baseInfo-ccdjrq"></TD>
 				<TD class=l>出厂年月</TD>
-				<TD class=r>2012-08-02</TD>
+				<TD class=r name="report-baseInfo-ccrq"></TD>
 				<TD class=l>燃&nbsp;料&nbsp;种&nbsp;类</TD>
-				<TD class=r colSpan=2>柴油</TD>
+				<TD class=r colSpan=2 name="report-baseInfo-rlzl"></TD>
 			</TR>
 			<TR>
 				<TD class=l>驱&nbsp;动&nbsp;型&nbsp;式</TD>
-				<TD class=r>2</TD>
+				<TD class=r name="report-baseInfo-qdxs"></TD>
 				<TD class=l>驻&nbsp;车&nbsp;轴</TD>
-				<TD class=r>1</TD>
+				<TD class=r name="report-baseInfo-zczw"></TD>
 				<TD class=l>转向轴悬架形式</TD>
-				<TD class=r colSpan=2>非独立</TD>
+				<TD class=r colSpan=2 name="report-baseInfo-zxxs"></TD>
 			</TR>
 			<TR>
 				<TD class="l no-bot">整备质量（kg）</TD>
-				<TD class="r no-bot">3200</TD>
+				<TD class="r no-bot" name="report-baseInfo-zbzl"></TD>
 				<TD class="l no-bot">前&nbsp;照&nbsp;灯&nbsp;制</TD>
-				<TD class="r no-bot">二灯远近光</TD>
+				<TD class="r no-bot" name="report-baseInfo-qzdz"></TD>
 				<TD class="l no-bot">前照灯远光光束能否单独调整</TD>
-				<TD class="l no-bot" colSpan=2>否</TD>
+				<TD class="l no-bot" colSpan=2 name="report-baseInfo-ygddtz"></TD>
 			</TR>
 		</TBODY>
 	</TABLE>
@@ -133,19 +134,19 @@ overflow: hidden;
 				<TD class=l width="6%">不平<BR>衡率<BR>（%）
 				</TD>
 			</TR>
-			<TR>
+			<TR name="B1">
 				<TD class="l no-bot" rowSpan=8 width="3%">制<BR>动<BR>B
 				</TD>
 				<TD class=l width="6%">一 轴</TD>
-				<TD class=l>814</TD>
-				<TD class=l>822</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="1">637</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="2">654</SPAN></TD>
-				<TD class=l>489</TD>
-				<TD class=l>347</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="3">80.5</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="4">21.7</SPAN></TD>
-				<TD class=l></TD>
+				<TD class=l name="zz_leftData"></TD>
+				<TD class=l name="zz_rightData"></TD>
+				<TD class=l name="zd_zzdl"></TD>
+				<TD class=l name="zd_yzdl"></TD>
+				<TD class=l name="zd_zzdlcd"></TD>
+				<TD class=l name="zd_yzdlcd"></TD>
+				<TD class=l name="zd_kzxczdl"></TD>
+				<TD class=l name="zd_kzbphl"></TD>
+				<TD class=l name="zd_b1_zczdl"></TD>
 				<TD class="l out" rowSpan=6 >
 					<div class="xx" style="width: 43px; height: 150px;">
 						<div style="width: 160px;left: -58px;
@@ -159,81 +160,81 @@ overflow: hidden;
 				<TD class=l></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="5">O</SPAN></TD>
-				<TD class=l>1</TD>
+				<TD class=l name="xmpd">—</TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="B2">
 				<TD class=l>二 轴</TD>
-				<TD class=l>925</TD>
-				<TD class=l>798</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="6">633</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="7">558</SPAN></TD>
-				<TD class=l>390</TD>
-				<TD class=l>467</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="8">70.5</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="9">12.2</SPAN></TD>
-				<TD class=l>1021</TD>
+				<TD class=l name="zz_leftData"></TD>
+				<TD class=l name="zz_rightData"></TD>
+				<TD class=l name="zd_zzdl"></TD>
+				<TD class=l name="zd_yzdl"></TD>
+				<TD class=l name="zd_zzdlcd"></TD>
+				<TD class=l name="zd_yzdlcd"></TD>
+				<TD class=l name="zd_kzxczdl"></TD>
+				<TD class=l name="zd_kzbphl"></TD>
+				<TD class=l name="zd_b2_zczdl"></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="10">O</SPAN></TD>
-				<TD class=l>1</TD>
+				<TD class=l name="xmpd">—</TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="B3">
 				<TD class=l>三 轴</TD>
+				<TD class=l name="zz_leftData"></TD>
+				<TD class=l name="zz_rightData"></TD>
+				<TD class=l name="zd_zzdl"></TD>
+				<TD class=l name="zd_yzdl"></TD>
+				<TD class=l name="zd_zzdlcd"></TD>
+				<TD class=l name="zd_yzdlcd"></TD>
+				<TD class=l name="zd_kzxczdl"></TD>
+				<TD class=l name="zd_kzbphl"></TD>
+				<TD class=l name="zd_b3_zczdl"></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="11">—</SPAN></TD>
-				<TD class=l></TD>
+				<TD class=l name="xmpd">—</TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="B4">
 				<TD class=l>四 轴</TD>
+				<TD class=l name="zz_leftData"></TD>
+				<TD class=l name="zz_rightData"></TD>
+				<TD class=l name="zd_zzdl"></TD>
+				<TD class=l name="zd_yzdl"></TD>
+				<TD class=l name="zd_zzdlcd"></TD>
+				<TD class=l name="zd_yzdlcd"></TD>
+				<TD class=l name="zd_kzxczdl"></TD>
+				<TD class=l name="zd_kzbphl"></TD>
+				<TD class=l name="zd_b4_zczdl"></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="12">—</SPAN></TD>
-				<TD class=l></TD>
+				<TD class=l name="xmpd">—</TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="B5">
 				<TD class=l>五 轴</TD>
+				<TD class=l name="zz_leftData"></TD>
+				<TD class=l name="zz_rightData"></TD>
+				<TD class=l name="zd_zzdl"></TD>
+				<TD class=l name="zd_yzdl"></TD>
+				<TD class=l name="zd_zzdlcd"></TD>
+				<TD class=l name="zd_yzdlcd"></TD>
+				<TD class=l name="zd_kzxczdl"></TD>
+				<TD class=l name="zd_kzbphl"></TD>
+				<TD class=l name="zd_b5_zczdl"></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
 				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="13">—</SPAN></TD>
-				<TD class=l></TD>
+				<TD class=l name="xmpd">—</TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="ZC">
 				<TD class=l>整 车</TD>
-				<TD class=l colSpan=2>3359</TD>
-				<TD class=l colSpan=2>2482</TD>
+				<TD class=l colSpan=2 name="other_jczczbzl"></TD>
+				<TD class=l colSpan=2 name="other_zdlh"></TD>
 				<!-- 整车过程差最大差值点（10N）斜线单元格 -->
 				<TD class=l colSpan=2>
 					<div class="xx" style="width: 85px;height: 26px;">
@@ -246,7 +247,7 @@ overflow: hidden;
 						"></div>
 					</div>
 				</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="14">75.4</SPAN></TD>
+				<TD class=l name="other_zczdl"></TD>
 				<!-- 整车空载制动 -->
 				<TD class=l colSpan=2>
 					<div class="xx" style="width: 85px;height: 26px;">
@@ -261,12 +262,12 @@ overflow: hidden;
 				</TD>
 				<!-- 整车加载制动 -->
 				<TD class=l colSpan=3></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="15">O</SPAN></TD>
-				<TD class=l>1</TD>
+				<TD class=l name="zczdpd"></TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="par">
 				<TD class=l>驻 车</TD>
-				<TD class=l colSpan=2><SPAN jQuery17205925304521128261="16">3359</SPAN>
+				<TD class=l colSpan=2 name="par_tczclh">
 				</TD>
 				<!-- 驻车制动力 -->
 				<TD class=l colSpan=6>
@@ -280,12 +281,12 @@ overflow: hidden;
 						"></div>
 					</div>
 				</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="17">1021</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="18">31</SPAN></TD>
+				<TD class=l name="par_zczczdl"></TD>
+				<TD class=l name="par_tczdl"></TD>
 				<!-- 驻车加载制动 -->
 				<TD class=l colSpan=3></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="19">O</SPAN></TD>
-				<TD class=l>1</TD>
+				<TD class=l name="xmpd">—</TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
 			<TR>
 				<TD class="l no-bot" colSpan=4>动态轴荷（左/右）（kg）</TD>
@@ -317,79 +318,77 @@ overflow: hidden;
 				<TD class=l width="5%">单项<BR>次数
 				</TD>
 			</TR>
-			<TR>
+			<TR name="H1">
 				<TD class=l>左外灯</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="20">27900</SPAN></TD>
-				<TD class=l>上0</TD>
-				<TD class=l>下507</TD>
-				<TD class=l>899</TD>
-				<TD class=l>899</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="21">1</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="22">0.44</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="23">O</SPAN></TD>
-				<TD class=l>1</TD>
+				<TD class=l name="y_gq"></TD>
+				<TD class=l name="y_czpc"></TD>
+				<TD class=l name="j_czpc"></TD>
+				<TD class=l name="y_dg"></TD>
+				<TD class=l name="j_dg"></TD>
+				<TD class=l name="y_czpy"></TD>
+				<TD class=l name="j_czpy"></TD>
+				<TD class=l name="xmpd" ></TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="H2">
 				<TD class=l>左内灯</TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="24">—</SPAN></TD>
-				<TD class=l></TD>
+				<TD class=l name="y_gq"></TD>
+				<TD class=l name="y_czpc"></TD>
+				<TD class=l name="j_czpc"></TD>
+				<TD class=l name="y_dg"></TD>
+				<TD class=l name="j_dg"></TD>
+				<TD class=l name="y_czpy"></TD>
+				<TD class=l name="j_czpy"></TD>
+				<TD class=l name="xmpd" ></TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="H3">
 				<TD class=l>右内灯</TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="25">—</SPAN></TD>
-				<TD class=l></TD>
+				<TD class=l name="y_gq"></TD>
+				<TD class=l name="y_czpc"></TD>
+				<TD class=l name="j_czpc"></TD>
+				<TD class=l name="y_dg"></TD>
+				<TD class=l name="j_dg"></TD>
+				<TD class=l name="y_czpy"></TD>
+				<TD class=l name="j_czpy"></TD>
+				<TD class=l name="xmpd" ></TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="H4">
 				<TD class=l>右外灯</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="26">29000</SPAN></TD>
-				<TD class=l>上51</TD>
-				<TD class=l>下367</TD>
-				<TD class=l>901</TD>
-				<TD class=l>901</TD>
-				<TD class=l><SPAN jQuery17205925304521128261="27">1.06</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="28">0.59</SPAN></TD>
-				<TD class=l><SPAN jQuery17205925304521128261="29">O</SPAN></TD>
-				<TD class=l>1</TD>
+				<TD class=l name="y_gq"></TD>
+				<TD class=l name="y_czpc"></TD>
+				<TD class=l name="j_czpc"></TD>
+				<TD class=l name="y_dg"></TD>
+				<TD class=l name="j_dg"></TD>
+				<TD class=l name="y_czpy"></TD>
+				<TD class=l name="j_czpy"></TD>
+				<TD class=l name="xmpd" ></TD>
+				<TD class=l name="dxcs"></TD>
 			</TR>
 		</TBODY>
 	</TABLE>
 	<TABLE cellSpacing=0 cellPadding=0 border=0>
 		<TBODY>
-			<TR>
+			<TR name="S1">
 				<TD class="l no-top" width="15%">车速表 S</TD>
 				<TD class="l no-top" colSpan=3>
-					<DIV style="FLOAT: left; WIDTH: 45%"></DIV>
+					<DIV style="FLOAT: left; WIDTH: 45%" name="speed" ></DIV>
 					<DIV style="FLOAT: right; WIDTH: 15%">km/h</DIV>
 				</TD>
-				<TD class="l no-top" width="5%" colSpan=2><SPAN
-					jQuery17205925304521128261="30">—</SPAN></TD>
-				<TD class="l no-top" width="5%" colSpan=2></TD>
+				<TD class="l no-top" width="5%" colSpan=2 name="xmpd"></TD>
+				<TD class="l no-top" width="5%" colSpan=2 name="dxcs"></TD>
 			</TR>
-			<TR>
+			<TR name="A1">
 				<TD class=l>侧 滑 A</TD>
 				<TD class="l no-top" colSpan=3>
-					<DIV style="FLOAT: left; WIDTH: 45%">
-						<SPAN jQuery17205925304521128261="31">0</SPAN>
+					<DIV style="FLOAT: left; WIDTH: 45%" name="sideslip">
 					</DIV>
 					<DIV style="FLOAT: right; WIDTH: 15%">m/km</DIV>
 				</TD>
-				<TD class=l colSpan=2><SPAN jQuery17205925304521128261="32">O</SPAN>
+				<TD class=l colSpan=2 name="xmpd">
 				</TD>
-				<TD class=l colSpan=2>1</TD>
+				<TD class=l colSpan=2 name="dxcs"></TD>
 			</TR>
 			<TR>
 				<TD class=l>路试制动性能</TD>
@@ -401,7 +400,7 @@ overflow: hidden;
 			</TR>
 			<TR>
 				<TD class="r no-rig" colSpan=2>车辆外廓尺寸（mm×mm×mm）：××</TD>
-				<TD class="r no-left" colSpan=2>整备质量(kg)：3359</TD>
+				<TD class="r no-left" colSpan=2>整备质量(kg)：<span name="report-baseInfo-zbzl"></span></TD>
 				<TD class=l width="3%"></TD>
 				<TD class=l></TD>
 				<TD class=l width="3%"></TD>
@@ -411,11 +410,12 @@ overflow: hidden;
 				<TD class=r colSpan=2>主车制动检验结果(对于主车和挂车一起检验，在打印挂车报告时)</TD>
 				<TD class=l>0</TD>
 				<TD class=l>总检次数</TD>
-				<TD class=l colSpan=4>1</TD>
+				<TD class=l colSpan=4 name="report-baseInfo-jycs"></TD>
 			</TR>
 			<TR>
 				<TD class=r style="HEIGHT: 40px" colSpan=8>备注</TD>
 			</TR>
 		</TBODY>
 	</TABLE>
+</div>
 </div>

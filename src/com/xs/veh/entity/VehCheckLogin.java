@@ -287,6 +287,35 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 
 	@Column
 	private Integer checkType;
+	
+	//上线时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date upLineDate;
+	
+	//外检时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-d ", timezone = "GMT+8")
+	private Date externalCheckDate;
+	
+
+	public Date getUpLineDate() {
+		return upLineDate;
+	}
+
+	public Date getExternalCheckDate() {
+		return externalCheckDate;
+	}
+
+	public void setUpLineDate(Date upLineDate) {
+		this.upLineDate = upLineDate;
+	}
+
+	public void setExternalCheckDate(Date externalCheckDate) {
+		this.externalCheckDate = externalCheckDate;
+	}
 
 	public Integer getCheckType() {
 		return checkType;

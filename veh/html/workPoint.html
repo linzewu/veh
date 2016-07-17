@@ -17,11 +17,18 @@
 		<tr>
 			<td class="simpletable-l" style="width: 15%;"><label>制动\称重交叉检测：</label></td>
 			<td class="simpletable-r" style="width: 35%;"><input
-				name="czzdjc" value="0" type="radio" checked="checked"  />否 <input
+				name="czzdjc" value="0" type="radio" checked="checked" />否 <input
 				name="czzdjc" value="1" type="radio" />是</td>
 			<td class="simpletable-l" style="width: 15%"><label>地沟显示屏：</label></td>
 			<td class="simpletable-r" style="width: 35%"><input
-				class="easyui-combobox" name="dg-display" id="dg-display" ></td>
+				class="easyui-combobox" name="dg-display" id="dg-display"></td>
+		</tr>
+
+		<tr>
+			<td class="simpletable-l" style="width: 15%;"><label>是否加载制动台：</label></td>
+			<td class="simpletable-r" style="width: 85%;" colspan="3"><input
+				name="jzzdt" value="1" type="radio" />是 <input name="jzzdt"
+				value="0" type="radio" checked="checked" />否</td>
 		</tr>
 	</table>
 </div>
@@ -47,9 +54,9 @@
 			var name = $("#textbox-name").textbox("getValue");
 			var jcxdh = $("#numberbox-jcxdh").numberspinner("getValue");
 			var flowType = $("#combox-flowType").combobox("getValue");
-			var czzdjc=$("input[name=czzdjc]:checked").val();
-			
-			
+			var czzdjc = $("input[name=czzdjc]:checked").val();
+			var jzzdt = $("input[name=jzzdt]:checked").val();
+
 			$.messager.progress({
 				title : '提示',
 				msg : "数据处理中..."
@@ -58,7 +65,8 @@
 				jclcmc : name,
 				jcxdh : jcxdh,
 				jclclx : flowType,
-				czzdjc:czzdjc
+				jzzdt : jzzdt,
+				czzdjc : czzdjc
 			}, function(data) {
 				$.messager.alert("提示", data.message, "info");
 			}).error(function(e) {
@@ -67,7 +75,7 @@
 				$.messager.progress("close");
 				$("#flowManager").datagrid("reload");
 				$("#panel-flow").panel("refresh");
-				
+
 			});
 		} else {
 			$("#textbox-name").textbox("validate")
@@ -90,7 +98,7 @@
 		$("#combox-flowType").combobox("disable");
 		$("#numberbox-jcxdh").numberbox("disable");
 		$("#textbox-name").textbox("disable");
-		
+
 		//隐藏添加按钮
 		$(".button-add").hide();
 		$(".button-edit").show();
@@ -155,8 +163,8 @@
 		$.each($("#workpoint_contex .workpoint"), function(i, n) {
 			var w = {};
 			w.sort = i + 1;
-			w.name=$(n).find("span").text();
-			w.id=$(n).find("span").attr("value");
+			w.name = $(n).find("span").text();
+			w.id = $(n).find("span").attr("value");
 			var sb = [];
 			$.each($(n).find(".drag-item"), function(j, k) {
 				sb[j] = {
@@ -164,16 +172,18 @@
 					name : $(k).text()
 				}
 			});
-			w.sbs =sb;
+			w.sbs = sb;
 			ws[i] = w;
 		});
-		
-		
-		
-		var czzdjc=$("input[name=czzdjc]:checked").val();
+
+		var czzdjc = $("input[name=czzdjc]:checked").val();
+
+		var jzzdt = $("input[name=jzzdt]:checked").val();
+
 		currentRow.flow = JSON.stringify(ws);
-		currentRow.czzdjc=czzdjc;
-		currentRow.displayId=$("#dg-display").combobox("getValue");
+		currentRow.czzdjc = czzdjc;
+		currentRow.jzzdt = jzzdt;
+		currentRow.displayId = $("#dg-display").combobox("getValue");
 		$.messager.progress({
 			title : '提示',
 			msg : "流程更新中..."

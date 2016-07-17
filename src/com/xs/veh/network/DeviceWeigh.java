@@ -102,10 +102,11 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 					}
 				}
 				byte[] endodedData = new byte[length];
+				//logger.info("数据长度："+endodedData.length);
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
 				dw.device2pc(endodedData);
-			} catch (IOException e) {
-				logger.error("称重台数据流异常", e);
+			} catch (Exception e) {
+				logger.error("称重台通讯异常", e);
 			}
 			break;
 		}
@@ -122,7 +123,6 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
 		s1=getQtxxObject().getInt("kzsb-xhw");
-		
 		
 		dw = (AbstractDeviceWeigh) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		// 加载挂载设备
@@ -143,8 +143,11 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin , VehFlow vehFlow) throws IOException, InterruptedException {
+	public void startCheck(VehCheckLogin vehCheckLogin , VehFlow vehFlow) throws Exception {
 		WeighData weighData = dw.startCheck(vehFlow);
+		
+		weighData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, weighData),
+				vehFlow.getJyxm());
 		
 		Thread.sleep(2000);
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
@@ -156,7 +159,9 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		}
 		
 		weighData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
-		this.hibernateTemplate.save(weighData);
+		this.checkDataManager.saveData(weighData);
+		
+		display.setDefault();
 	}
 
 }

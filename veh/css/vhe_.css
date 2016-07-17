@@ -1,3 +1,33 @@
+.vehInfoInput{
+	width: 155px;
+}
+
+.nullData{
+font-size: 24px;
+ color: red;
+ text-align: center;
+ margin-top: 30px;
+}
+.reportTable4{
+ border-top:1px solid black;
+ border-right:1px solid black;
+ width: 100%;
+ border-collapse:collapse;
+ border-spacing:0;
+ margin-top: 30px;
+ margin-bottom: 20px;
+}
+.reportTable4 td{
+ border-bottom:1px solid black;
+ border-left:1px solid black;
+ padding:0;
+ text-align: center;
+}
+
+.reportTable4 thead{
+font-size: 16px;
+}
+
 html {
 	font-size: 100%;
 	-webkit-text-size-adjust: 100%;
@@ -300,3 +330,15 @@ html {
 	border-right: 99px solid transparent;
 	content: "";
 }
+
+.tg  {border-collapse:collapse;border-spacing:0; margin: auto; margin-top: 10px;}
+.tg td{font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-s6z2{text-align:center}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-yw4l{vertical-align:top}
+
+ .basetg{ margin: auto; margin-top: 10px;border: 0px;border-spacing:0;border: 0px;}
+ 
+.basetg td{font-size:12px;padding:5px 5px;overflow:hidden;border: 0px;text-align: left;}
+.basetg th{font-size:12px;font-weight:normal;padding:5px 5px;verflow:hidden;border: 0px;}

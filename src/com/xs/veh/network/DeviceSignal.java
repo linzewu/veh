@@ -91,12 +91,12 @@ public class DeviceSignal extends SimpleRead {
 		while (this.isRun()) {
 			try {
 				this.sendMessage(dsj);
-				if(i%10==0){
+				/*if(i%10==0){
 					this.outputStream.flush();
 					i=0;
-				}
-			} catch (IOException e) {
-				//logger.error("光电开关数据发送IO异常", e);
+				}*/
+			} catch (Exception e) {
+				logger.error("光电开异常", e);
 			}
 			try {
 				Thread.sleep(jtpl);

@@ -6,7 +6,6 @@
 <hibernate-configuration>  
     <session-factory> 
        <property name="dialect">org.hibernate.dialect.SQLServer2008Dialect</property> 
-  <!--  <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>   -->
         <property name="jdbc.batch_size">20</property>  
         <property name="connection.autocommit">true</property>  
         <property name="hibernate.hbm2ddl.auto" >update</property>

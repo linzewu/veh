@@ -309,8 +309,7 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = "deviceLightSetting", method = RequestMethod.POST)
-	public @ResponseBody Map deviceLightSetting(Integer id) throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException, IOException, InterruptedException, SystemException {
+	public @ResponseBody Map deviceLightSetting(Integer id) throws Exception {
 
 		Device device = this.deviceManager.getDevice(id);
 		String qtxx = device.getQtxx();
@@ -422,7 +421,7 @@ public class DeviceController {
 				try {
 					VehFlow vheFlow=new VehFlow();
 					deviceBrakRoller.startCheck(null,vheFlow);
-				} catch (IOException | InterruptedException | SystemException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -485,7 +484,7 @@ public class DeviceController {
 			public void run() {
 				try {
 					deviceSpeed.startCheck(null,null);
-				} catch (IOException | InterruptedException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -550,7 +549,7 @@ public class DeviceController {
 					
 					VehFlow vehFlow=new VehFlow();
 					deviceSideslip.startCheck(null,vehFlow);
-				} catch (IOException | InterruptedException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -600,7 +599,7 @@ public class DeviceController {
 				try {
 					VehFlow vehflow=new VehFlow();
 					deviceWeigh.startCheck(null,vehflow);
-				} catch (IOException | InterruptedException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

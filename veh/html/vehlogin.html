@@ -7,8 +7,7 @@
 					<thead>
 						<tr>
 							<th data-options="field:'hphm',width:80">号牌号码</th>
-							<th data-options="field:'hpzl',width:80">号牌种类</th>
-							<th data-options="field:'status',width:50">状态</th>
+							<th data-options="field:'hpzl',width:80,formatter:function(value){return comm.getParamNameByValue('hpzl',value)}">号牌种类</th>
 							<th data-options="field:'jycs',width:50">检验次数</th>
 						</tr>
 					</thead>
@@ -16,12 +15,14 @@
 			</div>
 			<div title="查验结束车辆信息">
 				<table class="easyui-datagrid" id="checkedVehList"
-					data-options="url:'/veh/veh/getVehChecking',fitColumns:true,singleSelect:true,fit:true,queryParams:{statusArry:'2'},pagination:true,pageSize:20,toolbar:'#checkedVehToolbar',footer:'#checkedVehFooter',onDblClickRow:veh.loadVehCheckInfo">
+					data-options="url:'/veh/veh/getVehChecking',singleSelect:true,height:'100%',queryParams:{statusArry:'2,3'},pagination:true,pageSize:20,toolbar:'#checkedVehToolbar',footer:'#checkedVehFooter',onDblClickRow:veh.loadVehCheckInfo">
 					<thead>
 						<tr>
+							<th data-options="field:'clxh',width:80">车辆型号</th>
+							<th data-options="field:'jylsh',width:100">检验流水号</th>
 							<th data-options="field:'hphm',width:80">号牌号码</th>
-							<th data-options="field:'hpzl',width:80">号牌种类</th>
-							<th data-options="field:'jycs',width:50">检验次数</th>
+							<th data-options="field:'hpzl',width:80,formatter:function(value){return comm.getParamNameByValue('hpzl',value)}">号牌种类</th>
+							<th data-options="field:'jycs',width:80">检验次数</th>
 						</tr>
 					</thead>
 				</table>
@@ -106,9 +107,8 @@
 </div>
 
 <div id="checkedVehToolbar">
-	<div><label>号牌种类：</label><input value="" class="easyui-combobox" id="quer_checked_hpzl" data-options="data:comm.getBaseParames('hpzl'),	valueField: 'id',
-		textField: 'value'" style="width: 110px;">
-	    <label>号牌号码：</label><input value="" class="easyui-textbox" data-options="onChange:veh.uphphm" id="quer_checked_hphm" style="width: 70px;"  />
+	<div>
+	    <label>车辆型号：</label><input value="" class="easyui-textbox" data-options="onChange:veh.uphphm" id="quer_checked_clxh" style="width: 70px;"  />
 		<a class="easyui-linkbutton" href="#" data-options="iconCls:'icon-search'" onclick="veh.vehCheckedQuery()"></a>
 	</div>
 </div>
@@ -116,10 +116,10 @@
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cut'" onclick="veh.clone()">克隆车辆信息</a>
 </div>
 
-<div class="easyui-window" id="win_checke_veh_info"   data-options="iconCls:'icon-save',modal:true,title:'车辆基本信息',border:0"  style="width:940px;height:620px;">
+<div class="easyui-window" id="win_checke_veh_info"   data-options="iconCls:'icon-save',modal:true,title:'车辆基本信息',border:0,closed:true"  style="width:940px;height:620px;">
 	<form id="win_form_veh" style="width: 100%;height: 100%">
 	<div class="easyui-layout" data-options="fit:true,border:0" >
-		<div data-options="region:'center',href:'vehInfo_.html',onLoad:function(){$('#win_checke_veh_info').window('close')}" style="padding: 10px;"></div>
+		<div data-options="region:'center',href:'vehInfo_.html'" style="padding: 10px;"></div>
 		<div data-options="region:'south'"  style="height: 80px;" >
 			<ul class="vehCheckeItem"></ul>
 		</div>

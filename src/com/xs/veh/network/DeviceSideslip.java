@@ -15,6 +15,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.SideslipData;
+import com.xs.veh.network.data.SpeedData;
 
 import gnu.io.SerialPortEvent;
 
@@ -120,21 +121,36 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
 		}
 		sd = (AbstractDeviceSideslip) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
-		
+
 		sd.init(this);
 
 	}
 
 	/**
 	 * 侧滑
+	 * 
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws SystemException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin , VehFlow vehFlow) throws IOException, InterruptedException {
-		SideslipData sideslipData  = sd.startCheck(vehFlow);
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+		SideslipData sideslipData = sd.startCheck(vehFlow);
 		sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
-		this.checkDataManager.saveSideslipData(sideslipData);
+
+		sideslipData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, sideslipData),
+				vehFlow.getJyxm());
+
+		// 侧滑限制
+		sideslipData.setChxz();
+		// 侧滑判定
+		sideslipData.setChpd();
+		sideslipData.setZpd();
+		this.checkDataManager.saveData(sideslipData);
+		Thread.sleep(2000);
+		String jg = sideslipData.getChpd() == SideslipData.PDJG_HG ? "O" : "X";
+		this.display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
+		Thread.sleep(1500);
+		display.setDefault();
 	}
 
 }

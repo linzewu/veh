@@ -4,8 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class ResultHandler {
 
@@ -56,10 +61,8 @@ public class ResultHandler {
 	}
 	
 	public static Map<String,Object> toMessage(Message message) {
-		
 		Map<String,Object> myJson = new HashMap<String,Object>();
 		myJson.put(Constant.ConstantKey.MESSAGE, message.getMessage());
-		
 		if(message.getState().equals(Message.STATE_ERROR)){
 			myJson.put(Constant.ConstantKey.STATE,Constant.ConstantState.STATE_ERROR);
 		}
@@ -67,6 +70,17 @@ public class ResultHandler {
 			myJson.put(Constant.ConstantKey.STATE,Constant.ConstantState.STATE_SUCCESS);
 		}
 		return myJson;
+	}
+	
+	
+	public static String parserJSONP(HttpServletRequest request,String data){
+		String param = request.getParameter("callback");
+		if(param!=null&&!"".equals(param)){
+			return param+"("+data+")";
+		}else{
+			return data;
+		}
+		
 	}
 
 

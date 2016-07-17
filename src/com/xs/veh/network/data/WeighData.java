@@ -37,4 +37,9 @@ public class WeighData extends BaseDeviceData {
 		this.leftData = leftData;
 	}
 
+	@Override
+	public void setZpd() {
+		
+	}
+
 }

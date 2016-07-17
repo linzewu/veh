@@ -1,7 +1,18 @@
 document
 		.write("<script language='javascript' src='/veh/bps/all.js' ></script>");
-
 var veh = {
+	jgpd:function(jg){
+		if(jg==1){
+			return "O";
+		}
+		if(jg==2){
+			return "X";
+		}
+		if(jg==null){
+			return "—";
+		}
+		
+	},
 	clone:function(){
 		var row = $("#checkedVehList").datagrid("getSelected");
 		if(!row){
@@ -25,11 +36,11 @@ var veh = {
 		if(row){
 			var ss=row;
 			ss['sf']=ss['hphm'].substring(0,1);
-			ss['hphm']=ss['hphm'].substring(1);
+			var hpmh = ss['hphm'].substring(1);
 			$("#win_form_veh").form("load",ss);
-			
+			$("#win_form_veh input[sid=hphm]").textbox("setValue",hpmh);
 			var jyxmArry = row.jyxm.split(",");
-			$(".mainConsole_checkeItem").empty();
+			$(".vehCheckeItem").empty();
 			$.each(jyxmArry,function(i,n){
 				var itemName=comm.getParamNameByValue('jyxm',n);
 				var li ="<li><a href=\"#\" class=\"easyui-linkbutton c6\" >"+itemName+"</a></li>";
@@ -37,6 +48,11 @@ var veh = {
 				$.parser.parse('.vehCheckeItem');
 			});
 		}
+		$("#win_checke_veh_info .easyui-textbox").textbox("disable");
+		$("#win_checke_veh_info .easyui-combobox").combobox("disable");
+		$("#win_checke_veh_info .easyui-datebox").datebox("disable");
+		$("#win_checke_veh_info .easyui-numberbox").numberbox("disable");
+		$("#win_checke_veh_info .easyui-linkbutton").linkbutton("disable");
 	},
 	uphphm:function(n,o){
 		$(this).textbox("setValue",n.toUpperCase());
@@ -55,16 +71,12 @@ var veh = {
 		$("#checkingVehList").datagrid("reload",param);
 	},
 	vehCheckedQuery:function(){
-		var hpzl = $("#quer_checked_hpzl").combobox("getValue");
-		var hphm = $("#quer_checked_hphm").val();
+		var clxh = $("#quer_checked_clxh").val();
 		var param={};
-		if(hphm&&$.trim(hphm)!=""){
-			param.hphm=hphm;
+		if(clxh&&$.trim(clxh)!=""){
+			param.clxh=clxh;
 		}
-		if(hpzl&&$.trim(hpzl)!=""){
-			param.hpzl=hpzl;
-		}
-		param.statusArry="2";
+		param.statusArry="2,3";
 		$("#checkedVehList").datagrid("reload",param);
 	}
 	,login:function(){
@@ -111,9 +123,9 @@ var veh = {
 							body = data["body"]
 						}
 						if (head["code"] == 1){
-						//	$("#vehinfo").form("clear");
+						// $("#vehinfo").form("clear");
 							$("#panel-vheInfo").panel("refresh");
-						//	veh.setDefaultConfig();
+						// veh.setDefaultConfig();
 							$(":checkbox[name=jyxm]").prop("checked",false);
 							$("#checkingVehList").datagrid("reload");
 							$.messager.alert("提示","车辆登录成功。");
@@ -158,7 +170,7 @@ var veh = {
 					 str_jyxm=str_jyxm.substring(1, str_jyxm.length);
 				 }
 				 console.log(str_jyxm);
-				 //$("#str_jyxm").val(str_jyxm);
+				 // $("#str_jyxm").val(str_jyxm);
 				var param=$("#vehinfo").serializeJson();
 				param['hphm'] = param['sf']+param['hphm'];
 				param['jyxm']=str_jyxm;
@@ -773,35 +785,227 @@ $.extend(
 		}
 	});
 
-var mainConsole={
+var report={
+	getBsStr:function(jszt){
+		if(jszt==0){
+			return ",";
+		}else if(jszt==1){
+			return "*,";
+		}else if(jszt==2){
+			return ",*"
+		}else if(jszt==3){
+			return "*,*"
+		}else{
+			return ",";
+		}
+			
+	},
+	createReport:function (area){
+		var strStyleCSS="<link href='/veh/css/vhe_.css' type='text/css' rel='stylesheet'>";
+		var LODOP=getLodop();  
+		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+		LODOP.SET_PRINT_STYLE("FontSize",14);
+		LODOP.SET_PRINT_STYLE("Bold",1);
+		LODOP.ADD_PRINT_HTM("8mm",34,"RightMargin:0.9cm","BottomMargin:9mm",strStyleCSS+"<body>"+area.html()+"</body>");
+		//LODOP.PRINT();
+		LODOP.PREVIEW();
+		
+	},	                     
 	loadVehCheckInfo:function(index,row){
 		if(row){
-			$.messager.progress({"title":"正在加载过程数据..."});
-			$.post("/veh/veh/getVehCheckeProcess",{'jylsh':row.jylsh},function(data){
-				if($.isArray(data)){
-					$(".mainConsole_checkeItem").empty();
-					$.each(data,function(i,n){
-						var itemName=comm.getParamNameByValue('jyxm',n.jyxm);
-						var li;
-						if(n.status==0){
-							li ="<li><a href=\"#\" class=\"easyui-linkbutton c2\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(未检)</a></li>";
-						}else if(n.status==1){
-							li ="<li><a href=\"#\" class=\"easyui-linkbutton c6\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(检验中)</a></li>";
-						}else if(n.status==2){
-							li ="<li><a href=\"#\" class=\"easyui-linkbutton c1\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(已检)</a></li>";
-						}else if(n.status==3){
-							li ="<li><a href=\"#\" class=\"easyui-linkbutton c5\" onclick=\"mainConsole.loadCheckItemInfo('"+n.jylsh+"','"+n.jyxm+"')\">"+itemName+"(复检)</a></li>";
-						}
-						$(".mainConsole_checkeItem").append(li);
-						$.parser.parse('.mainConsole_checkeItem');
+			$("#report1").panel({"href":"/veh/html/report/report1.html","onLoad":report.getReport1,baseInfo:row});
+			$("#report2").panel({"href":"/veh/html/report/report2.html","onLoad":report.getReport2,baseInfo:row});
+			$("#report3").panel({"href":"/veh/html/report/report3.html","onLoad":report.getReport3,baseInfo:row});
+			$("#report4").panel({"href":"/veh/html/report/report4.html","onLoad":report.getReport4,baseInfo:row});
+			$("#tab-report").tabs("getSelected").panel("refresh");
+		}
+	},
+	getReport1:function(){
+		var baseInfo = $(this).panel("options").baseInfo;
+		
+		 $.messager.progress({
+				title:"提示",
+				msg:"正在努力加载报表中"
+		 });
+		
+		$.post("/veh/report/getReport1",{jylsh:baseInfo.jylsh},function(data){
+			$("#report1_jyjgmc").text(data.title);
+			
+			$("#report1 [name^='report-baseInfo-']").each(function(i,n){
+				var name = $(n).attr("name").replace("report-baseInfo-","");
+				
+				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
+			});
+			
+			$.each(data,function(i,n){
+				// 处理灯光
+				if(i.indexOf("H")==0){
+					var tt = i.split("_");
+					$.each(n,function(j,k){
+						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k);
+					});
+					$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					$("#report1 tr[name="+tt[0]+"] td[name=dxcs]").text(n.dxcs);
+				}else if(i.indexOf("S1")==0){
+					$("#report1 tr[name=S1] div[name=speed]").text(n.speed);
+					$("#report1 tr[name=S1] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					$("#report1 tr[name=S1] td[name=dxcs]").text(n.dxcs);
+				}else if(i.indexOf("A1")==0){
+					$("#report1 tr[name=A1] div[name=sideslip]").text(n.sideslip);
+					$("#report1 tr[name=A1] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					$("#report1 tr[name=A1] td[name=dxcs]").text(n.dxcs);
+				}else if(i.indexOf("ZZ")==0){
+					var tt = i.split("_");
+					$("#report1 tr[name="+tt[1]+"] td[name=zz_leftData]").text(n.leftData);
+					$("#report1 tr[name="+tt[1]+"] td[name=zz_rightData]").text(n.leftData);
+				}else if(i.indexOf("ZD")==0){
+					var tt = i.split("_");
+					var bsStr=report.getBsStr(n.jszt);
+					var starts=bsStr.split(",");
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_zzdl]").text(n.zzdl+starts[0]);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdl]").text(n.yzdl+starts[1]);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_zzdlcd]").text(n.zzdlcd);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdlcd]").text(n.yzdlcd);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzbphl]").text(n.kzbphl);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzxczdl]").text(n.kzxczdl);
+					$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					$("#report1 tr[name="+tt[1]+"] td[name=dxcs]").text(n.dxcs);
+					if(tt[1]=="B0"){
+						$("#report1 tr[name=B"+n.zw+"] td[name=zd_b"+n.zw+"_zczdl]").text((Number(n.zzdl)+Number(n.yzdl)))
+					}
+					
+				}else if(i.indexOf("other")==0){
+					$("#report1 tr[name=ZC] td[name=other_jczczbzl]").text(n.jczczbzl);
+					$("#report1 tr[name=ZC] td[name=zdlh]").text(n.zdlh);
+					$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl);
+					$("#report1 tr[name=ZC] td[name=zczdpd]").text(veh.jgpd(n.zczdpd));
+					$("#report1 tr[name=ZC] td[name=dxcs]").text(baseInfo.jycs);
+				}else if(i.indexOf("par")==0){
+					$("#report1 tr[name=par] td[name=par_tczclh]").text(n.tczclh);
+					$("#report1 tr[name=par] td[name=par_tczdl]").text(n.tczdl);
+					$("#report1 tr[name=par] td[name=par_zczczdl]").text(n.zczczdl);
+					$("#report1 tr[name=par] td[name=xmpd]").text(veh.jgpd(n.tczdpd));
+					$("#report1 tr[name=par] td[name=dxcs]").text(n.dxcs);
+				}
+			});
+		}).error(function(e){
+			$.messager.alert("提示","请求失败","error");
+		}).complete(function(){
+			 $.messager.progress("close");
+		});
+	},getReport2:function(){
+		var baseInfo = $(this).panel("options").baseInfo;
+		$("#report2 [name^='report-baseInfo-']").each(function(i,n){
+			var name = $(n).attr("name").replace("report-baseInfo-","");
+			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
+		});
+		$("#report2 [name=report-baseInfo-jyjgmc]").text(vehComm.jyjgmc);
+		$("#report2 [name=report-baseInfo-sqrqz]").text(vehComm.sqrqz);
+		
+		$.post("/veh/report/getReport2",{jylsh:baseInfo.jylsh},function(data){
+			
+			var yqsbjyjg = data['yqsbjyjg'];
+			var rgjyjg =data['rgjyjg'];
+			
+			$.each(yqsbjyjg,function(i,n){
+				var tr="<tr><td>"+n.xh+"</td><td>"+n.yqjyxm+"</td><td>"+		
+						n.yqjyjg+"</td><td>"+n.yqbzxz+"</td><td>"+n.yqjgpd+"</td><td>"+
+						n.yqjybz+"</td></tr>";
+				$("#tbody_yqsbjyjg").append(tr);
+			});
+			$.each(rgjyjg,function(i,n){
+				var tr="<tr><td>"+n.xh+"</td><td>"+n.rgjyxm+"</td><td>"+n.rgjgpd+"</td><td>"+
+				n.rgjysm+"</td><td>"+n.rgjybz+"</td><td>";
+			});
+		});
+		
+	},getReport3:function(){
+		var baseInfo = $(this).panel("options").baseInfo;
+		$("#report3 [name^='report-baseInfo-']").each(function(i,n){
+			var name = $(n).attr("name").replace("report-baseInfo-","");
+			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
+		});
+	},
+	getReport4:function(){
+		var baseInfo = $(this).panel("options").baseInfo;
+		$.post("/veh/report/getReport4",{jylsh:baseInfo.jylsh},function(datas){
+			if(datas.length==0){
+				 $("#zdltabs").tabs("add",{
+					 title:"制动力曲线",
+					 content:"<div class='nullData'>无制动力过程数据</div>"
+				 });
+			}
+			 $.each(datas,function(i,data){
+				 var rdata=[];
+				 var ldata=[];
+					
+			    if(data.rigthDataStr!=null){
+					var temp=data.rigthDataStr.split(",");
+					$.each(temp.splice(300,700),function(i,n){
+						rdata.push(Number(n));
 					});
 				}
-			},"json").error(function(){
-				$.messager.alert("提示","数据发送失败","error")
-			}).complete(function(){
-				$.messager.progress("close");
-			});
+				
+				if(data.leftDataStr!=null){
+					var temp=data.leftDataStr.split(",");
+					$.each(temp.splice(300,700),function(i,n){
+						ldata.push(Number(n));
+					});
+				}
+				
+				 var template="<div style='text-align:center;margin-top: 10px;'><a id='report4Print"+data.zw+"'></a>&nbsp;&nbsp;<a id='showReport4Detail"+data.zw+"'></a><div/>"+
+				 "<div style='margin:0 auto;width:740px;' id='report4Contex"+data.zw+"'><div id='container"+data.zw+"'></div></div>";
+				 
+				 $("#zdltabs").tabs("add",{
+					 title:data.zw+"轴制动力曲线",
+					 index:data.zw,
+					 content:template,
+					 selected:i==0?true:false,
+					 baseInfo:baseInfo,
+					 rdata:rdata,
+					 ldata:ldata,
+					 data:data
+				 });
+				 
+				 $("#report4Print"+data.zw).linkbutton({
+					 iconCls: 'icon-print',
+					 text:'打印',
+					 onClick:function(){
+						 report.createReport($("#report4Contex"+data.zw));
+					 }
+				 });
+				 
+				 $("#showReport4Detail"+data.zw).linkbutton({
+					 iconCls: 'icon-search',
+					 text:'显示详细',
+					 onClick:function(){
+						 var temp= report.createReport4Teblae(data.zw, ldata, rdata);
+						 $("#report4Contex"+data.zw).append(temp);
+					 }
+				 });
+				 
+				 
+			 });
+		});
+	},
+	createReport4Teblae:function (zw,ldata,rdata){
+		
+		var report4Table="<table id='report4Table"+zw+"' class='reportTable4'><thead><tr><td colspan='8'><h4>"+zw+"轴制动力</h4></td></tr><tr><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td></tr></thead><tbody>";
+		var size=ldata.length<=rdata.length?ldata.length:rdata.length;
+		size=size%2==1?(size-1):size;
+		for(var i=0;i<size;i++){
+			report4Table+="<tr><td>"+(i+1)+"</td>"+
+			"<td>"+ldata[i]+"</td>"+
+			"<td>"+rdata[i]+"</td>"+
+			"<td>"+Math.abs(rdata[i]-ldata[i])+"</td>";
+			i++;
+			report4Table+="<td>"+(i+1)+"</td>"+
+			"<td>"+ldata[i]+"</td>"+
+			"<td>"+rdata[i]+"</td>"+
+			"<td>"+Math.abs(rdata[i]-ldata[i])+"</td></tr>";
 		}
+		report4Table+="</tbody></table>";
+		return report4Table;
 	},
 	loadCheckItemInfo:function(jylsh,jyxm){
 		var center  = $("#layout-jyxm").layout("panel","center");
@@ -819,7 +1023,5 @@ var mainConsole={
 				center.panel("setTitle",title);
 			}
 		}
-		
 	}
-
 }

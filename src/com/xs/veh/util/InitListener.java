@@ -138,6 +138,8 @@ public class InitListener implements ServletContextListener {
 				try {
 					dd.setDevice(device);
 					dd.open();
+					dd.setDefault();
+					
 				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
 						| PortInUseException | IOException | UnsupportedCommOperationException
 						| TooManyListenersException e) {

@@ -1,0 +1,30 @@
+<div class="easyui-layout" fit="true" >
+	<div data-options="region:'west'" title="在检车辆信息" style="width: 300px;">
+		<table class="easyui-datagrid" id="checkingVeh" 
+			data-options="pagination:true,pageSize:20,onDblClickRow:report.loadVehCheckInfo,toolbar:'#checkingVehTool',border:0,fitColumns:true,singleSelect:true,fit:true,url:'/veh/veh/getVehChecking',queryParams:{statusArry:'0,1'}">
+			<thead>
+				<tr>
+					<th data-options="field:'jylsh',width:100">检验流水号</th>
+					<th data-options="field:'hphm',width:60">号牌号码</th>
+					<th data-options="field:'hpzl',width:40">号牌种类</th>
+				</tr>
+			</thead>
+		</table>
+		<script language="javascript" src="/veh/html/Lodop6.198/LodopFuncs.js"></script> 
+		<object  id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>  
+		       <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0></embed> 
+		</object> 
+	</div>
+	<div data-options="region:'center',border:0">
+		<div id="tab-report" class="easyui-tabs" fit="true" >
+		    <div id="report1" title="仪器设备检验记录" fit="true" ></div>
+		    <div id="report3" title="外检报告" fit="true"  ></div>
+		    <div id="report2" title="检验报告" fit="true" ></div>
+		    <div id="report4" title="制动力曲线" fit="true"></div>
+		    <div id="upimage" title="（外检/资料）照片" fit="true"></div>
+		</div>
+	</div>
+</div>
+<div id="checkingVehTool">
+<label>号牌号码：</label><input class="easyui-textbox" value="苏J"><a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search'" >查询</a>
+</div>

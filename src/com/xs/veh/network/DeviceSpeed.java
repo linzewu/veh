@@ -1,7 +1,5 @@
 package com.xs.veh.network;
 
-import java.io.IOException;
-
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
@@ -84,8 +82,8 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 				
 				sd.device2pc(endodedData);
 			
-			} catch (IOException e) {
-				logger.error("读取灯光仪数据流异常", e);
+			} catch (Exception e) {
+				logger.error("速度仪表通讯异常", e);
 			}
 			break;
 		}
@@ -116,13 +114,30 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 		sd.init(this);
 	}
 
-	public void startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException {
+	public void startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws Exception {
+		
 		SpeedData speedData = sd.startCheck(vehCheckLogin,vehFlow);
-		// 保存检测数据 //计算检测结果
-		this.checkDataManager.saveSpeedData(speedData);
-		this.checkDataManager.saveSpeedData(speedData);
-		this.display.sendMessage("速度：" + speedData.getSpeed() / 10.0, DeviceDisplay.XP);
-		Thread.sleep(2000);
+		
+		speedData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, speedData),
+				vehFlow.getJyxm());
+		
+		//速度限值
+		speedData.setSdxz();
+		//速度判定
+		speedData.setSdpd();
+		speedData.setZpd();
+		// 保存检测数据 
+		this.checkDataManager.saveData(speedData);
+		
+		this.display.sendMessage("速度：" + CheckDataManager.MathRound(speedData.getSpeed()/1f), DeviceDisplay.XP);
+		Thread.sleep(1500);
+		
+		String jg = speedData.getSdpd()==SpeedData.PDJG_HG?"O":"X";
+		
+		this.display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
+		
+		Thread.sleep(1500);
+		
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
 		
 		boolean flag=true;
@@ -131,7 +146,7 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 			flag = this.signal.getSignal(s1);
 			Thread.sleep(200);
 		}
-		
+		display.setDefault();
 	}
 
 }

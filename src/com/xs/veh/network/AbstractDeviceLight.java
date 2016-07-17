@@ -83,8 +83,25 @@ public abstract class AbstractDeviceLight {
 		/**
 		 * 近关灯测量结束
 		 */
-		lowBeamOfMainEnd
+		lowBeamOfMainEnd,
+		
+		/**
+		 * 灯光归位
+		 */
+		deviceBreak,
+		
+		/**
+		 * 灯光错误
+		 */
+		beamError,
+		
+		/**
+		 * 无光
+		 */
+		noBeam
 	}
+	
+	
 
 
 	protected DeviceLight deviceLight;
@@ -99,13 +116,15 @@ public abstract class AbstractDeviceLight {
 
 	protected Integer s2;
 	
+	protected Integer kwfx;
+	
 
-	public abstract void sysSetting() throws IOException, InterruptedException;
+	public abstract void sysSetting() throws Exception;
 
 	public abstract List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
-			throws IOException, InterruptedException;
+			throws Exception;
 
-	public abstract void device2pc(byte[] data) throws IOException;
+	public abstract void device2pc(byte[] data) throws Exception;
 
 	public abstract void setDeviceLight(DeviceLight deviceLight);
 

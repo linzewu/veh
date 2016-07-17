@@ -1,6 +1,5 @@
 package com.xs.veh.manager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.xs.common.Message;
-import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
@@ -45,6 +43,10 @@ public class WorkPointManager {
 
 	@Resource(name = "checkQueueManager")
 	private CheckQueueManager checkQueueManager;
+	
+	@Resource(name = "checkDataManager")
+	private CheckDataManager checkDataManager;
+	
 
 	public List<WorkPoint> getWorkPoints() {
 		return (List<WorkPoint>) this.hibernateTemplate.find("from WorkPoint order by jcxdh asc , sort asc");
@@ -65,9 +67,9 @@ public class WorkPointManager {
 	public Message startWorkpoint(Integer id) {
 		WorkPoint workPoint = this.hibernateTemplate.load(WorkPoint.class, id);
 		Message message = new Message();
-		
-		WorkPointThread workPointThread = (WorkPointThread)servletContext.getAttribute(workPoint.getThreadKey());
-		if(workPointThread==null){
+
+		WorkPointThread workPointThread = (WorkPointThread) servletContext.getAttribute(workPoint.getThreadKey());
+		if (workPointThread == null) {
 			WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(servletContext);
 			workPointThread = wac.getBean(WorkPointThread.class);
 			workPoint.setGwzt(WorkPoint.GWZT_QY);
@@ -77,10 +79,10 @@ public class WorkPointManager {
 			executor.execute(workPointThread);
 			message.setState(Message.STATE_SUCCESS);
 			message.setMessage("启动成功");
-		}else{
+		} else {
 			message.setMessage("该工位已启动");
 		}
-		
+
 		return message;
 	}
 
@@ -111,7 +113,7 @@ public class WorkPointManager {
 			if (checkQueue != null) {
 				// 设置工位状态
 				setWorkPointState(workPoint, checkQueue);
-				
+
 				List<VehFlow> vehFlows = getVehFlow(checkQueue);
 
 				VehCheckLogin vehCheckLogin = getVehCheckLogin(checkQueue);
@@ -121,7 +123,6 @@ public class WorkPointManager {
 				int dgcount = getDGCount(vehCheckLogin.getJyxm());
 
 				for (VehFlow vehFlow : vehFlows) {
-
 					Device device = this.hibernateTemplate.load(Device.class, vehFlow.getSbid());
 					ICheckDevice checkDevice = (ICheckDevice) servletContext.getAttribute(device.getThredKey());
 					// 灯光项目 特殊处理
@@ -135,26 +136,38 @@ public class WorkPointManager {
 								this.hibernateTemplate.delete(checkQueue);
 								// 创建一条新队列
 								checkQueue = createNextQueue(vehFlow, vehCheckLogin);
-							} catch (IOException | InterruptedException e) {
-								e.printStackTrace();
+								//如果队列为空，则检测过程结束
+								if(checkQueue==null){
+									checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
+								}
+							} catch (Exception e) {
+								logger.error("检测过程异常", e);
 							}
 						}
 					} else {
 						// 非灯光设备
 						try {
+							logger.info(vehFlow.getJyxm() + "项目开始检测");
 							checkDevice.startCheck(vehCheckLogin, vehFlow);
 							// 检测完成，删除队列
 							logger.info("检测结束");
 							this.hibernateTemplate.delete(checkQueue);
 							logger.info("删除队列完成");
 							// 创建一条新队列
-							checkQueue = createNextQueue(vehFlow, vehCheckLogin);
 							logger.info("创建下一队列完成");
+							checkQueue = createNextQueue(vehFlow, vehCheckLogin);
+							
+							//如果队列为空，则检测过程结束
+							if(checkQueue==null){
+								checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
+							}
 						} catch (Exception e) {
-							logger.error("检测异常 工位线程 " , e);
+							logger.error("检测过程异常 :", e);
 						}
 					}
 				}
+				
+				
 			} else {
 				// 设备工位为空闲状态
 				setWorkPointIsNotUse(workPoint);
@@ -162,7 +175,7 @@ public class WorkPointManager {
 		}
 
 	}
-
+	
 	private int getDGCount(String jyxm) {
 
 		int count = 0;
@@ -211,9 +224,21 @@ public class WorkPointManager {
 
 		List<VehFlow> vehFlows = (List<VehFlow>) this.hibernateTemplate.find(
 				"from VehFlow where jylsh=? and jycs=? and gwsx=? and sx>=? order by sx asc", checkQueue.getJylsh(),
-				checkQueue.getJycs(), checkQueue.getGwsx(),checkQueue.getLcsx());
+				checkQueue.getJycs(), checkQueue.getGwsx(), checkQueue.getLcsx());
 
-		return vehFlows;
+		List<VehFlow> temp = new ArrayList<VehFlow>();
+
+		if (vehFlows.get(0).getJyxm().indexOf("H") == -1) {
+			temp.add(vehFlows.get(0));
+			return temp;
+		} else {
+			for (VehFlow vehFlow : vehFlows) {
+				if (vehFlow.getJyxm().indexOf("H") == 0) {
+					temp.add(vehFlow);
+				}
+			}
+		}
+		return temp;
 	}
 
 	public CheckQueue getQueue(final WorkPoint workPoint) {
@@ -259,7 +284,7 @@ public class WorkPointManager {
 			queue.setJycs(newFlow.getJycs());
 
 			queue.setJylsh(newFlow.getJylsh());
-			
+
 			queue.setLcsx(newFlow.getSx());
 
 			queue.setPdxh(checkQueueManager.getPdxh(vehCheckLogin.getJcxdh(), newFlow.getGwsx()));
@@ -281,6 +306,18 @@ public class WorkPointManager {
 
 		for (WorkPoint workPoint : workPoints) {
 			this.startWorkpoint(workPoint.getId());
+		}
+	}
+
+	public VehFlow getNextFlow(VehFlow vehFlow) {
+
+		List<VehFlow> vehFlows = (List<VehFlow>)this.hibernateTemplate.find("from VehFlow where jylsh=? and jycs=? and sx=?", vehFlow.getJylsh(),
+				vehFlow.getJycs(), vehFlow.getSx() + 1);
+		
+		if(vehFlows==null||vehFlows.isEmpty()){
+			return null;
+		}else{
+			return vehFlows.get(0);
 		}
 
 	}

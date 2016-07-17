@@ -9,11 +9,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -26,6 +28,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.jdbc.ReturningWork;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -39,6 +42,7 @@ import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.Flow;
+import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLog;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -82,6 +86,9 @@ public class VehManager {
 
 	@Resource(name = "flowManager")
 	private FlowManager flowManager;
+
+	@Autowired
+	private HttpSession session;
 
 	private Document write(String jkid, Map data)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
@@ -190,7 +197,6 @@ public class VehManager {
 		}
 
 		if (head.get("code").equals("1")) {
-
 			this.hibernateTemplate.save(vehCheckLogin);
 			String jyxm = vehCheckLogin.getJyxm();
 			String[] jyxmArray = jyxm.split(",");
@@ -224,6 +230,22 @@ public class VehManager {
 		return messager;
 	}
 
+	public boolean isLoged(VehCheckLogin vehCheckLogin) {
+
+		String hphm = vehCheckLogin.getHphm();
+		String hpzl = vehCheckLogin.getHpzl();
+
+		List data = hibernateTemplate.find("from VehCheckLogin where hphm=? and hpzl=? and ( vehjczt=? or vehjczt=? )",
+				hphm, hpzl, VehCheckLogin.JCZT_DL, VehCheckLogin.JCZT_JYZ);
+
+		if (data != null && !data.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
 	public String getJylsh() {
 		return this.hibernateTemplate.execute(new HibernateCallback<String>() {
 			@Override
@@ -253,7 +275,6 @@ public class VehManager {
 
 		List<VehCheckProcess> vcps = (List<VehCheckProcess>) this.hibernateTemplate
 				.find("From VehCheckProcess where jylsh =? order by jylsh desc", jylsh);
-
 		return vcps;
 	}
 
@@ -263,6 +284,10 @@ public class VehManager {
 
 		if (vehCheckLogin.getHphm() != null && !"".equals(vehCheckLogin.getHphm())) {
 			query.add(Restrictions.like("hphm", vehCheckLogin.getHphm()));
+		}
+
+		if (vehCheckLogin.getClxh() != null && !"".equals(vehCheckLogin.getClxh())) {
+			query.add(Restrictions.like("clxh", vehCheckLogin.getClxh()));
 		}
 
 		if (vehCheckLogin.getHpzl() != null && !"".equals(vehCheckLogin.getHpzl())) {
@@ -329,15 +354,6 @@ public class VehManager {
 			jsonHead.put("code", "1");
 			jsonHead.put("isNetwork", isNetwork);
 			jo.put("head", jsonHead);
-			/*
-			 * this.hibernateTemplate.delete(vheLogininfo);
-			 * this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
-			 * 
-			 * @Override public Integer doInHibernate(Session session) throws
-			 * HibernateException { return session.createQuery(
-			 * "delete VehCheckProcess where jylsh=:jylsh"
-			 * ).setParameter("jylsh", jylsh) .executeUpdate(); } });
-			 */
 
 			vheLogininfo.setVehjczt(VehCheckLogin.JCZZT_TB);
 			this.hibernateTemplate.update(vheLogininfo);
@@ -409,18 +425,40 @@ public class VehManager {
 								}
 							}
 						} else {
-							VehFlow v = new VehFlow();
-							v.setGw(gwid);
-							v.setHphm(vcl.getHphm());
-							v.setHpzl(vcl.getHpzl());
-							v.setJylsh(vcl.getJylsh());
-							v.setJycs(vcl.getJycs());
-							v.setJyxm(jyxm);
-							v.setJysb(device.getId());
-							v.setGwsx(i + 1);
-							v.setSbsx(j + 1);
-							v.setSbid(deviceId);
-							vehFlows.add(v);
+							// 存在加载制动台 货车 挂车 半挂车 并且是多轴 车3轴以上 不需要上称重台
+							if (flow.getJzzdt() == Flow.JZZDT_YES && device.getType() == Device.CZJCSB
+									&& vcl.getZs() >= 3 && (vcl.getCllx().indexOf("H") > 0
+									|| vcl.getCllx().indexOf("G") > 0 || vcl.getCllx().indexOf("B") > 0)) {
+
+								// 货车类型 1轴需要上称重台 其他轴不上称重台
+								if (vcl.getCllx().indexOf("H") > 0 && jyxm.equals("B1")) {
+									VehFlow v = new VehFlow();
+									v.setGw(gwid);
+									v.setHphm(vcl.getHphm());
+									v.setHpzl(vcl.getHpzl());
+									v.setJylsh(vcl.getJylsh());
+									v.setJycs(vcl.getJycs());
+									v.setJyxm(jyxm);
+									v.setJysb(device.getId());
+									v.setGwsx(i + 1);
+									v.setSbsx(j + 1);
+									v.setSbid(deviceId);
+									vehFlows.add(v);
+								}
+							} else {
+								VehFlow v = new VehFlow();
+								v.setGw(gwid);
+								v.setHphm(vcl.getHphm());
+								v.setHpzl(vcl.getHpzl());
+								v.setJylsh(vcl.getJylsh());
+								v.setJycs(vcl.getJycs());
+								v.setJyxm(jyxm);
+								v.setJysb(device.getId());
+								v.setGwsx(i + 1);
+								v.setSbsx(j + 1);
+								v.setSbid(deviceId);
+								vehFlows.add(v);
+							}
 						}
 					}
 				}
@@ -472,6 +510,8 @@ public class VehManager {
 
 	public List<VehCheckLogin> getVehCheckLoginOfSXZT(Integer zt) {
 
+		DetachedCriteria detachedCrit = DetachedCriteria.forClass(VehCheckLogin.class);
+
 		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
 				.find("from VehCheckLogin where vehsxzt = ?", zt);
 
@@ -481,6 +521,7 @@ public class VehManager {
 	public Message upLine(Integer id) {
 
 		VehCheckLogin vehCheckLogin = this.hibernateTemplate.load(VehCheckLogin.class, id);
+		User user = (User) session.getAttribute("user");
 
 		Message message = new Message();
 
@@ -494,8 +535,8 @@ public class VehManager {
 			return message;
 
 		} else {
-			
-			//创建一条新的队列
+
+			// 创建一条新的队列
 			VehFlow vehFlow = (VehFlow) this.hibernateTemplate
 					.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
 							vehCheckLogin.getJycs())
@@ -510,17 +551,34 @@ public class VehManager {
 			queue.setPdxh(checkQueueManager.getPdxh(vehCheckLogin.getJcxdh(), vehFlow.getGwsx()));
 			queue.setLcsx(vehFlow.getSx());
 			this.hibernateTemplate.save(queue);
-			
+
 			vehCheckLogin.setVehsxzt(VehCheckLogin.SXZT_JCZ);
+			vehCheckLogin.setUpLineDate(new Date());
+
+			if (user != null) {
+				vehCheckLogin.setYcy(user.getRealName());
+				vehCheckLogin.setYcysfzh(user.getIdCard());
+			}
+
 			this.hibernateTemplate.update(vehCheckLogin);
-			
+
 			message.setState(Message.STATE_SUCCESS);
 			message.setMessage("上线成功！");
-			
+
 			return message;
 
 		}
+	}
 
+	public VehCheckLogin getVehCheckLoginByJylsh(String jyjgbh, String jylsh) {
+		List<VehCheckLogin> vehCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
+				.find("from VehCheckLogin where jyjgbh=? and jylsh=?", jyjgbh, jylsh);
+
+		if (vehCheckLogins != null && vehCheckLogins.size() > 0) {
+			return vehCheckLogins.get(0);
+		} else {
+			return null;
+		}
 	}
 
 }

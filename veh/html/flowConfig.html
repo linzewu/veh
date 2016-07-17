@@ -80,6 +80,7 @@
 		$("#numberbox-jcxdh").numberspinner("disable");
 		$("#combox-flowType").combobox("disable");
 		$("input[name=czzdjc]:eq("+row.czzdjc+")").attr("checked","checked");
+		$("input[name=jzzdt][value="+row.jzzdt+"]").attr("checked","checked");
 		$.messager.progress({
 			title : '提示',
 			msg : "加载设备信息。。。"

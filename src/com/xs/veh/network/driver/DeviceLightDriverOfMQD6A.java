@@ -20,7 +20,7 @@ import com.xs.veh.network.data.LightData;
 import net.sf.json.JSONObject;
 
 public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
-
+	
 	static Logger logger = Logger.getLogger(DeviceLightDriverOfMQD6A.class);
 
 	private boolean checkingFlag;
@@ -28,7 +28,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	private boolean getMainBeamDataFlag;
 
 	private boolean getSideBeamDataFlag;
-
+	
 	private byte[] mainBeam;
 
 	private byte[] sideBeam;
@@ -40,6 +40,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	// 光型
 	private GX gx;
+
+	private boolean isBreak = true;
 
 	public DeviceLightDriverOfMQD6A() {
 	}
@@ -54,12 +56,25 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		if ("0232544F29".equals(rtx)) {
 			return LightNoticeType.highBeamOfMainEnd;
 		}
-
 		if ("0232544E2A".equals(rtx)) {
 			return LightNoticeType.highBeamOfSideEnd;
 		}
 		if ("0232544D2B".equals(rtx)) {
 			return LightNoticeType.lowBeamOfMainEnd;
+		}
+
+		// 灯光归为
+		if ("0232544038".equals(rtx)) {
+			return LightNoticeType.deviceBreak;
+		}
+
+		// 无灯
+		if ("0232451374".equals(rtx)) {
+			return LightNoticeType.noBeam;
+		}
+
+		if ("0232451473".equals(rtx)) {
+			return LightNoticeType.beamError;
 		}
 
 		return null;
@@ -120,7 +135,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			if (!isEmptyData(highData)) {
 				if (type == 'R') {
 					LightData lowBeamOfMainRigth = new LightData();
-					
+
 					lowBeamOfMainRigth.setWz(LightData.WZ_Y);
 					lowBeamOfMainRigth.setDx(LightData.DX_ZD);
 					lowBeamOfMainRigth.setGx(LightData.GX_JGD);
@@ -145,7 +160,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 			if (type == 'R') {
 				LightData highBeamOfSideRigth = new LightData();
-				
+
 				highBeamOfSideRigth.setWz(LightData.WZ_Y);
 				highBeamOfSideRigth.setDx(LightData.DX_FD);
 				highBeamOfSideRigth.setGx(LightData.GX_YGD);
@@ -168,7 +183,6 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		if (new String(highData).equals("000000000000000000")) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -183,16 +197,16 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		byte[] data3 = new byte[4];
 		System.arraycopy(bs, 10, data3, 0, data3.length);
-		lightData.setGq(byte2String(data3));
+		lightData.setGq(Integer.parseInt(byte2String(data3)));
 
 		byte[] data4 = new byte[4];
 		System.arraycopy(bs, 14, data4, 0, data4.length);
-		lightData.setDg(byte2String(data4));
+		lightData.setDg(Integer.parseInt(byte2String(data4).trim()));
 
 	}
 
 	@Override
-	public void sysSetting() throws IOException, InterruptedException {
+	public void sysSetting() throws Exception {
 
 		String qtxx = deviceLight.getDevice().getQtxx();
 		// 获取开机设置信息
@@ -242,6 +256,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	public Map<String, String> getSetting(VehCheckLogin vehCheckLogin) {
+		
 		String qtxx = deviceLight.getDevice().getQtxx();
 		JSONObject jo = JSONObject.fromObject(qtxx);
 		Map<String, String> data = new HashMap<String, String>();
@@ -249,6 +264,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		String dz = (String) jo.get("s-edz");
 		String yjgjc = (String) jo.get("s-yjgjc");
+		
 		if (qzdz.equals("01") || qzdz.equals("02")) {
 			dz = (String) jo.get("s-sdz");
 		}
@@ -260,9 +276,6 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			yjgjc = (String) jo.get("s-yjgjc");
 		}
 
-		if (qzdz.equals("01") || qzdz.equals("03")) {
-			yjgjc = (String) jo.get("s-yjgjc");
-		}
 		if (qzdz.equals("02")) {
 			yjgjc = (String) jo.get("s-dcyg");
 		}
@@ -281,8 +294,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		return data;
 	}
 
-	private void setting(Map<String, String> setting, DeviceLight deviceLight)
-			throws InterruptedException, IOException {
+	private void setting(Map<String, String> setting, DeviceLight deviceLight) throws Exception {
 
 		Set<String> array = setting.keySet();
 		for (String ml : array) {
@@ -292,8 +304,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	@Override
-	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
-			throws IOException, InterruptedException {
+	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
 
 		// 等待到位
 		String hphm = vehCheckLogin.getHphm();
@@ -323,7 +334,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			}
 			Thread.sleep(500);
 		}
-		
+
 		Map<String, String> setting = this.getSetting(vehCheckLogin);
 
 		String dxml = (String) setting.get("dx");
@@ -339,13 +350,13 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			if (vehFlow.getJyxm().equals("H1") || vehFlow.getJyxm().equals("H2")) {
 				clzd = (String) deviceLight.getQtxxObject().get("t-czd");
 			}
-
 			if (vehFlow.getJyxm().equals("H3") || vehFlow.getJyxm().equals("H4")) {
 				clyd = (String) deviceLight.getQtxxObject().get("t-cyd");
 			}
 		}
 
 		if (clzd != null) {
+			isBreak = false;
 			// 开始测量
 			this.checkingFlag = true;
 			if (gx == GX.DCYG || gx == GX.YJGJC) {
@@ -366,6 +377,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			}
 		}
 		if (clyd != null) {
+			isBreak = false;
 			// 开始测量
 			this.checkingFlag = true;
 			if (gx == GX.DCYG || gx == GX.YJGJC) {
@@ -390,17 +402,28 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		qsml = deviceLight.getQtxxObject().getString("g-qyzdsj");
 		getMainBeamData(qsml);
-		Thread.sleep(1000);
-		
-		//归位
+		Thread.sleep(500);
+		deviceLight.getDisplay().sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
+		deviceLight.getDisplay().sendMessage("等待归位", DeviceDisplay.XP);
+
+		// 归位
 		String yqgw = (String) deviceLight.getQtxxObject().get("s-yqgw");
 		deviceLight.sendMessage(yqgw);
-		
+
+		if (!isBreak) {
+			Thread.sleep(500);
+		}
+
+		for (LightData lightData : lightDatas) {
+			if (lightData.getGq() != null) {
+				lightData.setGq(lightData.getGq() * 100);
+			}
+		}
 		return lightDatas;
-		
+
 	}
 
-	private void getMainBeamData(String qsml) throws IOException, InterruptedException {
+	private void getMainBeamData(String qsml) throws Exception {
 		mainBeam = new byte[39];
 		deviceLight.sendMessage(qsml);
 		this.getMainBeamDataFlag = true;
@@ -429,17 +452,15 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			logger.info("仪器响应通知：" + CharUtil.byte2HexOfString(endodedData));
 			// 解析响应命令
 			LightNoticeType lightNoticeType = getLightNoticeType(endodedData);
-
 			String xpString = null;
 			String spString = null;
-			// 远光灯测量结束
+			//远光灯测量结束
 			if (lightNoticeType == LightNoticeType.highBeamOfMainEnd) {
-				// 只测试远光 并且是二灯制
+				//只测试远光 并且是二灯制
 				if (dx == DX.EDZ && gx == GX.DCYG) {
 					this.checkingFlag = false;
 					return;
 				}
-
 				if (dx == DX.SDZ) {
 					spString = "开始测量副远光灯";
 					xpString = "请打开副远光灯";
@@ -466,13 +487,27 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 				}
 			}
 			if (lightNoticeType == LightNoticeType.lowBeamOfMainEnd) {
-				deviceLight.getDisplay().sendMessage("", DeviceDisplay.SP);
-				deviceLight.getDisplay().sendMessage("", DeviceDisplay.XP);
 				this.checkingFlag = false;
 				return;
 			}
-		}
 
+			if (lightNoticeType == LightNoticeType.noBeam) {
+				deviceLight.getDisplay().sendMessage("无法找到灯光", DeviceDisplay.XP);
+				this.checkingFlag = false;
+				return;
+			}
+
+			if (lightNoticeType == LightNoticeType.beamError) {
+				deviceLight.getDisplay().sendMessage("测量出错", DeviceDisplay.XP);
+				this.checkingFlag = false;
+				return;
+			}
+
+			if (lightNoticeType == LightNoticeType.deviceBreak) {
+				this.isBreak = true;
+				return;
+			}
+		}
 	}
 
 	/**

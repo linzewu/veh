@@ -63,6 +63,15 @@ public class DeviceDisplay extends SimpleRead {
 		}
 		this.outputStream.write(message.getBytes("GBK"));
 	}
+	
+	
+	public void setDefault() throws IOException{
+		String xpmr = (String) this.getQtxxObject().get("xpmr");
+		String spmr = (String) this.getQtxxObject().get("spmr");
+		sendMessage(xpmr,XP);
+		sendMessage(spmr,SP);
+	}
+	
 
 	@Override
 	public void init() {

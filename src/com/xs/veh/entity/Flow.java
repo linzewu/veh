@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 @Entity
 @Table(name = "TM_Flow")
 public class Flow extends BaseEntity {
+	
+	public static final Integer JZZDT_YES=1;
+	
+	public static final Integer JZZDT_NO=0;
 
 	/**
 	 * 安检
@@ -68,9 +72,33 @@ public class Flow extends BaseEntity {
 	@Column
 	private Integer displayId;
 	
+	
+	
+	/**
+	 * 是否有 加载制动台
+	 */
+	@Column
+	private Integer jzzdt;
+	
+	
+	
 	@Column(length=4000)
 	private String flow;
 	
+	
+
+
+
+
+	public Integer getJzzdt() {
+		return jzzdt;
+	}
+
+
+	public void setJzzdt(Integer jzzdt) {
+		this.jzzdt = jzzdt;
+	}
+
 
 	public String getFlow() {
 		return flow;

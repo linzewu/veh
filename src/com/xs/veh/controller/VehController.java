@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.dom4j.DocumentException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
@@ -34,20 +37,21 @@ import net.sf.json.JSONObject;
 @Controller
 @RequestMapping(value = "/veh")
 public class VehController {
-	
-	
 
 	@Value("${jyjgbh}")
 	private String jyjgbh;
-	
+
 	@Value("${sf}")
 	private String sf;
-	
+
 	@Value("${cs}")
 	private String cs;
-	
+
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
+	
+	@Autowired
+	private HttpSession session;
 
 	/**
 	 * 注册时间类型的属性编辑器，将String转化为Date
@@ -57,14 +61,10 @@ public class VehController {
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 	}
 
-	
-
 	@RequestMapping(value = "getVehInfo", method = RequestMethod.POST)
 	public @ResponseBody String getVehInfo(@RequestParam Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
-
 		JSON json = vehManager.getVehInfoOfws(param);
-
 		return json.toString();
 	}
 
@@ -84,19 +84,20 @@ public class VehController {
 	}
 
 	@RequestMapping(value = "getVehChecking", method = RequestMethod.POST)
-	public @ResponseBody List<VehCheckLogin> getVehChecking(Integer page, Integer rows, VehCheckLogin vehCheckLogin,@RequestParam(required=false) String statusArry) {
-		
-		Integer[] jczt =null;
-		if(statusArry!=null&&!"".equals(statusArry.trim())){
+	public @ResponseBody List<VehCheckLogin> getVehChecking(Integer page, Integer rows, VehCheckLogin vehCheckLogin,
+			@RequestParam(required = false) String statusArry) {
+
+		Integer[] jczt = null;
+		if (statusArry != null && !"".equals(statusArry.trim())) {
 			String[] ss = statusArry.split(",");
-			jczt=new Integer[ss.length];
-			int i=0;
-			for(String s: ss){
-				jczt[i]=Integer.parseInt(s);
+			jczt = new Integer[ss.length];
+			int i = 0;
+			for (String s : ss) {
+				jczt[i] = Integer.parseInt(s);
 				i++;
 			}
 		}
-		List<VehCheckLogin> vcps = vehManager.getVehChecking(page,rows,vehCheckLogin,jczt);
+		List<VehCheckLogin> vcps = vehManager.getVehChecking(page, rows, vehCheckLogin, jczt);
 		return vcps;
 	}
 
@@ -104,18 +105,32 @@ public class VehController {
 	public @ResponseBody String vehLogin(VehCheckLogin vehCheckLogin, VehInfo vehInfo)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
-		String jylsh = this.vehManager.getJylsh();
-		vehCheckLogin.setJylsh(jylsh.trim());
-		vehCheckLogin.setJyjgbh(jyjgbh);
-		vehCheckLogin.setJycs(1);
-		
-		vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_DL);
-		vehCheckLogin.setVehsxzt(VehCheckLogin.SXZT_WSX);
-		vehCheckLogin.setVehwjzt(VehCheckLogin.WJZT_WKS);
-		
-		
-		JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
-		return json.toString();
+		if (!vehManager.isLoged(vehCheckLogin)) {
+			String jylsh = this.vehManager.getJylsh();
+			vehCheckLogin.setJylsh(jylsh.trim());
+			vehCheckLogin.setJyjgbh(jyjgbh);
+			vehCheckLogin.setJycs(1);
+			vehCheckLogin.setDlsj(new Date());
+			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_DL);
+			vehCheckLogin.setVehsxzt(VehCheckLogin.SXZT_WSX);
+			vehCheckLogin.setVehwjzt(VehCheckLogin.WJZT_WKS);
+			User user =(User)session.getAttribute("user");
+			if(user!=null){
+				vehCheckLogin.setDly(user.getRealName());
+				vehCheckLogin.setDlysfzh(user.getIdCard());
+			}
+
+			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
+			return json.toString();
+		} else {
+			JSONObject head = new JSONObject();
+			head.put("code", "-1");
+			head.put("message", "登陆失败，该车辆已登陆。");
+			JSONObject messager = new JSONObject();
+			messager.put("head", head);
+			return messager.toString();
+		}
+
 	}
 
 	/**
@@ -131,11 +146,11 @@ public class VehController {
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 		return this.vehManager.unLoginVeh(id).toString();
 	}
-	
+
 	@RequestMapping(value = "getDefaultConfig", method = RequestMethod.POST)
-	public @ResponseBody String getDefaultConfig(VehCheckLogin vehCheckLogin, VehInfo vehInfo){
-		
-		JSONObject json=new JSONObject();
+	public @ResponseBody String getDefaultConfig(VehCheckLogin vehCheckLogin, VehInfo vehInfo) {
+
+		JSONObject json = new JSONObject();
 		json.put("sf", sf);
 		json.put("cs", cs);
 		return json.toString();

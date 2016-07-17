@@ -16,7 +16,6 @@
 	src="/veh/js/easyui-1.4.3/jquery.easyui.min.js"></script>
 <script type="text/javascript"
 	src="/veh/js/easyui-1.4.3/jquery.easyui.mobile.js"></script>
-<script type="text/javascript" src="/veh/js/veh_.js"></script>
 </head>
 <script type="text/javascript">
 	function checkPsuh(id){
@@ -37,9 +36,8 @@
 	
 	function getCheckList(){
 		$.post('/veh/pda/getCheckList',{},function(data){
-			
+			data = $.parseJSON(data);
 			$(".m-list").empty();
-			
 			$.each(data,function(i,n){
 				var item ="<li><div class=\"list-header\">"+n.hphm+"</div><div class=\"list-content\">"+comm.getParamNameByValue('hpzl',n.hpzl)+"</div><div class=\"m-right\"><a href=\"javascript:void(0)\" class=\"easyui-linkbutton\" onClick=\"checkPsuh('"+n.id+"')\">引车上线</a></div></li>";
 				$(".m-list").append(item);

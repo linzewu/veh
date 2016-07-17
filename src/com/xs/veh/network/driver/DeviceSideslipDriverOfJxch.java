@@ -80,7 +80,7 @@ public class DeviceSideslipDriverOfJxch extends AbstractDeviceSideslip {
 	}
 
 	@Override
-	public void device2pc(byte[] endodedData) throws IOException {
+	public void device2pc(byte[] endodedData) throws Exception {
 		
 		if(checkingFlag){
 			setData(endodedData, sideslipData);

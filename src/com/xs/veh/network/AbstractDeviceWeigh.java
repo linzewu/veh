@@ -18,9 +18,9 @@ public abstract class AbstractDeviceWeigh {
 	protected Integer s1;
 
 	
-	public abstract WeighData startCheck(VehFlow vehFlow) throws  IOException, InterruptedException;
+	public abstract WeighData startCheck(VehFlow vehFlow) throws Exception;
 
-	public abstract void device2pc(byte[] data) throws IOException;
+	public abstract void device2pc(byte[] data) throws Exception;
 	
 	public void init(DeviceWeigh deviceWeigh) {
 		this.deviceWeigh = deviceWeigh;

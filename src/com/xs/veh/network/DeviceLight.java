@@ -14,10 +14,10 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.LightData;
 
 import gnu.io.NoSuchPortException;
@@ -51,6 +51,9 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "taskExecutor")
 	private ThreadPoolTaskExecutor executor;
+
+	@Resource(name = "checkDataManager")
+	private CheckDataManager checkDataManager;
 
 	public DeviceLight() {
 	}
@@ -93,7 +96,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 				byte[] endodedData = new byte[length];
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
 				dld.device2pc(endodedData);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				logger.error("读取灯光仪数据流异常", e);
 			}
 			break;
@@ -105,7 +108,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	}
 
-	public void sysSetting() throws IOException, InterruptedException {
+	public void sysSetting() throws Exception {
 		this.dld.sysSetting();
 	}
 
@@ -116,23 +119,43 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
-			throws IOException, InterruptedException {
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
 
 		dld.createNewList();
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
-
+		String jg = "O";
 		for (LightData data : datas) {
-			data.setBaseDeviceData(vehCheckLogin, 1, "");
-			hibernateTemplate.save(data);
+			data.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), data.getJyxm());
+			data.setCzpy();
+			// 设置灯光光强的判定限制
+			data.setDgpdxz(vehCheckLogin);
+			// 设置光强判定
+			data.setGqpd();
+			// 设置垂直偏移限值
+			data.setCzpyxz(vehCheckLogin);
+			data.setCzpypd();
+			data.setZpd();
+			this.checkDataManager.saveData(data);
+			if (data.getZpd() == CheckDataManager.PDJG_BHG) {
+				jg = "X";
+			}
 		}
+		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
+		display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
+
+		// 灯光检测完成后等待8秒 仪器归为时间
+		Thread.sleep(3000);
+		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
+		display.sendMessage("请等待！", DeviceDisplay.XP);
+		Thread.sleep(3000);
+		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
+		display.sendMessage("请向前行驶", DeviceDisplay.XP);
 
 		// 判定车是否离开 如果没有离开，则等待是否复位 ，如果离开则结束检测
-		while (dld.deviceSignal1.getSignal(dld.s1) && dld.deviceSignal1.getSignal(dld.s2)) {
+		while (dld.deviceSignal1.getSignal(dld.s1) && !dld.deviceSignal2.getSignal(dld.s2)) {
 			Thread.sleep(300);
-			// 判定是否复位
-			// 如果复位 判定灯光仪是否已经归为 归为则开始复位检测
 		}
+		display.setDefault();
 	}
 
 	@Override
@@ -160,14 +183,15 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		if (dwkg2 != null) {
 			dld.deviceSignal2 = (DeviceSignal) servletContext.getAttribute(dwkg2 + "_" + Device.KEY);
 		}
+		
+		dld.kwfx=(Integer)qtxx.get("sz-ssfx");
 
 		dld.setDeviceLight(this);
 	}
 
 	@Override
 	@Deprecated
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow)
-			throws SystemException, IOException, InterruptedException {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
 		List<VehFlow> vehFlows = new ArrayList<VehFlow>();
 		vehFlows.add(vehFlow);
 		this.startCheck(vehCheckLogin, vehFlows);

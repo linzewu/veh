@@ -145,7 +145,7 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 
 	public abstract void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 
-	public void sendMessage(String message) throws IOException {
+	public void sendMessage(String message) throws Exception {
 		Integer dhcf = Integer.parseInt(qtxxObject.get("dhcf").toString());
 		Integer xylx = Integer.parseInt(qtxxObject.get("xylx").toString());
 

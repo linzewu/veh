@@ -22,9 +22,37 @@ public class SideslipData extends BaseDeviceData {
 	@Transient
 	private List<Float> datas;
 	
+	@Column
+	private Integer chpd;
+	
+	@Column
+	private String chxz;
+	
 	@Column(length=4000)
 	private String strData;
 	
+
+	public Integer getChpd() {
+		return chpd;
+	}
+
+
+	public void setChpd(Integer chpd) {
+		this.chpd = chpd;
+	}
+
+	
+	
+	public String getChxz() {
+		return chxz;
+	}
+
+
+	public void setChxz(String chxz) {
+		this.chxz = chxz;
+	}
+
+
 	public String getStrData() {
 		return strData;
 	}
@@ -54,6 +82,22 @@ public class SideslipData extends BaseDeviceData {
 		return "SideslipData [sideslip=" + sideslip + ", datas=" + datas + "]";
 	}
 	
+	public void setChpd() {
+		if (sideslip <= 5 && sideslip >= -5) {
+			this.chpd = PDJG_HG;
+		} else {
+			this.chpd = PDJG_BHG;
+		}
+	}
 	
+	public void setChxz() {
+		this.chxz="-5,5";
+	}
+
+
+	@Override
+	public void setZpd() {
+		this.setZpd(chpd);
+	}
 
 }
