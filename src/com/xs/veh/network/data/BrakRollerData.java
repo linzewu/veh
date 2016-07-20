@@ -93,7 +93,7 @@ public class BrakRollerData extends BaseDeviceData {
 
 	// 加载制动率
 	@Column
-	private Integer jzzzdl;
+	private Float jzzzdl;
 
 	// 加载轴荷
 	@Column
@@ -101,7 +101,7 @@ public class BrakRollerData extends BaseDeviceData {
 
 	// 加载不平衡率
 	@Column
-	private Integer jzbphl;
+	private Float jzbphl;
 
 	// 空载制动率限值
 	@Column
@@ -133,7 +133,7 @@ public class BrakRollerData extends BaseDeviceData {
 	
 	//是否加载轴
 	@Column
-	private Integer sfjzz;
+	private Integer sfjzz=SFJZZ_NO;
 	
 
 	public Integer getSfjzz() {
@@ -205,7 +205,7 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 
 	 * @return
 	 */
-	public Integer getJzzzdl() {
+	public Float getJzzzdl() {
 		return jzzzdl;
 	}
 
@@ -214,7 +214,7 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 
 	 * @param jzzzdl
 	 */
-	public void setJzzzdl(Integer jzzzdl) {
+	public void setJzzzdl(Float jzzzdl) {
 		this.jzzzdl = jzzzdl;
 	}
 
@@ -250,7 +250,7 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 
 	 * @return
 	 */
-	public Integer getJzbphl() {
+	public Float getJzbphl() {
 		return jzbphl;
 	}
 
@@ -286,7 +286,7 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 
 	 * @param jzbphl
 	 */
-	public void setJzbphl(Integer jzbphl) {
+	public void setJzbphl(Float jzbphl) {
 		this.jzbphl = jzbphl;
 	}
 
@@ -699,7 +699,7 @@ public class BrakRollerData extends BaseDeviceData {
 	 */
 	public void setKzbphl() {
 
-		if (yzdl == null || zzdl == null || gcc == null) {
+		if (yzdl == null || zzdl == null || gcc == null || sfjzz==SFJZZ_YES) {
 			return;
 		}
 		Integer zdzdl = zzdl > yzdl ? zzdl : yzdl;
@@ -708,19 +708,52 @@ public class BrakRollerData extends BaseDeviceData {
 		this.kzbphl = CheckDataManager.MathRound(bphl);
 
 	}
+	
+	
+	/**
+	 * 加载 设置不平衡率
+	 * 
+	 * @return
+	 */
+	public void setJzbphl() {
+
+		if (yzdl == null || zzdl == null || gcc == null || sfjzz==SFJZZ_NO) {
+			return;
+		}
+		Integer zdzdl = zzdl > yzdl ? zzdl : yzdl;
+		Float bphl = (float) (Math.abs(zzdl-yzdl) * 1.0 / zdzdl * 1.0) * 100;
+
+		this.jzbphl = CheckDataManager.MathRound(bphl);
+
+	}
 
 	/**
 	 * 设置空载行车制动率
 	 */
 	public void setKzxczdl(WeighData weighData) {
 
-		if (weighData == null) {
+		if (weighData == null||sfjzz==SFJZZ_YES) {
 			return;
 		}
 		Integer zh = weighData.getRightData() + weighData.getLeftData();
 		Integer zdl = this.getZzdl() + this.getYzdl();
-		Float xczdl = (float) (zdl * 1.0 / zh * 0.98) * 100;
+		Float xczdl = (float) (zdl * 1.0 /(zh * 0.98)) * 100;
 		this.kzxczdl = CheckDataManager.MathRound(xczdl);
+	}
+	
+	/**
+	 * 设置加载制动率
+	 * @param weighData
+	 */
+	public void setJzzdl(WeighData weighData) {
+
+		if (weighData == null||sfjzz==SFJZZ_NO) {
+			return;
+		}
+		Integer zh = weighData.getRightData() + weighData.getLeftData();
+		Integer zdl = this.getZzdl() + this.getYzdl();
+		Float xczdl = (float) (zdl * 1.0 / (zh * 0.98)) * 100;
+		this.jzzzdl = CheckDataManager.MathRound(xczdl);
 	}
 
 	@Override

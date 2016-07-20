@@ -92,8 +92,8 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 	@Override
 	public void init(DeviceWeigh deviceWeigh) {
 		super.init(deviceWeigh);
-		kscz = (String) deviceWeigh.getQtxxObject().get("t-kscz");
-		jscz = (String) deviceWeigh.getQtxxObject().get("t-jscz");
+		kscz = "FF01EE";
+		jscz ="FF02EE";
 	}
 
 }

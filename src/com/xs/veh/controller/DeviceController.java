@@ -63,13 +63,13 @@ public class DeviceController {
 		Map json = ResultHandler.toMyJSON(deviceManager.getDevices(), 0);
 		return json;
 	}
-	
+
 	@RequestMapping(value = "getDeviceByJcxxh", method = RequestMethod.POST)
 	public @ResponseBody Map getDeviceByJcxxh(@RequestParam Integer jcxdh) {
 		Map json = ResultHandler.toMyJSON(deviceManager.getDevices(jcxdh), 0);
 		return json;
 	}
-	
+
 	@RequestMapping(value = "getDeviceDisplay", method = RequestMethod.POST)
 	public @ResponseBody Map getDeviceDisplay(@RequestParam Integer jcxxh) {
 		Map json = ResultHandler.toMyJSON(deviceManager.getDevicesDisplay(jcxxh), 0);
@@ -106,7 +106,7 @@ public class DeviceController {
 		List<Map> datas = new ArrayList<Map>();
 		while (portList.hasMoreElements()) {
 			CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-			Map<String,Object> data = new HashMap<String,Object>();
+			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("id", portId.getName());
 			data.put("text", portId.getName());
 			datas.add(data);
@@ -176,6 +176,25 @@ public class DeviceController {
 	}
 
 	/**
+	 * 停止所有设备
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	@RequestMapping(value = "stopAllDevice", method = RequestMethod.POST)
+	public @ResponseBody Map stopAllDevice() throws IOException, InterruptedException {
+		List<Device> devices = this.deviceManager.getDevices();
+		for (Device device : devices) {
+			SimpleRead sr = (SimpleRead) servletContext.getAttribute(device.getThredKey());
+			if (sr != null && sr.isOpen()) {
+				sr.close();
+			}
+		}
+		
+		return ResultHandler.toSuccessJSON("所有设备停止成功");
+	}
+	
+
+	/**
 	 * 获取串口状态
 	 * 
 	 * @param request
@@ -185,7 +204,7 @@ public class DeviceController {
 	@RequestMapping(value = "getState", method = RequestMethod.POST)
 	public @ResponseBody Map getDeeviceState(Integer id) {
 		SimpleRead sr = this.getSimpleRead(id);
-		Map<String,Object> data = new HashMap<String,Object>();
+		Map<String, Object> data = new HashMap<String, Object>();
 		if (sr == null) {
 			data.put("isOpen", false);
 			data.put("isRun", false);
@@ -342,20 +361,18 @@ public class DeviceController {
 			return ResultHandler.toMyJSON(300, "设备未启动");
 		}
 
-		/*final Map<String, String> setting = deviceLight.createSettingData();
-		final String clzd = (String) deviceLight.getQtxxObject().get("t-czd");
-		final String clyd = (String) deviceLight.getQtxxObject().get("t-cyd");*/
+		/*
+		 * final Map<String, String> setting = deviceLight.createSettingData();
+		 * final String clzd = (String)
+		 * deviceLight.getQtxxObject().get("t-czd"); final String clyd =
+		 * (String) deviceLight.getQtxxObject().get("t-cyd");
+		 */
 
-	/*	// 执行线程
-		executor.execute(new Runnable() {
-			public void run() {
-				try {
-					deviceLight.startCheck(setting, clzd, clyd);
-				} catch (IOException | InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		});*/
+		/*
+		 * // 执行线程 executor.execute(new Runnable() { public void run() { try {
+		 * deviceLight.startCheck(setting, clzd, clyd); } catch (IOException |
+		 * InterruptedException e) { e.printStackTrace(); } } });
+		 */
 
 		return ResultHandler.toSuccessJSON("灯光测试命令发送成功");
 	}
@@ -419,8 +436,8 @@ public class DeviceController {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					VehFlow vheFlow=new VehFlow();
-					deviceBrakRoller.startCheck(null,vheFlow);
+					VehFlow vheFlow = new VehFlow();
+					deviceBrakRoller.startCheck(null, vheFlow);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -483,7 +500,7 @@ public class DeviceController {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					deviceSpeed.startCheck(null,null);
+					deviceSpeed.startCheck(null, null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -546,9 +563,9 @@ public class DeviceController {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					
-					VehFlow vehFlow=new VehFlow();
-					deviceSideslip.startCheck(null,vehFlow);
+
+					VehFlow vehFlow = new VehFlow();
+					deviceSideslip.startCheck(null, vehFlow);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -597,8 +614,8 @@ public class DeviceController {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					VehFlow vehflow=new VehFlow();
-					deviceWeigh.startCheck(null,vehflow);
+					VehFlow vehflow = new VehFlow();
+					deviceWeigh.startCheck(null, vehflow);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -613,5 +630,5 @@ public class DeviceController {
 		SimpleRead sr = (SimpleRead) servletContext.getAttribute(device.getThredKey());
 		return sr;
 	}
-	
+
 }

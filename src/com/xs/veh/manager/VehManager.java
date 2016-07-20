@@ -429,9 +429,27 @@ public class VehManager {
 							if (flow.getJzzdt() == Flow.JZZDT_YES && device.getType() == Device.CZJCSB
 									&& vcl.getZs() >= 3 && (vcl.getCllx().indexOf("H") > 0
 									|| vcl.getCllx().indexOf("G") > 0 || vcl.getCllx().indexOf("B") > 0)) {
+								
+								int zs =vcl.getZs();
+								int zw =Integer.parseInt(jyxm.substring(1));
+								
 
-								// 货车类型 1轴需要上称重台 其他轴不上称重台
-								if (vcl.getCllx().indexOf("H") > 0 && jyxm.equals("B1")) {
+								// 货车类型 1轴与最后轴需要上称重台 其他轴不上称重台
+								if (vcl.getCllx().indexOf("H") > 0 && (zw==1||zw==zs)) {
+									VehFlow v = new VehFlow();
+									v.setGw(gwid);
+									v.setHphm(vcl.getHphm());
+									v.setHpzl(vcl.getHpzl());
+									v.setJylsh(vcl.getJylsh());
+									v.setJycs(vcl.getJycs());
+									v.setJyxm(jyxm);
+									v.setJysb(device.getId());
+									v.setGwsx(i + 1);
+									v.setSbsx(j + 1);
+									v.setSbid(deviceId);
+									vehFlows.add(v);
+								}else if((vcl.getCllx().indexOf("G") > 0 ||vcl.getCllx().indexOf("B")>0)&&zw==zs){
+									//挂车 与办挂车 最后一个轴不加载
 									VehFlow v = new VehFlow();
 									v.setGw(gwid);
 									v.setHphm(vcl.getHphm());
@@ -445,6 +463,8 @@ public class VehManager {
 									v.setSbid(deviceId);
 									vehFlows.add(v);
 								}
+								
+								
 							} else {
 								VehFlow v = new VehFlow();
 								v.setGw(gwid);
@@ -511,7 +531,7 @@ public class VehManager {
 	public List<VehCheckLogin> getVehCheckLoginOfSXZT(Integer zt) {
 
 		DetachedCriteria detachedCrit = DetachedCriteria.forClass(VehCheckLogin.class);
-
+		
 		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
 				.find("from VehCheckLogin where vehsxzt = ?", zt);
 

@@ -94,7 +94,6 @@ public abstract class AbstractDeviceBrakRoller {
 		}
 		
 		return str;
-		
 	}
 	
 	

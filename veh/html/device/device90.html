@@ -83,14 +83,6 @@
 		$.post("/veh/device/getState",{'id':row.id},call,"json");
 	}
 	
-	function deviceSignalStart(){
-		var row = $("#deviceManager").datagrid("getSelected");
-		var call=function(data){
-			$.messager.alert("提示",data.message);
-			getState();
-		}
-		$.post("/veh/device/deviceSignalStart",{'id':row.id},call,"json");
-	}
 	
 	function getLineDevice(){
 		var row = $("#deviceManager").datagrid("getSelected");

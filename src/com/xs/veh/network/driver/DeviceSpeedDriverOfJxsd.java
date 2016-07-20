@@ -72,7 +72,7 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 			Thread.sleep(500);
 		}
 
-		// 速度太下降
+		// 速度台下降
 		deviceSpeed.sendMessage(down);
 
 		Thread.sleep(4000);
@@ -151,10 +151,10 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 	public void init(DeviceSpeed deviceSpeed) {
 		super.init(deviceSpeed);
 		s1 = deviceSpeed.getQtxxObject().getInt("kzsb-xhw");
-		// up = (String) deviceSpeed.getQtxxObject().get("t-up");
-		down = (String) deviceSpeed.getQtxxObject().get("t-down");
-		end = (String) deviceSpeed.getQtxxObject().get("r-end");
-		qs = (String) deviceSpeed.getQtxxObject().get("g-qs");
+		// up = "D";
+		down = "44";
+		end = "FF00EE";
+		qs = "AA";
 
 	}
 

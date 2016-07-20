@@ -16,6 +16,9 @@
 	src="/veh/js/easyui-1.4.3/jquery.easyui.min.js"></script>
 <script type="text/javascript"
 	src="/veh/js/easyui-1.4.3/jquery.easyui.mobile.js"></script>
+	
+<script type="text/javascript"
+	src="/veh/js/veh_.js"></script>
 </head>
 <script type="text/javascript">
 	function checkPsuh(id){
@@ -35,7 +38,7 @@
 	}
 	
 	function getCheckList(){
-		$.post('/veh/pda/getCheckList',{},function(data){
+		$.post('/veh/pda/getCheckList',{status:0},function(data){
 			data = $.parseJSON(data);
 			$(".m-list").empty();
 			$.each(data,function(i,n){
@@ -67,14 +70,6 @@
 				</div>
 				<ul class="m-list" id="checkList">
 				</ul>
-			</div>
-			<div style="padding: 10px">
-				<div class="panel-header tt-inner">
-					<img src='../images/pda.png' /><br>线上车辆
-				</div>
-				<p>In computing, an image scanner—often abbreviated to just
-					scanner—is a device that optically scans images, printed text,
-					handwriting, or an object, and converts it to a digital image.</p>
 			</div>
 			<div style="padding: 10px">
 				<div class="panel-header tt-inner">

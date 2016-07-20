@@ -110,6 +110,16 @@
 		$.post("/veh/device/deviceStop",{'id':row.id},call,"json");
 	}
 	
+	function stopAllDevice(){
+		
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		
+		$.post("/veh/device/stopAllDevice",call,"json");
+	}
+	
 	function getGdkg(){
 		var row = $("#deviceManager").datagrid("getSelected");
 		var rows = $("#deviceManager").datagrid("getRows");
@@ -172,8 +182,104 @@
 				return;
 			}
 		}
+	}
+	
+	function brakRollerTest(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+		}
+		
+		$.post("/veh/device/brakRollerTest",{'id':row.id},call,"json");
+	}
+	
+
+	function deviceLightStart(){
+		
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/deviceLightStart",{'id':row.id},call,"json");
+	}
+	
+	function speedStart(){
+		
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/speedStart",{'id':row.id},call,"json");
+	}
+	
+	function sideslipStart(){
+		
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/sideslipStart",{'id':row.id},call,"json");
+	}
+	
+	function weighStart(){
+		
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/weighStart",{'id':row.id},call,"json");
+	}
+	
+	function deviceSignalStart(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/deviceSignalStart",{'id':row.id},call,"json");
+	}
+	function deviceDisplayStart(){
+		
+		var row = $("#deviceManager").datagrid("getSelected");
+		var call=function(data){
+			$.messager.alert("提示",data.message);
+			getState();
+		}
+		$.post("/veh/device/deviceDisplayStart",{'id':row.id},call,"json");
+	}
+	
+	function startAll(){
+		
+		var rows = $("#deviceManager").datagrid("getRows");
+		
+		$.each(rows,function(i,row){
+			$("#deviceManager").datagrid("selectRow",i);
+			var type = row.type;
+			if(type==1){
+				brakRollerTest();
+			}else if(type==2){
+				deviceLightStart();
+			}else if(type==3){
+				speedStart();
+			}else if(type==4){
+				sideslipStart();
+			}else if(type==5){
+				weighStart();
+			}else if(type==90){
+				deviceSignalStart();
+			}else if(type==91){
+				deviceDisplayStart();
+			}
+			
+		});
+		
 		
 	}
+	
 </script>
 
 <div class="easyui-tabs" data-options="fit:true">
@@ -202,6 +308,9 @@
 			<!-- <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="device.editData()">编辑设备</a> -->
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="openDeviceInfo()">编辑设备</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="device.remove()">删除设备</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-stop',plain:true" onclick="startAll()">启动所有设备</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-stop',plain:true" onclick="stopAllDevice()">停止所有设备</a>
+			
 		</div>
 	</div>
 	<div data-options="title:'检测工位'">

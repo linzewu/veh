@@ -146,9 +146,9 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
 		
 		if(vehCheckLogin.getZs() >= 3 && (vehCheckLogin.getCllx().indexOf("G") > 0
-						|| vehCheckLogin.getCllx().indexOf("B") > 0)){
+						|| vehCheckLogin.getCllx().indexOf("B") > 0)&&vehCheckLogin.getZs()!=intZw){
 			dbrd.isPlusLoad=true;
-		}else if(vehCheckLogin.getCllx().indexOf("H") > 0&&vehCheckLogin.getZs() >= 3 && intZw>1){
+		}else if(vehCheckLogin.getCllx().indexOf("H") > 0&&vehCheckLogin.getZs() >= 3 && intZw>1&&vehCheckLogin.getZs()!=intZw){
 			dbrd.isPlusLoad=true;
 		}else{
 			dbrd.isPlusLoad=false;

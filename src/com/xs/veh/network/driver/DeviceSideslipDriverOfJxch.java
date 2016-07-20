@@ -117,8 +117,8 @@ public class DeviceSideslipDriverOfJxch extends AbstractDeviceSideslip {
 	@Override
 	public void init(DeviceSideslip deviceSideslip) {
 		super.init(deviceSideslip);
-		qs = (String) deviceSideslip.getQtxxObject().get("g-qs");
-		sjjcjs = (String) deviceSideslip.getQtxxObject().get("r-sjjcjs");
+		qs = "FF02EE";
+		sjjcjs = "FF000EEE";
 	}
 	
 	

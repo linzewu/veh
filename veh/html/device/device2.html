@@ -23,7 +23,7 @@
 				<tr>
 					<td colspan="4" class="simpletable-l" style="padding: 10px 0 10px 10px">
 						<div class="easyui-tabs" style="width: 680px;">
-							<div title="控制协议">
+							<!-- <div title="控制协议">
 								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
 									<tr>
 										<td class="simpletable-l" style="width: 15%"><label>二灯制</label></td>
@@ -184,7 +184,7 @@
 										</td>
 									</tr>
 								</table>
-							</div>
+							</div> -->
 							<div title="开关及输出">
 								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
 									<tr>
@@ -207,7 +207,7 @@
 									</tr>
 								</table>
 							</div>
-							<div title="开机设置"  style="height: 200px;" id="panel-st">
+							<!-- <div title="开机设置"  style="height: 200px;" id="panel-st">
 								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
 									<tr>
 										<td class="simpletable-l" style="width: 15%"><label>靠位方向</label></td>
@@ -260,7 +260,7 @@
 										</td>
 									</tr>
 								</table>
-							</div>
+							</div> -->
 						</div>
 					</td>
 				</tr>
@@ -339,15 +339,6 @@ function getState(){
 }
 
 
-function deviceLightStart(){
-	
-	var row = $("#deviceManager").datagrid("getSelected");
-	var call=function(data){
-		$.messager.alert("提示",data.message);
-		getState();
-	}
-	$.post("/veh/device/deviceLightStart",{'id':row.id},call,"json");
-}
 
 $(function(){
 	getState();

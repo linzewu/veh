@@ -109,15 +109,7 @@ function getState(){
 	$.post("/veh/device/getState",{'id':row.id},call,"json");
 }
 
-function deviceDisplayStart(){
-	
-	var row = $("#deviceManager").datagrid("getSelected");
-	var call=function(data){
-		$.messager.alert("提示",data.message);
-		getState();
-	}
-	$.post("/veh/device/deviceDisplayStart",{'id':row.id},call,"json");
-}
+
 
 $(function(){
 	getState();

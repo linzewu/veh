@@ -51,9 +51,9 @@ public class InitListener implements ServletContextListener {
 	private DeviceManager deviceManager;
 
 	private ThreadPoolTaskExecutor executor;
-	
+
 	private WorkPointManager workPointManager;
-	
+
 	private BaseParamsManager baseParamsManager;
 
 	/**
@@ -61,9 +61,9 @@ public class InitListener implements ServletContextListener {
 	 */
 	public InitListener() {
 	}
-	
-	private void init(ServletContext servletContext){
-		
+
+	private void init(ServletContext servletContext) {
+
 		this.servletContext = servletContext;
 		wac = WebApplicationContextUtils.getWebApplicationContext(servletContext);
 		baseParamsManager = (BaseParamsManager) wac.getBean("baseParamsManager");
@@ -79,15 +79,14 @@ public class InitListener implements ServletContextListener {
 
 		try {
 			init(contextEvent.getServletContext());
-			
+
 			// 加载参数表
 			List<BaseParams> bps = baseParamsManager.getBaseParams();
 			servletContext.setAttribute("bps", bps);
 			// 打开所有设备
-			 openDevice();
-			 //启动工位线程
-			 workPointManager.startAllWorkPonit();
-			 
+			openDevice();
+			// 启动工位线程
+			workPointManager.startAllWorkPonit();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -132,14 +131,14 @@ public class InitListener implements ServletContextListener {
 			// 初始化显示屏
 			if (device.getType() == Device.XSP) {
 				DeviceDisplay dd = (DeviceDisplay) wac.getBean("deviceDisplay");
-				
+
 				System.out.println(device.getCom());
-				
+
 				try {
 					dd.setDevice(device);
 					dd.open();
 					dd.setDefault();
-					
+
 				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
 						| PortInUseException | IOException | UnsupportedCommOperationException
 						| TooManyListenersException e) {

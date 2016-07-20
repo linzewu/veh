@@ -1,6 +1,13 @@
-document.onkeydown = function(e) {
+/*document.onkeydown=function(event){
+      var e = event || window.event || arguments.callee.caller.arguments[0];
+       if(e && e.keyCode==13){
+    	   
+      }
+ };*/
 
-	var e = window.event || e;
+document.onkeydown = function(e) {
+	var e = event || window.event || arguments.callee.caller.arguments[0];
+	
 	var element = e.srcElement || e.target;
 
 	if (e.keyCode == 13 && element.type != "submit" && element.type != "button"
@@ -9,8 +16,13 @@ document.onkeydown = function(e) {
 			e.keyCode = 9;
 		} else {
 			var nexElement = getNextInput(element);
-			nexElement.focus();
-			e.preventDefault();
+			if(nexElement!=null){
+				nexElement.focus();
+				e.preventDefault();
+			}
+		}
+		if(element.type=="password"){
+			login();
 		}
 	}
 }
@@ -25,8 +37,11 @@ function getNextInput(input) {
 	}
 	while (true) {
 		if (i++ < form.elements.length) {
-			if (form.elements[i].type != "hidden"
-					&& form.elements[i].type != 'checkbox') {
+			
+			if (form.elements[i]!=null && form.elements[i].type != "hidden"
+					&& form.elements[i].type != 'checkbox'&&
+					$(form.elements[i]).css('display')!="none"
+			) {
 				return form.elements[i];
 			}
 		} else {
@@ -37,16 +52,16 @@ function getNextInput(input) {
 
 function login() {
 	
-	var userName=$("#userName").val();
-	var password=$("#password").val();
+	var userName=$("#userName").textbox("getValue");
+	var password=$("#password").textbox("getValue");
 	
-	if(userName==""){
-		webix.alert("请输入用户名");
+	if($.trim(userName)==""){
+		$("#userName").textbox("validate");
+		$("#userName").textbox('textbox').focus();
 		return;
-	}
-	
-	if(password==""){
-		webix.alert("请输入密码");
+	}else if($.trim(password)==""){
+		$("#password").textbox("validate");
+		$("#password").textbox('textbox').focus();
 		return;
 	}
 	
@@ -56,7 +71,7 @@ function login() {
 		if(jdata.state=1){
 			window.location.href="/veh/";
 		}else{
-			webix.alert(jdata.message);
+			
 		}
 		
 	});

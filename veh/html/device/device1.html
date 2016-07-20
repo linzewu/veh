@@ -168,14 +168,7 @@
 </form>
 <script type="text/javascript">
 
-function brakRollerTest(){
-	var row = $("#deviceManager").datagrid("getSelected");
-	var call=function(data){
-		$.messager.alert("提示",data.message);
-	}
-	
-	$.post("/veh/device/brakRollerTest",{'id':row.id},call,"json");
-}
+
 
 
 

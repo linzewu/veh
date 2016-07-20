@@ -228,6 +228,7 @@ public class LightData extends BaseDeviceData {
 			return;
 		}
 		this.czpy = 1 + (l * 1f / h * 1f);
+		
 		this.czpy = (float) (Math.round(czpy * 100)) / 100;
 	}
 

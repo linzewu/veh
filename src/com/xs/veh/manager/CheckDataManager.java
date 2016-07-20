@@ -143,7 +143,7 @@ public class CheckDataManager {
 	public void createOtherDataOfAnjian(String jylsh) {
 
 		OtherInfoData otherInfoData = new OtherInfoData();
-
+		
 		VehCheckLogin vehCheckLogin = (VehCheckLogin) this.hibernateTemplate
 				.find("from VehCheckLogin where jylsh=?", jylsh).get(0);
 		otherInfoData.setBaseInfo(vehCheckLogin);
@@ -211,12 +211,12 @@ public class CheckDataManager {
 		otherInfoData.setJczczbzl(zclh);
 		otherInfoData.setZdlh(zdlh);
 		if (zclh != 0) {
-			Float zczdl = (float) ((zdlh * 1.0 / zclh * 1.0) * 100);
+			Float zczdl = (float) ((zdlh * 1.0 / (zclh *0.98 * 1.0)) * 100);
 			otherInfoData.setZczdl(MathRound(zczdl));
 		}
 		if (parDataOfAnjian != null) {
 
-			Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / zclh * 1.0) * 100);
+			Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			parDataOfAnjian.setTczclh(zclh);
 			parDataOfAnjian.setTczdl(MathRound(tczdl));
 			parDataOfAnjian.setTczdxz();
@@ -244,8 +244,8 @@ public class CheckDataManager {
 		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
 			@Override
 			public Integer doInHibernate(Session session) throws HibernateException {
-				int res = session.createSQLQuery("delete DeviceCheckJudeg where jyls=? and jyjgbh=? ")
-						.setString(0, vehCheckLogin.getJylsh()).setString(0, vehCheckLogin.getJyjgbh()).executeUpdate();
+				int res = session.createQuery("delete DeviceCheckJudeg where jylsh=? and jyjgbh=? ")
+						.setString(0, vehCheckLogin.getJylsh()).setString(1, vehCheckLogin.getJyjgbh()).executeUpdate();
 				return res;
 			}
 		});
@@ -258,7 +258,7 @@ public class CheckDataManager {
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("整车手刹制动率");
-			dcj1.setYqjyjg(parDataOfAnjian.getZczczdl() == null ? "" : parDataOfAnjian.getZczczdl().toString());
+			dcj1.setYqjyjg(parDataOfAnjian.getTczdl() == null ? "" : parDataOfAnjian.getTczdl().toString());
 			dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : ">=" + parDataOfAnjian.getTczdxz());
 			dcj1.setYqjgpd(parDataOfAnjian.getTczdpd() == null ? "" : parDataOfAnjian.getTczdpd().toString());
 			dcj1.setXh(xh);

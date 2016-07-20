@@ -64,12 +64,22 @@ public class DeviceSignal extends SimpleRead {
 			break;
 		case SerialPortEvent.DATA_AVAILABLE:// 当有可用数据时读取数据,并且给串口返回数据
 
-			byte[] readBuffer = new byte[8];
+			
+			byte[] readBuffer = new byte[1024];
+			int length = 0;
+			int lengthTemp = 0;
 			try {
 				while (inputStream.available() > 0) {
-					inputStream.read(readBuffer);
+					lengthTemp = inputStream.read(readBuffer);
+					length += lengthTemp;
+					if (length >= 1024 * 128) {
+						logger.error("读入的数据超过1024");
+						break;
+					}
 				}
-				this.setRtx(dsd.decode(readBuffer));
+				byte[] endodedData = new byte[length];
+				System.arraycopy(readBuffer, 0, endodedData, 0, length);
+				this.setRtx(dsd.decode(endodedData));
 			} catch (IOException e) {
 				logger.error("光电开关读取数据流异常", e);
 			}
