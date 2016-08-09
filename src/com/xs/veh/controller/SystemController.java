@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.lzw.security.util.WindowsInfoUtil;
 import com.xs.common.BaseParamsUtil;
 import com.xs.common.ResultHandler;
-import com.xs.common.WindowsInfoUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.SystemInfo;
 import com.xs.veh.manager.BaseParamsManager;

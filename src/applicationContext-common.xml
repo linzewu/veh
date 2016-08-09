@@ -14,21 +14,16 @@
         http://www.springframework.org/schema/mvc  http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
            "
 	default-lazy-init="false">
-
-
-	<context:property-placeholder location="classpath:rca.properties" />
-
-	<!-- 数据库连接池c3p0配置 -->
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close">
-		<property name="jdbcUrl" value="${db.url}"></property>
-		<property name="driverClass" value="${db.driverClassName}"></property>
-		<property name="user" value="${db.username}"></property>
-		<property name="password" value="${db.password}"></property>
-		<property name="maxPoolSize" value="20"></property>
-		<property name="minPoolSize" value="5"></property>
-		<property name="initialPoolSize" value="5"></property>
+	<bean class="com.lzw.comm.spring.GollfPropertyPlaceholderConfigurer">
+		<constructor-arg>
+			<value>veh_hb.license</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>veh.crt</value>
+		</constructor-arg>
 	</bean>
+	
+	<bean id="dataSource" class="com.lzw.comm.spring.BasicDataSource"  destroy-method="close" />
 
 	<!-- 配置sessionFactory -->
 	<bean id="sessionFactory"
@@ -48,10 +43,7 @@
 	<bean id="hibernateTemplate" class="com.xs.common.MyHibernateTemplate">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-
-
 	<!-- 配置事务管理器 -->
-
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />

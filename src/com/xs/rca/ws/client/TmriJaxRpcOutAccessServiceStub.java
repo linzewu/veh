@@ -6,18 +6,22 @@
  */
 package com.xs.rca.ws.client;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.PublicKey;
 import java.util.Properties;
 
 import org.springframework.stereotype.Service;
+
+import com.lzw.comm.spring.GollfPropertyPlaceholderConfigurer;
+import com.lzw.security.util.RSAUtil;
 
 /*
  *  TmriJaxRpcOutAccessServiceStub java implementation
  */
 @Service("tmriJaxRpcOutAccessServiceStub")
-public class TmriJaxRpcOutAccessServiceStub extends
-		org.apache.axis2.client.Stub {
+public class TmriJaxRpcOutAccessServiceStub extends org.apache.axis2.client.Stub {
 	protected org.apache.axis2.description.AxisOperation[] _operations;
 
 	// hashmaps to keep the fault mapping
@@ -26,48 +30,33 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	private java.util.HashMap faultMessageMap = new java.util.HashMap();
 
 	private static int counter = 0;
-	
-	
-	public static String  ip =null;
-	
-	public static String port=null;
-	
-	public  static String getIp(){
-		if(ip==null){
-			try {
-				Properties properties = new Properties();
-				InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("rca.properties");
-				System.out.println("获取监管平台IP：");
-				properties.load(in);
-				ip = properties.getProperty("ip");
-				System.out.println(ip);
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+	public static String ip = null;
+
+	public static String port = null;
+
+	public static String getIp() {
+		if (ip == null) {
+			Properties properties = GollfPropertyPlaceholderConfigurer.getProp();
+			// InputStream in =
+			// Thread.currentThread().getContextClassLoader().getResourceAsStream("rca.properties");
+			System.out.println("获取监管平台IP：");
+			// properties.load(in);
+			ip = properties.getProperty("ip");
+			System.out.println(ip);
 		}
 		return ip;
 	}
-	
-	
-	public  static String getPort(){
-		if(port==null){
-			try {
-				System.out.println("获取监管平台端口：");
-				InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("rca.properties");
-				Properties properties = new Properties();
-				properties.load(in);
-				port = properties.getProperty("port");
-				System.out.println(port);
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+	public static String getPort() {
+		if (port == null) {
+			System.out.println("获取监管平台端口：");
+			Properties properties = GollfPropertyPlaceholderConfigurer.getProp();
+			port = properties.getProperty("port");
+			System.out.println(port);
 		}
 		return port;
 	}
-	
-
 
 	private static synchronized java.lang.String getUniqueSuffix() {
 		// reset the counter if it is greater than 99999
@@ -75,15 +64,13 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			counter = 0;
 		}
 		counter = counter + 1;
-		return java.lang.Long.toString(java.lang.System.currentTimeMillis())
-				+ "_" + counter;
+		return java.lang.Long.toString(java.lang.System.currentTimeMillis()) + "_" + counter;
 	}
 
 	private void populateAxisService() throws org.apache.axis2.AxisFault {
 
 		// creating the Service with a unique name
-		_service = new org.apache.axis2.description.AxisService(
-				"TmriJaxRpcOutAccessService" + getUniqueSuffix());
+		_service = new org.apache.axis2.description.AxisService("TmriJaxRpcOutAccessService" + getUniqueSuffix());
 		addAnonymousOperations();
 
 		// creating the operations
@@ -94,8 +81,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		__operation = new org.apache.axis2.description.OutInAxisOperation();
 
 		__operation.setName(new javax.xml.namespace.QName(
-				"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-				"writeObjectOut"));
+				"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "writeObjectOut"));
 		_service.addOperation(__operation);
 
 		_operations[0] = __operation;
@@ -103,8 +89,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		__operation = new org.apache.axis2.description.OutInAxisOperation();
 
 		__operation.setName(new javax.xml.namespace.QName(
-				"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-				"queryObjectOut"));
+				"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "queryObjectOut"));
 		_service.addOperation(__operation);
 
 		_operations[1] = __operation;
@@ -120,8 +105,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	 * Constructor that takes in a configContext
 	 */
 
-	public TmriJaxRpcOutAccessServiceStub(
-			org.apache.axis2.context.ConfigurationContext configurationContext,
+	public TmriJaxRpcOutAccessServiceStub(org.apache.axis2.context.ConfigurationContext configurationContext,
 			java.lang.String targetEndpoint) throws org.apache.axis2.AxisFault {
 		this(configurationContext, targetEndpoint, false);
 	}
@@ -129,20 +113,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	/**
 	 * Constructor that takes in a configContext and useseperate listner
 	 */
-	public TmriJaxRpcOutAccessServiceStub(
-			org.apache.axis2.context.ConfigurationContext configurationContext,
-			java.lang.String targetEndpoint, boolean useSeparateListener)
-			throws org.apache.axis2.AxisFault {
+	public TmriJaxRpcOutAccessServiceStub(org.apache.axis2.context.ConfigurationContext configurationContext,
+			java.lang.String targetEndpoint, boolean useSeparateListener) throws org.apache.axis2.AxisFault {
 		// To populate AxisService
 		populateAxisService();
 		populateFaults();
 
-		_serviceClient = new org.apache.axis2.client.ServiceClient(
-				configurationContext, _service);
+		_serviceClient = new org.apache.axis2.client.ServiceClient(configurationContext, _service);
 
-		_serviceClient.getOptions().setTo(
-				new org.apache.axis2.addressing.EndpointReference(
-						targetEndpoint));
+		_serviceClient.getOptions().setTo(new org.apache.axis2.addressing.EndpointReference(targetEndpoint));
 		_serviceClient.getOptions().setUseSeparateListener(useSeparateListener);
 
 	}
@@ -150,12 +129,10 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	/**
 	 * Default Constructor
 	 */
-	public TmriJaxRpcOutAccessServiceStub(
-			org.apache.axis2.context.ConfigurationContext configurationContext)
+	public TmriJaxRpcOutAccessServiceStub(org.apache.axis2.context.ConfigurationContext configurationContext)
 			throws org.apache.axis2.AxisFault {
 
-		this(configurationContext,
-				"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess");
+		this(configurationContext, "http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess");
 
 	}
 
@@ -163,18 +140,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	 * Default Constructor
 	 */
 	public TmriJaxRpcOutAccessServiceStub() throws org.apache.axis2.AxisFault {
-		
-		
 
-		this("http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess");
+		this("http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess");
 
 	}
 
 	/**
 	 * Constructor taking the target endpoint
 	 */
-	public TmriJaxRpcOutAccessServiceStub(java.lang.String targetEndpoint)
-			throws org.apache.axis2.AxisFault {
+	public TmriJaxRpcOutAccessServiceStub(java.lang.String targetEndpoint) throws org.apache.axis2.AxisFault {
 		this(null, targetEndpoint);
 	}
 
@@ -189,24 +163,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut writeObjectOut0)
 
-	throws java.rmi.RemoteException
+			throws java.rmi.RemoteException
 
 	{
 		org.apache.axis2.context.MessageContext _messageContext = null;
 		try {
 			org.apache.axis2.client.OperationClient _operationClient = _serviceClient
 					.createClient(_operations[0].getName());
-			_operationClient
-					.getOptions()
-					.setAction(
-							"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/writeObjectOutRequest");
-			_operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(
-					true);
+			_operationClient.getOptions().setAction("http://" + getIp() + ":" + getPort()
+					+ "/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/writeObjectOutRequest");
+			_operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
-			addPropertyToOperationClient(
-					_operationClient,
-					org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,
-					"&");
+			addPropertyToOperationClient(_operationClient,
+					org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
 
 			// create a message context
 			_messageContext = new org.apache.axis2.context.MessageContext();
@@ -214,16 +183,11 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			// create SOAP envelope with that payload
 			org.apache.axiom.soap.SOAPEnvelope env = null;
 
-			env = toEnvelope(
-					getFactory(_operationClient.getOptions()
-							.getSoapVersionURI()),
-					writeObjectOut0,
+			env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), writeObjectOut0,
 					optimizeContent(new javax.xml.namespace.QName(
-							"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-							"writeObjectOut")),
+							"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "writeObjectOut")),
 					new javax.xml.namespace.QName(
-							"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-							"writeObjectOut"));
+							"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "writeObjectOut"));
 
 			// adding SOAP soap_headers
 			_serviceClient.addHeadersToEnvelope(env);
@@ -238,11 +202,9 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 			org.apache.axis2.context.MessageContext _returnMessageContext = _operationClient
 					.getMessageContext(org.apache.axis2.wsdl.WSDLConstants.MESSAGE_LABEL_IN_VALUE);
-			org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext
-					.getEnvelope();
+			org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext.getEnvelope();
 
-			java.lang.Object object = fromOM(
-					_returnEnv.getBody().getFirstElement(),
+			java.lang.Object object = fromOM(_returnEnv.getBody().getFirstElement(),
 					com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.class,
 					getEnvelopeNamespaces(_returnEnv));
 
@@ -253,29 +215,20 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			org.apache.axiom.om.OMElement faultElt = f.getDetail();
 			if (faultElt != null) {
 				if (faultExceptionNameMap
-						.containsKey(new org.apache.axis2.client.FaultMapKey(
-								faultElt.getQName(), "writeObjectOut"))) {
+						.containsKey(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "writeObjectOut"))) {
 					// make the fault by reflection
 					try {
 						java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-								.get(new org.apache.axis2.client.FaultMapKey(
-										faultElt.getQName(), "writeObjectOut"));
-						java.lang.Class exceptionClass = java.lang.Class
-								.forName(exceptionClassName);
-						java.lang.reflect.Constructor constructor = exceptionClass
-								.getConstructor(String.class);
-						java.lang.Exception ex = (java.lang.Exception) constructor
-								.newInstance(f.getMessage());
+								.get(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "writeObjectOut"));
+						java.lang.Class exceptionClass = java.lang.Class.forName(exceptionClassName);
+						java.lang.reflect.Constructor constructor = exceptionClass.getConstructor(String.class);
+						java.lang.Exception ex = (java.lang.Exception) constructor.newInstance(f.getMessage());
 						// message class
 						java.lang.String messageClassName = (java.lang.String) faultMessageMap
-								.get(new org.apache.axis2.client.FaultMapKey(
-										faultElt.getQName(), "writeObjectOut"));
-						java.lang.Class messageClass = java.lang.Class
-								.forName(messageClassName);
-						java.lang.Object messageObject = fromOM(faultElt,
-								messageClass, null);
-						java.lang.reflect.Method m = exceptionClass.getMethod(
-								"setFaultMessage",
+								.get(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "writeObjectOut"));
+						java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
+						java.lang.Object messageObject = fromOM(faultElt, messageClass, null);
+						java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
 								new java.lang.Class[] { messageClass });
 						m.invoke(ex, new java.lang.Object[] { messageObject });
 
@@ -313,8 +266,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			}
 		} finally {
 			if (_messageContext.getTransportOut() != null) {
-				_messageContext.getTransportOut().getSender()
-						.cleanup(_messageContext);
+				_messageContext.getTransportOut().getSender().cleanup(_messageContext);
 			}
 		}
 	}
@@ -331,20 +283,16 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 			final com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceCallbackHandler callback)
 
-	throws java.rmi.RemoteException {
+			throws java.rmi.RemoteException {
 
 		org.apache.axis2.client.OperationClient _operationClient = _serviceClient
 				.createClient(_operations[0].getName());
-		_operationClient
-				.getOptions()
-				.setAction(
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/writeObjectOutRequest");
+		_operationClient.getOptions().setAction("http://" + getIp() + ":" + getPort()
+				+ "/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/writeObjectOutRequest");
 		_operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
-		addPropertyToOperationClient(
-				_operationClient,
-				org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,
-				"&");
+		addPropertyToOperationClient(_operationClient,
+				org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
 
 		// create SOAP envelope with that payload
 		org.apache.axiom.soap.SOAPEnvelope env = null;
@@ -352,14 +300,10 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 		// Style is Doc.
 
-		env = toEnvelope(
-				getFactory(_operationClient.getOptions().getSoapVersionURI()),
-				writeObjectOut0,
+		env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), writeObjectOut0,
 				optimizeContent(new javax.xml.namespace.QName(
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-						"writeObjectOut")),
-				new javax.xml.namespace.QName(
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
+						"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "writeObjectOut")),
+				new javax.xml.namespace.QName("http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess",
 						"writeObjectOut"));
 
 		// adding SOAP soap_headers
@@ -370,126 +314,103 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		// add the message context to the operation client
 		_operationClient.addMessageContext(_messageContext);
 
-		_operationClient
-				.setCallback(new org.apache.axis2.client.async.AxisCallback() {
-					public void onMessage(
-							org.apache.axis2.context.MessageContext resultContext) {
-						try {
-							org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext
-									.getEnvelope();
+		_operationClient.setCallback(new org.apache.axis2.client.async.AxisCallback() {
+			public void onMessage(org.apache.axis2.context.MessageContext resultContext) {
+				try {
+					org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
 
-							java.lang.Object object = fromOM(
-									resultEnv.getBody().getFirstElement(),
-									com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.class,
-									getEnvelopeNamespaces(resultEnv));
-							callback.receiveResultwriteObjectOut((com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse) object);
+					java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
+							com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.class,
+							getEnvelopeNamespaces(resultEnv));
+					callback.receiveResultwriteObjectOut(
+							(com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse) object);
 
-						} catch (org.apache.axis2.AxisFault e) {
-							callback.receiveErrorwriteObjectOut(e);
-						}
-					}
+				} catch (org.apache.axis2.AxisFault e) {
+					callback.receiveErrorwriteObjectOut(e);
+				}
+			}
 
-					public void onError(java.lang.Exception error) {
-						if (error instanceof org.apache.axis2.AxisFault) {
-							org.apache.axis2.AxisFault f = (org.apache.axis2.AxisFault) error;
-							org.apache.axiom.om.OMElement faultElt = f
-									.getDetail();
-							if (faultElt != null) {
-								if (faultExceptionNameMap
-										.containsKey(new org.apache.axis2.client.FaultMapKey(
-												faultElt.getQName(),
-												"writeObjectOut"))) {
-									// make the fault by reflection
-									try {
-										java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-												.get(new org.apache.axis2.client.FaultMapKey(
-														faultElt.getQName(),
-														"writeObjectOut"));
-										java.lang.Class exceptionClass = java.lang.Class
-												.forName(exceptionClassName);
-										java.lang.reflect.Constructor constructor = exceptionClass
-												.getConstructor(String.class);
-										java.lang.Exception ex = (java.lang.Exception) constructor
-												.newInstance(f.getMessage());
-										// message class
-										java.lang.String messageClassName = (java.lang.String) faultMessageMap
-												.get(new org.apache.axis2.client.FaultMapKey(
-														faultElt.getQName(),
-														"writeObjectOut"));
-										java.lang.Class messageClass = java.lang.Class
-												.forName(messageClassName);
-										java.lang.Object messageObject = fromOM(
-												faultElt, messageClass, null);
-										java.lang.reflect.Method m = exceptionClass
-												.getMethod(
-														"setFaultMessage",
-														new java.lang.Class[] { messageClass });
-										m.invoke(
-												ex,
-												new java.lang.Object[] { messageObject });
+			public void onError(java.lang.Exception error) {
+				if (error instanceof org.apache.axis2.AxisFault) {
+					org.apache.axis2.AxisFault f = (org.apache.axis2.AxisFault) error;
+					org.apache.axiom.om.OMElement faultElt = f.getDetail();
+					if (faultElt != null) {
+						if (faultExceptionNameMap.containsKey(
+								new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "writeObjectOut"))) {
+							// make the fault by reflection
+							try {
+								java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap.get(
+										new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "writeObjectOut"));
+								java.lang.Class exceptionClass = java.lang.Class.forName(exceptionClassName);
+								java.lang.reflect.Constructor constructor = exceptionClass.getConstructor(String.class);
+								java.lang.Exception ex = (java.lang.Exception) constructor.newInstance(f.getMessage());
+								// message class
+								java.lang.String messageClassName = (java.lang.String) faultMessageMap.get(
+										new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "writeObjectOut"));
+								java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
+								java.lang.Object messageObject = fromOM(faultElt, messageClass, null);
+								java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
+										new java.lang.Class[] { messageClass });
+								m.invoke(ex, new java.lang.Object[] { messageObject });
 
-										callback.receiveErrorwriteObjectOut(new java.rmi.RemoteException(
-												ex.getMessage(), ex));
-									} catch (java.lang.ClassCastException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									} catch (java.lang.ClassNotFoundException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									} catch (java.lang.NoSuchMethodException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									} catch (java.lang.reflect.InvocationTargetException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									} catch (java.lang.IllegalAccessException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									} catch (java.lang.InstantiationException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									} catch (org.apache.axis2.AxisFault e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorwriteObjectOut(f);
-									}
-								} else {
-									callback.receiveErrorwriteObjectOut(f);
-								}
-							} else {
+								callback.receiveErrorwriteObjectOut(new java.rmi.RemoteException(ex.getMessage(), ex));
+							} catch (java.lang.ClassCastException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorwriteObjectOut(f);
+							} catch (java.lang.ClassNotFoundException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorwriteObjectOut(f);
+							} catch (java.lang.NoSuchMethodException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorwriteObjectOut(f);
+							} catch (java.lang.reflect.InvocationTargetException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorwriteObjectOut(f);
+							} catch (java.lang.IllegalAccessException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorwriteObjectOut(f);
+							} catch (java.lang.InstantiationException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorwriteObjectOut(f);
+							} catch (org.apache.axis2.AxisFault e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
 								callback.receiveErrorwriteObjectOut(f);
 							}
 						} else {
-							callback.receiveErrorwriteObjectOut(error);
+							callback.receiveErrorwriteObjectOut(f);
 						}
+					} else {
+						callback.receiveErrorwriteObjectOut(f);
 					}
+				} else {
+					callback.receiveErrorwriteObjectOut(error);
+				}
+			}
 
-					public void onFault(
-							org.apache.axis2.context.MessageContext faultContext) {
-						org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
-								.getInboundFaultFromMessageContext(faultContext);
-						onError(fault);
-					}
+			public void onFault(org.apache.axis2.context.MessageContext faultContext) {
+				org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
+						.getInboundFaultFromMessageContext(faultContext);
+				onError(fault);
+			}
 
-					public void onComplete() {
-						try {
-							_messageContext.getTransportOut().getSender()
-									.cleanup(_messageContext);
-						} catch (org.apache.axis2.AxisFault axisFault) {
-							callback.receiveErrorwriteObjectOut(axisFault);
-						}
-					}
-				});
+			public void onComplete() {
+				try {
+					_messageContext.getTransportOut().getSender().cleanup(_messageContext);
+				} catch (org.apache.axis2.AxisFault axisFault) {
+					callback.receiveErrorwriteObjectOut(axisFault);
+				}
+			}
+		});
 
 		org.apache.axis2.util.CallbackReceiver _callbackReceiver = null;
-		if (_operations[0].getMessageReceiver() == null
-				&& _operationClient.getOptions().isUseSeparateListener()) {
+		if (_operations[0].getMessageReceiver() == null && _operationClient.getOptions().isUseSeparateListener()) {
 			_callbackReceiver = new org.apache.axis2.util.CallbackReceiver();
 			_operations[0].setMessageReceiver(_callbackReceiver);
 		}
@@ -510,24 +431,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut queryObjectOut2)
 
-	throws java.rmi.RemoteException
+			throws java.rmi.RemoteException
 
 	{
 		org.apache.axis2.context.MessageContext _messageContext = null;
 		try {
 			org.apache.axis2.client.OperationClient _operationClient = _serviceClient
 					.createClient(_operations[1].getName());
-			_operationClient
-					.getOptions()
-					.setAction(
-							"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/queryObjectOutRequest");
-			_operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(
-					true);
+			_operationClient.getOptions().setAction("http://" + getIp() + ":" + getPort()
+					+ "/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/queryObjectOutRequest");
+			_operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
-			addPropertyToOperationClient(
-					_operationClient,
-					org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,
-					"&");
+			addPropertyToOperationClient(_operationClient,
+					org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
 
 			// create a message context
 			_messageContext = new org.apache.axis2.context.MessageContext();
@@ -535,16 +451,11 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			// create SOAP envelope with that payload
 			org.apache.axiom.soap.SOAPEnvelope env = null;
 
-			env = toEnvelope(
-					getFactory(_operationClient.getOptions()
-							.getSoapVersionURI()),
-					queryObjectOut2,
+			env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), queryObjectOut2,
 					optimizeContent(new javax.xml.namespace.QName(
-							"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-							"queryObjectOut")),
+							"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "queryObjectOut")),
 					new javax.xml.namespace.QName(
-							"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-							"queryObjectOut"));
+							"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "queryObjectOut"));
 
 			// adding SOAP soap_headers
 			_serviceClient.addHeadersToEnvelope(env);
@@ -559,11 +470,9 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 			org.apache.axis2.context.MessageContext _returnMessageContext = _operationClient
 					.getMessageContext(org.apache.axis2.wsdl.WSDLConstants.MESSAGE_LABEL_IN_VALUE);
-			org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext
-					.getEnvelope();
+			org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext.getEnvelope();
 
-			java.lang.Object object = fromOM(
-					_returnEnv.getBody().getFirstElement(),
+			java.lang.Object object = fromOM(_returnEnv.getBody().getFirstElement(),
 					com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.class,
 					getEnvelopeNamespaces(_returnEnv));
 
@@ -574,29 +483,20 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			org.apache.axiom.om.OMElement faultElt = f.getDetail();
 			if (faultElt != null) {
 				if (faultExceptionNameMap
-						.containsKey(new org.apache.axis2.client.FaultMapKey(
-								faultElt.getQName(), "queryObjectOut"))) {
+						.containsKey(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "queryObjectOut"))) {
 					// make the fault by reflection
 					try {
 						java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-								.get(new org.apache.axis2.client.FaultMapKey(
-										faultElt.getQName(), "queryObjectOut"));
-						java.lang.Class exceptionClass = java.lang.Class
-								.forName(exceptionClassName);
-						java.lang.reflect.Constructor constructor = exceptionClass
-								.getConstructor(String.class);
-						java.lang.Exception ex = (java.lang.Exception) constructor
-								.newInstance(f.getMessage());
+								.get(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "queryObjectOut"));
+						java.lang.Class exceptionClass = java.lang.Class.forName(exceptionClassName);
+						java.lang.reflect.Constructor constructor = exceptionClass.getConstructor(String.class);
+						java.lang.Exception ex = (java.lang.Exception) constructor.newInstance(f.getMessage());
 						// message class
 						java.lang.String messageClassName = (java.lang.String) faultMessageMap
-								.get(new org.apache.axis2.client.FaultMapKey(
-										faultElt.getQName(), "queryObjectOut"));
-						java.lang.Class messageClass = java.lang.Class
-								.forName(messageClassName);
-						java.lang.Object messageObject = fromOM(faultElt,
-								messageClass, null);
-						java.lang.reflect.Method m = exceptionClass.getMethod(
-								"setFaultMessage",
+								.get(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "queryObjectOut"));
+						java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
+						java.lang.Object messageObject = fromOM(faultElt, messageClass, null);
+						java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
 								new java.lang.Class[] { messageClass });
 						m.invoke(ex, new java.lang.Object[] { messageObject });
 
@@ -634,8 +534,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			}
 		} finally {
 			if (_messageContext.getTransportOut() != null) {
-				_messageContext.getTransportOut().getSender()
-						.cleanup(_messageContext);
+				_messageContext.getTransportOut().getSender().cleanup(_messageContext);
 			}
 		}
 	}
@@ -652,20 +551,16 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 			final com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceCallbackHandler callback)
 
-	throws java.rmi.RemoteException {
+			throws java.rmi.RemoteException {
 
 		org.apache.axis2.client.OperationClient _operationClient = _serviceClient
 				.createClient(_operations[1].getName());
-		_operationClient
-				.getOptions()
-				.setAction(
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/queryObjectOutRequest");
+		_operationClient.getOptions().setAction("http://" + getIp() + ":" + getPort()
+				+ "/pnweb/services/TmriOutAccess/TmriJaxRpcOutAccess/queryObjectOutRequest");
 		_operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
-		addPropertyToOperationClient(
-				_operationClient,
-				org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,
-				"&");
+		addPropertyToOperationClient(_operationClient,
+				org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
 
 		// create SOAP envelope with that payload
 		org.apache.axiom.soap.SOAPEnvelope env = null;
@@ -673,14 +568,10 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 		// Style is Doc.
 
-		env = toEnvelope(
-				getFactory(_operationClient.getOptions().getSoapVersionURI()),
-				queryObjectOut2,
+		env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), queryObjectOut2,
 				optimizeContent(new javax.xml.namespace.QName(
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-						"queryObjectOut")),
-				new javax.xml.namespace.QName(
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
+						"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "queryObjectOut")),
+				new javax.xml.namespace.QName("http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess",
 						"queryObjectOut"));
 
 		// adding SOAP soap_headers
@@ -691,126 +582,103 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		// add the message context to the operation client
 		_operationClient.addMessageContext(_messageContext);
 
-		_operationClient
-				.setCallback(new org.apache.axis2.client.async.AxisCallback() {
-					public void onMessage(
-							org.apache.axis2.context.MessageContext resultContext) {
-						try {
-							org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext
-									.getEnvelope();
+		_operationClient.setCallback(new org.apache.axis2.client.async.AxisCallback() {
+			public void onMessage(org.apache.axis2.context.MessageContext resultContext) {
+				try {
+					org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
 
-							java.lang.Object object = fromOM(
-									resultEnv.getBody().getFirstElement(),
-									com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.class,
-									getEnvelopeNamespaces(resultEnv));
-							callback.receiveResultqueryObjectOut((com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse) object);
+					java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
+							com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.class,
+							getEnvelopeNamespaces(resultEnv));
+					callback.receiveResultqueryObjectOut(
+							(com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse) object);
 
-						} catch (org.apache.axis2.AxisFault e) {
-							callback.receiveErrorqueryObjectOut(e);
-						}
-					}
+				} catch (org.apache.axis2.AxisFault e) {
+					callback.receiveErrorqueryObjectOut(e);
+				}
+			}
 
-					public void onError(java.lang.Exception error) {
-						if (error instanceof org.apache.axis2.AxisFault) {
-							org.apache.axis2.AxisFault f = (org.apache.axis2.AxisFault) error;
-							org.apache.axiom.om.OMElement faultElt = f
-									.getDetail();
-							if (faultElt != null) {
-								if (faultExceptionNameMap
-										.containsKey(new org.apache.axis2.client.FaultMapKey(
-												faultElt.getQName(),
-												"queryObjectOut"))) {
-									// make the fault by reflection
-									try {
-										java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-												.get(new org.apache.axis2.client.FaultMapKey(
-														faultElt.getQName(),
-														"queryObjectOut"));
-										java.lang.Class exceptionClass = java.lang.Class
-												.forName(exceptionClassName);
-										java.lang.reflect.Constructor constructor = exceptionClass
-												.getConstructor(String.class);
-										java.lang.Exception ex = (java.lang.Exception) constructor
-												.newInstance(f.getMessage());
-										// message class
-										java.lang.String messageClassName = (java.lang.String) faultMessageMap
-												.get(new org.apache.axis2.client.FaultMapKey(
-														faultElt.getQName(),
-														"queryObjectOut"));
-										java.lang.Class messageClass = java.lang.Class
-												.forName(messageClassName);
-										java.lang.Object messageObject = fromOM(
-												faultElt, messageClass, null);
-										java.lang.reflect.Method m = exceptionClass
-												.getMethod(
-														"setFaultMessage",
-														new java.lang.Class[] { messageClass });
-										m.invoke(
-												ex,
-												new java.lang.Object[] { messageObject });
+			public void onError(java.lang.Exception error) {
+				if (error instanceof org.apache.axis2.AxisFault) {
+					org.apache.axis2.AxisFault f = (org.apache.axis2.AxisFault) error;
+					org.apache.axiom.om.OMElement faultElt = f.getDetail();
+					if (faultElt != null) {
+						if (faultExceptionNameMap.containsKey(
+								new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "queryObjectOut"))) {
+							// make the fault by reflection
+							try {
+								java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap.get(
+										new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "queryObjectOut"));
+								java.lang.Class exceptionClass = java.lang.Class.forName(exceptionClassName);
+								java.lang.reflect.Constructor constructor = exceptionClass.getConstructor(String.class);
+								java.lang.Exception ex = (java.lang.Exception) constructor.newInstance(f.getMessage());
+								// message class
+								java.lang.String messageClassName = (java.lang.String) faultMessageMap.get(
+										new org.apache.axis2.client.FaultMapKey(faultElt.getQName(), "queryObjectOut"));
+								java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
+								java.lang.Object messageObject = fromOM(faultElt, messageClass, null);
+								java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
+										new java.lang.Class[] { messageClass });
+								m.invoke(ex, new java.lang.Object[] { messageObject });
 
-										callback.receiveErrorqueryObjectOut(new java.rmi.RemoteException(
-												ex.getMessage(), ex));
-									} catch (java.lang.ClassCastException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									} catch (java.lang.ClassNotFoundException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									} catch (java.lang.NoSuchMethodException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									} catch (java.lang.reflect.InvocationTargetException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									} catch (java.lang.IllegalAccessException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									} catch (java.lang.InstantiationException e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									} catch (org.apache.axis2.AxisFault e) {
-										// we cannot intantiate the class -
-										// throw the original Axis fault
-										callback.receiveErrorqueryObjectOut(f);
-									}
-								} else {
-									callback.receiveErrorqueryObjectOut(f);
-								}
-							} else {
+								callback.receiveErrorqueryObjectOut(new java.rmi.RemoteException(ex.getMessage(), ex));
+							} catch (java.lang.ClassCastException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorqueryObjectOut(f);
+							} catch (java.lang.ClassNotFoundException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorqueryObjectOut(f);
+							} catch (java.lang.NoSuchMethodException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorqueryObjectOut(f);
+							} catch (java.lang.reflect.InvocationTargetException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorqueryObjectOut(f);
+							} catch (java.lang.IllegalAccessException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorqueryObjectOut(f);
+							} catch (java.lang.InstantiationException e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
+								callback.receiveErrorqueryObjectOut(f);
+							} catch (org.apache.axis2.AxisFault e) {
+								// we cannot intantiate the class -
+								// throw the original Axis fault
 								callback.receiveErrorqueryObjectOut(f);
 							}
 						} else {
-							callback.receiveErrorqueryObjectOut(error);
+							callback.receiveErrorqueryObjectOut(f);
 						}
+					} else {
+						callback.receiveErrorqueryObjectOut(f);
 					}
+				} else {
+					callback.receiveErrorqueryObjectOut(error);
+				}
+			}
 
-					public void onFault(
-							org.apache.axis2.context.MessageContext faultContext) {
-						org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
-								.getInboundFaultFromMessageContext(faultContext);
-						onError(fault);
-					}
+			public void onFault(org.apache.axis2.context.MessageContext faultContext) {
+				org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
+						.getInboundFaultFromMessageContext(faultContext);
+				onError(fault);
+			}
 
-					public void onComplete() {
-						try {
-							_messageContext.getTransportOut().getSender()
-									.cleanup(_messageContext);
-						} catch (org.apache.axis2.AxisFault axisFault) {
-							callback.receiveErrorqueryObjectOut(axisFault);
-						}
-					}
-				});
+			public void onComplete() {
+				try {
+					_messageContext.getTransportOut().getSender().cleanup(_messageContext);
+				} catch (org.apache.axis2.AxisFault axisFault) {
+					callback.receiveErrorqueryObjectOut(axisFault);
+				}
+			}
+		});
 
 		org.apache.axis2.util.CallbackReceiver _callbackReceiver = null;
-		if (_operations[1].getMessageReceiver() == null
-				&& _operationClient.getOptions().isUseSeparateListener()) {
+		if (_operations[1].getMessageReceiver() == null && _operationClient.getOptions().isUseSeparateListener()) {
 			_callbackReceiver = new org.apache.axis2.util.CallbackReceiver();
 			_operations[1].setMessageReceiver(_callbackReceiver);
 		}
@@ -823,13 +691,11 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	/**
 	 * A utility method that copies the namepaces from the SOAPEnvelope
 	 */
-	private java.util.Map getEnvelopeNamespaces(
-			org.apache.axiom.soap.SOAPEnvelope env) {
+	private java.util.Map getEnvelopeNamespaces(org.apache.axiom.soap.SOAPEnvelope env) {
 		java.util.Map returnMap = new java.util.HashMap();
 		java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
 		while (namespaceIterator.hasNext()) {
-			org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator
-					.next();
+			org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator.next();
 			returnMap.put(ns.getPrefix(), ns.getNamespaceURI());
 		}
 		return returnMap;
@@ -851,12 +717,10 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	}
 
 	// http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess
-	public static class QueryObjectOut implements
-			org.apache.axis2.databinding.ADBBean {
+	public static class QueryObjectOut implements org.apache.axis2.databinding.ADBBean {
 
 		public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-				"http://endpoint.axis.framework.tmri.com", "queryObjectOut",
-				"ns2");
+				"http://endpoint.axis.framework.tmri.com", "queryObjectOut", "ns2");
 
 		/**
 		 * field for Xtlb
@@ -972,52 +836,40 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * @param factory
 		 * @return org.apache.axiom.om.OMElement
 		 */
-		public org.apache.axiom.om.OMElement getOMElement(
-				final javax.xml.namespace.QName parentQName,
-				final org.apache.axiom.om.OMFactory factory)
-				throws org.apache.axis2.databinding.ADBException {
+		public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
+				final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException {
 
-			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(
-					this, MY_QNAME);
+			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
+					MY_QNAME);
 			return factory.createOMElement(dataSource, MY_QNAME);
 
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter)
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 			serialize(parentQName, xmlWriter, false);
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter,
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter,
 				boolean serializeType)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 
 			java.lang.String prefix = null;
 			java.lang.String namespace = null;
 
 			prefix = parentQName.getPrefix();
 			namespace = parentQName.getNamespaceURI();
-			writeStartElement(prefix, namespace, parentQName.getLocalPart(),
-					xmlWriter);
+			writeStartElement(prefix, namespace, parentQName.getLocalPart(), xmlWriter);
 
 			if (serializeType) {
 
-				java.lang.String namespacePrefix = registerPrefix(xmlWriter,
-						"http://endpoint.axis.framework.tmri.com");
-				if ((namespacePrefix != null)
-						&& (namespacePrefix.trim().length() > 0)) {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type", namespacePrefix + ":queryObjectOut",
-							xmlWriter);
+				java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://endpoint.axis.framework.tmri.com");
+				if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+							namespacePrefix + ":queryObjectOut", xmlWriter);
 				} else {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type", "queryObjectOut", xmlWriter);
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "queryObjectOut",
+							xmlWriter);
 				}
 
 			}
@@ -1028,9 +880,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localXtlb == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -1046,9 +896,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localJkxlh == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -1064,9 +912,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localJkid == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -1082,9 +928,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localUTF8XmlDoc == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -1098,22 +942,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 		}
 
-		private static java.lang.String generatePrefix(
-				java.lang.String namespace) {
+		private static java.lang.String generatePrefix(java.lang.String namespace) {
 			if (namespace.equals("http://endpoint.axis.framework.tmri.com")) {
 				return "ns2";
 			}
-			return org.apache.axis2.databinding.utils.BeanUtil
-					.getUniquePrefix();
+			return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 		}
 
 		/**
 		 * Utility method to write an element start tag.
 		 */
-		private void writeStartElement(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String localPart,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeStartElement(java.lang.String prefix, java.lang.String namespace, java.lang.String localPart,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
 			if (writerPrefix != null) {
 				xmlWriter.writeStartElement(namespace, localPart);
@@ -1133,10 +973,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute with the ns prefix
 		 */
-		private void writeAttribute(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String attName,
-				java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeAttribute(java.lang.String prefix, java.lang.String namespace, java.lang.String attName,
+				java.lang.String attValue, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			if (xmlWriter.getPrefix(namespace) == null) {
 				xmlWriter.writeNamespace(prefix, namespace);
@@ -1148,10 +986,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeAttribute(java.lang.String namespace,
-				java.lang.String attName, java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeAttribute(java.lang.String namespace, java.lang.String attName, java.lang.String attValue,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			if (namespace.equals("")) {
 				xmlWriter.writeAttribute(attName, attValue);
 			} else {
@@ -1163,14 +999,12 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeQNameAttribute(java.lang.String namespace,
-				java.lang.String attName, javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNameAttribute(java.lang.String namespace, java.lang.String attName,
+				javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			java.lang.String attributeNamespace = qname.getNamespaceURI();
-			java.lang.String attributePrefix = xmlWriter
-					.getPrefix(attributeNamespace);
+			java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
 			if (attributePrefix == null) {
 				attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
 			}
@@ -1193,8 +1027,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * method to handle Qnames
 		 */
 
-		private void writeQName(javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQName(javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String namespaceURI = qname.getNamespaceURI();
 			if (namespaceURI != null) {
@@ -1206,26 +1039,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 				}
 
 				if (prefix.trim().length() > 0) {
-					xmlWriter.writeCharacters(prefix
-							+ ":"
-							+ org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(
+							prefix + ":" + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				} else {
 					// i.e this is the default namespace
-					xmlWriter
-							.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				}
 
 			} else {
-				xmlWriter
-						.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-								.convertToString(qname));
+				xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 			}
 		}
 
-		private void writeQNames(javax.xml.namespace.QName[] qnames,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNames(javax.xml.namespace.QName[] qnames, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			if (qnames != null) {
@@ -1250,20 +1076,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						}
 
 						if (prefix.trim().length() > 0) {
-							stringToWrite
-									.append(prefix)
-									.append(":")
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(prefix).append(":").append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						} else {
-							stringToWrite
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						}
 					} else {
 						stringToWrite
-								.append(org.apache.axis2.databinding.utils.ConverterUtil
-										.convertToString(qnames[i]));
+								.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 					}
 				}
 				xmlWriter.writeCharacters(stringToWrite.toString());
@@ -1274,22 +1095,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Register a namespace prefix
 		 */
-		private java.lang.String registerPrefix(
-				javax.xml.stream.XMLStreamWriter xmlWriter,
-				java.lang.String namespace)
+		private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String prefix = xmlWriter.getPrefix(namespace);
 			if (prefix == null) {
 				prefix = generatePrefix(namespace);
-				javax.xml.namespace.NamespaceContext nsContext = xmlWriter
-						.getNamespaceContext();
+				javax.xml.namespace.NamespaceContext nsContext = xmlWriter.getNamespaceContext();
 				while (true) {
 					java.lang.String uri = nsContext.getNamespaceURI(prefix);
 					if (uri == null || uri.length() == 0) {
 						break;
 					}
-					prefix = org.apache.axis2.databinding.utils.BeanUtil
-							.getUniquePrefix();
+					prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 				}
 				xmlWriter.writeNamespace(prefix, namespace);
 				xmlWriter.setPrefix(prefix, namespace);
@@ -1301,8 +1118,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * databinding method to get an XML representation of this object
 		 * 
 		 */
-		public javax.xml.stream.XMLStreamReader getPullParser(
-				javax.xml.namespace.QName qName)
+		public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
 				throws org.apache.axis2.databinding.ADBException {
 
 			java.util.ArrayList elementList = new java.util.ArrayList();
@@ -1311,29 +1127,25 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			elementList.add(new javax.xml.namespace.QName("", "xtlb"));
 
 			elementList.add(localXtlb == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localXtlb));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localXtlb));
 
 			elementList.add(new javax.xml.namespace.QName("", "jkxlh"));
 
 			elementList.add(localJkxlh == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localJkxlh));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localJkxlh));
 
 			elementList.add(new javax.xml.namespace.QName("", "jkid"));
 
 			elementList.add(localJkid == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localJkid));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localJkid));
 
 			elementList.add(new javax.xml.namespace.QName("", "UTF8XmlDoc"));
 
 			elementList.add(localUTF8XmlDoc == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localUTF8XmlDoc));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUTF8XmlDoc));
 
-			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(
-					qName, elementList.toArray(), attribList.toArray());
+			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
+					attribList.toArray());
 
 		}
 
@@ -1352,9 +1164,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			 * element If this object is a complex type, the reader is
 			 * positioned at the end element of its outer element
 			 */
-			public static QueryObjectOut parse(
-					javax.xml.stream.XMLStreamReader reader)
-					throws java.lang.Exception {
+			public static QueryObjectOut parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception {
 				QueryObjectOut object = new QueryObjectOut();
 
 				int event;
@@ -1366,32 +1176,22 @@ public class TmriJaxRpcOutAccessServiceStub extends
 					while (!reader.isStartElement() && !reader.isEndElement())
 						reader.next();
 
-					if (reader
-							.getAttributeValue(
-									"http://www.w3.org/2001/XMLSchema-instance",
-									"type") != null) {
+					if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null) {
 						java.lang.String fullTypeName = reader
-								.getAttributeValue(
-										"http://www.w3.org/2001/XMLSchema-instance",
-										"type");
+								.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
 						if (fullTypeName != null) {
 							java.lang.String nsPrefix = null;
 							if (fullTypeName.indexOf(":") > -1) {
-								nsPrefix = fullTypeName.substring(0,
-										fullTypeName.indexOf(":"));
+								nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
 							}
 							nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-							java.lang.String type = fullTypeName
-									.substring(fullTypeName.indexOf(":") + 1);
+							java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
 							if (!"queryObjectOut".equals(type)) {
 								// find namespace for the prefix
-								java.lang.String nsUri = reader
-										.getNamespaceContext().getNamespaceURI(
-												nsPrefix);
-								return (QueryObjectOut) ExtensionMapper
-										.getTypeObject(nsUri, type, reader);
+								java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+								return (QueryObjectOut) ExtensionMapper.getTypeObject(nsUri, type, reader);
 							}
 
 						}
@@ -1408,20 +1208,14 @@ public class TmriJaxRpcOutAccessServiceStub extends
 					while (!reader.isStartElement() && !reader.isEndElement())
 						reader.next();
 
-					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "xtlb")
-									.equals(reader.getName())) {
+					if (reader.isStartElement() && new javax.xml.namespace.QName("", "xtlb").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setXtlb(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setXtlb(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -1444,19 +1238,43 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						reader.next();
 
 					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "jkxlh")
-									.equals(reader.getName())) {
+							&& new javax.xml.namespace.QName("", "jkxlh").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setJkxlh(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setJkxlh(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+
+						} else {
+
+							reader.getElementText(); // throw away text nodes if
+														// any.
+						}
+
+						reader.next();
+
+					} // End of if for expected property start element
+
+					else {
+						// A start element we are not expecting indicates an
+						// invalid parameter was passed
+						throw new org.apache.axis2.databinding.ADBException(
+								"Unexpected subelement " + reader.getName());
+					}
+
+					while (!reader.isStartElement() && !reader.isEndElement())
+						reader.next();
+
+					if (reader.isStartElement() && new javax.xml.namespace.QName("", "jkid").equals(reader.getName())) {
+
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
+
+							java.lang.String content = reader.getElementText();
+
+							object.setJkid(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -1479,54 +1297,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						reader.next();
 
 					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "jkid")
-									.equals(reader.getName())) {
+							&& new javax.xml.namespace.QName("", "UTF8XmlDoc").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setJkid(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
-
-						} else {
-
-							reader.getElementText(); // throw away text nodes if
-														// any.
-						}
-
-						reader.next();
-
-					} // End of if for expected property start element
-
-					else {
-						// A start element we are not expecting indicates an
-						// invalid parameter was passed
-						throw new org.apache.axis2.databinding.ADBException(
-								"Unexpected subelement " + reader.getName());
-					}
-
-					while (!reader.isStartElement() && !reader.isEndElement())
-						reader.next();
-
-					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "UTF8XmlDoc")
-									.equals(reader.getName())) {
-
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
-
-							java.lang.String content = reader.getElementText();
-
-							object.setUTF8XmlDoc(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setUTF8XmlDoc(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -1567,23 +1346,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 	public static class ExtensionMapper {
 
-		public static java.lang.Object getTypeObject(
-				java.lang.String namespaceURI, java.lang.String typeName,
-				javax.xml.stream.XMLStreamReader reader)
-				throws java.lang.Exception {
+		public static java.lang.Object getTypeObject(java.lang.String namespaceURI, java.lang.String typeName,
+				javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception {
 
-			throw new org.apache.axis2.databinding.ADBException(
-					"Unsupported type " + namespaceURI + " " + typeName);
+			throw new org.apache.axis2.databinding.ADBException("Unsupported type " + namespaceURI + " " + typeName);
 		}
 
 	}
 
-	public static class WriteObjectOutResponse implements
-			org.apache.axis2.databinding.ADBBean {
+	public static class WriteObjectOutResponse implements org.apache.axis2.databinding.ADBBean {
 
 		public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-				"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-				"writeObjectOutResponse", "ns1");
+				"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "writeObjectOutResponse",
+				"ns1");
 
 		/**
 		 * field for WriteObjectOutReturn
@@ -1618,67 +1393,52 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * @param factory
 		 * @return org.apache.axiom.om.OMElement
 		 */
-		public org.apache.axiom.om.OMElement getOMElement(
-				final javax.xml.namespace.QName parentQName,
-				final org.apache.axiom.om.OMFactory factory)
-				throws org.apache.axis2.databinding.ADBException {
+		public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
+				final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException {
 
-			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(
-					this, MY_QNAME);
+			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
+					MY_QNAME);
 			return factory.createOMElement(dataSource, MY_QNAME);
 
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter)
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 			serialize(parentQName, xmlWriter, false);
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter,
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter,
 				boolean serializeType)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 
 			java.lang.String prefix = null;
 			java.lang.String namespace = null;
 
 			prefix = parentQName.getPrefix();
 			namespace = parentQName.getNamespaceURI();
-			writeStartElement(prefix, namespace, parentQName.getLocalPart(),
-					xmlWriter);
+			writeStartElement(prefix, namespace, parentQName.getLocalPart(), xmlWriter);
 
 			if (serializeType) {
 
 				java.lang.String namespacePrefix = registerPrefix(xmlWriter,
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess");
-				if ((namespacePrefix != null)
-						&& (namespacePrefix.trim().length() > 0)) {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type",
-							namespacePrefix + ":writeObjectOutResponse",
-							xmlWriter);
+						"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess");
+				if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+							namespacePrefix + ":writeObjectOutResponse", xmlWriter);
 				} else {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type", "writeObjectOutResponse", xmlWriter);
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "writeObjectOutResponse",
+							xmlWriter);
 				}
 
 			}
 
 			namespace = "";
-			writeStartElement(null, namespace, "writeObjectOutReturn",
-					xmlWriter);
+			writeStartElement(null, namespace, "writeObjectOutReturn", xmlWriter);
 
 			if (localWriteObjectOutReturn == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -1692,23 +1452,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 		}
 
-		private static java.lang.String generatePrefix(
-				java.lang.String namespace) {
-			if (namespace
-					.equals("http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess")) {
+		private static java.lang.String generatePrefix(java.lang.String namespace) {
+			if (namespace.equals("http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess")) {
 				return "ns1";
 			}
-			return org.apache.axis2.databinding.utils.BeanUtil
-					.getUniquePrefix();
+			return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 		}
 
 		/**
 		 * Utility method to write an element start tag.
 		 */
-		private void writeStartElement(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String localPart,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeStartElement(java.lang.String prefix, java.lang.String namespace, java.lang.String localPart,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
 			if (writerPrefix != null) {
 				xmlWriter.writeStartElement(namespace, localPart);
@@ -1728,10 +1483,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute with the ns prefix
 		 */
-		private void writeAttribute(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String attName,
-				java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeAttribute(java.lang.String prefix, java.lang.String namespace, java.lang.String attName,
+				java.lang.String attValue, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			if (xmlWriter.getPrefix(namespace) == null) {
 				xmlWriter.writeNamespace(prefix, namespace);
@@ -1743,10 +1496,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeAttribute(java.lang.String namespace,
-				java.lang.String attName, java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeAttribute(java.lang.String namespace, java.lang.String attName, java.lang.String attValue,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			if (namespace.equals("")) {
 				xmlWriter.writeAttribute(attName, attValue);
 			} else {
@@ -1758,14 +1509,12 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeQNameAttribute(java.lang.String namespace,
-				java.lang.String attName, javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNameAttribute(java.lang.String namespace, java.lang.String attName,
+				javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			java.lang.String attributeNamespace = qname.getNamespaceURI();
-			java.lang.String attributePrefix = xmlWriter
-					.getPrefix(attributeNamespace);
+			java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
 			if (attributePrefix == null) {
 				attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
 			}
@@ -1788,8 +1537,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * method to handle Qnames
 		 */
 
-		private void writeQName(javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQName(javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String namespaceURI = qname.getNamespaceURI();
 			if (namespaceURI != null) {
@@ -1801,26 +1549,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 				}
 
 				if (prefix.trim().length() > 0) {
-					xmlWriter.writeCharacters(prefix
-							+ ":"
-							+ org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(
+							prefix + ":" + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				} else {
 					// i.e this is the default namespace
-					xmlWriter
-							.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				}
 
 			} else {
-				xmlWriter
-						.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-								.convertToString(qname));
+				xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 			}
 		}
 
-		private void writeQNames(javax.xml.namespace.QName[] qnames,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNames(javax.xml.namespace.QName[] qnames, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			if (qnames != null) {
@@ -1845,20 +1586,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						}
 
 						if (prefix.trim().length() > 0) {
-							stringToWrite
-									.append(prefix)
-									.append(":")
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(prefix).append(":").append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						} else {
-							stringToWrite
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						}
 					} else {
 						stringToWrite
-								.append(org.apache.axis2.databinding.utils.ConverterUtil
-										.convertToString(qnames[i]));
+								.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 					}
 				}
 				xmlWriter.writeCharacters(stringToWrite.toString());
@@ -1869,22 +1605,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Register a namespace prefix
 		 */
-		private java.lang.String registerPrefix(
-				javax.xml.stream.XMLStreamWriter xmlWriter,
-				java.lang.String namespace)
+		private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String prefix = xmlWriter.getPrefix(namespace);
 			if (prefix == null) {
 				prefix = generatePrefix(namespace);
-				javax.xml.namespace.NamespaceContext nsContext = xmlWriter
-						.getNamespaceContext();
+				javax.xml.namespace.NamespaceContext nsContext = xmlWriter.getNamespaceContext();
 				while (true) {
 					java.lang.String uri = nsContext.getNamespaceURI(prefix);
 					if (uri == null || uri.length() == 0) {
 						break;
 					}
-					prefix = org.apache.axis2.databinding.utils.BeanUtil
-							.getUniquePrefix();
+					prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 				}
 				xmlWriter.writeNamespace(prefix, namespace);
 				xmlWriter.setPrefix(prefix, namespace);
@@ -1896,22 +1628,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * databinding method to get an XML representation of this object
 		 * 
 		 */
-		public javax.xml.stream.XMLStreamReader getPullParser(
-				javax.xml.namespace.QName qName)
+		public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
 				throws org.apache.axis2.databinding.ADBException {
 
 			java.util.ArrayList elementList = new java.util.ArrayList();
 			java.util.ArrayList attribList = new java.util.ArrayList();
 
-			elementList.add(new javax.xml.namespace.QName("",
-					"writeObjectOutReturn"));
+			elementList.add(new javax.xml.namespace.QName("", "writeObjectOutReturn"));
 
 			elementList.add(localWriteObjectOutReturn == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localWriteObjectOutReturn));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWriteObjectOutReturn));
 
-			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(
-					qName, elementList.toArray(), attribList.toArray());
+			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
+					attribList.toArray());
 
 		}
 
@@ -1930,8 +1659,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			 * element If this object is a complex type, the reader is
 			 * positioned at the end element of its outer element
 			 */
-			public static WriteObjectOutResponse parse(
-					javax.xml.stream.XMLStreamReader reader)
+			public static WriteObjectOutResponse parse(javax.xml.stream.XMLStreamReader reader)
 					throws java.lang.Exception {
 				WriteObjectOutResponse object = new WriteObjectOutResponse();
 
@@ -1944,32 +1672,22 @@ public class TmriJaxRpcOutAccessServiceStub extends
 					while (!reader.isStartElement() && !reader.isEndElement())
 						reader.next();
 
-					if (reader
-							.getAttributeValue(
-									"http://www.w3.org/2001/XMLSchema-instance",
-									"type") != null) {
+					if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null) {
 						java.lang.String fullTypeName = reader
-								.getAttributeValue(
-										"http://www.w3.org/2001/XMLSchema-instance",
-										"type");
+								.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
 						if (fullTypeName != null) {
 							java.lang.String nsPrefix = null;
 							if (fullTypeName.indexOf(":") > -1) {
-								nsPrefix = fullTypeName.substring(0,
-										fullTypeName.indexOf(":"));
+								nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
 							}
 							nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-							java.lang.String type = fullTypeName
-									.substring(fullTypeName.indexOf(":") + 1);
+							java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
 							if (!"writeObjectOutResponse".equals(type)) {
 								// find namespace for the prefix
-								java.lang.String nsUri = reader
-										.getNamespaceContext().getNamespaceURI(
-												nsPrefix);
-								return (WriteObjectOutResponse) ExtensionMapper
-										.getTypeObject(nsUri, type, reader);
+								java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+								return (WriteObjectOutResponse) ExtensionMapper.getTypeObject(nsUri, type, reader);
 							}
 
 						}
@@ -1987,20 +1705,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						reader.next();
 
 					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("",
-									"writeObjectOutReturn").equals(reader
-									.getName())) {
+							&& new javax.xml.namespace.QName("", "writeObjectOutReturn").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setWriteObjectOutReturn(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setWriteObjectOutReturn(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -2039,12 +1752,10 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 	}
 
-	public static class WriteObjectOut implements
-			org.apache.axis2.databinding.ADBBean {
+	public static class WriteObjectOut implements org.apache.axis2.databinding.ADBBean {
 
 		public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-				"http://endpoint.axis.framework.tmri.com", "writeObjectOut",
-				"ns2");
+				"http://endpoint.axis.framework.tmri.com", "writeObjectOut", "ns2");
 
 		/**
 		 * field for Xtlb
@@ -2160,52 +1871,40 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * @param factory
 		 * @return org.apache.axiom.om.OMElement
 		 */
-		public org.apache.axiom.om.OMElement getOMElement(
-				final javax.xml.namespace.QName parentQName,
-				final org.apache.axiom.om.OMFactory factory)
-				throws org.apache.axis2.databinding.ADBException {
+		public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
+				final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException {
 
-			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(
-					this, MY_QNAME);
+			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
+					MY_QNAME);
 			return factory.createOMElement(dataSource, MY_QNAME);
 
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter)
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 			serialize(parentQName, xmlWriter, false);
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter,
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter,
 				boolean serializeType)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 
 			java.lang.String prefix = null;
 			java.lang.String namespace = null;
 
 			prefix = parentQName.getPrefix();
 			namespace = parentQName.getNamespaceURI();
-			writeStartElement(prefix, namespace, parentQName.getLocalPart(),
-					xmlWriter);
+			writeStartElement(prefix, namespace, parentQName.getLocalPart(), xmlWriter);
 
 			if (serializeType) {
 
-				java.lang.String namespacePrefix = registerPrefix(xmlWriter,
-						"http://endpoint.axis.framework.tmri.com");
-				if ((namespacePrefix != null)
-						&& (namespacePrefix.trim().length() > 0)) {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type", namespacePrefix + ":writeObjectOut",
-							xmlWriter);
+				java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://endpoint.axis.framework.tmri.com");
+				if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+							namespacePrefix + ":writeObjectOut", xmlWriter);
 				} else {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type", "writeObjectOut", xmlWriter);
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "writeObjectOut",
+							xmlWriter);
 				}
 
 			}
@@ -2216,9 +1915,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localXtlb == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -2234,9 +1931,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localJkxlh == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -2252,9 +1947,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localJkid == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -2270,9 +1963,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			if (localUTF8XmlDoc == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -2286,22 +1977,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 		}
 
-		private static java.lang.String generatePrefix(
-				java.lang.String namespace) {
+		private static java.lang.String generatePrefix(java.lang.String namespace) {
 			if (namespace.equals("http://endpoint.axis.framework.tmri.com")) {
 				return "ns2";
 			}
-			return org.apache.axis2.databinding.utils.BeanUtil
-					.getUniquePrefix();
+			return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 		}
 
 		/**
 		 * Utility method to write an element start tag.
 		 */
-		private void writeStartElement(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String localPart,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeStartElement(java.lang.String prefix, java.lang.String namespace, java.lang.String localPart,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
 			if (writerPrefix != null) {
 				xmlWriter.writeStartElement(namespace, localPart);
@@ -2321,10 +2008,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute with the ns prefix
 		 */
-		private void writeAttribute(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String attName,
-				java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeAttribute(java.lang.String prefix, java.lang.String namespace, java.lang.String attName,
+				java.lang.String attValue, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			if (xmlWriter.getPrefix(namespace) == null) {
 				xmlWriter.writeNamespace(prefix, namespace);
@@ -2336,10 +2021,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeAttribute(java.lang.String namespace,
-				java.lang.String attName, java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeAttribute(java.lang.String namespace, java.lang.String attName, java.lang.String attValue,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			if (namespace.equals("")) {
 				xmlWriter.writeAttribute(attName, attValue);
 			} else {
@@ -2351,14 +2034,12 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeQNameAttribute(java.lang.String namespace,
-				java.lang.String attName, javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNameAttribute(java.lang.String namespace, java.lang.String attName,
+				javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			java.lang.String attributeNamespace = qname.getNamespaceURI();
-			java.lang.String attributePrefix = xmlWriter
-					.getPrefix(attributeNamespace);
+			java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
 			if (attributePrefix == null) {
 				attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
 			}
@@ -2381,8 +2062,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * method to handle Qnames
 		 */
 
-		private void writeQName(javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQName(javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String namespaceURI = qname.getNamespaceURI();
 			if (namespaceURI != null) {
@@ -2394,26 +2074,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 				}
 
 				if (prefix.trim().length() > 0) {
-					xmlWriter.writeCharacters(prefix
-							+ ":"
-							+ org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(
+							prefix + ":" + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				} else {
 					// i.e this is the default namespace
-					xmlWriter
-							.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				}
 
 			} else {
-				xmlWriter
-						.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-								.convertToString(qname));
+				xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 			}
 		}
 
-		private void writeQNames(javax.xml.namespace.QName[] qnames,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNames(javax.xml.namespace.QName[] qnames, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			if (qnames != null) {
@@ -2438,20 +2111,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						}
 
 						if (prefix.trim().length() > 0) {
-							stringToWrite
-									.append(prefix)
-									.append(":")
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(prefix).append(":").append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						} else {
-							stringToWrite
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						}
 					} else {
 						stringToWrite
-								.append(org.apache.axis2.databinding.utils.ConverterUtil
-										.convertToString(qnames[i]));
+								.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 					}
 				}
 				xmlWriter.writeCharacters(stringToWrite.toString());
@@ -2462,22 +2130,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Register a namespace prefix
 		 */
-		private java.lang.String registerPrefix(
-				javax.xml.stream.XMLStreamWriter xmlWriter,
-				java.lang.String namespace)
+		private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String prefix = xmlWriter.getPrefix(namespace);
 			if (prefix == null) {
 				prefix = generatePrefix(namespace);
-				javax.xml.namespace.NamespaceContext nsContext = xmlWriter
-						.getNamespaceContext();
+				javax.xml.namespace.NamespaceContext nsContext = xmlWriter.getNamespaceContext();
 				while (true) {
 					java.lang.String uri = nsContext.getNamespaceURI(prefix);
 					if (uri == null || uri.length() == 0) {
 						break;
 					}
-					prefix = org.apache.axis2.databinding.utils.BeanUtil
-							.getUniquePrefix();
+					prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 				}
 				xmlWriter.writeNamespace(prefix, namespace);
 				xmlWriter.setPrefix(prefix, namespace);
@@ -2489,8 +2153,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * databinding method to get an XML representation of this object
 		 * 
 		 */
-		public javax.xml.stream.XMLStreamReader getPullParser(
-				javax.xml.namespace.QName qName)
+		public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
 				throws org.apache.axis2.databinding.ADBException {
 
 			java.util.ArrayList elementList = new java.util.ArrayList();
@@ -2499,29 +2162,25 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			elementList.add(new javax.xml.namespace.QName("", "xtlb"));
 
 			elementList.add(localXtlb == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localXtlb));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localXtlb));
 
 			elementList.add(new javax.xml.namespace.QName("", "jkxlh"));
 
 			elementList.add(localJkxlh == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localJkxlh));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localJkxlh));
 
 			elementList.add(new javax.xml.namespace.QName("", "jkid"));
 
 			elementList.add(localJkid == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localJkid));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localJkid));
 
 			elementList.add(new javax.xml.namespace.QName("", "UTF8XmlDoc"));
 
 			elementList.add(localUTF8XmlDoc == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localUTF8XmlDoc));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUTF8XmlDoc));
 
-			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(
-					qName, elementList.toArray(), attribList.toArray());
+			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
+					attribList.toArray());
 
 		}
 
@@ -2540,9 +2199,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			 * element If this object is a complex type, the reader is
 			 * positioned at the end element of its outer element
 			 */
-			public static WriteObjectOut parse(
-					javax.xml.stream.XMLStreamReader reader)
-					throws java.lang.Exception {
+			public static WriteObjectOut parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception {
 				WriteObjectOut object = new WriteObjectOut();
 
 				int event;
@@ -2554,32 +2211,22 @@ public class TmriJaxRpcOutAccessServiceStub extends
 					while (!reader.isStartElement() && !reader.isEndElement())
 						reader.next();
 
-					if (reader
-							.getAttributeValue(
-									"http://www.w3.org/2001/XMLSchema-instance",
-									"type") != null) {
+					if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null) {
 						java.lang.String fullTypeName = reader
-								.getAttributeValue(
-										"http://www.w3.org/2001/XMLSchema-instance",
-										"type");
+								.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
 						if (fullTypeName != null) {
 							java.lang.String nsPrefix = null;
 							if (fullTypeName.indexOf(":") > -1) {
-								nsPrefix = fullTypeName.substring(0,
-										fullTypeName.indexOf(":"));
+								nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
 							}
 							nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-							java.lang.String type = fullTypeName
-									.substring(fullTypeName.indexOf(":") + 1);
+							java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
 							if (!"writeObjectOut".equals(type)) {
 								// find namespace for the prefix
-								java.lang.String nsUri = reader
-										.getNamespaceContext().getNamespaceURI(
-												nsPrefix);
-								return (WriteObjectOut) ExtensionMapper
-										.getTypeObject(nsUri, type, reader);
+								java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+								return (WriteObjectOut) ExtensionMapper.getTypeObject(nsUri, type, reader);
 							}
 
 						}
@@ -2596,20 +2243,14 @@ public class TmriJaxRpcOutAccessServiceStub extends
 					while (!reader.isStartElement() && !reader.isEndElement())
 						reader.next();
 
-					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "xtlb")
-									.equals(reader.getName())) {
+					if (reader.isStartElement() && new javax.xml.namespace.QName("", "xtlb").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setXtlb(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setXtlb(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -2632,19 +2273,43 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						reader.next();
 
 					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "jkxlh")
-									.equals(reader.getName())) {
+							&& new javax.xml.namespace.QName("", "jkxlh").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setJkxlh(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setJkxlh(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+
+						} else {
+
+							reader.getElementText(); // throw away text nodes if
+														// any.
+						}
+
+						reader.next();
+
+					} // End of if for expected property start element
+
+					else {
+						// A start element we are not expecting indicates an
+						// invalid parameter was passed
+						throw new org.apache.axis2.databinding.ADBException(
+								"Unexpected subelement " + reader.getName());
+					}
+
+					while (!reader.isStartElement() && !reader.isEndElement())
+						reader.next();
+
+					if (reader.isStartElement() && new javax.xml.namespace.QName("", "jkid").equals(reader.getName())) {
+
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
+
+							java.lang.String content = reader.getElementText();
+
+							object.setJkid(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -2667,54 +2332,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						reader.next();
 
 					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "jkid")
-									.equals(reader.getName())) {
+							&& new javax.xml.namespace.QName("", "UTF8XmlDoc").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setJkid(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
-
-						} else {
-
-							reader.getElementText(); // throw away text nodes if
-														// any.
-						}
-
-						reader.next();
-
-					} // End of if for expected property start element
-
-					else {
-						// A start element we are not expecting indicates an
-						// invalid parameter was passed
-						throw new org.apache.axis2.databinding.ADBException(
-								"Unexpected subelement " + reader.getName());
-					}
-
-					while (!reader.isStartElement() && !reader.isEndElement())
-						reader.next();
-
-					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("", "UTF8XmlDoc")
-									.equals(reader.getName())) {
-
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
-
-							java.lang.String content = reader.getElementText();
-
-							object.setUTF8XmlDoc(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setUTF8XmlDoc(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -2753,12 +2379,11 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 	}
 
-	public static class QueryObjectOutResponse implements
-			org.apache.axis2.databinding.ADBBean {
+	public static class QueryObjectOutResponse implements org.apache.axis2.databinding.ADBBean {
 
 		public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-				"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess",
-				"queryObjectOutResponse", "ns1");
+				"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess", "queryObjectOutResponse",
+				"ns1");
 
 		/**
 		 * field for QueryObjectOutReturn
@@ -2793,67 +2418,52 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * @param factory
 		 * @return org.apache.axiom.om.OMElement
 		 */
-		public org.apache.axiom.om.OMElement getOMElement(
-				final javax.xml.namespace.QName parentQName,
-				final org.apache.axiom.om.OMFactory factory)
-				throws org.apache.axis2.databinding.ADBException {
+		public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
+				final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException {
 
-			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(
-					this, MY_QNAME);
+			org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
+					MY_QNAME);
 			return factory.createOMElement(dataSource, MY_QNAME);
 
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter)
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 			serialize(parentQName, xmlWriter, false);
 		}
 
-		public void serialize(final javax.xml.namespace.QName parentQName,
-				javax.xml.stream.XMLStreamWriter xmlWriter,
+		public void serialize(final javax.xml.namespace.QName parentQName, javax.xml.stream.XMLStreamWriter xmlWriter,
 				boolean serializeType)
-				throws javax.xml.stream.XMLStreamException,
-				org.apache.axis2.databinding.ADBException {
+				throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
 
 			java.lang.String prefix = null;
 			java.lang.String namespace = null;
 
 			prefix = parentQName.getPrefix();
 			namespace = parentQName.getNamespaceURI();
-			writeStartElement(prefix, namespace, parentQName.getLocalPart(),
-					xmlWriter);
+			writeStartElement(prefix, namespace, parentQName.getLocalPart(), xmlWriter);
 
 			if (serializeType) {
 
 				java.lang.String namespacePrefix = registerPrefix(xmlWriter,
-						"http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess");
-				if ((namespacePrefix != null)
-						&& (namespacePrefix.trim().length() > 0)) {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type",
-							namespacePrefix + ":queryObjectOutResponse",
-							xmlWriter);
+						"http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess");
+				if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+							namespacePrefix + ":queryObjectOutResponse", xmlWriter);
 				} else {
-					writeAttribute("xsi",
-							"http://www.w3.org/2001/XMLSchema-instance",
-							"type", "queryObjectOutResponse", xmlWriter);
+					writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "queryObjectOutResponse",
+							xmlWriter);
 				}
 
 			}
 
 			namespace = "";
-			writeStartElement(null, namespace, "queryObjectOutReturn",
-					xmlWriter);
+			writeStartElement(null, namespace, "queryObjectOutReturn", xmlWriter);
 
 			if (localQueryObjectOutReturn == null) {
 				// write the nil attribute
 
-				writeAttribute("xsi",
-						"http://www.w3.org/2001/XMLSchema-instance", "nil",
-						"1", xmlWriter);
+				writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "nil", "1", xmlWriter);
 
 			} else {
 
@@ -2867,23 +2477,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 		}
 
-		private static java.lang.String generatePrefix(
-				java.lang.String namespace) {
-			if (namespace
-					.equals("http://"+getIp()+":"+getPort()+"/pnweb/services/TmriOutAccess")) {
+		private static java.lang.String generatePrefix(java.lang.String namespace) {
+			if (namespace.equals("http://" + getIp() + ":" + getPort() + "/pnweb/services/TmriOutAccess")) {
 				return "ns1";
 			}
-			return org.apache.axis2.databinding.utils.BeanUtil
-					.getUniquePrefix();
+			return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 		}
 
 		/**
 		 * Utility method to write an element start tag.
 		 */
-		private void writeStartElement(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String localPart,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeStartElement(java.lang.String prefix, java.lang.String namespace, java.lang.String localPart,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
 			if (writerPrefix != null) {
 				xmlWriter.writeStartElement(namespace, localPart);
@@ -2903,10 +2508,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute with the ns prefix
 		 */
-		private void writeAttribute(java.lang.String prefix,
-				java.lang.String namespace, java.lang.String attName,
-				java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeAttribute(java.lang.String prefix, java.lang.String namespace, java.lang.String attName,
+				java.lang.String attValue, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			if (xmlWriter.getPrefix(namespace) == null) {
 				xmlWriter.writeNamespace(prefix, namespace);
@@ -2918,10 +2521,8 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeAttribute(java.lang.String namespace,
-				java.lang.String attName, java.lang.String attValue,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
-				throws javax.xml.stream.XMLStreamException {
+		private void writeAttribute(java.lang.String namespace, java.lang.String attName, java.lang.String attValue,
+				javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 			if (namespace.equals("")) {
 				xmlWriter.writeAttribute(attName, attValue);
 			} else {
@@ -2933,14 +2534,12 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Util method to write an attribute without the ns prefix
 		 */
-		private void writeQNameAttribute(java.lang.String namespace,
-				java.lang.String attName, javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNameAttribute(java.lang.String namespace, java.lang.String attName,
+				javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			java.lang.String attributeNamespace = qname.getNamespaceURI();
-			java.lang.String attributePrefix = xmlWriter
-					.getPrefix(attributeNamespace);
+			java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
 			if (attributePrefix == null) {
 				attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
 			}
@@ -2963,8 +2562,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * method to handle Qnames
 		 */
 
-		private void writeQName(javax.xml.namespace.QName qname,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQName(javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String namespaceURI = qname.getNamespaceURI();
 			if (namespaceURI != null) {
@@ -2976,26 +2574,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 				}
 
 				if (prefix.trim().length() > 0) {
-					xmlWriter.writeCharacters(prefix
-							+ ":"
-							+ org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(
+							prefix + ":" + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				} else {
 					// i.e this is the default namespace
-					xmlWriter
-							.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(qname));
+					xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 				}
 
 			} else {
-				xmlWriter
-						.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-								.convertToString(qname));
+				xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
 			}
 		}
 
-		private void writeQNames(javax.xml.namespace.QName[] qnames,
-				javax.xml.stream.XMLStreamWriter xmlWriter)
+		private void writeQNames(javax.xml.namespace.QName[] qnames, javax.xml.stream.XMLStreamWriter xmlWriter)
 				throws javax.xml.stream.XMLStreamException {
 
 			if (qnames != null) {
@@ -3020,20 +2611,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						}
 
 						if (prefix.trim().length() > 0) {
-							stringToWrite
-									.append(prefix)
-									.append(":")
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(prefix).append(":").append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						} else {
-							stringToWrite
-									.append(org.apache.axis2.databinding.utils.ConverterUtil
-											.convertToString(qnames[i]));
+							stringToWrite.append(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 						}
 					} else {
 						stringToWrite
-								.append(org.apache.axis2.databinding.utils.ConverterUtil
-										.convertToString(qnames[i]));
+								.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
 					}
 				}
 				xmlWriter.writeCharacters(stringToWrite.toString());
@@ -3044,22 +2630,18 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		/**
 		 * Register a namespace prefix
 		 */
-		private java.lang.String registerPrefix(
-				javax.xml.stream.XMLStreamWriter xmlWriter,
-				java.lang.String namespace)
+		private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace)
 				throws javax.xml.stream.XMLStreamException {
 			java.lang.String prefix = xmlWriter.getPrefix(namespace);
 			if (prefix == null) {
 				prefix = generatePrefix(namespace);
-				javax.xml.namespace.NamespaceContext nsContext = xmlWriter
-						.getNamespaceContext();
+				javax.xml.namespace.NamespaceContext nsContext = xmlWriter.getNamespaceContext();
 				while (true) {
 					java.lang.String uri = nsContext.getNamespaceURI(prefix);
 					if (uri == null || uri.length() == 0) {
 						break;
 					}
-					prefix = org.apache.axis2.databinding.utils.BeanUtil
-							.getUniquePrefix();
+					prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
 				}
 				xmlWriter.writeNamespace(prefix, namespace);
 				xmlWriter.setPrefix(prefix, namespace);
@@ -3071,22 +2653,19 @@ public class TmriJaxRpcOutAccessServiceStub extends
 		 * databinding method to get an XML representation of this object
 		 * 
 		 */
-		public javax.xml.stream.XMLStreamReader getPullParser(
-				javax.xml.namespace.QName qName)
+		public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
 				throws org.apache.axis2.databinding.ADBException {
 
 			java.util.ArrayList elementList = new java.util.ArrayList();
 			java.util.ArrayList attribList = new java.util.ArrayList();
 
-			elementList.add(new javax.xml.namespace.QName("",
-					"queryObjectOutReturn"));
+			elementList.add(new javax.xml.namespace.QName("", "queryObjectOutReturn"));
 
 			elementList.add(localQueryObjectOutReturn == null ? null
-					: org.apache.axis2.databinding.utils.ConverterUtil
-							.convertToString(localQueryObjectOutReturn));
+					: org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localQueryObjectOutReturn));
 
-			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(
-					qName, elementList.toArray(), attribList.toArray());
+			return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
+					attribList.toArray());
 
 		}
 
@@ -3105,8 +2684,7 @@ public class TmriJaxRpcOutAccessServiceStub extends
 			 * element If this object is a complex type, the reader is
 			 * positioned at the end element of its outer element
 			 */
-			public static QueryObjectOutResponse parse(
-					javax.xml.stream.XMLStreamReader reader)
+			public static QueryObjectOutResponse parse(javax.xml.stream.XMLStreamReader reader)
 					throws java.lang.Exception {
 				QueryObjectOutResponse object = new QueryObjectOutResponse();
 
@@ -3119,32 +2697,22 @@ public class TmriJaxRpcOutAccessServiceStub extends
 					while (!reader.isStartElement() && !reader.isEndElement())
 						reader.next();
 
-					if (reader
-							.getAttributeValue(
-									"http://www.w3.org/2001/XMLSchema-instance",
-									"type") != null) {
+					if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null) {
 						java.lang.String fullTypeName = reader
-								.getAttributeValue(
-										"http://www.w3.org/2001/XMLSchema-instance",
-										"type");
+								.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
 						if (fullTypeName != null) {
 							java.lang.String nsPrefix = null;
 							if (fullTypeName.indexOf(":") > -1) {
-								nsPrefix = fullTypeName.substring(0,
-										fullTypeName.indexOf(":"));
+								nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
 							}
 							nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-							java.lang.String type = fullTypeName
-									.substring(fullTypeName.indexOf(":") + 1);
+							java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
 							if (!"queryObjectOutResponse".equals(type)) {
 								// find namespace for the prefix
-								java.lang.String nsUri = reader
-										.getNamespaceContext().getNamespaceURI(
-												nsPrefix);
-								return (QueryObjectOutResponse) ExtensionMapper
-										.getTypeObject(nsUri, type, reader);
+								java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+								return (QueryObjectOutResponse) ExtensionMapper.getTypeObject(nsUri, type, reader);
 							}
 
 						}
@@ -3162,20 +2730,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 						reader.next();
 
 					if (reader.isStartElement()
-							&& new javax.xml.namespace.QName("",
-									"queryObjectOutReturn").equals(reader
-									.getName())) {
+							&& new javax.xml.namespace.QName("", "queryObjectOutReturn").equals(reader.getName())) {
 
-						nillableValue = reader.getAttributeValue(
-								"http://www.w3.org/2001/XMLSchema-instance",
-								"nil");
-						if (!"true".equals(nillableValue)
-								&& !"1".equals(nillableValue)) {
+						nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "nil");
+						if (!"true".equals(nillableValue) && !"1".equals(nillableValue)) {
 
 							java.lang.String content = reader.getElementText();
 
-							object.setQueryObjectOutReturn(org.apache.axis2.databinding.utils.ConverterUtil
-									.convertToString(content));
+							object.setQueryObjectOutReturn(
+									org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
 						} else {
 
@@ -3214,16 +2777,12 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 	}
 
-	private org.apache.axiom.om.OMElement toOM(
-			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut param,
+	private org.apache.axiom.om.OMElement toOM(com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut param,
 			boolean optimizeContent) throws org.apache.axis2.AxisFault {
 
 		try {
-			return param
-					.getOMElement(
-							com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.MY_QNAME,
-							org.apache.axiom.om.OMAbstractFactory
-									.getOMFactory());
+			return param.getOMElement(com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.MY_QNAME,
+					org.apache.axiom.om.OMAbstractFactory.getOMFactory());
 		} catch (org.apache.axis2.databinding.ADBException e) {
 			throw org.apache.axis2.AxisFault.makeFault(e);
 		}
@@ -3231,69 +2790,54 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	}
 
 	private org.apache.axiom.om.OMElement toOM(
-			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse param,
-			boolean optimizeContent) throws org.apache.axis2.AxisFault {
-
-		try {
-			return param
-					.getOMElement(
-							com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.MY_QNAME,
-							org.apache.axiom.om.OMAbstractFactory
-									.getOMFactory());
-		} catch (org.apache.axis2.databinding.ADBException e) {
-			throw org.apache.axis2.AxisFault.makeFault(e);
-		}
-
-	}
-
-	private org.apache.axiom.om.OMElement toOM(
-			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut param,
-			boolean optimizeContent) throws org.apache.axis2.AxisFault {
-
-		try {
-			return param
-					.getOMElement(
-							com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.MY_QNAME,
-							org.apache.axiom.om.OMAbstractFactory
-									.getOMFactory());
-		} catch (org.apache.axis2.databinding.ADBException e) {
-			throw org.apache.axis2.AxisFault.makeFault(e);
-		}
-
-	}
-
-	private org.apache.axiom.om.OMElement toOM(
-			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse param,
-			boolean optimizeContent) throws org.apache.axis2.AxisFault {
-
-		try {
-			return param
-					.getOMElement(
-							com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.MY_QNAME,
-							org.apache.axiom.om.OMAbstractFactory
-									.getOMFactory());
-		} catch (org.apache.axis2.databinding.ADBException e) {
-			throw org.apache.axis2.AxisFault.makeFault(e);
-		}
-
-	}
-
-	private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
-			org.apache.axiom.soap.SOAPFactory factory,
-			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut param,
-			boolean optimizeContent, javax.xml.namespace.QName methodQName)
+			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse param, boolean optimizeContent)
 			throws org.apache.axis2.AxisFault {
 
 		try {
+			return param.getOMElement(
+					com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.MY_QNAME,
+					org.apache.axiom.om.OMAbstractFactory.getOMFactory());
+		} catch (org.apache.axis2.databinding.ADBException e) {
+			throw org.apache.axis2.AxisFault.makeFault(e);
+		}
 
-			org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory
-					.getDefaultEnvelope();
-			emptyEnvelope
-					.getBody()
-					.addChild(
-							param.getOMElement(
-									com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.MY_QNAME,
-									factory));
+	}
+
+	private org.apache.axiom.om.OMElement toOM(com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut param,
+			boolean optimizeContent) throws org.apache.axis2.AxisFault {
+
+		try {
+			return param.getOMElement(com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.MY_QNAME,
+					org.apache.axiom.om.OMAbstractFactory.getOMFactory());
+		} catch (org.apache.axis2.databinding.ADBException e) {
+			throw org.apache.axis2.AxisFault.makeFault(e);
+		}
+
+	}
+
+	private org.apache.axiom.om.OMElement toOM(
+			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse param, boolean optimizeContent)
+			throws org.apache.axis2.AxisFault {
+
+		try {
+			return param.getOMElement(
+					com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.MY_QNAME,
+					org.apache.axiom.om.OMAbstractFactory.getOMFactory());
+		} catch (org.apache.axis2.databinding.ADBException e) {
+			throw org.apache.axis2.AxisFault.makeFault(e);
+		}
+
+	}
+
+	private org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory,
+			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut param, boolean optimizeContent,
+			javax.xml.namespace.QName methodQName) throws org.apache.axis2.AxisFault {
+
+		try {
+
+			org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+			emptyEnvelope.getBody().addChild(param.getOMElement(
+					com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.MY_QNAME, factory));
 			return emptyEnvelope;
 		} catch (org.apache.axis2.databinding.ADBException e) {
 			throw org.apache.axis2.AxisFault.makeFault(e);
@@ -3303,22 +2847,15 @@ public class TmriJaxRpcOutAccessServiceStub extends
 
 	/* methods to provide back word compatibility */
 
-	private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
-			org.apache.axiom.soap.SOAPFactory factory,
-			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut param,
-			boolean optimizeContent, javax.xml.namespace.QName methodQName)
-			throws org.apache.axis2.AxisFault {
+	private org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory,
+			com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut param, boolean optimizeContent,
+			javax.xml.namespace.QName methodQName) throws org.apache.axis2.AxisFault {
 
 		try {
 
-			org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory
-					.getDefaultEnvelope();
-			emptyEnvelope
-					.getBody()
-					.addChild(
-							param.getOMElement(
-									com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.MY_QNAME,
-									factory));
+			org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+			emptyEnvelope.getBody().addChild(param.getOMElement(
+					com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.MY_QNAME, factory));
 			return emptyEnvelope;
 		} catch (org.apache.axis2.databinding.ADBException e) {
 			throw org.apache.axis2.AxisFault.makeFault(e);
@@ -3331,43 +2868,37 @@ public class TmriJaxRpcOutAccessServiceStub extends
 	/**
 	 * get the default envelope
 	 */
-	private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
-			org.apache.axiom.soap.SOAPFactory factory) {
+	private org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory) {
 		return factory.getDefaultEnvelope();
 	}
 
-	private java.lang.Object fromOM(org.apache.axiom.om.OMElement param,
-			java.lang.Class type, java.util.Map extraNamespaces)
-			throws org.apache.axis2.AxisFault {
+	private java.lang.Object fromOM(org.apache.axiom.om.OMElement param, java.lang.Class type,
+			java.util.Map extraNamespaces) throws org.apache.axis2.AxisFault {
 
 		try {
 
-			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.class
-					.equals(type)) {
+			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.class.equals(type)) {
 
 				return com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOut.Factory
 						.parse(param.getXMLStreamReaderWithoutCaching());
 
 			}
 
-			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.class
-					.equals(type)) {
+			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.class.equals(type)) {
 
 				return com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse.Factory
 						.parse(param.getXMLStreamReaderWithoutCaching());
 
 			}
 
-			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.class
-					.equals(type)) {
+			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.class.equals(type)) {
 
 				return com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOut.Factory
 						.parse(param.getXMLStreamReaderWithoutCaching());
 
 			}
 
-			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.class
-					.equals(type)) {
+			if (com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.class.equals(type)) {
 
 				return com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse.Factory
 						.parse(param.getXMLStreamReaderWithoutCaching());

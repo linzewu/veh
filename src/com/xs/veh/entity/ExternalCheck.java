@@ -3,6 +3,7 @@ package com.xs.veh.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,21 +20,27 @@ public class ExternalCheck extends BaseEntity {
 	public static final String PD_BHG="2";
 	
 	@Column(length = 25)
+	@NotNull
 	private String jylsh;
 
 	@Column(length = 20)
+	@NotNull
 	private String hphm;
 
 	@Column(length = 10)
+	@NotNull
 	private String hpzl;
 	
 	@Column(length = 20)
+	@NotNull
 	private String jyjgbh;
 
 	@Column
+	@NotNull
 	private Integer jycs;
 
 	@Column(length = 20)
+	@NotNull
 	private String jyxm;
 
 	

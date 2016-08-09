@@ -14,6 +14,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.Message;
+import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.User;
@@ -193,8 +194,6 @@ public class ExternalCheckManager {
 				vehCheckLogin.setWjy(user.getRealName());
 				vehCheckLogin.setWjysfzh(user.getIdCard());
 			}
-			
-			
 			this.hibernateTemplate.update(vehCheckLogin);
 			message.setMessage("上传成功");
 			message.setState(Message.STATE_SUCCESS);
@@ -225,6 +224,20 @@ public class ExternalCheckManager {
 		}
 		return (List<VehCheckLogin>) this.hibernateTemplate.find(sql, values.toArray());
 
+	}
+	
+	public Message savePhoto(CheckPhoto checkPhoto){
+		
+		
+		
+		this.hibernateTemplate.save(checkPhoto);
+		
+		Message message = new Message();
+		message.setMessage("上传成功");
+		message.setState(Message.STATE_SUCCESS);
+		
+		return message;
+		
 	}
 
 }

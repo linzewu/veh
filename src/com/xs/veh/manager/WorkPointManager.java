@@ -167,7 +167,6 @@ public class WorkPointManager {
 					}
 				}
 				
-				
 			} else {
 				// 设备工位为空闲状态
 				setWorkPointIsNotUse(workPoint);
@@ -190,7 +189,6 @@ public class WorkPointManager {
 
 	@SuppressWarnings("unchecked")
 	public VehCheckLogin getVehCheckLogin(CheckQueue checkQueue) {
-
 		List<VehCheckLogin> list = (List<VehCheckLogin>) this.hibernateTemplate
 				.find("from VehCheckLogin where jylsh=? and jycs = ?", checkQueue.getJylsh(), checkQueue.getJycs());
 		if (!list.isEmpty()) {
@@ -206,7 +204,7 @@ public class WorkPointManager {
 			workPoint.setJycs(null);
 			workPoint.setHphm(null);
 			workPoint.setHpzl(null);
-			workPoint.setIsUse(WorkPoint.ISUSE_YES);
+			workPoint.setIsUse(WorkPoint.ISUSE_NO);
 			this.hibernateTemplate.update(workPoint);
 		}
 	}

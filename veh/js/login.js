@@ -1,10 +1,3 @@
-/*document.onkeydown=function(event){
-      var e = event || window.event || arguments.callee.caller.arguments[0];
-       if(e && e.keyCode==13){
-    	   
-      }
- };*/
-
 document.onkeydown = function(e) {
 	var e = event || window.event || arguments.callee.caller.arguments[0];
 	
@@ -30,6 +23,9 @@ document.onkeydown = function(e) {
 function getNextInput(input) {
 
 	var form = input.form;
+	if(!form){
+		return null;
+	}
 	for (var i = 0; i < form.elements.length; i++) {
 		if (form.elements[i] == input) {
 			break;
@@ -65,14 +61,23 @@ function login() {
 		return;
 	}
 	
-	$.post("../user/login",{userName:userName,password:password}, function(text, data){
-		var jdata = data.json();
-		console.log(jdata)
-		if(jdata.state=1){
-			window.location.href="/veh/";
+	$.post("/veh/user/login",{userName:userName,password:password}, function(data){
+		console.log(data);
+		if(data.state==1){
+			window.location.href="/veh/html/index.html";
 		}else{
-			
+			$.messager.alert("登陆失败","用户名或密码错误！","info");
 		}
-		
-	});
+	},"json");
 }
+
+$(document).ajaxStart(function(){
+	$.messager.progress({
+		title:"请等待",
+		msg:"请求发送中。。。"
+	}); 
+});
+
+$(document).ajaxComplete(function(){
+	$.messager.progress('close');
+});

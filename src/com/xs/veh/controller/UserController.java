@@ -35,25 +35,36 @@ public class UserController {
 		RequestContext requestContext = new RequestContext(request);
 		if (user != null) {
 			session.setAttribute(Constant.ConstantKey.USER_SESSIO_NKEY, user);
-			return ResultHandler.toMyJSON(1, requestContext.getMessage(Constant.ConstantMessage.LOGIN_SUCCESS), user);
+			Map data=ResultHandler.toMyJSON(1, requestContext.getMessage(Constant.ConstantMessage.LOGIN_SUCCESS), user);
+			data.put("session", session.getId());
+			return data;
 		} else {
-			return ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
+			Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
+			data.put("session", session.getId());
+			session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
+			return data;
 		}
-
 	}
+	
+	@RequestMapping(value = "logout", method = RequestMethod.POST)
+	public @ResponseBody Map logout(HttpSession session) {
+		session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
+		session.invalidate();
+		return ResultHandler.toSuccessJSON("注销成功");
+	}
+	
+	
 
 	@RequestMapping(value = "getUsers", method = RequestMethod.POST)
 	public @ResponseBody Map getUsers(User user, PageInfo pageInfo) {
 
 		Map json = ResultHandler.toMyJSON(userManager.getUsers(user, pageInfo),
 				userManager.getUserCount(user, pageInfo));
-
 		return json;
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveUser(@Valid User user, BindingResult result) {
-		
 		if (!result.hasErrors()) {
 			User u = this.userManager.saveUser(user);
 			return  ResultHandler.resultHandle(result,u ,Constant.ConstantMessage.SAVE_SUCCESS);
@@ -64,7 +75,6 @@ public class UserController {
 
 	@RequestMapping(value = "validateUserName")
 	public @ResponseBody boolean validateUserName(User user) {
-		
 		User querUser = this.userManager.queryUserByUserName(user);
 		if(querUser==null){
 			return true;
@@ -84,5 +94,15 @@ public class UserController {
 	public @ResponseBody void delete(User user){
 		this.userManager.deleteUser(user);
 	}
+	
+	@RequestMapping(value = "getCurrentUser", method = RequestMethod.POST)
+	public @ResponseBody User getCurrentUser(HttpSession session) {
+		
+		User user = (User)session.getAttribute("user");
+		
+		return user;
+		
+	}
+
 
 }

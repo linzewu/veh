@@ -2,31 +2,60 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="/veh/js/easyui/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css" href="/veh/js/easyui/themes/color.css">
-<link rel="stylesheet" type="text/css" href="/veh/css/vhe.css">
-<link rel="stylesheet" type="text/css" href="/veh/js/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"
+	href="/veh/js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"
+	href="/veh/js/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css" href="/veh/css/veh.css">
+<link rel="stylesheet" type="text/css"
+	href="/veh/js/easyui/themes/icon.css">
 <script type="text/javascript" src="/veh/js/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="/veh/js/easyui/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="/veh/js/easyui/locale/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript" src="/veh/js/easyui/datagrid-groupview.js"></script>
+<script type="text/javascript"
+	src="/veh/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript"
+	src="/veh/js/easyui/datagrid-groupview.js"></script>
 <script type="text/javascript" src="/veh/js/veh.js"></script>
 <script type="text/javascript" src="/veh/js/common.js"></script>
-  <script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
 <title>机动车查验系统</title>
 </head>
 <body class="easyui-layout">
 	<div data-options="region:'north'" class="header">
-		<div style="float: left;	margin: 0 0 0 30px;"><img alt="" src="/veh/images/logo.png" style="border: 0 ;margin: 0" ></div>
-		<div class="header-title" style="float: left;">盐城市机动车安全检验系统  </div>
+		<div style="float: left; margin: 0 0 0 30px;">
+			<img alt="" src="/veh/images/logo.png" style="border: 0; margin: 0">
+		</div>
+		<div class="header-title" style="float: left;">上海翔尚机动车安全技术检验系统</div>
+		<div style="float: right; height: 50px;">
+			<div style="padding: 24px 10px 0 0;">
+				用户名：<span id="realName"></span>_您好！ <a class="easyui-linkbutton c5" data-options="onClick:logout">注销</a>
+			</div>
+		</div>
 	</div>
-    <div data-options="region:'center'">
-    	<div class="easyui-tabs" data-options="fit:true,justified:true,plain:false,tabHeight:34,tabPosition:'top',pill:true">
-		    <div title="机动车检测登陆" data-options="href:'vehlogin.html'"></div>
-		    <div title="机动车检测报告"  data-options="href:'report/index.html'"></div>
-		    <div title="系统管理" data-options="href:'system.html',onLoad:system.initEvents">
-		    </div>
+	<div data-options="region:'center'">
+		<div class="easyui-tabs"
+			data-options="fit:true,justified:true,plain:false,tabHeight:34,tabPosition:'top',pill:true">
+			<div title="机动车检测登陆" data-options="href:'vehlogin.html'"></div>
+			<div title="机动车检测报告" data-options="href:'report/index.html'"></div>
+			<div title="系统管理"
+				data-options="href:'system.html',onLoad:system.initEvents"></div>
 		</div>
 	</div>
 </body>
+<script type="text/javascript">
+	$.ajax({
+		url : "/veh/user/getCurrentUser",
+		async : false,
+		type:'POST',
+		success : function(data) {
+			$("#realName").text(data.realName);
+		}
+	});
+	
+	function logout(){
+		$.post("/veh/user/logout",function(data){
+			 window.location.href="/veh/html/login.html";
+		});
+	}
+</script>
 </html>

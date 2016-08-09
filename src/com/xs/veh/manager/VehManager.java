@@ -426,13 +426,12 @@ public class VehManager {
 							}
 						} else {
 							// 存在加载制动台 货车 挂车 半挂车 并且是多轴 车3轴以上 不需要上称重台
-							if (flow.getJzzdt() == Flow.JZZDT_YES && device.getType() == Device.CZJCSB
+							/*if (flow.getJzzdt() == Flow.JZZDT_YES && device.getType() == Device.CZJCSB
 									&& vcl.getZs() >= 3 && (vcl.getCllx().indexOf("H") > 0
 									|| vcl.getCllx().indexOf("G") > 0 || vcl.getCllx().indexOf("B") > 0)) {
 								
 								int zs =vcl.getZs();
 								int zw =Integer.parseInt(jyxm.substring(1));
-								
 
 								// 货车类型 1轴与最后轴需要上称重台 其他轴不上称重台
 								if (vcl.getCllx().indexOf("H") > 0 && (zw==1||zw==zs)) {
@@ -478,7 +477,20 @@ public class VehManager {
 								v.setSbsx(j + 1);
 								v.setSbid(deviceId);
 								vehFlows.add(v);
-							}
+							}*/
+							
+							VehFlow v = new VehFlow();
+							v.setGw(gwid);
+							v.setHphm(vcl.getHphm());
+							v.setHpzl(vcl.getHpzl());
+							v.setJylsh(vcl.getJylsh());
+							v.setJycs(vcl.getJycs());
+							v.setJyxm(jyxm);
+							v.setJysb(device.getId());
+							v.setGwsx(i + 1);
+							v.setSbsx(j + 1);
+							v.setSbid(deviceId);
+							vehFlows.add(v);
 						}
 					}
 				}
@@ -531,10 +543,8 @@ public class VehManager {
 	public List<VehCheckLogin> getVehCheckLoginOfSXZT(Integer zt) {
 
 		DetachedCriteria detachedCrit = DetachedCriteria.forClass(VehCheckLogin.class);
-		
 		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
 				.find("from VehCheckLogin where vehsxzt = ?", zt);
-
 		return vheCheckLogins;
 	}
 

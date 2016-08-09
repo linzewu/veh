@@ -801,13 +801,13 @@ var report={
 			
 	},
 	createReport:function (area){
-		var strStyleCSS="<link href='/veh/css/vhe_.css' type='text/css' rel='stylesheet'>";
+		var strStyleCSS="<link href='/veh/css/veh.css' type='text/css' rel='stylesheet'>";
 		var LODOP=getLodop();  
 		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
 		LODOP.SET_PRINT_STYLE("FontSize",14);
 		LODOP.SET_PRINT_STYLE("Bold",1);
 		LODOP.ADD_PRINT_HTM("8mm",34,"RightMargin:0.9cm","BottomMargin:9mm",strStyleCSS+"<body>"+area.html()+"</body>");
-		//LODOP.PRINT();
+		// LODOP.PRINT();
 		LODOP.PREVIEW();
 		
 	},	                     
@@ -1026,3 +1026,64 @@ var report={
 		}
 	}
 }
+
+
+$(function($){  
+    //备份jquery的ajax方法  
+    var _ajax=$.ajax;  
+      
+    //重写jquery的ajax方法  
+    $.ajax=function(opt){  
+        //备份opt中error和success方法  
+        var fn = {  
+            error:function(XMLHttpRequest, textStatus, errorThrown){},  
+            success:function(data, textStatus){}  
+        }  
+        if(opt.error){  
+            fn.error=opt.error;  
+        }  
+        if(opt.success){  
+            fn.success=opt.success;  
+        }  
+          
+        //扩展增强处理  
+        var _opt = $.extend(opt,{  
+            error:function(XMLHttpRequest, textStatus, errorThrown){  
+                fn.error(XMLHttpRequest, textStatus, errorThrown);  
+            },  
+            success:function(data, textStatus){
+            	var temp={};
+            	if(typeof(data) == "string"){
+            		try{
+            			 if (data.match("^\{(.+:.+,*){1,}\}$"))
+                         {
+            				temp=$.parseJSON(data);
+                         }
+            		}catch (e) {
+            			console.log("返回非JSON对象");
+        			}
+            	}else if(typeof(data) == "object"&&!$.isArray(data)){
+            		temp=data;
+            	}
+                if(temp['state'] == 600) {
+                    window.location.href="/veh/html/login.html";
+                    return;
+                }
+                fn.success(data, textStatus);
+            }  
+        });  
+        return _ajax(_opt);  
+    };  
+});
+
+$(document).ajaxStart(function(){
+	$.messager.progress({
+		title:"请等待",
+		msg:"数据请求中。。。"
+	}); 
+});
+
+$(document).ajaxComplete(function(){
+	$.messager.progress('close');
+});
+

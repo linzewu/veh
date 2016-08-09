@@ -13,34 +13,25 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
         http://www.springframework.org/schema/mvc  http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
            ">
-	<mvc:resources location="/images/" mapping="/images/**" />
+     
+    <mvc:resources location="/images/" mapping="/images/**" />
 	<mvc:resources location="/js/" mapping="/js/**" />
 	<mvc:resources location="/css/" mapping="/css/**" />
 	<mvc:resources location="/codebase/" mapping="/codebase/**" />
 	<mvc:resources location="/datas/" mapping="/datas/**" />
-	<mvc:resources location="/html/" mapping="/html/**" />
-	<mvc:resources location="/pages/" mapping="/pages/*" />
-
-
-
+	<mvc:resources location="/html/" mapping="/html/**" />      
+     
 	<!-- 自动加载构建bean -->
 	<context:component-scan base-package="com.xs.veh.controller" />
-	<context:property-placeholder location="classpath:rca.properties" />
-
-	<!-- <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"> 
-		<property name="messageConverters"> <list> <ref bean="stringHttpMessageConverter" 
-		/> <ref bean="mappingJacksonHttpMessageConverter" />json转换器 </list> </property> 
-		</bean> -->
-
-
-	<!-- <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"> 
-		</bean> <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter"> 
-		<constructor-arg value="UTF-8" /> <property name="supportedMediaTypes"> <list> 
-		<value>text/plain;charset=UTF-8</value> <value>application/javascript;charset=UTF-8</value> 
-		</list> </property> </bean> -->
-
-
-
+	
+	<bean class="com.lzw.comm.spring.GollfPropertyPlaceholderConfigurer">
+		<constructor-arg>
+			<value>veh.license</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>veh.crt</value>
+		</constructor-arg>
+	</bean>
 	<mvc:annotation-driven validator="validator">
 		<mvc:message-converters register-defaults="true">
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -53,30 +44,32 @@
 				</property>
 			</bean>
 			<bean
-				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 		</mvc:message-converters>
 	</mvc:annotation-driven>
-	
-	<!-- 以下 validator  ConversionService 在使用 mvc:annotation-driven 会 自动注册-->  
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">  
-        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>  
-        <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->  
-        <property name="validationMessageSource" ref="messageSource"/>  
-    </bean>  
-       
-    <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->  
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
-        <property name="basenames">  
-            <list>  
-                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->  
-                <value>classpath:messages</value>
-                <value>classpath:org/hibernate/validator/ValidationMessages</value>
-            </list>  
-        </property>
-        <property name="useCodeAsDefaultMessage" value="false"/>  
-        <property name="defaultEncoding" value="UTF-8"/>  
-        <property name="cacheSeconds" value="60"/>  
-    </bean>
+
+	<!-- 以下 validator ConversionService 在使用 mvc:annotation-driven 会 自动注册 -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+
+	<!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找 -->
+				<value>classpath:messages</value>
+				<value>classpath:org/hibernate/validator/ValidationMessages</value>
+			</list>
+		</property>
+		<property name="useCodeAsDefaultMessage" value="false" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="cacheSeconds" value="60" />
+	</bean>
 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -88,4 +81,24 @@
 		</property>
 	</bean>
 
+	<!--配置拦截器, 多个拦截器,顺序执行 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/user/login" />
+			<mvc:exclude-mapping path="/bps/**" />
+			<mvc:exclude-mapping path="/images/**" />
+			<mvc:exclude-mapping path="/js/**" />
+			<mvc:exclude-mapping path="/css/**" />
+			<mvc:exclude-mapping path="/datas/**" />
+			<mvc:exclude-mapping path="/html/**" />
+			<bean class="com.xs.veh.util.UserInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+        <property name="defaultEncoding" value="utf-8"></property>   
+        <property name="maxUploadSize" value="5242880"></property>  
+        <property name="maxInMemorySize" value="40960"></property>  
+   </bean>  
 </beans>
