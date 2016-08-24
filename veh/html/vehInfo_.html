@@ -183,11 +183,13 @@
 		
 		<td class="tl"><label>制动力源：</label></td >
 		<td class="tc">
-			<label></label><input class="easyui-combobox vehInfoInput"  name="zzly">
+			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('zzly'),	valueField: 'id',
+		textField: 'value'"  name="zzly">
 		</td>
 		<td class="tl"><label>驱动形式：</label></td >
 		<td class="tc">
-			<input  name="qdxs" class="easyui-numberbox vehInfoInput">
+			<input  name="qdxs" data-options="editable:false,data:comm.getBaseParames('qdxs'),	valueField: 'id',
+		textField: 'value'" class="easyui-combobox vehInfoInput" >
 		</td>
 		<td class="tl"><label>前轴悬架形式：</label></td >
 		<td class="tc">
@@ -204,11 +206,13 @@
 		</td>
 		<td class="tl"><label>车辆用途：</label></td>
 		<td class="tc">
-			<input class="easyui-combobox vehInfoInput" data-options="editable:false" prompt='请选择车辆用途' name="clyt">
+			<input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('clyt'),	valueField: 'id',
+		textField: 'value',editable:false"  prompt='请选择车辆用途' name="clyt">
 		</td>
 		<td class="tl"><label>用途属性：</label></td >
 		<td class="tc">
-			<input  name="ytsx" class="easyui-combobox vehInfoInput" data-options="editable:false"  prompt='用途属性' >
+			<input  name="ytsx" class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('ytsx'),	valueField: 'id',
+		textField: 'value',editable:false"  prompt='用途属性' >
 		</td>
 	</tr>
 </table>

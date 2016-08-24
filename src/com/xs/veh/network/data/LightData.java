@@ -4,17 +4,22 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.xs.common.CharUtil;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.VehManager;
 
 @Scope("prototype")
 @Component("lightData")
 @Entity
 @Table(name = "TM_LightData")
 public class LightData extends BaseDeviceData {
+	
+	private static Logger logger = Logger.getLogger(LightData.class);
 
 	/**
 	 * 光型 远
@@ -219,21 +224,26 @@ public class LightData extends BaseDeviceData {
 	}
 
 	public void setCzpy() {
-		if (this.czpc == null || this.dg == null) {
-			return;
+		try{
+			if (this.czpc == null || this.dg == null) {
+				return;
+			}
+			Integer l = Integer.parseInt(this.czpc.trim());
+			Integer h = this.dg;
+			if (h == 0) {
+				return;
+			}
+			this.czpy = 1 + (l * 1f / h * 1f);
+			
+			this.czpy = (float) (Math.round(czpy * 100)) / 100;
+		}catch(Exception e){
+			logger.error("设置垂直偏移出错", e);
 		}
-		Integer l = Integer.parseInt(this.czpc.trim());
-		Integer h = this.dg;
-		if (h == 0) {
-			return;
-		}
-		this.czpy = 1 + (l * 1f / h * 1f);
 		
-		this.czpy = (float) (Math.round(czpy * 100)) / 100;
 	}
 
 	public void setGqpd() {
-		if (this.gqxz == null || this.gqxz == null) {
+		if (this.gqxz == null || this.gqxz == null||gq==null) {
 			return;
 		}
 		this.gqpd = gq >= this.gqxz ? CheckDataManager.PDJG_HG : CheckDataManager.PDJG_BHG;
@@ -353,7 +363,7 @@ public class LightData extends BaseDeviceData {
 
 		String[] xz = this.getCzpyxz().split(",");
 
-		if (Integer.parseInt(xz[0]) >= this.getCzpy() && Integer.parseInt(xz[1]) <= this.getCzpy()) {
+		if (Float.parseFloat(xz[0].trim()) <= this.getCzpy() && Float.parseFloat(xz[1].trim()) >= this.getCzpy()) {
 			this.czpypd = CheckDataManager.PDJG_HG;
 		} else {
 			this.czpypd = CheckDataManager.PDJG_BHG;

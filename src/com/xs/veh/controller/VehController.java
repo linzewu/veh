@@ -49,7 +49,7 @@ public class VehController {
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
-	
+
 	@Autowired
 	private HttpSession session;
 
@@ -71,9 +71,7 @@ public class VehController {
 	@RequestMapping(value = "getVehCheckItem", method = RequestMethod.POST)
 	public @ResponseBody String getVehCheckItem(@RequestParam Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
-
 		JSON json = vehManager.getVehCheckItem(param);
-
 		return json.toString();
 	}
 
@@ -107,15 +105,49 @@ public class VehController {
 
 		if (!vehManager.isLoged(vehCheckLogin)) {
 			String jylsh = this.vehManager.getJylsh();
+
+			String jyxm = vehCheckLogin.getJyxm();
+
 			vehCheckLogin.setJylsh(jylsh.trim());
 			vehCheckLogin.setJyjgbh(jyjgbh);
 			vehCheckLogin.setJycs(1);
 			vehCheckLogin.setDlsj(new Date());
 			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_DL);
-			vehCheckLogin.setVehsxzt(VehCheckLogin.SXZT_WSX);
-			vehCheckLogin.setVehwjzt(VehCheckLogin.WJZT_WKS);
-			User user =(User)session.getAttribute("user");
-			if(user!=null){
+
+			if (jyxm.indexOf("F1") != -1) {
+				vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_BJC);
+			}
+
+			if (jyxm.indexOf("C1") != -1) {
+				vehCheckLogin.setVehdpzt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehdpzt(VehCheckLogin.ZT_BJC);
+			}
+
+			if (jyxm.indexOf("DC") != -1) {
+				vehCheckLogin.setVehdtdpzt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehdtdpzt(VehCheckLogin.ZT_BJC);
+			}
+
+			// 路试状态
+			if (jyxm.indexOf("R") != -1) {
+				vehCheckLogin.setVehlszt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehlszt(VehCheckLogin.ZT_BJC);
+			}
+
+			// 上线状态
+			if (jyxm.indexOf("H") != -1 || jyxm.indexOf("B") != -1 || jyxm.indexOf("S") != -1
+					|| jyxm.indexOf("A") != -1) {
+				vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_BJC);
+			}
+			User user = (User) session.getAttribute("user");
+			if (user != null) {
 				vehCheckLogin.setDly(user.getRealName());
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
@@ -149,7 +181,6 @@ public class VehController {
 
 	@RequestMapping(value = "getDefaultConfig", method = RequestMethod.POST)
 	public @ResponseBody String getDefaultConfig(VehCheckLogin vehCheckLogin, VehInfo vehInfo) {
-
 		JSONObject json = new JSONObject();
 		json.put("sf", sf);
 		json.put("cs", cs);

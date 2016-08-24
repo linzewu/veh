@@ -142,18 +142,20 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		dbrd.resetCheckStatus();
 		VehFlow nextVehFlow = workPointManager.getNextFlow(vehFlow);
 		dbrd.setNextVehFlow(nextVehFlow);
-		
+
 		Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
-		
-		if(vehCheckLogin.getZs() >= 3 && (vehCheckLogin.getCllx().indexOf("G") > 0
-						|| vehCheckLogin.getCllx().indexOf("B") > 0)&&vehCheckLogin.getZs()!=intZw){
-			dbrd.isPlusLoad=true;
-		}else if(vehCheckLogin.getCllx().indexOf("H") > 0&&vehCheckLogin.getZs() >= 3 && intZw>1&&vehCheckLogin.getZs()!=intZw){
-			dbrd.isPlusLoad=true;
-		}else{
-			dbrd.isPlusLoad=false;
+
+		if (vehCheckLogin.getZs() >= 3
+				&& (vehCheckLogin.getCllx().indexOf("G") > 0 || vehCheckLogin.getCllx().indexOf("B") > 0)
+				&& vehCheckLogin.getZs() != intZw) {
+			dbrd.isPlusLoad = true;
+		} else if (vehCheckLogin.getCllx().indexOf("H") > 0 && vehCheckLogin.getZs() >= 3 && intZw > 1
+				&& vehCheckLogin.getZs() != intZw) {
+			dbrd.isPlusLoad = true;
+		} else {
+			dbrd.isPlusLoad = false;
 		}
-		
+
 		BrakRollerData brakRollerData = dbrd.startCheck(vehFlow);
 		setInfoData(brakRollerData);
 
@@ -161,16 +163,15 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
 
 		WeighData weighData = this.checkDataManager.getWeighDataByBrakRollerData(brakRollerData);
-		
-		//如果是3轴以上的货车 挂车 半挂车 轴重数据取加载制动台的数据
-		if (weighData == null && vehCheckLogin.getZs() >= 3
-				&& (vehCheckLogin.getCllx().indexOf("H") > 0 || vehCheckLogin.getCllx().indexOf("G") > 0
-						|| vehCheckLogin.getCllx().indexOf("B") > 0)){
-			weighData=dbrd.getWeighData();
+
+		// 如果是3轴以上的货车 挂车 半挂车 轴重数据取加载制动台的数据
+		if (weighData == null && vehCheckLogin.getZs() >= 3 && (vehCheckLogin.getCllx().indexOf("H") > 0
+				|| vehCheckLogin.getCllx().indexOf("G") > 0 || vehCheckLogin.getCllx().indexOf("B") > 0)) {
+			weighData = dbrd.getWeighData();
 		}
 
-			// 非驻车制动则计算检测结果
-			if (!brakRollerData.getJyxm().equals("B0")) {
+		// 非驻车制动则计算检测结果
+		if (!brakRollerData.getJyxm().equals("B0")) {
 			// 空载行车制动率
 			brakRollerData.setKzxczdl(weighData);
 			// 空载制动率限制及判定
@@ -183,17 +184,17 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setBphlxz(vehCheckLogin, weighData);
 			// 空载不平衡率判定
 			brakRollerData.setKzbphlpd();
-			
+
 			// 加载制动率限制及判定
 			brakRollerData.setJzzdlxz(vehCheckLogin);
 			brakRollerData.setJzzdlpd();
 			// 加载不平衡率判定
 			brakRollerData.setJzbphlpd();
-			}
+		}
 		brakRollerData.setZpd();
 		this.checkDataManager.saveData(brakRollerData);
 
-		if (nextVehFlow.getJyxm().equals("B0")) {
+		if (nextVehFlow!=null&&nextVehFlow.getJyxm().equals("B0")) {
 			display.sendMessage("请等待", DeviceDisplay.XP);
 		} else {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {

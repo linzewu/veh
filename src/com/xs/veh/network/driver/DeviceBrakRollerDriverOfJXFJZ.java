@@ -197,7 +197,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			}
 			return brakRollerData;
 		} finally {
-			if (!nextVehFlow.getJyxm().equals("B0")) {
+			if (nextVehFlow!=null&&!nextVehFlow.getJyxm().equals("B0")) {
 				this.deviceBrakRoller.sendMessage(jsqss);
 			}
 			

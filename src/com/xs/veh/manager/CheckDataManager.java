@@ -226,8 +226,8 @@ public class CheckDataManager {
 		otherInfoData.setZczdlxz();
 		otherInfoData.setZczdlpd();
 		this.hibernateTemplate.save(otherInfoData);
+		
 		createDeviceCheckJudeg(vehCheckLogin, otherInfoData, parDataOfAnjian);
-
 	}
 
 	/**
@@ -315,15 +315,24 @@ public class CheckDataManager {
 			xh++;
 			this.hibernateTemplate.save(dcj1);
 		}
+		
+		//修改上线状态
+		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
+		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
+		this.hibernateTemplate.update(vehInfo);
+		vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 	}
 
 	private void createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, int xh) {
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
 				"from LightData where  jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
 				LightData.SJZT_ZC);
+		
+		String cllx =vehCheckLogin.getCllx();
+		
+		String syxz=vehCheckLogin.getSyxz();
 
 		for (LightData lightData : lightDatas) {
-
 			String jyxm = lightData.getJyxm();
 			if (flagMap.get(jyxm + lightData.getGx()) == null) {
 				if (lightData.getGx() == LightData.GX_YGD) {
@@ -337,16 +346,19 @@ public class CheckDataManager {
 					xh++;
 					this.hibernateTemplate.save(dcj1);
 				}
-
-				DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-				dcj2.setXh(xh);
-				dcj2.setYqjyxm(getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏");
-				dcj2.setYqjyjg(lightData.getCzpy() == null ? "" : lightData.getCzpy().toString());
-				dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
-				dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
-				dcj2.setXh(xh);
-				xh++;
-				this.hibernateTemplate.save(dcj2);
+				
+				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz.equals("A"))) {
+					DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj2.setXh(xh);
+					dcj2.setYqjyxm(getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏");
+					dcj2.setYqjyjg(lightData.getCzpy() == null ? "" : lightData.getCzpy().toString());
+					dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
+					dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
+					dcj2.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj2);
+				}
+				
 			}
 
 			flagMap.put(jyxm + lightData.getGx(), lightData);
@@ -485,7 +497,6 @@ public class CheckDataManager {
 	}
 
 	public List<BrakRollerData> getReport4(String jylsh) {
-
 		List<BrakRollerData> report4 = (List<BrakRollerData>) this.hibernateTemplate
 				.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm!=?", jylsh, BrakRollerData.SJZT_ZC, "B0");
 		return report4;

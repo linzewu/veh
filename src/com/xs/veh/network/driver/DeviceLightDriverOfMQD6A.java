@@ -145,6 +145,18 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	// 检测返回的数据
 	private byte[] checkData;
 
+	//检测状态
+	private Integer checkState;
+	
+	//正常
+	public static Integer ZT_ZC=0;
+	
+	//无灯
+	public static Integer ZT_WD=1;
+	
+	//出错
+	public static Integer ZT_CC=2;
+
 	@Override
 	public void sysSetting() throws Exception {
 	}
@@ -178,6 +190,10 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	private List<LightData> getData(List<VehFlow> vheFlows) throws InterruptedException {
+		
+		if(checkState!=ZT_ZC){
+			return null;
+		}
 
 		while (dataList.size()<112) {
 			Thread.sleep(200);
@@ -276,11 +292,18 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		byte[] data3 = new byte[4];
 		System.arraycopy(bs, 10, data3, 0, data3.length);
-		lightData.setGq(Integer.parseInt(new String(data3))*100);
+		String gq =new String(data3);
+		if(CharUtil.isNumeric(gq)){
+			lightData.setGq(Integer.parseInt(gq)*100);
+		}
+		
 
 		byte[] data4 = new byte[4];
 		System.arraycopy(bs, 14, data4, 0, data4.length);
-		lightData.setDg(Integer.parseInt(new String(data4).trim()));
+		String dg =new String(data4);
+		if(CharUtil.isNumeric(dg)){
+			lightData.setDg(Integer.parseInt(dg.trim()));
+		}
 
 	}
 
@@ -347,6 +370,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	private void reset() {
+		
+		checkState=ZT_ZC;
 		isChecking = false;
 		isCheckLeft = false;
 		isCheckRight = false;
@@ -470,6 +495,21 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	public void device2pc(byte[] data) throws Exception {
 		if (data.length == 5) {
 			String rtx = CharUtil.byte2HexOfString(data);
+			
+			if(rtx.equals(rClwd)){
+				deviceLight.getDisplay().sendMessage("无法找到灯光", DeviceDisplay.XP);
+				Thread.sleep(2000);
+				this.isChecking = false;
+				return;
+			}
+			
+			if(rtx.equals(rClcc)){
+				deviceLight.getDisplay().sendMessage("测量出错", DeviceDisplay.XP);
+				Thread.sleep(2000);
+				this.isChecking = false;
+				return;
+			}
+			
 			if (rZygclwc.equals(rtx) || rFygclwc.equals(rtx) || rJgclwc.equals(rtx)) {
 				String[] messageArry = null;
 				if (currentPosition == 'L') {
@@ -501,8 +541,6 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			if(dataList.size()==112){
 				isGetData=false;
 			}
-			
-			
 		}
 
 	}

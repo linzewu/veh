@@ -187,14 +187,19 @@ public class ExternalCheckManager {
 			//创建判定结果
 			createExternalCheckJudge(externalCheck);
 			
-			vehCheckLogin.setVehwjzt(VehCheckLogin.WJZT_JYJS);
+			vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_JYJS);
 			vehCheckLogin.setExternalCheckDate(new Date());
 			
 			if(user!=null){
 				vehCheckLogin.setWjy(user.getRealName());
 				vehCheckLogin.setWjysfzh(user.getIdCard());
 			}
+			
 			this.hibernateTemplate.update(vehCheckLogin);
+			
+			//判断项目的状态
+			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
+			
 			message.setMessage("上传成功");
 			message.setState(Message.STATE_SUCCESS);
 		} else {
@@ -211,7 +216,7 @@ public class ExternalCheckManager {
 
 		List values = new ArrayList();
 
-		values.add(VehCheckLogin.WJZT_WKS);
+		values.add(VehCheckLogin.ZT_WKS);
 
 		if (hphm != null) {
 			sql += " and hphm=?";

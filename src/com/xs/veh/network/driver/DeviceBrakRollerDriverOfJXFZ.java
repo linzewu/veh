@@ -150,6 +150,7 @@ public class DeviceBrakRollerDriverOfJXFZ extends AbstractDeviceBrakRoller {
 			// 到位判断
 			dw(vehFlow, zw);
 
+			logger.info("开始检测命令：" + ksjc);
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
 
@@ -173,7 +174,7 @@ public class DeviceBrakRollerDriverOfJXFZ extends AbstractDeviceBrakRoller {
 			}
 			return brakRollerData;
 		} finally {
-			if (!nextVehFlow.getJyxm().equals("B0")) {
+			if (nextVehFlow!=null&&!nextVehFlow.getJyxm().equals("B0")) {
 				this.deviceBrakRoller.sendMessage(jsqss);
 			}
 		}

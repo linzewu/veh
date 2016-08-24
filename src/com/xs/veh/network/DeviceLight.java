@@ -123,7 +123,8 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 		dld.createNewList();
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
-		String jg = "O";
+		String jg = (datas==null||datas.size()==0)?"X":"O";
+		
 		for (LightData data : datas) {
 			data.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), data.getJyxm());
 			data.setCzpy();
@@ -131,6 +132,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			data.setDgpdxz(vehCheckLogin);
 			// 设置光强判定
 			data.setGqpd();
+			
 			// 设置垂直偏移限值
 			data.setCzpyxz(vehCheckLogin);
 			data.setCzpypd();
@@ -150,7 +152,6 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		Thread.sleep(3000);
 		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
 		display.sendMessage("请向前行驶", DeviceDisplay.XP);
-
 		// 判定车是否离开 如果没有离开，则等待是否复位 ，如果离开则结束检测
 		while (dld.deviceSignal1.getSignal(dld.s1) && !dld.deviceSignal2.getSignal(dld.s2)) {
 			Thread.sleep(300);

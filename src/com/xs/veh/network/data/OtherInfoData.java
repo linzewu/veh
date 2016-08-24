@@ -279,6 +279,7 @@ public class OtherInfoData extends BaseEntity {
 			return;
 		}
 		this.zczdpd=(zczdl>=zczdlxz?BaseDeviceData.PDJG_HG:BaseDeviceData.PDJG_BHG).toString();
+		this.zcpd=zczdpd;
 	}
 
 }

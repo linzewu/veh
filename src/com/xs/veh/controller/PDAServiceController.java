@@ -52,14 +52,12 @@ public class PDAServiceController {
 
 	@RequestMapping(value = "external", method = RequestMethod.POST)
 	public @ResponseBody Map externalUpload(@Valid ExternalCheck externalCheck, BindingResult result) {
-
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheck(externalCheck);
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
 		}
-
 	}
 
 	@RequestMapping(value = "getExternal")

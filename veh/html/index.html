@@ -10,6 +10,7 @@
 <link rel="stylesheet" type="text/css"
 	href="/veh/js/easyui/themes/icon.css">
 <script type="text/javascript" src="/veh/js/easyui/jquery.min.js"></script>
+
 <script type="text/javascript" src="/veh/js/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript"
 	src="/veh/js/easyui/locale/easyui-lang-zh_CN.js"></script>
@@ -28,7 +29,7 @@
 		<div class="header-title" style="float: left;">上海翔尚机动车安全技术检验系统</div>
 		<div style="float: right; height: 50px;">
 			<div style="padding: 24px 10px 0 0;">
-				用户名：<span id="realName"></span>_您好！ <a class="easyui-linkbutton c5" data-options="onClick:logout">注销</a>
+				用户名：<span id="realName"></span>您好! <a class="easyui-linkbutton c5" data-options="onClick:logout">注销</a>
 			</div>
 		</div>
 	</div>
@@ -43,19 +44,11 @@
 	</div>
 </body>
 <script type="text/javascript">
-	$.ajax({
-		url : "/veh/user/getCurrentUser",
-		async : false,
-		type:'POST',
-		success : function(data) {
-			$("#realName").text(data.realName);
-		}
-	});
-	
 	function logout(){
 		$.post("/veh/user/logout",function(data){
 			 window.location.href="/veh/html/login.html";
 		});
 	}
+	$("#realName").text(userInfo.realName);
 </script>
 </html>

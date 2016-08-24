@@ -1,20 +1,40 @@
 package com.xs.veh.job;
 
 import java.io.File;
+import java.net.SocketException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.lzw.security.util.WindowsInfoUtil;
 
 @Component("dataExchangeJob")
 public class DataExchangeJobOfFolder  {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Value("${lic.startData}")
+	private String startDataStr;
+	
+	@Value("${lic.endData}")
+	private String endDataStr;
+	
+	@Value("${lic.macaddress}")
+	private String macaddress;
+	
+	@Value("${lic.ip}")
+	private String ipstr;
+	
 
 
 	/**
@@ -79,15 +99,56 @@ public class DataExchangeJobOfFolder  {
 		return flag;
 	}
 	
-	//@Scheduled(fixedDelay = 1000*10)
-	private void timeoutPocess(){
-		Date date = new Date();
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2016, 7, 1, 0, 0, 0);
-		if(date.getTime()>calendar.getTimeInMillis()){
+	@Scheduled(fixedDelay = 1000*10)
+	public void timeoutPocess() throws Exception{
+		try {
+			validate();
+		} catch (Exception e) {
 			if(!sessionFactory.isClosed()){
 				sessionFactory.close();
 			}
+			throw e;
+		}
+	}
+	
+	private void validate() throws Exception{
+		
+		List<Map<String, Object>>  ipAndMac =  WindowsInfoUtil.getLocalInetMac();
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		Date startData  = sdf.parse(startDataStr);
+		Date endData  = sdf.parse(endDataStr);
+		Date now = new Date();
+		if(now.getTime()<startData.getTime()||now.getTime()>endData.getTime()){
+			throw new Exception("系统有效日期为："+startDataStr+"至"+endDataStr);
+		}
+		
+		String[] macs = macaddress.split(",");
+		String[] ips = ipstr.split(",");
+		
+		boolean ipflag =false;
+		boolean macflag =false;
+		
+		for(Map<String,Object> data:ipAndMac){
+			String localip = (String)data.get("ip");
+			String localmac = (String)data.get("mac");
+			for(String ip:ips){
+				if(localip.equals(ip)){
+					ipflag=true;
+					break;
+				}
+			}
+			for(String mac:macs){
+				if(localmac.equals(mac)){
+					macflag=true;
+					break;
+				}
+			}
+		}
+		if(!ipflag){
+			throw new Exception("ip地址不匹配,邦定IP地址为："+ipstr);
+		}
+		if(!macflag){
+			throw new Exception("mac地址不匹配,邦定地址为："+macaddress);
 		}
 	}
 

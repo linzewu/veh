@@ -34,7 +34,6 @@ public class UserManager {
 		} else {
 			return null;
 		}
-
 	}
 
 	public List<User> getUsers(final User user,final PageInfo pageInfo) {

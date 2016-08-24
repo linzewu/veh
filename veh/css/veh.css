@@ -74,7 +74,7 @@ html {
 }
 
 .panel_cyxm {
-	height: 180px;
+	height: 100%;
 	padding: 10px 40px 0px 0px;
 }
 
@@ -88,7 +88,7 @@ html {
 
 .panel_cyxm table tr td label {
 	font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", sans-serif;
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .basetable {

@@ -303,10 +303,10 @@ public class BrakRollerData extends BaseDeviceData {
 		this.zw = zw;
 	}
 
-	@Column(length = 4000)
+	@Column(length = 8000)
 	private String leftDataStr;
 
-	@Column(length = 4000)
+	@Column(length = 8000)
 	private String rigthDataStr;
 
 	public Integer getJszt() {

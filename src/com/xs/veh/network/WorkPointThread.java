@@ -13,7 +13,7 @@ import com.xs.veh.manager.WorkPointManager;
 @Component("workPointThread")
 @Scope("prototype")
 public class WorkPointThread implements Runnable {
-	
+
 	Logger logger = Logger.getLogger(WorkPointThread.class);
 
 	private WorkPoint workPoint;
@@ -23,6 +23,7 @@ public class WorkPointThread implements Runnable {
 
 	@Resource(name = "workPointManager")
 	private WorkPointManager workPointManager;
+
 
 	public WorkPoint getWorkPoint() {
 		return workPoint;
@@ -42,6 +43,6 @@ public class WorkPointThread implements Runnable {
 			}
 			workPointManager.check(workPoint);
 		}
-		
+
 	}
 }

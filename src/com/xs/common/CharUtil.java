@@ -1,5 +1,8 @@
 package com.xs.common;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class CharUtil {
 
 	public static String toHexString(String s) {
@@ -197,5 +200,15 @@ public class CharUtil {
 		}
 		return bbt;
 	}
+	
+	
+	public static boolean isNumeric(String str){ 
+		   Pattern pattern = Pattern.compile("[0-9]*"); 
+		   Matcher isNum = pattern.matcher(str);
+		   if( !isNum.matches() ){
+		       return false; 
+		   } 
+		   return true; 
+		}
 
 }

@@ -86,6 +86,7 @@ public class InitListener implements ServletContextListener {
 			// 打开所有设备
 			openDevice();
 			// 启动工位线程
+			workPointManager.setServletContext(servletContext);
 			workPointManager.startAllWorkPonit();
 
 		} catch (Exception e) {
@@ -106,6 +107,7 @@ public class InitListener implements ServletContextListener {
 
 			if (device.getQtxx() == null) {
 				log.error("设备信息不完整，无法启动,设备类型==" + device.getType());
+				return;
 			}
 
 			// 光电开关

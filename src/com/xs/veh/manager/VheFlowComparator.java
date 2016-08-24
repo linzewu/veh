@@ -82,6 +82,10 @@ public class VheFlowComparator implements Comparator<VehFlow> {
 	 * @return
 	 */
 	private int zdSort(VehFlow o1, VehFlow o2) {
+		
+		String jyxm1=o1.getJyxm().substring(0, 1);
+		String jyxm2=o2.getJyxm().substring(0, 1);
+		
 		if(o1.getJyxm().substring(0, 1).equals("B")){
 			Integer zw1 = Integer.parseInt(o1.getJyxm().substring(1,2));
 			Integer zw2 = Integer.parseInt(o2.getJyxm().substring(1,2));
@@ -100,6 +104,18 @@ public class VheFlowComparator implements Comparator<VehFlow> {
 				return -1;
 			}else{
 				return retzw;
+			}
+		}
+		//灯光
+		if(jyxm1.equals("H")&&jyxm2.equals("H")){
+			Integer dg1 = Integer.parseInt(o1.getJyxm().substring(1,2));
+			Integer dg2 = Integer.parseInt(o2.getJyxm().substring(1,2));
+			if(dg1>dg2){
+				return 1;
+			}else if(dg1<dg2){
+				return -1;
+			}else{
+				return 0;
 			}
 		}
 		return 0;

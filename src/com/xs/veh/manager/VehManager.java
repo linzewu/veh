@@ -202,7 +202,6 @@ public class VehManager {
 			String[] jyxmArray = jyxm.split(",");
 
 			List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
-
 			for (String jyxmItem : jyxmArray) {
 				VehCheckProcess vcp = new VehCheckProcess();
 				vcp.setClsbdh(vehCheckLogin.getClsbdh());
@@ -212,10 +211,8 @@ public class VehManager {
 				vcp.setJyxm(jyxmItem);
 				vcp.setJycs(vehCheckLogin.getJycs());
 				this.hibernateTemplate.save(vcp);
-
 				processArray.add(vcp);
 			}
-
 			addVehFlow(vehCheckLogin, processArray, flow);
 		}
 
@@ -339,7 +336,7 @@ public class VehManager {
 				 * .setParameter("jylsh", jylsh).executeUpdate(); } });
 				 */
 
-				vheLogininfo.setVehjczt(VehCheckLogin.JCZZT_TB);
+				vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
 				this.hibernateTemplate.update(vheLogininfo);
 
 				// 同时修改 上线表 队列表 状态 为退办
@@ -355,7 +352,7 @@ public class VehManager {
 			jsonHead.put("isNetwork", isNetwork);
 			jo.put("head", jsonHead);
 
-			vheLogininfo.setVehjczt(VehCheckLogin.JCZZT_TB);
+			vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
 			this.hibernateTemplate.update(vheLogininfo);
 			// 同时修改 上线表 队列表 状态 为退办
 			return jo;
@@ -426,59 +423,48 @@ public class VehManager {
 							}
 						} else {
 							// 存在加载制动台 货车 挂车 半挂车 并且是多轴 车3轴以上 不需要上称重台
-							/*if (flow.getJzzdt() == Flow.JZZDT_YES && device.getType() == Device.CZJCSB
-									&& vcl.getZs() >= 3 && (vcl.getCllx().indexOf("H") > 0
-									|| vcl.getCllx().indexOf("G") > 0 || vcl.getCllx().indexOf("B") > 0)) {
-								
-								int zs =vcl.getZs();
-								int zw =Integer.parseInt(jyxm.substring(1));
+							/*
+							 * if (flow.getJzzdt() == Flow.JZZDT_YES &&
+							 * device.getType() == Device.CZJCSB && vcl.getZs()
+							 * >= 3 && (vcl.getCllx().indexOf("H") > 0 ||
+							 * vcl.getCllx().indexOf("G") > 0 ||
+							 * vcl.getCllx().indexOf("B") > 0)) {
+							 * 
+							 * int zs =vcl.getZs(); int zw
+							 * =Integer.parseInt(jyxm.substring(1));
+							 * 
+							 * // 货车类型 1轴与最后轴需要上称重台 其他轴不上称重台 if
+							 * (vcl.getCllx().indexOf("H") > 0 &&
+							 * (zw==1||zw==zs)) { VehFlow v = new VehFlow();
+							 * v.setGw(gwid); v.setHphm(vcl.getHphm());
+							 * v.setHpzl(vcl.getHpzl());
+							 * v.setJylsh(vcl.getJylsh());
+							 * v.setJycs(vcl.getJycs()); v.setJyxm(jyxm);
+							 * v.setJysb(device.getId()); v.setGwsx(i + 1);
+							 * v.setSbsx(j + 1); v.setSbid(deviceId);
+							 * vehFlows.add(v); }else
+							 * if((vcl.getCllx().indexOf("G") > 0
+							 * ||vcl.getCllx().indexOf("B")>0)&&zw==zs){ //挂车
+							 * 与办挂车 最后一个轴不加载 VehFlow v = new VehFlow();
+							 * v.setGw(gwid); v.setHphm(vcl.getHphm());
+							 * v.setHpzl(vcl.getHpzl());
+							 * v.setJylsh(vcl.getJylsh());
+							 * v.setJycs(vcl.getJycs()); v.setJyxm(jyxm);
+							 * v.setJysb(device.getId()); v.setGwsx(i + 1);
+							 * v.setSbsx(j + 1); v.setSbid(deviceId);
+							 * vehFlows.add(v); }
+							 * 
+							 * 
+							 * } else { VehFlow v = new VehFlow();
+							 * v.setGw(gwid); v.setHphm(vcl.getHphm());
+							 * v.setHpzl(vcl.getHpzl());
+							 * v.setJylsh(vcl.getJylsh());
+							 * v.setJycs(vcl.getJycs()); v.setJyxm(jyxm);
+							 * v.setJysb(device.getId()); v.setGwsx(i + 1);
+							 * v.setSbsx(j + 1); v.setSbid(deviceId);
+							 * vehFlows.add(v); }
+							 */
 
-								// 货车类型 1轴与最后轴需要上称重台 其他轴不上称重台
-								if (vcl.getCllx().indexOf("H") > 0 && (zw==1||zw==zs)) {
-									VehFlow v = new VehFlow();
-									v.setGw(gwid);
-									v.setHphm(vcl.getHphm());
-									v.setHpzl(vcl.getHpzl());
-									v.setJylsh(vcl.getJylsh());
-									v.setJycs(vcl.getJycs());
-									v.setJyxm(jyxm);
-									v.setJysb(device.getId());
-									v.setGwsx(i + 1);
-									v.setSbsx(j + 1);
-									v.setSbid(deviceId);
-									vehFlows.add(v);
-								}else if((vcl.getCllx().indexOf("G") > 0 ||vcl.getCllx().indexOf("B")>0)&&zw==zs){
-									//挂车 与办挂车 最后一个轴不加载
-									VehFlow v = new VehFlow();
-									v.setGw(gwid);
-									v.setHphm(vcl.getHphm());
-									v.setHpzl(vcl.getHpzl());
-									v.setJylsh(vcl.getJylsh());
-									v.setJycs(vcl.getJycs());
-									v.setJyxm(jyxm);
-									v.setJysb(device.getId());
-									v.setGwsx(i + 1);
-									v.setSbsx(j + 1);
-									v.setSbid(deviceId);
-									vehFlows.add(v);
-								}
-								
-								
-							} else {
-								VehFlow v = new VehFlow();
-								v.setGw(gwid);
-								v.setHphm(vcl.getHphm());
-								v.setHpzl(vcl.getHpzl());
-								v.setJylsh(vcl.getJylsh());
-								v.setJycs(vcl.getJycs());
-								v.setJyxm(jyxm);
-								v.setJysb(device.getId());
-								v.setGwsx(i + 1);
-								v.setSbsx(j + 1);
-								v.setSbid(deviceId);
-								vehFlows.add(v);
-							}*/
-							
 							VehFlow v = new VehFlow();
 							v.setGw(gwid);
 							v.setHphm(vcl.getHphm());
@@ -555,8 +541,7 @@ public class VehManager {
 
 		Message message = new Message();
 
-		if (vehCheckLogin.getVehsxzt() == VehCheckLogin.SXZT_JYJS
-				|| vehCheckLogin.getVehsxzt() == VehCheckLogin.SXZT_JCZ) {
+		if (vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JYJS || vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JCZ) {
 
 			message.setState(Message.STATE_ERROR);
 
@@ -565,24 +550,31 @@ public class VehManager {
 			return message;
 
 		} else {
-
-			// 创建一条新的队列
-			VehFlow vehFlow = (VehFlow) this.hibernateTemplate
+			// 获取第一顺序流程
+			VehFlow firstVehFlow = (VehFlow) this.hibernateTemplate
 					.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
 							vehCheckLogin.getJycs())
 					.get(0);
-			CheckQueue queue = new CheckQueue();
-			queue.setGwsx(vehFlow.getGwsx());
-			queue.setHphm(vehFlow.getHphm());
-			queue.setHpzl(vehFlow.getHpzl());
-			queue.setJcxdh(Integer.parseInt(vehCheckLogin.getJcxdh()));
-			queue.setJycs(vehFlow.getJycs());
-			queue.setJylsh(vehFlow.getJylsh());
-			queue.setPdxh(checkQueueManager.getPdxh(vehCheckLogin.getJcxdh(), vehFlow.getGwsx()));
-			queue.setLcsx(vehFlow.getSx());
-			this.hibernateTemplate.save(queue);
 
-			vehCheckLogin.setVehsxzt(VehCheckLogin.SXZT_JCZ);
+			// 获取同一工位的流程
+			List<VehFlow> vehFlows = (List<VehFlow>) this.hibernateTemplate.find(
+					"from VehFlow where jylsh=? and jycs=? and gw=? order by sx asc", vehCheckLogin.getJylsh(),
+					vehCheckLogin.getJycs(), firstVehFlow.getGw());
+
+			for (VehFlow vehFlow : vehFlows) {
+				CheckQueue queue = new CheckQueue();
+				queue.setGwsx(vehFlow.getGwsx());
+				queue.setHphm(vehFlow.getHphm());
+				queue.setHpzl(vehFlow.getHpzl());
+				queue.setJcxdh(Integer.parseInt(vehCheckLogin.getJcxdh()));
+				queue.setJycs(vehFlow.getJycs());
+				queue.setJylsh(vehFlow.getJylsh());
+				queue.setPdxh(checkQueueManager.getPdxh(vehCheckLogin.getJcxdh(), vehFlow.getGwsx()));
+				queue.setLcsx(vehFlow.getSx());
+				this.hibernateTemplate.save(queue);
+			}
+
+			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_JCZ);
 			vehCheckLogin.setUpLineDate(new Date());
 
 			if (user != null) {
@@ -609,6 +601,31 @@ public class VehManager {
 		} else {
 			return null;
 		}
+	}
+
+	public void updateVehCheckLoginState(String jylsh) {
+
+		List<VehCheckLogin> array = (List<VehCheckLogin>) this.hibernateTemplate
+				.find("from VehCheckLogin where jylsh=?", jylsh);
+
+		if (array != null && !array.isEmpty()) {
+			VehCheckLogin vehCheckLogin = array.get(0);
+			if ((vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_JYJS
+					|| vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_BJC)) {
+				
+				vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
+			}
+
+		}
+
 	}
 
 }

@@ -37,38 +37,31 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	/**
 	 * 退办
 	 */
-	public static final Integer JCZZT_TB = 3;
-
-	/**
-	 * 未上线
-	 */
-	public static final Integer SXZT_WSX = 0;
-
-	/**
-	 * 检验中
-	 */
-	public static final Integer SXZT_JCZ = 1;
-
-	/**
-	 * 检验结束
-	 */
-	public static final Integer SXZT_JYJS = 2;
+	public static final Integer JCZT_TB = 3;
+	
 
 	/**
 	 * 未开始
 	 */
-	public static final Integer WJZT_WKS = 0;
+	public static final Integer ZT_WKS = 0;
 
 	/**
 	 * 检验中
 	 */
-	public static final Integer WJZT_JYZ = 1;
+	public static final Integer ZT_JCZ = 1;
 
 	/**
 	 * 检验结束
 	 */
-	public static final Integer WJZT_JYJS = 2;
-
+	public static final Integer ZT_JYJS = 2;
+	
+	/**
+	 * 不检测
+	 */
+	public static final Integer ZT_BJC=-1;
+	
+	
+	
 	private static final long serialVersionUID = -8255217792287102494L;
 	/** 检验流水号 */
 	@Column(length = 17, nullable = false)
@@ -284,6 +277,15 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	 */
 	@Column
 	private Integer vehwjzt;
+	
+	@Column
+	private Integer vehdpzt;
+	
+	@Column
+	private Integer vehdtdpzt;
+	
+	@Column
+	private Integer vehlszt;
 
 	@Column
 	private Integer checkType;
@@ -300,6 +302,37 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-d ", timezone = "GMT+8")
 	private Date externalCheckDate;
 	
+	
+	
+	public Integer getVehlszt() {
+		return vehlszt;
+	}
+
+
+	public void setVehlszt(Integer vehlszt) {
+		this.vehlszt = vehlszt;
+	}
+
+
+	public Integer getVehdpzt() {
+		return vehdpzt;
+	}
+
+
+	public void setVehdpzt(Integer vehdpzt) {
+		this.vehdpzt = vehdpzt;
+	}
+
+
+	public Integer getVehdtdpzt() {
+		return vehdtdpzt;
+	}
+
+
+	public void setVehdtdpzt(Integer vehdtdpzt) {
+		this.vehdtdpzt = vehdtdpzt;
+	}
+
 
 	public Date getUpLineDate() {
 		return upLineDate;

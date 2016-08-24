@@ -97,11 +97,8 @@ public class UserController {
 	
 	@RequestMapping(value = "getCurrentUser", method = RequestMethod.POST)
 	public @ResponseBody User getCurrentUser(HttpSession session) {
-		
 		User user = (User)session.getAttribute("user");
-		
 		return user;
-		
 	}
 
 

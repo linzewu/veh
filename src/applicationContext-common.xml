@@ -16,7 +16,7 @@
 	default-lazy-init="false">
 	<bean class="com.lzw.comm.spring.GollfPropertyPlaceholderConfigurer">
 		<constructor-arg>
-			<value>veh_hb.license</value>
+			<value>veh.license</value>
 		</constructor-arg>
 		<constructor-arg>
 			<value>veh.crt</value>

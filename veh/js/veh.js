@@ -1,3 +1,15 @@
+var userInfo = $.ajax({
+	url : "/veh/user/getCurrentUser",
+	async : false,
+	type:'POST'
+}).responseText;
+
+userInfo=$.parseJSON(userInfo);
+
+if(userInfo.state==600){
+	 window.location.href="/veh/html/login.html";
+}
+
 document
 		.write("<script language='javascript' src='/veh/bps/all.js' ></script>");
 var veh = {
@@ -26,8 +38,9 @@ var veh = {
 			temp['jyyxqz']='';
 			temp['bxzzrq']='';
 			temp['jyrq']='';
-			
 			$("#vehinfo").form("load",temp);
+			veh.setVehB16(temp['zs']);
+			
 		}
 	},
 	loadVehCheckInfo:function(index,row){
@@ -369,8 +382,9 @@ var veh = {
 
 		var qzdz = $("input[textboxname=qzdz]").combobox("getValue");
 		var cllx = $("input[textboxname=cllx]").combobox("getValue");
+		$(":checkbox[name=jyxm][value^=H]").prop("disabled", false);
 		$(":checkbox[name=jyxm][value^=H]").prop("checked", false);
-		console.log(cllx == "")
+		
 		if (cllx && cllx != "") {
 			var cllxChar = cllx.substring(0, 1);
 			if (cllxChar == "B" || cllxChar == "G") {
@@ -385,8 +399,16 @@ var veh = {
 			} else if (qzdz == "03" || qzdz == "04") {
 				$(":checkbox[name=jyxm][value=H1]").prop("checked", true);
 				$(":checkbox[name=jyxm][value=H4]").prop("checked", true);
+				
+				$(":checkbox[name=jyxm][value=H2]").prop("disabled", true);
+				$(":checkbox[name=jyxm][value=H3]").prop("disabled", true);
+				
 			} else if (qzdz == "05") {
 				$(":checkbox[name=jyxm][value=H1]").prop("checked", true);
+				
+				$(":checkbox[name=jyxm][value=H2]").prop("disabled", true);
+				$(":checkbox[name=jyxm][value=H3]").prop("disabled", true);
+				$(":checkbox[name=jyxm][value=H4]").prop("disabled", true);
 			}
 		}
 	},
@@ -908,16 +930,26 @@ var report={
 			var yqsbjyjg = data['yqsbjyjg'];
 			var rgjyjg =data['rgjyjg'];
 			
+			var jyjl="合格";
+			
 			$.each(yqsbjyjg,function(i,n){
-				var tr="<tr><td>"+n.xh+"</td><td>"+n.yqjyxm+"</td><td>"+		
-						n.yqjyjg+"</td><td>"+n.yqbzxz+"</td><td>"+(n.yqjgpd==1?"合格":(n.yqjgpd==2?"不合格":""))+"</td><td>"+
+				if(n.yqjgpd==2){
+					jyjl="不合格";
+				}
+				var tr="<tr><td class=l >"+n.xh+"</td><td class=l>"+n.yqjyxm+"</td><td class=l>"+		
+						n.yqjyjg+"</td><td class=l>"+n.yqbzxz+"</td><td class=l>"+(n.yqjgpd==1?"合格":(n.yqjgpd==2?"不合格":""))+"</td><td class=l>"+
 						(n.yqjybz==null?"":n.yqjybz)+"</td></tr>";
 				$("#tbody_yqsbjyjg").append(tr);
 			});
 			$.each(rgjyjg,function(i,n){
+				if(n.rgjgpd==2){
+					jyjl="不合格";
+				}
 				var tr="<tr><td>"+n.xh+"</td><td>"+n.rgjyxm+"</td><td>"+n.rgjgpd+"</td><td>"+
 				n.rgjysm+"</td><td>"+n.rgjybz+"</td><td>";
 			});
+			
+			$("#report2 td[name=report-baseInfo-jyjl]").text(jyjl);
 		});
 		
 	},getReport3:function(){
@@ -1076,14 +1108,21 @@ $(function($){
     };  
 });
 
+var progressFlag=false;
 $(document).ajaxStart(function(){
-	$.messager.progress({
-		title:"请等待",
-		msg:"数据请求中。。。"
-	}); 
+	if(!progressFlag){
+		$.messager.progress({
+			title:"请等待",
+			msg:"数据请求中。。。"
+		});
+		progressFlag=true;
+	}
 });
 
 $(document).ajaxComplete(function(){
-	$.messager.progress('close');
+	if(progressFlag){
+		$.messager.progress('close');
+		progressFlag=false;
+	}
 });
 

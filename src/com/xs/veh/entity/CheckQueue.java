@@ -46,6 +46,20 @@ public class CheckQueue extends BaseEntity {
 	@Column
 	private Integer lcsx;
 	
+	@Column(length=20)
+	private String jyxm;
+	
+	
+	
+	
+	public String getJyxm() {
+		return jyxm;
+	}
+
+	public void setJyxm(String jyxm) {
+		this.jyxm = jyxm;
+	}
+
 	public Integer getLcsx() {
 		return lcsx;
 	}
