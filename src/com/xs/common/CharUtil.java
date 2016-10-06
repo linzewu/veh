@@ -111,7 +111,16 @@ public class CharUtil {
 	}
 
 	public static void main(String args[]) {
-		System.out.println(CharUtil.byte2HexOfString(new byte[] { 0x02, 0x32, 0x54, 0x4D, 0x2B }));
+		/*
+		 * System.out.println(CharUtil.byte2HexOfString(new byte[] { 0x02, 0x32,
+		 * 0x54, 0x4D, 0x2B }));
+		 * System.out.println(CharUtil.byte2HexOfString(CharUtil.sumCheck(new
+		 * byte[]{0xA,0x04,0xA},4)) );
+		 */
+		byte[] s = new byte[] { 0x30 };
+		
+		System.out.println((char)s[0]);
+		
 	}
 
 	public static String byte2HexOfString(byte[] b) {
@@ -125,7 +134,7 @@ public class CharUtil {
 		}
 		return sb.toString();
 	}
-	
+
 	public static String byte2HexOfString(Byte[] b) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < b.length; i++) {
@@ -137,7 +146,6 @@ public class CharUtil {
 		}
 		return sb.toString();
 	}
-	
 
 	/**
 	 * @函数功能: BCD码转为10进制串(阿拉伯数据)
@@ -200,15 +208,44 @@ public class CharUtil {
 		}
 		return bbt;
 	}
-	
-	
-	public static boolean isNumeric(String str){ 
-		   Pattern pattern = Pattern.compile("[0-9]*"); 
-		   Matcher isNum = pattern.matcher(str);
-		   if( !isNum.matches() ){
-		       return false; 
-		   } 
-		   return true; 
-		}
 
+	public static boolean isNumeric(String str) {
+		Pattern pattern = Pattern.compile("[0-9]*");
+		Matcher isNum = pattern.matcher(str);
+		if (!isNum.matches()) {
+			return false;
+		}
+		return true;
+	}
+
+	public static byte[] sumCheck(byte[] msg, int length) {
+		long mSum = 0;
+		byte[] mByte = new byte[length];
+
+		/** 逐Byte添加位数和 */
+		for (byte byteMsg : msg) {
+			long mNum = ((long) byteMsg >= 0) ? (long) byteMsg : ((long) byteMsg + 256);
+			mSum += mNum;
+		} /** end of for (byte byteMsg : msg) */
+
+		/** 位数和转化为Byte数组 */
+		for (int liv_Count = 0; liv_Count < length; liv_Count++) {
+			mByte[length - liv_Count - 1] = (byte) (mSum >> (liv_Count * 8) & 0xff);
+		} /** end of for (int liv_Count = 0; liv_Count < length; liv_Count++) */
+
+		return mByte;
+	}
+
+	
+	public static String getCheckSum(String hex) {
+
+		byte[] vs = CharUtil.hexStringToByte(hex);
+		byte i = 0;
+		for (byte v : vs) {
+			i += v;
+		}
+		byte b = (byte) (~i + 1);
+		return CharUtil.byte2HexOfString(new byte[]{b});
+
+	}
 }

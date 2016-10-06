@@ -26,27 +26,16 @@
 							<div title="开关及输出">
 								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
 									<tr>
-										<td class="simpletable-l" style="width: 15%"><label>到位开关1</label></td>
+										<td class="simpletable-l" style="width: 15%"><label>到位开关</label></td>
 										<td class="simpletable-r" style="width: 35%">
-											<input class="easyui-combobox" name="kzsb-dwkg1" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
-											<input class="easyui-combobox" name="kzsb-xhw1" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
-										</td>
-										<td class="simpletable-l" style="width: 15%"><label>到位开关2</label></td>
-										<td class="simpletable-r" style="width: 35%">
-											<input class="easyui-combobox" name="kzsb-dwkg2" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
-											<input class="easyui-combobox" name="kzsb-xhw2" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
+											<input class="easyui-combobox" name="kzsb-dwkg" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
+											<input class="easyui-combobox" name="kzsb-xhw" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
 										</td>
 									</tr>
 									<tr>
 										<td class="simpletable-l" style="width: 15%"><label>显示屏</label></td>
-										<td class="simpletable-r">
+										<td class="simpletable-r" colspan="3">
 											<input class="easyui-combobox" name="kzsb-xsp"  data-options=" valueField: 'id',textField: 'name',data:getXsp()" >
-										</td>
-										<td class="simpletable-l" style="width: 15%"><label>灯光仪靠位</label></td>
-										<td class="simpletable-r">
-											<span>左&nbsp;</span><input type="radio" name="kw"  value="L" >
-											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-											<span>右&nbsp;</span><input type="radio" name="kw"  value="R" >
 										</td>
 									</tr>
 								</table>
@@ -72,17 +61,10 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="simpletable-l"><label>控制台：</label></td>
-					<td class="simpletable-r" colspan="3">
-						<input class="easyui-textbox" id="device_console"  data-options="multiline:true,editable:false" style="width: 400px;height: 140px;">
-						<a href="#" class="easyui-linkbutton" onclick="getRtx()">获取报文</a>&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="#" class="easyui-linkbutton" onclick="lightTest()">测试</a>
-					</td>
-				</tr>
-				<tr>
 					<td class="simpletable-l" colspan="4" style="text-align: center;">
-						<a href="#" class="easyui-linkbutton" onclick="deviceLightStart()">启动设备</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton" onclick="brakRollerStart()">启动设备</a>&nbsp;&nbsp;&nbsp;&nbsp;
 						<a href="#" class="easyui-linkbutton" onclick="deviceStop()">停止设备</a>
+						<a href="#" class="easyui-linkbutton" onclick="brakRollerTest()">测试</a>
 					</td>
 				</tr>
 			</table>
@@ -92,14 +74,7 @@
 </form>
 <script type="text/javascript">
 
-function lightTest(){
-	var row = $("#deviceManager").datagrid("getSelected");
-	var call=function(data){
-		$.messager.alert("提示",data.message);
-	}
-	
-	$.post("/veh/device/deviceLightTest",{'id':row.id},call,"json");
-}
+
 
 
 
@@ -129,6 +104,15 @@ function getState(){
 }
 
 
+function brakRollerStart(){
+	
+	var row = $("#deviceManager").datagrid("getSelected");
+	var call=function(data){
+		$.messager.alert("提示",data.message);
+		getState();
+	}
+	$.post("/veh/device/brakRollerStart",{'id':row.id},call,"json");
+}
 
 $(function(){
 	getState();

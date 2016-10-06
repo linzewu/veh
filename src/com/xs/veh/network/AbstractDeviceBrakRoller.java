@@ -2,7 +2,6 @@ package com.xs.veh.network;
 
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
-import com.xs.veh.network.data.WeighData;
 
 public abstract class AbstractDeviceBrakRoller {
 	
@@ -10,8 +9,6 @@ public abstract class AbstractDeviceBrakRoller {
 	protected DeviceBrakRoller deviceBrakRoller;
 	
 	protected BrakRollerData brakRollerData;
-	
-	private WeighData weighData;
 	
 	protected VehFlow nextVehFlow;
 	
@@ -51,15 +48,6 @@ public abstract class AbstractDeviceBrakRoller {
 
 	public void setNextVehFlow(VehFlow nextVehFlow) {
 		this.nextVehFlow = nextVehFlow;
-	}
-	
-
-	public WeighData getWeighData() {
-		return weighData;
-	}
-
-	public void setWeighData(WeighData weighData) {
-		this.weighData = weighData;
 	}
 
 	public String getZW(Integer zw){
@@ -102,7 +90,6 @@ public abstract class AbstractDeviceBrakRoller {
 		checkingFlage = true;
 		isError=false;
 		isbs=false;
-		weighData=null;
 	}
 	
 

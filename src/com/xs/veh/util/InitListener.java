@@ -21,6 +21,7 @@ import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.DeviceBrakRoller;
+import com.xs.veh.network.DeviceBrakePad;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceLight;
 import com.xs.veh.network.DeviceSideslip;
@@ -205,6 +206,20 @@ public class InitListener implements ServletContextListener {
 					log.error("称重设备打开异常", e);
 				}
 				servletContext.setAttribute(device.getThredKey(), dl);
+			}
+
+			// 平板设备
+			if (device.getType() == Device.ZDPBSB) {
+				DeviceBrakePad dbp = (DeviceBrakePad) wac.getBean("deviceBrakePad");
+				try {
+					dbp.setDevice(device);
+					dbp.open();
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
+						| PortInUseException | IOException | UnsupportedCommOperationException
+						| TooManyListenersException e) {
+					log.error("平板设备打开异常", e);
+				}
+				servletContext.setAttribute(device.getThredKey(), dbp);
 			}
 
 			// 速度设备

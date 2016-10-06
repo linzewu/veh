@@ -25,7 +25,6 @@ import com.xs.veh.network.data.OtherInfoData;
 import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
-import com.xs.veh.network.data.WeighData;
 
 @Service("checkDataManager")
 public class CheckDataManager {
@@ -95,12 +94,6 @@ public class CheckDataManager {
 			data.put("A1", sids.get(0));
 		}
 
-		List<WeighData> wds = (List<WeighData>) this.hibernateTemplate.find("from WeighData where jylsh=? and sjzt=? ",
-				jylsh, WeighData.SJZT_ZC);
-		for (WeighData wd : wds) {
-			data.put("ZZ_" + wd.getJyxm(), wd);
-		}
-
 		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate
 				.find("from BrakRollerData where jylsh=? and sjzt=? ", jylsh, BrakRollerData.SJZT_ZC);
 		for (BrakRollerData brd : brds) {
@@ -143,7 +136,7 @@ public class CheckDataManager {
 	public void createOtherDataOfAnjian(String jylsh) {
 
 		OtherInfoData otherInfoData = new OtherInfoData();
-		
+
 		VehCheckLogin vehCheckLogin = (VehCheckLogin) this.hibernateTemplate
 				.find("from VehCheckLogin where jylsh=?", jylsh).get(0);
 		otherInfoData.setBaseInfo(vehCheckLogin);
@@ -190,13 +183,6 @@ public class CheckDataManager {
 				}
 			}
 		}
-		List<WeighData> wds = (List<WeighData>) this.hibernateTemplate.find("from WeighData where jylsh=? and sjzt=?",
-				jylsh, BrakRollerData.SJZT_ZC);
-		// 整车轮荷
-		Integer zclh = 0;
-		for (WeighData wd : wds) {
-			zclh += wd.getRightData() + wd.getLeftData();
-		}
 
 		// 计算整车制动力
 		List<BrakRollerData> list = (List<BrakRollerData>) this.hibernateTemplate
@@ -204,14 +190,16 @@ public class CheckDataManager {
 
 		// 制动力和
 		Integer zdlh = 0;
-
+		// 整车轮荷
+		Integer zclh = 0;
 		for (BrakRollerData brakRollerData : list) {
-			zdlh = zdlh + brakRollerData.getZzdl() + brakRollerData.getYzdl();
+			zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
+			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
 		}
 		otherInfoData.setJczczbzl(zclh);
 		otherInfoData.setZdlh(zdlh);
 		if (zclh != 0) {
-			Float zczdl = (float) ((zdlh * 1.0 / (zclh *0.98 * 1.0)) * 100);
+			Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			otherInfoData.setZczdl(MathRound(zczdl));
 		}
 		if (parDataOfAnjian != null) {
@@ -226,7 +214,7 @@ public class CheckDataManager {
 		otherInfoData.setZczdlxz();
 		otherInfoData.setZczdlpd();
 		this.hibernateTemplate.save(otherInfoData);
-		
+
 		createDeviceCheckJudeg(vehCheckLogin, otherInfoData, parDataOfAnjian);
 	}
 
@@ -315,8 +303,8 @@ public class CheckDataManager {
 			xh++;
 			this.hibernateTemplate.save(dcj1);
 		}
-		
-		//修改上线状态
+
+		// 修改上线状态
 		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
 		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
 		this.hibernateTemplate.update(vehInfo);
@@ -327,10 +315,10 @@ public class CheckDataManager {
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
 				"from LightData where  jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
 				LightData.SJZT_ZC);
-		
-		String cllx =vehCheckLogin.getCllx();
-		
-		String syxz=vehCheckLogin.getSyxz();
+
+		String cllx = vehCheckLogin.getCllx();
+
+		String syxz = vehCheckLogin.getSyxz();
 
 		for (LightData lightData : lightDatas) {
 			String jyxm = lightData.getJyxm();
@@ -346,8 +334,9 @@ public class CheckDataManager {
 					xh++;
 					this.hibernateTemplate.save(dcj1);
 				}
-				
-				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz.equals("A"))) {
+
+				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
+						&& syxz.equals("A"))) {
 					DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj2.setXh(xh);
 					dcj2.setYqjyxm(getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏");
@@ -358,7 +347,7 @@ public class CheckDataManager {
 					xh++;
 					this.hibernateTemplate.save(dcj2);
 				}
-				
+
 			}
 
 			flagMap.put(jyxm + lightData.getGx(), lightData);
@@ -483,19 +472,6 @@ public class CheckDataManager {
 		return dcj;
 	}
 
-	public WeighData getWeighDataByBrakRollerData(BrakRollerData brakRollerData) {
-		List<WeighData> wds = (List<WeighData>) this.hibernateTemplate.find(
-				"from WeighData where jylsh=? and jyxm=? and jycs=? and sjzt=?", brakRollerData.getJylsh(),
-				brakRollerData.getJyxm(), brakRollerData.getJycs(), WeighData.SJZT_ZC);
-
-		if (wds != null && !wds.isEmpty()) {
-			WeighData weighData = wds.get(0);
-			return weighData;
-		} else {
-			return null;
-		}
-	}
-
 	public List<BrakRollerData> getReport4(String jylsh) {
 		List<BrakRollerData> report4 = (List<BrakRollerData>) this.hibernateTemplate
 				.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm!=?", jylsh, BrakRollerData.SJZT_ZC, "B0");
@@ -504,6 +480,20 @@ public class CheckDataManager {
 
 	public static Float MathRound(Float f) {
 		return (float) (Math.round(f * 100)) / 100;
+	}
+
+	public BrakRollerData getBrakRollerDataOfVehLoginInfo(VehCheckLogin vehCheckLogin, String jyxm) {
+
+		List<BrakRollerData> datas = (List<BrakRollerData>) this.hibernateTemplate.find(
+				"from BrakRollerData where jylsh=? and jycs=? and jyxm=?", vehCheckLogin.getJylsh(),
+				vehCheckLogin.getJycs(), jyxm);
+
+		if (datas == null || datas.isEmpty()) {
+			return null;
+		} else {
+			return datas.get(0);
+		}
+
 	}
 
 }

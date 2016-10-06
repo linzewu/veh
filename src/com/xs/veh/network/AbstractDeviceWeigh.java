@@ -1,9 +1,7 @@
 package com.xs.veh.network;
 
-import java.io.IOException;
-
 import com.xs.veh.entity.VehFlow;
-import com.xs.veh.network.data.WeighData;
+import com.xs.veh.network.data.BrakRollerData;
 
 public abstract class AbstractDeviceWeigh {
 	
@@ -13,12 +11,11 @@ public abstract class AbstractDeviceWeigh {
 
 	protected DeviceSignal signal;
 	
-	protected WeighData weighData;
+	protected BrakRollerData brakRollerData;
 	
 	protected Integer s1;
-
 	
-	public abstract WeighData startCheck(VehFlow vehFlow) throws Exception;
+	public abstract BrakRollerData startCheck(VehFlow vehFlow) throws Exception;
 
 	public abstract void device2pc(byte[] data) throws Exception;
 	
@@ -27,7 +24,6 @@ public abstract class AbstractDeviceWeigh {
 		display=deviceWeigh.getDisplay();
 		signal=deviceWeigh.getSignal();
 		s1=deviceWeigh.getS1();
-		
 	}
 
 

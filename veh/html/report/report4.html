@@ -6,23 +6,29 @@ function createQXReport(title,index){
 	var baseInfo = options.baseInfo;
 	var rdata=options.rdata;
 	var ldata=options.ldata;
-	var data=panel.panel("options").data;
+	var obj =panel.panel("options");
+	var data=obj.data;
+	var tt=obj.title;
+	var ckey=obj.ckey;
+	var dw=obj.dw;
 	if(!data){
 		return ;
 	}
-	$('#container'+data.zw).highcharts({
+	console.log(rdata)
+	console.log(ldata)
+	$('#container'+ckey).highcharts({
         chart: {
             type: 'line'
         },
         title: {
-            text: baseInfo.hphm+'制动力曲线图'
+            text: baseInfo.hphm
         },
         subtitle: {
-            text: data.zw+'轴制动力'
+            text: tt
         },
         yAxis: {
             title: {
-                text: '制动力 (N)'
+                text: dw=="N"?"制动力(N)":"轮重(KG)"
             },
             plotLines: [{
                 value: 0,
@@ -31,7 +37,7 @@ function createQXReport(title,index){
             }]
         },
         tooltip: {
-            valueSuffix: 'N'
+            valueSuffix: dw
         },
         legend: {
             layout: 'vertical',
@@ -40,10 +46,10 @@ function createQXReport(title,index){
             borderWidth: 0
         },
         series: [{
-            name: '左制动力',
+            name: '左'+ (dw=="N"?"制动力":"轮重"),
             data: ldata
         }, {
-            name: '右制动力',
+            name: '右'+ (dw=="N"?"制动力":"轮重"),
             data: rdata
         }]
     });

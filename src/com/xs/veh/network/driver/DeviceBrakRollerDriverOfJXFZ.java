@@ -142,11 +142,8 @@ public class DeviceBrakRollerDriverOfJXFZ extends AbstractDeviceBrakRoller {
 			// 仪表清0
 			logger.info("仪表清0命令：" + ybql);
 			deviceBrakRoller.sendMessage(ybql);
-
 			// 清理数据
 			deviceBrakRoller.clearDate();
-			brakRollerData = new BrakRollerData();
-
 			// 到位判断
 			dw(vehFlow, zw);
 
@@ -174,7 +171,7 @@ public class DeviceBrakRollerDriverOfJXFZ extends AbstractDeviceBrakRoller {
 			}
 			return brakRollerData;
 		} finally {
-			if (nextVehFlow!=null&&!nextVehFlow.getJyxm().equals("B0")) {
+			if (nextVehFlow==null||!nextVehFlow.getJyxm().equals("B0")) {
 				this.deviceBrakRoller.sendMessage(jsqss);
 			}
 		}

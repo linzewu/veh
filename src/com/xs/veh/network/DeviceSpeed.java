@@ -1,5 +1,7 @@
 package com.xs.veh.network;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
@@ -71,7 +73,7 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 				while (inputStream.available() > 0) {
 					lengthTemp = inputStream.read(readBuffer);
 					length += lengthTemp;
-					logger.info("数据长度" + length);
+					//logger.info("数据长度" + length);
 					if (length >= 1024 * 128) {
 						logger.debug("读入的数据超过1024 * 128");
 						break;
@@ -147,6 +149,12 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 			Thread.sleep(200);
 		}
 		display.setDefault();
+	}
+
+	@Override
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -101,8 +101,9 @@ public class DeviceController {
 	 */
 	@RequestMapping(value = "getComList", method = RequestMethod.POST)
 	public @ResponseBody List getComList() {
+		System.out.println("开始获取COM口");
 		Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-
+		System.out.println("已获取COM口");
 		List<Map> datas = new ArrayList<Map>();
 		while (portList.hasMoreElements()) {
 			CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
@@ -111,6 +112,7 @@ public class DeviceController {
 			data.put("text", portId.getName());
 			datas.add(data);
 		}
+		System.out.println("成功返回");
 		return datas;
 	}
 
@@ -500,7 +502,7 @@ public class DeviceController {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					deviceSpeed.startCheck(null, null);
+				//	deviceSpeed.startCheck(new List(), null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -15,7 +16,7 @@ import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
-import com.xs.veh.network.data.WeighData;
+import com.xs.veh.network.data.BrakRollerData;
 
 import gnu.io.SerialPortEvent;
 
@@ -33,7 +34,7 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	private DeviceDisplay display;
 
 	private DeviceSignal signal;
-	
+
 	private Integer s1;
 
 	@Autowired
@@ -44,11 +45,9 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "taskExecutor")
 	private ThreadPoolTaskExecutor executor;
-	
+
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
-	
-	
 
 	public Integer getS1() {
 		return s1;
@@ -102,7 +101,7 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 					}
 				}
 				byte[] endodedData = new byte[length];
-				//logger.info("数据长度："+endodedData.length);
+				// logger.info("数据长度："+endodedData.length);
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
 				dw.device2pc(endodedData);
 			} catch (Exception e) {
@@ -122,8 +121,8 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
-		s1=getQtxxObject().getInt("kzsb-xhw");
-		
+		s1 = getQtxxObject().getInt("kzsb-xhw");
+
 		dw = (AbstractDeviceWeigh) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		// 加载挂载设备
 		if (temp != null) {
@@ -138,30 +137,33 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 
 	/**
 	 * 称重
+	 * 
 	 * @param vehCheckLogin
 	 * @param vehFlow
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin , VehFlow vehFlow) throws Exception {
-		WeighData weighData = dw.startCheck(vehFlow);
-		
-		weighData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, weighData),
-				vehFlow.getJyxm());
-		
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+		BrakRollerData brakRollerData = dw.startCheck(vehFlow);
+
+		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
+
 		Thread.sleep(2000);
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
-		boolean flag=true;
-		
-		while(flag){
+		boolean flag = true;
+
+		while (flag) {
 			flag = this.signal.getSignal(s1);
 			Thread.sleep(200);
 		}
-		
-		weighData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
-		this.checkDataManager.saveData(weighData);
-		
+		this.checkDataManager.saveData(brakRollerData);
 		display.setDefault();
+	}
+
+	@Override
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -60,9 +60,41 @@ public class PDAServiceController {
 		}
 	}
 
+	@RequestMapping(value = "externalDC", method = RequestMethod.POST)
+	public @ResponseBody Map externalDCUpload(@Valid ExternalCheck externalCheck, BindingResult result) {
+		if (!result.hasErrors()) {
+			Message message = externalCheckManager.saveExternalCheckDC(externalCheck);
+			return ResultHandler.toMessage(message);
+		} else {
+			return ResultHandler.resultHandle(result, null, "校验出错");
+		}
+	}
+
+	@RequestMapping(value = "externalC1", method = RequestMethod.POST)
+	public @ResponseBody Map externalC1Upload(@Valid ExternalCheck externalCheck, BindingResult result) {
+		if (!result.hasErrors()) {
+			Message message = externalCheckManager.saveExternalCheckC1(externalCheck);
+			return ResultHandler.toMessage(message);
+		} else {
+			return ResultHandler.resultHandle(result, null, "校验出错");
+		}
+	}
+
 	@RequestMapping(value = "getExternal")
 	public @ResponseBody List getExternal(String hphm) {
 		List<VehCheckLogin> data = externalCheckManager.getExternalCheckVhe(hphm);
+		return data;
+	}
+
+	@RequestMapping(value = "getExternalDC")
+	public @ResponseBody List getExternalDC(String hphm) {
+		List<VehCheckLogin> data = externalCheckManager.getExternalDC(hphm);
+		return data;
+	}
+
+	@RequestMapping(value = "getExternalC1")
+	public @ResponseBody List getExternalC1(String hphm) {
+		List<VehCheckLogin> data = externalCheckManager.getExternalC1(hphm);
 		return data;
 	}
 

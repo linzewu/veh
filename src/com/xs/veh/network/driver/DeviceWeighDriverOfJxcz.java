@@ -8,7 +8,7 @@ import com.xs.veh.network.AbstractDeviceWeigh;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceWeigh;
 import com.xs.veh.network.SimpleRead.ProtocolType;
-import com.xs.veh.network.data.WeighData;
+import com.xs.veh.network.data.BrakRollerData;
 
 public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 
@@ -21,18 +21,18 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 		return ProtocolType.DATA;
 	}
 
-	public void setData(byte[] bs, WeighData weighData) {
+	public void setData(byte[] bs, BrakRollerData brakRollerData) {
 
-		if (weighData != null && bs.length == 8) {
+		if (brakRollerData != null && bs.length == 8) {
 			String t1 = CharUtil.bcd2Str(new byte[] { bs[1], bs[2] });
 			String t2 = CharUtil.bcd2Str(new byte[] { bs[5], bs[6] });
-			weighData.setLeftData(Integer.parseInt(t1));
-			weighData.setRightData(Integer.parseInt(t2));
+			brakRollerData.setZlh(Integer.parseInt(t1));
+			brakRollerData.setYlh(Integer.parseInt(t2));
 		}
 	}
 
 	@Override
-	public WeighData startCheck(VehFlow vehFlow) throws Exception {
+	public BrakRollerData startCheck(VehFlow vehFlow) throws Exception {
 
 		String zs = vehFlow.getJyxm().substring(1, 2);
 
@@ -49,9 +49,9 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 		while (true) {
 
 			if (this.signal.getSignal(s1)) {
-				if (weighData.getLeftData() != null && weighData.getRightData() != null) {
+				if (brakRollerData.getZlh() != null && brakRollerData.getYlh() != null) {
 					this.display.sendMessage(zs + "轴称重已到位", DeviceDisplay.SP);
-					this.display.sendMessage((weighData.getLeftData() + weighData.getRightData()) + "KG",
+					this.display.sendMessage((brakRollerData.getZlh() + brakRollerData.getYlh()) + "KG",
 							DeviceDisplay.XP);
 				}
 				i++;
@@ -70,14 +70,14 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 		deviceWeigh.sendHead(jscz);
 
 		this.display.sendMessage(zs + "轴称重结束", DeviceDisplay.SP);
-		this.display.sendMessage((weighData.getLeftData() + weighData.getRightData()) + "KG", DeviceDisplay.XP);
+		this.display.sendMessage((brakRollerData.getZlh() + brakRollerData.getYlh()) + "KG", DeviceDisplay.XP);
 
-		return weighData;
+		return brakRollerData;
 
 	}
 
 	private void createNew() {
-		this.weighData = new WeighData();
+		this.brakRollerData = new BrakRollerData();
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 		ProtocolType type = getProtocolType(endodedData);
 		// 响应数据的处理方法
 		if (type == ProtocolType.DATA) {
-			setData(endodedData, weighData);
+			setData(endodedData, brakRollerData);
 		}
 	}
 

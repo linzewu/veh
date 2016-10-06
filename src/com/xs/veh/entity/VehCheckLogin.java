@@ -61,7 +61,6 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	public static final Integer ZT_BJC=-1;
 	
 	
-	
 	private static final long serialVersionUID = -8255217792287102494L;
 	/** 检验流水号 */
 	@Column(length = 17, nullable = false)
@@ -182,7 +181,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	/** 登录时间 */
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date dlsj;
 	/** 检验次数 */
 	@Column(length = 2)
@@ -869,5 +868,27 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	public void setSjrsfzh(String sjrsfzh) {
 		this.sjrsfzh = sjrsfzh;
 	}
+
+
+	@Override
+	public String toString() {
+		return "VehCheckLogin [jylsh=" + jylsh + ", jyjgbh=" + jyjgbh + ", jcxdh=" + jcxdh + ", xh=" + xh + ", hpzl="
+				+ hpzl + ", hphm=" + hphm + ", clsbdh=" + clsbdh + ", fdjh=" + fdjh + ", csys=" + csys + ", syxz="
+				+ syxz + ", ccdjrq=" + ccdjrq + ", jyrq=" + jyrq + ", jyyxqz=" + jyyxqz + ", bxzzrq=" + bxzzrq
+				+ ", rlzl=" + rlzl + ", gl=" + gl + ", zs=" + zs + ", zj=" + zj + ", qlj=" + qlj + ", hlj=" + hlj
+				+ ", zzl=" + zzl + ", zbzl=" + zbzl + ", ccrq=" + ccrq + ", qdxs=" + qdxs + ", zczs=" + zczs + ", zczw="
+				+ zczw + ", zzs=" + zzs + ", zzly=" + zzly + ", qzdz=" + qzdz + ", ygddtz=" + ygddtz + ", zxzxjxs="
+				+ zxzxjxs + ", lcbds=" + lcbds + ", jyxm=" + jyxm + ", jylb=" + jylb + ", bhgx=" + bhgx + ", dlsj="
+				+ dlsj + ", jycs=" + jycs + ", dly=" + dly + ", ycy=" + ycy + ", wjy=" + wjy + ", dtjyy=" + dtjyy
+				+ ", dpjyy=" + dpjyy + ", clpp1=" + clpp1 + ", clxh=" + clxh + ", syr=" + syr + ", cllx=" + cllx
+				+ ", cwkc=" + cwkc + ", cwkk=" + cwkk + ", cwkg=" + cwkg + ", clyt=" + clyt + ", ytsx=" + ytsx
+				+ ", dlysfzh=" + dlysfzh + ", ycysfzh=" + ycysfzh + ", wjysfzh=" + wjysfzh + ", dtjyysfzh=" + dtjyysfzh
+				+ ", dpjyysfzh=" + dpjyysfzh + ", clsslb=" + clsslb + ", jcxlb=" + jcxlb + ", sjr=" + sjr + ", sjrsfzh="
+				+ sjrsfzh + ", hdzk=" + hdzk + ", vehjczt=" + vehjczt + ", vehsxzt=" + vehsxzt + ", vehwjzt=" + vehwjzt
+				+ ", vehdpzt=" + vehdpzt + ", vehdtdpzt=" + vehdtdpzt + ", vehlszt=" + vehlszt + ", checkType="
+				+ checkType + ", upLineDate=" + upLineDate + ", externalCheckDate=" + externalCheckDate + "]";
+	}
+	
+	
 
 }

@@ -10,6 +10,8 @@ import javax.persistence.Transient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.xs.veh.entity.VehCheckLogin;
+
 @Scope("prototype")
 @Component("sideslipData")
 @Entity
@@ -82,12 +84,19 @@ public class SideslipData extends BaseDeviceData {
 		return "SideslipData [sideslip=" + sideslip + ", datas=" + datas + "]";
 	}
 	
-	public void setChpd() {
-		if (sideslip <= 5 && sideslip >= -5) {
-			this.chpd = PDJG_HG;
-		} else {
-			this.chpd = PDJG_BHG;
+	public void setChpd(VehCheckLogin vehCheckLogin) {
+		
+		if(vehCheckLogin.getZxzxjxs().equals("0")){
+			this.chpd = PDJG_WJ;
+		}else{
+			if (sideslip <= 5 && sideslip >= -5) {
+				this.chpd = PDJG_HG;
+			} else {
+				this.chpd = PDJG_BHG;
+			}
 		}
+		
+		
 	}
 	
 	public void setChxz() {

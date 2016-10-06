@@ -20,7 +20,7 @@ var veh = {
 		if(jg==2){
 			return "X";
 		}
-		if(jg==null){
+		if(jg==null||jg==0){
 			return "—";
 		}
 		
@@ -40,6 +40,9 @@ var veh = {
 			temp['jyrq']='';
 			$("#vehinfo").form("load",temp);
 			veh.setVehB16(temp['zs']);
+			veh.setVehH14();
+			veh.setVehB0();
+			veh.setVehS1();
 			
 		}
 	},
@@ -864,6 +867,9 @@ var report={
 				if(i.indexOf("H")==0){
 					var tt = i.split("_");
 					$.each(n,function(j,k){
+						if(j=="czpy"&&n["czpypd"]==2){
+							k+="x";
+						}
 						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k);
 					});
 					$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
@@ -891,9 +897,19 @@ var report={
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzbphl]").text(n.kzbphl);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzxczdl]").text(n.kzxczdl);
 					$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_zlh]").text(n.zlh);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_ylh]").text(n.ylh);
 					$("#report1 tr[name="+tt[1]+"] td[name=dxcs]").text(n.dxcs);
 					if(tt[1]=="B0"){
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_b"+n.zw+"_zczdl]").text((Number(n.zzdl)+Number(n.yzdl)))
+					}
+					
+					if(n.zdtlh!=null&&n.ydtlh!=null){
+						$("#report1 span[name=zd_dtzlh_"+tt[1]+"]").text(n.zdtlh);
+						$("#report1 span[name=zd_dtylh_"+tt[1]+"]").text(n.ydtlh);
+					}else{
+						$("#report1 span[name=zd_dtzlh_"+tt[1]+"]").text(0);
+						$("#report1 span[name=zd_dtylh_"+tt[1]+"]").text(0);
 					}
 					
 				}else if(i.indexOf("other")==0){
@@ -936,8 +952,18 @@ var report={
 				if(n.yqjgpd==2){
 					jyjl="不合格";
 				}
+				
+				var jg="-";
+				if(n.yqjgpd==1){
+					jg="合格";
+				}else if(n.yqjgpd==2){
+					jg="不合格";
+				}else if(n.yqjgpd==0){
+					jg="-";
+				}
+				
 				var tr="<tr><td class=l >"+n.xh+"</td><td class=l>"+n.yqjyxm+"</td><td class=l>"+		
-						n.yqjyjg+"</td><td class=l>"+n.yqbzxz+"</td><td class=l>"+(n.yqjgpd==1?"合格":(n.yqjgpd==2?"不合格":""))+"</td><td class=l>"+
+						n.yqjyjg+"</td><td class=l>"+n.yqbzxz+"</td><td class=l>"+jg+"</td><td class=l>"+
 						(n.yqjybz==null?"":n.yqjybz)+"</td></tr>";
 				$("#tbody_yqsbjyjg").append(tr);
 			});
@@ -969,61 +995,91 @@ var report={
 				 });
 			}
 			 $.each(datas,function(i,data){
-				 var rdata=[];
-				 var ldata=[];
-					
-			    if(data.rigthDataStr!=null){
-					var temp=data.rigthDataStr.split(",");
-					$.each(temp.splice(300,700),function(i,n){
-						rdata.push(Number(n));
-					});
-				}
-				
-				if(data.leftDataStr!=null){
-					var temp=data.leftDataStr.split(",");
-					$.each(temp.splice(300,700),function(i,n){
-						ldata.push(Number(n));
-					});
-				}
-				
-				 var template="<div style='text-align:center;margin-top: 10px;'><a id='report4Print"+data.zw+"'></a>&nbsp;&nbsp;<a id='showReport4Detail"+data.zw+"'></a><div/>"+
-				 "<div style='margin:0 auto;width:740px;' id='report4Contex"+data.zw+"'><div id='container"+data.zw+"'></div></div>";
 				 
-				 $("#zdltabs").tabs("add",{
-					 title:data.zw+"轴制动力曲线",
-					 index:data.zw,
-					 content:template,
-					 selected:i==0?true:false,
-					 baseInfo:baseInfo,
-					 rdata:rdata,
-					 ldata:ldata,
-					 data:data
-				 });
+				 if(data.leftDataStr!=null){
+					 report.processReport4(baseInfo, data, "zdlqx", data.leftDataStr, data.rigthDataStr, i, "轴制动力曲线","N");
+				 }
 				 
-				 $("#report4Print"+data.zw).linkbutton({
-					 iconCls: 'icon-print',
-					 text:'打印',
-					 onClick:function(){
-						 report.createReport($("#report4Contex"+data.zw));
-					 }
-				 });
+				 if(data.zdtlhStr!=null){
+					 report.processReport4(baseInfo, data, "dtlh", data.zdtlhStr, data.ydtlhStr, i, "动态轮荷曲线","KG");
+				 }
 				 
-				 $("#showReport4Detail"+data.zw).linkbutton({
-					 iconCls: 'icon-search',
-					 text:'显示详细',
-					 onClick:function(){
-						 var temp= report.createReport4Teblae(data.zw, ldata, rdata);
-						 $("#report4Contex"+data.zw).append(temp);
-					 }
-				 });
-				 
+				 if(data.jzLeftDataStr!=null){
+					 report.processReport4(baseInfo, data, "jzzdlqx", data.jzLeftDataStr, data.jzRigthDataStr, i, "轴加载制动力曲线","N");
+				 }
 				 
 			 });
 		});
 	},
-	createReport4Teblae:function (zw,ldata,rdata){
+	processReport4:function(baseInfo,data,key,strLeftdata,strRigthData,index,title,dw){
+		var rdata=[];
+		var ldata=[];
+		 
+	    if(strRigthData!=null){
+			var temp=strRigthData.split(",");
+			
+			console.log(temp.length)
+			if(temp.length>700){
+				temp=temp.splice(300,700)
+			}
+			
+			
+			$.each(temp,function(i,n){
+				rdata.push(Number(n));
+			});
+		}
 		
-		var report4Table="<table id='report4Table"+zw+"' class='reportTable4'><thead><tr><td colspan='8'><h4>"+zw+"轴制动力</h4></td></tr><tr><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td></tr></thead><tbody>";
+		if(strLeftdata!=null){
+			var temp=strLeftdata.split(",");
+			
+			console.log(temp.length)
+			if(temp.length>700){
+				temp=temp.splice(300,700)
+			}
+			$.each(temp,function(i,n){
+				ldata.push(Number(n));
+			});
+		}
+		
+		var ckey=data.zw+key;
+		
+		 var template="<div style='text-align:center;margin-top: 10px;'><a id='report4Print"+ckey+"'></a>&nbsp;&nbsp;<a id='showReport4Detail"+ckey+"'></a><div/>"+
+		 "<div style='margin:0 auto;width:740px;' id='report4Contex"+ckey+"'><div id='container"+ckey+"'></div></div>";
+		 
+		 $("#zdltabs").tabs("add",{
+			 title:data.zw+title,
+			 index:index,
+			 content:template,
+			 selected:index==0?true:false,
+			 baseInfo:baseInfo,
+			 rdata:rdata,
+			 ldata:ldata,
+			 data:data,
+			 ckey:ckey,
+			 dw:dw
+		 });
+		 
+		 $("#report4Print"+ckey).linkbutton({
+			 iconCls: 'icon-print',
+			 text:'打印',
+			 onClick:function(){
+				 report.createReport($("#report4Contex"+ckey));
+			 }
+		 });
+		 
+		 $("#showReport4Detail"+ckey).linkbutton({
+			 iconCls: 'icon-search',
+			 text:'显示详细',
+			 onClick:function(){
+				 var temp= report.createReport4Teblae(ckey,data.zw, ldata, rdata);
+				 $("#report4Contex"+ckey).append(temp);
+			 }
+		 });
+		 
+	},
+	createReport4Teblae:function (ckey,zw,ldata,rdata){
+		
+		var report4Table="<table id='report4Table"+ckey+"' class='reportTable4'><thead><tr><td colspan='8'><h4>"+zw+"轴制动力</h4></td></tr><tr><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td></tr></thead><tbody>";
 		var size=ldata.length<=rdata.length?ldata.length:rdata.length;
 		size=size%2==1?(size-1):size;
 		for(var i=0;i<size;i++){

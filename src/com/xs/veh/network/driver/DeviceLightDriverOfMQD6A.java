@@ -86,9 +86,9 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	// 远近光均测
 	private String sYjgjc = "020132533543";
 	// 先测远灯
-	private String sXcyg = "020132537107";
+	private String sXcyd = "020132537107";
 	// 先测近灯
-	private String sXcjg = "020132537206";
+	private String sXcjd = "020132537206";
 	// 四灯制
 	private String sSdz = "020132533147";
 	// 二灯制
@@ -168,7 +168,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		setting(vehCheckLogin, vheFlows);
 		// 等待到位
 		dw(vehCheckLogin);
-
+		
 		if (isCheckLeft) {
 			currentPosition = 'L';
 			checking();
@@ -485,8 +485,13 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		deviceLight.sendMessage(sBxytzjg);
 		Thread.sleep(300);
 		deviceLight.sendMessage(sBxytzyg);
+		Thread.sleep(300);
 		
-		
+		if(this.deviceLight.getKw().equals("L")){
+			deviceLight.sendMessage(sXcjd);
+		}else{
+			deviceLight.sendMessage(sXcyd);
+		}
 		
 
 	}

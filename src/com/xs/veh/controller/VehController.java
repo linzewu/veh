@@ -105,9 +105,7 @@ public class VehController {
 
 		if (!vehManager.isLoged(vehCheckLogin)) {
 			String jylsh = this.vehManager.getJylsh();
-
 			String jyxm = vehCheckLogin.getJyxm();
-
 			vehCheckLogin.setJylsh(jylsh.trim());
 			vehCheckLogin.setJyjgbh(jyjgbh);
 			vehCheckLogin.setJycs(1);
@@ -151,7 +149,6 @@ public class VehController {
 				vehCheckLogin.setDly(user.getRealName());
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
-
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
 			return json.toString();
 		} else {

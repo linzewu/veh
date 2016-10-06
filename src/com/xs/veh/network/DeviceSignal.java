@@ -130,17 +130,24 @@ public class DeviceSignal extends SimpleRead {
 	 * @param index 开完位置
 	 * @return  0是true 其他false
 	 */
-	public boolean getSignal(Integer index){
+	public boolean getSignal(Integer index){ 
 		
 		String temp =this.getRtx();
 		
 		Integer count =temp.length();
 		
-		String strSignal = temp.substring(count-index-1,count-index);
+		if(count>0&&count>index){
+			String strSignal = temp.substring(count-index-1,count-index);
+			
+			Integer signal = Integer.parseInt(strSignal);
+			
+			return signal==0?true:false;
+		}else{
+			return false;
+		}
 		
-		Integer signal = Integer.parseInt(strSignal);
 		
-		return signal==0?true:false;
+		
 		
 	}
 }

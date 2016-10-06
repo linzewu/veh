@@ -18,7 +18,7 @@ import com.xs.veh.manager.VehManager;
 @Entity
 @Table(name = "TM_LightData")
 public class LightData extends BaseDeviceData {
-	
+
 	private static Logger logger = Logger.getLogger(LightData.class);
 
 	/**
@@ -224,7 +224,7 @@ public class LightData extends BaseDeviceData {
 	}
 
 	public void setCzpy() {
-		try{
+		try {
 			if (this.czpc == null || this.dg == null) {
 				return;
 			}
@@ -234,16 +234,16 @@ public class LightData extends BaseDeviceData {
 				return;
 			}
 			this.czpy = 1 + (l * 1f / h * 1f);
-			
+
 			this.czpy = (float) (Math.round(czpy * 100)) / 100;
-		}catch(Exception e){
+		} catch (Exception e) {
 			logger.error("设置垂直偏移出错", e);
 		}
-		
+
 	}
 
 	public void setGqpd() {
-		if (this.gqxz == null || this.gqxz == null||gq==null) {
+		if (this.gqxz == null || this.gqxz == null || gq == null) {
 			return;
 		}
 		this.gqpd = gq >= this.gqxz ? CheckDataManager.PDJG_HG : CheckDataManager.PDJG_BHG;
@@ -370,15 +370,15 @@ public class LightData extends BaseDeviceData {
 		}
 
 	}
-	
+
 	/**
-	 * 总判定结果 
+	 * 总判定结果
 	 */
 	@Override
 	public void setZpd() {
-		if(gqpd==PDJG_BHG){
+		if (gqpd == PDJG_BHG||czpypd==PDJG_BHG) {
 			this.setZpd(PDJG_BHG);
-		}else{
+		} else {
 			this.setZpd(PDJG_HG);
 		}
 	}

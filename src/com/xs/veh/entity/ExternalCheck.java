@@ -39,11 +39,6 @@ public class ExternalCheck extends BaseEntity {
 	@NotNull
 	private Integer jycs;
 
-	@Column(length = 20)
-	@NotNull
-	private String jyxm;
-
-	
 	@Column(length=2)
 	private String item1;
 	
@@ -196,6 +191,74 @@ public class ExternalCheck extends BaseEntity {
 	
 	@Column(length=2)
 	private String item80;
+	
+	@Column(length=30)
+	private String wgjcjyy;
+	
+	@Column(length=30)
+	private String wgjcjyysfzh;
+	
+	@Column(length=30)
+	private String dpjcjyy;
+	
+	@Column(length=30)
+	private String dpjyysfzh;
+	
+	@Column(length=30)
+	private String dpdtjyy;
+	
+	@Column(length=30)
+	private String dpdtjyysfzh;
+	
+	
+
+	public String getWgjcjyy() {
+		return wgjcjyy;
+	}
+
+	public String getWgjcjyysfzh() {
+		return wgjcjyysfzh;
+	}
+
+	public String getDpjcjyy() {
+		return dpjcjyy;
+	}
+
+	public String getDpjyysfzh() {
+		return dpjyysfzh;
+	}
+
+	public String getDpdtjyy() {
+		return dpdtjyy;
+	}
+
+	public String getDpdtjyysfzh() {
+		return dpdtjyysfzh;
+	}
+
+	public void setWgjcjyy(String wgjcjyy) {
+		this.wgjcjyy = wgjcjyy;
+	}
+
+	public void setWgjcjyysfzh(String wgjcjyysfzh) {
+		this.wgjcjyysfzh = wgjcjyysfzh;
+	}
+
+	public void setDpjcjyy(String dpjcjyy) {
+		this.dpjcjyy = dpjcjyy;
+	}
+
+	public void setDpjyysfzh(String dpjyysfzh) {
+		this.dpjyysfzh = dpjyysfzh;
+	}
+
+	public void setDpdtjyy(String dpdtjyy) {
+		this.dpdtjyy = dpdtjyy;
+	}
+
+	public void setDpdtjyysfzh(String dpdtjyysfzh) {
+		this.dpdtjyysfzh = dpdtjyysfzh;
+	}
 
 	public String getItem1() {
 		return item1;
@@ -625,9 +688,6 @@ public class ExternalCheck extends BaseEntity {
 		return jycs;
 	}
 
-	public String getJyxm() {
-		return jyxm;
-	}
 
 	public void setJylsh(String jylsh) {
 		this.jylsh = jylsh;
@@ -648,11 +708,5 @@ public class ExternalCheck extends BaseEntity {
 	public void setJycs(Integer jycs) {
 		this.jycs = jycs;
 	}
-
-	public void setJyxm(String jyxm) {
-		this.jyxm = jyxm;
-	}
-	
-	
 
 }

@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.TooManyListenersException;
 
 import javax.annotation.Resource;
@@ -18,7 +19,6 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.data.BrakRollerData;
-import com.xs.veh.network.data.WeighData;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -140,40 +140,47 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 	public synchronized void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
 		dbrd.resetCheckStatus();
+		
 		VehFlow nextVehFlow = workPointManager.getNextFlow(vehFlow);
 		dbrd.setNextVehFlow(nextVehFlow);
-
 		Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
-
+		
+		logger.info("vehCheckLogin.getZs()"+vehCheckLogin.getZs());
+		logger.info("vehCheckLogin.getCllx()"+vehCheckLogin.getCllx());
+		logger.info("intZw"+intZw);
+		
 		if (vehCheckLogin.getZs() >= 3
-				&& (vehCheckLogin.getCllx().indexOf("G") > 0 || vehCheckLogin.getCllx().indexOf("B") > 0)
-				&& vehCheckLogin.getZs() != intZw) {
+				&& (vehCheckLogin.getCllx().indexOf("G") == 0 || vehCheckLogin.getCllx().indexOf("B") == 0)
+				&& vehCheckLogin.getZs() != intZw&&intZw!=0) {
 			dbrd.isPlusLoad = true;
-		} else if (vehCheckLogin.getCllx().indexOf("H") > 0 && vehCheckLogin.getZs() >= 3 && intZw > 1
-				&& vehCheckLogin.getZs() != intZw) {
+		} else if (vehCheckLogin.getCllx().indexOf("H") == 0 && vehCheckLogin.getZs() >= 3 && intZw > 1
+				&& vehCheckLogin.getZs() != intZw&&intZw!=0) {
 			dbrd.isPlusLoad = true;
 		} else {
 			dbrd.isPlusLoad = false;
 		}
-
-		BrakRollerData brakRollerData = dbrd.startCheck(vehFlow);
+		logger.info("dbrd.isPlusLoad:"+dbrd.isPlusLoad);
+		
+		BrakRollerData brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
+		
+		if(brakRollerData==null){
+			dbrd.setBrakRollerData(new BrakRollerData());
+		}else{
+			dbrd.setBrakRollerData(brakRollerData);
+		}
+		
+		
+		brakRollerData = dbrd.startCheck(vehFlow);
 		setInfoData(brakRollerData);
 
+		
 		// 设置基础数据
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
-
-		WeighData weighData = this.checkDataManager.getWeighDataByBrakRollerData(brakRollerData);
-
-		// 如果是3轴以上的货车 挂车 半挂车 轴重数据取加载制动台的数据
-		if (weighData == null && vehCheckLogin.getZs() >= 3 && (vehCheckLogin.getCllx().indexOf("H") > 0
-				|| vehCheckLogin.getCllx().indexOf("G") > 0 || vehCheckLogin.getCllx().indexOf("B") > 0)) {
-			weighData = dbrd.getWeighData();
-		}
 
 		// 非驻车制动则计算检测结果
 		if (!brakRollerData.getJyxm().equals("B0")) {
 			// 空载行车制动率
-			brakRollerData.setKzxczdl(weighData);
+			brakRollerData.setKzxczdl();
 			// 空载制动率限制及判定
 			brakRollerData.setKzzdlxz(vehCheckLogin);
 			brakRollerData.setKzzdlpd();
@@ -181,10 +188,11 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			// 设置空载不平衡率
 			brakRollerData.setKzbphl();
 			// 设置不平衡率限值
-			brakRollerData.setBphlxz(vehCheckLogin, weighData);
+			brakRollerData.setBphlxz(vehCheckLogin);
 			// 空载不平衡率判定
 			brakRollerData.setKzbphlpd();
-
+			
+			brakRollerData.setJzzdl();
 			// 加载制动率限制及判定
 			brakRollerData.setJzzdlxz(vehCheckLogin);
 			brakRollerData.setJzzdlpd();
@@ -193,7 +201,6 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		}
 		brakRollerData.setZpd();
 		this.checkDataManager.saveData(brakRollerData);
-
 		if (nextVehFlow!=null&&nextVehFlow.getJyxm().equals("B0")) {
 			display.sendMessage("请等待", DeviceDisplay.XP);
 		} else {
@@ -261,6 +268,12 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			}
 			brakRollerData.setRigthDataStr(rigthDataStr.toString());
 		}
+	}
+
+	@Override
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

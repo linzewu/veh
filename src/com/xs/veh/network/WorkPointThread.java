@@ -1,5 +1,7 @@
 package com.xs.veh.network;
 
+import java.io.IOException;
+
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
@@ -24,7 +26,6 @@ public class WorkPointThread implements Runnable {
 	@Resource(name = "workPointManager")
 	private WorkPointManager workPointManager;
 
-
 	public WorkPoint getWorkPoint() {
 		return workPoint;
 	}
@@ -38,11 +39,10 @@ public class WorkPointThread implements Runnable {
 		while (true) {
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+				workPointManager.check(workPoint);
+			} catch (InterruptedException | IOException e) {
 				e.printStackTrace();
 			}
-			workPointManager.check(workPoint);
 		}
-
 	}
 }

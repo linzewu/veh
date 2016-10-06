@@ -34,6 +34,8 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 	private ServletContext servletContext;
 
 	private DeviceDisplay display;
+	
+	private String kw="L";
 
 	public DeviceDisplay getDisplay() {
 		return display;
@@ -54,6 +56,16 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	
+
+	public String getKw() {
+		return kw;
+	}
+
+	public void setKw(String kw) {
+		this.kw = kw;
+	}
 
 	public DeviceLight() {
 	}
@@ -87,7 +99,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 				while (inputStream.available() > 0) {
 					lengthTemp = inputStream.read(readBuffer);
 					length += lengthTemp;
-					logger.info("数据长度" + length);
+					//logger.info("数据长度" + length);
 					if (length >= 1024 * 128) {
 						logger.debug("读入的数据超过1024 * 128");
 						break;
@@ -123,8 +135,8 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 		dld.createNewList();
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
-		String jg = (datas==null||datas.size()==0)?"X":"O";
-		
+		String jg = (datas == null || datas.size() == 0) ? "X" : "O";
+
 		for (LightData data : datas) {
 			data.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), data.getJyxm());
 			data.setCzpy();
@@ -132,7 +144,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			data.setDgpdxz(vehCheckLogin);
 			// 设置光强判定
 			data.setGqpd();
-			
+
 			// 设置垂直偏移限值
 			data.setCzpyxz(vehCheckLogin);
 			data.setCzpypd();
@@ -185,17 +197,18 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			dld.deviceSignal2 = (DeviceSignal) servletContext.getAttribute(dwkg2 + "_" + Device.KEY);
 		}
 		
-		dld.kwfx=(Integer)qtxx.get("sz-ssfx");
+		kw = (String)qtxx.get("kw");
+		if(kw==null){
+			kw="L";
+		}
+
+		dld.kwfx = (Integer) qtxx.get("sz-ssfx");
 
 		dld.setDeviceLight(this);
 	}
 
-	@Override
-	@Deprecated
 	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
-		List<VehFlow> vehFlows = new ArrayList<VehFlow>();
-		vehFlows.add(vehFlow);
-		this.startCheck(vehCheckLogin, vehFlows);
+		// TODO Auto-generated method stub
 	}
 
 }

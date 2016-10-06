@@ -135,6 +135,134 @@ public class BrakRollerData extends BaseDeviceData {
 	@Column
 	private Integer sfjzz=SFJZZ_NO;
 	
+	//加载轴荷 左
+	@Column
+	private Integer jzzlh;
+	
+	//加载轴荷 右
+	@Column
+	private Integer jzylh;
+	
+	//轴荷 左
+	@Column
+	private Integer zlh;
+	
+	//轴荷 右
+	@Column
+	private Integer ylh;
+	
+	//动态轴荷 左
+	@Column
+	private Integer zdtlh;
+	
+	//动态轴荷 右
+	@Column
+	private Integer ydtlh;
+	
+	@Column(length = 8000)
+	private String leftDataStr;
+
+	@Column(length = 8000)
+	private String rigthDataStr;
+	
+	@Column(length = 8000)
+	private String zdtlhStr;
+
+	@Column(length = 8000)
+	private String ydtlhStr;
+	
+	@Column(length = 8000)
+	private String jzLeftDataStr;
+
+	@Column(length = 8000)
+	private String jzRigthDataStr;
+	
+	
+	
+	
+
+	
+	
+
+	public String getZdtlhStr() {
+		return zdtlhStr;
+	}
+
+	public String getYdtlhStr() {
+		return ydtlhStr;
+	}
+
+	public String getJzLeftDataStr() {
+		return jzLeftDataStr;
+	}
+
+	public String getJzRigthDataStr() {
+		return jzRigthDataStr;
+	}
+
+	public void setZdtlhStr(String zdtlhStr) {
+		this.zdtlhStr = zdtlhStr;
+	}
+
+	public void setYdtlhStr(String ydtlhStr) {
+		this.ydtlhStr = ydtlhStr;
+	}
+
+	public void setJzLeftDataStr(String jzLeftDataStr) {
+		this.jzLeftDataStr = jzLeftDataStr;
+	}
+
+	public void setJzRigthDataStr(String jzRigthDataStr) {
+		this.jzRigthDataStr = jzRigthDataStr;
+	}
+
+	public Integer getZdtlh() {
+		return zdtlh;
+	}
+
+	public Integer getYdtlh() {
+		return ydtlh;
+	}
+
+	public void setZdtlh(Integer zdtlh) {
+		this.zdtlh = zdtlh;
+	}
+
+	public void setYdtlh(Integer ydtlh) {
+		this.ydtlh = ydtlh;
+	}
+
+	public Integer getZlh() {
+		return zlh;
+	}
+
+	public Integer getYlh() {
+		return ylh;
+	}
+
+	public void setZlh(Integer zlh) {
+		this.zlh = zlh;
+	}
+
+	public void setYlh(Integer ylh) {
+		this.ylh = ylh;
+	}
+
+	public Integer getJzzlh() {
+		return jzzlh;
+	}
+
+	public Integer getJzylh() {
+		return jzylh;
+	}
+
+	public void setJzzlh(Integer jzzlh) {
+		this.jzzlh = jzzlh;
+	}
+
+	public void setJzylh(Integer jzylh) {
+		this.jzylh = jzylh;
+	}
 
 	public Integer getSfjzz() {
 		return sfjzz;
@@ -302,12 +430,6 @@ public class BrakRollerData extends BaseDeviceData {
 	public void setZw(Integer zw) {
 		this.zw = zw;
 	}
-
-	@Column(length = 8000)
-	private String leftDataStr;
-
-	@Column(length = 8000)
-	private String rigthDataStr;
 
 	public Integer getJszt() {
 		return jszt;
@@ -557,7 +679,7 @@ public class BrakRollerData extends BaseDeviceData {
 		}
 
 		// 其他汽车
-		if (zw == 1 && zbzl >= 3500) {
+		if (zw > 1 && zbzl >= 3500) {
 			this.kzzdlxz = 50;
 			return;
 		}
@@ -597,17 +719,17 @@ public class BrakRollerData extends BaseDeviceData {
 		}
 
 		// 其他汽车
-		if (zw == 1 && zbzl >= 3500) {
+		if (zw > 1 && zbzl >= 3500) {
 			this.kzzdlxz = 50;
 			return;
 		}
 	}
 
-	public void setBphlxz(VehCheckLogin vehCheckLogin, WeighData weighData) {
+	public void setBphlxz(VehCheckLogin vehCheckLogin) {
 
 		String jylb = vehCheckLogin.getJylb();
 		// 轴荷
-		Integer zh = weighData.getRightData() + weighData.getLeftData();
+		Integer zh = zlh +ylh;
 
 		Integer zdl = this.zzdl + this.yzdl;
 
@@ -699,14 +821,22 @@ public class BrakRollerData extends BaseDeviceData {
 	 */
 	public void setKzbphl() {
 
-		if (yzdl == null || zzdl == null || gcc == null || sfjzz==SFJZZ_YES) {
+		if (yzdl == null || zzdl == null) {
 			return;
 		}
-		Integer zdzdl = zzdl > yzdl ? zzdl : yzdl;
-		Float bphl = (float) (Math.abs(gcc) * 1.0 / zdzdl * 1.0) * 100;
+		
+		Float zdzdl=null;
+		
+		if(zw>1&&kzxczdl<60){
+			zdzdl= (zlh + ylh)*0.98f;
+		}else{
+			zdzdl =  zzdl > yzdl ? zzdl.floatValue() : yzdl.floatValue();
+		}
 
+		
+		
+		Float bphl = (float) (Math.abs(zzdlcd-yzdlcd) * 1.0 / zdzdl * 1.0) * 100;
 		this.kzbphl = CheckDataManager.MathRound(bphl);
-
 	}
 	
 	
@@ -717,12 +847,19 @@ public class BrakRollerData extends BaseDeviceData {
 	 */
 	public void setJzbphl() {
 
-		if (yzdl == null || zzdl == null || gcc == null || sfjzz==SFJZZ_NO) {
+		if (yzdl == null || zzdl == null || gcc == null) {
 			return;
 		}
-		Integer zdzdl = zzdl > yzdl ? zzdl : yzdl;
-		Float bphl = (float) (Math.abs(zzdl-yzdl) * 1.0 / zdzdl * 1.0) * 100;
-
+		
+		Float zdzdl=null;
+		
+		if(zw>1&&kzxczdl<60){
+			zdzdl= (jzzlh+jzylh)*0.98f;
+		}else{
+			zdzdl =  zzdl > yzdl ? zzdl.floatValue() : yzdl.floatValue();
+		}
+		
+		Float bphl = (float) (Math.abs(zzdlcd-yzdlcd) * 1.0 / zdzdl * 1.0) * 100;
 		this.jzbphl = CheckDataManager.MathRound(bphl);
 
 	}
@@ -730,12 +867,7 @@ public class BrakRollerData extends BaseDeviceData {
 	/**
 	 * 设置空载行车制动率
 	 */
-	public void setKzxczdl(WeighData weighData) {
-
-		if (weighData == null||sfjzz==SFJZZ_YES) {
-			return;
-		}
-		Integer zh = weighData.getRightData() + weighData.getLeftData();
+	public void setKzxczdl() {		Integer zh = zlh + ylh;
 		Integer zdl = this.getZzdl() + this.getYzdl();
 		Float xczdl = (float) (zdl * 1.0 /(zh * 0.98)) * 100;
 		this.kzxczdl = CheckDataManager.MathRound(xczdl);
@@ -745,12 +877,12 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 设置加载制动率
 	 * @param weighData
 	 */
-	public void setJzzdl(WeighData weighData) {
+	public void setJzzdl() {
 
-		if (weighData == null||sfjzz==SFJZZ_NO) {
+		if (sfjzz==SFJZZ_NO||this.getJzzlh()==null||this.getJzylh()==null) {
 			return;
 		}
-		Integer zh = weighData.getRightData() + weighData.getLeftData();
+		Integer zh = this.getJzzlh()+this.getJzylh();
 		Integer zdl = this.getZzdl() + this.getYzdl();
 		Float xczdl = (float) (zdl * 1.0 / (zh * 0.98)) * 100;
 		this.jzzzdl = CheckDataManager.MathRound(xczdl);

@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -86,7 +87,7 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 				while (inputStream.available() > 0) {
 					lengthTemp = inputStream.read(readBuffer);
 					length += lengthTemp;
-					logger.info("数据长度" + length);
+					//logger.info("数据长度" + length);
 					if (length >= 1024 * 128) {
 						logger.debug("读入的数据超过1024 * 128");
 						break;
@@ -143,14 +144,29 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		// 侧滑限制
 		sideslipData.setChxz();
 		// 侧滑判定
-		sideslipData.setChpd();
+		sideslipData.setChpd(vehCheckLogin);
 		sideslipData.setZpd();
 		this.checkDataManager.saveData(sideslipData);
 		Thread.sleep(2000);
-		String jg = sideslipData.getChpd() == SideslipData.PDJG_HG ? "O" : "X";
+		
+		String jg="-";
+		
+		if(sideslipData.getChpd() == SideslipData.PDJG_HG){
+			jg="O";
+		}else if(sideslipData.getChpd() == SideslipData.PDJG_BHG){
+			jg="X";
+		}
+		
+		
 		this.display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
 		Thread.sleep(1500);
 		display.setDefault();
+	}
+
+	@Override
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

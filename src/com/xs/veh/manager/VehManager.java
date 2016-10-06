@@ -41,6 +41,7 @@ import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutRespons
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.Flow;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLog;
@@ -163,9 +164,7 @@ public class VehManager {
 
 	public JSONObject vehLogin(VehCheckLogin vehCheckLogin)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
-
 		Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
-
 		JSONObject head = new JSONObject();
 		JSONObject messager = null;
 
@@ -214,6 +213,7 @@ public class VehManager {
 				processArray.add(vcp);
 			}
 			addVehFlow(vehCheckLogin, processArray, flow);
+			createExternalCheck(vehCheckLogin);
 		}
 
 		if (!isNetwork) {
@@ -225,6 +225,19 @@ public class VehManager {
 		}
 
 		return messager;
+	}
+
+	private void createExternalCheck(VehCheckLogin vehCheckLogin) {
+
+		ExternalCheck ec = new ExternalCheck();
+
+		ec.setHphm(vehCheckLogin.getHphm());
+		ec.setHpzl(vehCheckLogin.getHpzl());
+		ec.setJylsh(vehCheckLogin.getJylsh());
+		ec.setJyjgbh(vehCheckLogin.getJyjgbh());
+		ec.setJycs(vehCheckLogin.getJycs());
+		this.hibernateTemplate.save(ec);
+
 	}
 
 	public boolean isLoged(VehCheckLogin vehCheckLogin) {
@@ -299,7 +312,6 @@ public class VehManager {
 
 		List<VehCheckLogin> vcps = (List<VehCheckLogin>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
-
 		return vcps;
 	}
 
@@ -325,19 +337,17 @@ public class VehManager {
 			Document document = this.write(RCAConstant.V18C72, map);
 			Element head = document.getRootElement().element("head");
 			if (head.element("code").getText().equals("1")) {
-				/*
-				 * this.hibernateTemplate.delete(vheLogininfo);
-				 * this.hibernateTemplate.execute(new
-				 * HibernateCallback<Integer>() {
-				 * 
-				 * @Override public Integer doInHibernate(Session session)
-				 * throws HibernateException { return session.createQuery(
-				 * "delete VehCheckProcess where jylsh=:jylsh")
-				 * .setParameter("jylsh", jylsh).executeUpdate(); } });
-				 */
-
 				vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
 				this.hibernateTemplate.update(vheLogininfo);
+
+				this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+					@Override
+					public Integer doInHibernate(Session session) throws HibernateException {
+						return session.createQuery("delete CheckQueue where jylsh=?").setParameter(0, jylsh)
+								.executeUpdate();
+					}
+
+				});
 
 				// 同时修改 上线表 队列表 状态 为退办
 			}
@@ -355,6 +365,15 @@ public class VehManager {
 			vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
 			this.hibernateTemplate.update(vheLogininfo);
 			// 同时修改 上线表 队列表 状态 为退办
+			this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+				@Override
+				public Integer doInHibernate(Session session) throws HibernateException {
+					return session.createQuery("delete CheckQueue where jylsh=?").setParameter(0, jylsh)
+							.executeUpdate();
+				}
+
+			});
+			
 			return jo;
 		}
 	}
@@ -403,7 +422,7 @@ public class VehManager {
 					for (String jyxm : jyxmArray) {
 						// 如果是驻车制动 需要根据驻车轴为来生成
 						if (jyxm.equals("B0")) {
-							if (device.getType() == Device.ZDJCSB) {
+							if (device.getType() == Device.ZDJCSB||device.getType() == Device.ZDPBSB) {
 								String zczw = vcl.getZczw();
 								for (int k = 0; k < zczw.length(); k++) {
 									VehFlow v = new VehFlow();
@@ -422,49 +441,6 @@ public class VehManager {
 								}
 							}
 						} else {
-							// 存在加载制动台 货车 挂车 半挂车 并且是多轴 车3轴以上 不需要上称重台
-							/*
-							 * if (flow.getJzzdt() == Flow.JZZDT_YES &&
-							 * device.getType() == Device.CZJCSB && vcl.getZs()
-							 * >= 3 && (vcl.getCllx().indexOf("H") > 0 ||
-							 * vcl.getCllx().indexOf("G") > 0 ||
-							 * vcl.getCllx().indexOf("B") > 0)) {
-							 * 
-							 * int zs =vcl.getZs(); int zw
-							 * =Integer.parseInt(jyxm.substring(1));
-							 * 
-							 * // 货车类型 1轴与最后轴需要上称重台 其他轴不上称重台 if
-							 * (vcl.getCllx().indexOf("H") > 0 &&
-							 * (zw==1||zw==zs)) { VehFlow v = new VehFlow();
-							 * v.setGw(gwid); v.setHphm(vcl.getHphm());
-							 * v.setHpzl(vcl.getHpzl());
-							 * v.setJylsh(vcl.getJylsh());
-							 * v.setJycs(vcl.getJycs()); v.setJyxm(jyxm);
-							 * v.setJysb(device.getId()); v.setGwsx(i + 1);
-							 * v.setSbsx(j + 1); v.setSbid(deviceId);
-							 * vehFlows.add(v); }else
-							 * if((vcl.getCllx().indexOf("G") > 0
-							 * ||vcl.getCllx().indexOf("B")>0)&&zw==zs){ //挂车
-							 * 与办挂车 最后一个轴不加载 VehFlow v = new VehFlow();
-							 * v.setGw(gwid); v.setHphm(vcl.getHphm());
-							 * v.setHpzl(vcl.getHpzl());
-							 * v.setJylsh(vcl.getJylsh());
-							 * v.setJycs(vcl.getJycs()); v.setJyxm(jyxm);
-							 * v.setJysb(device.getId()); v.setGwsx(i + 1);
-							 * v.setSbsx(j + 1); v.setSbid(deviceId);
-							 * vehFlows.add(v); }
-							 * 
-							 * 
-							 * } else { VehFlow v = new VehFlow();
-							 * v.setGw(gwid); v.setHphm(vcl.getHphm());
-							 * v.setHpzl(vcl.getHpzl());
-							 * v.setJylsh(vcl.getJylsh());
-							 * v.setJycs(vcl.getJycs()); v.setJyxm(jyxm);
-							 * v.setJysb(device.getId()); v.setGwsx(i + 1);
-							 * v.setSbsx(j + 1); v.setSbid(deviceId);
-							 * vehFlows.add(v); }
-							 */
-
 							VehFlow v = new VehFlow();
 							v.setGw(gwid);
 							v.setHphm(vcl.getHphm());
@@ -542,11 +518,8 @@ public class VehManager {
 		Message message = new Message();
 
 		if (vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JYJS || vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JCZ) {
-
 			message.setState(Message.STATE_ERROR);
-
 			message.setMessage("引车上线失败，该流水已上线！");
-
 			return message;
 
 		} else {
@@ -620,7 +593,7 @@ public class VehManager {
 							|| vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_BJC)
 					&& (vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_JYJS
 							|| vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_BJC)) {
-				
+
 				vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
 			}
 

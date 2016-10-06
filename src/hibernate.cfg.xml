@@ -10,7 +10,7 @@
         <property name="connection.autocommit">true</property>  
         <property name="hibernate.hbm2ddl.auto" >update</property>
         <!-- 显示sql语句 -->
-        <property name="show_sql">false</property>  
+        <property name="show_sql">true</property>  
         <property name="connection.useUnicode">true</property>  
         <property name="connection.characterEncoding">UTF-8</property> 
         <!-- 缓存设置
