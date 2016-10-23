@@ -19,6 +19,7 @@
 <script type="text/javascript" src="/veh/js/veh.js"></script>
 <script type="text/javascript" src="/veh/js/common.js"></script>
 <script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/veh/html/demo4/jquery.webcam.min.js"></script>
 <title>机动车查验系统</title>
 </head>
 <body class="easyui-layout">
@@ -29,8 +30,24 @@
 		<div class="header-title" style="float: left;">上海翔尚机动车安全技术检验系统</div>
 		<div style="float: right; height: 50px;">
 			<div style="padding: 24px 10px 0 0;">
-				用户名：<span id="realName"></span>您好! <a class="easyui-linkbutton c5" data-options="onClick:logout">注销</a>
+				用户名：<span id="realName"></span>您好! 
+				<a class="easyui-linkbutton c6" data-options="onClick:updataPassword">密码修改</a>
+				<a class="easyui-linkbutton c5" data-options="onClick:logout">注销</a>
 			</div>
+			<div id="win_password" class="easyui-window" data-options="
+																    width:400,
+																    height:200,
+																    modal:true,
+																    title:'密码修改',
+																    closed:false,
+																    closable:false,
+																    minimizable:false,
+																    collapsible:false,
+																    maximizable:false,
+																    draggable:false,
+																    href:'password.html',
+																    closed:true
+																    "></div>
 		</div>
 	</div>
 	<div data-options="region:'center'">

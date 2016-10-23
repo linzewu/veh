@@ -65,7 +65,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 	private String ksjc = "FF0AEE";
 
 	// 台体上升高度
-	private String ttssgd = "FF11EE";
+	private String ttssgd = "FF12EE";
 
 	// 台体举升
 	private String ttjs = "FF13EE";
@@ -112,21 +112,35 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		if (fh.equals("F")) {
 			gcc = -gcc;
 		}
-		brakRollerData.setGcc(gcc);
-		brakRollerData.setZzzl(zzzl);
-		brakRollerData.setYzzl(yzzl);
-		brakRollerData.setZzdl(zzdl);
-		brakRollerData.setYzdl(yzdl);
-		brakRollerData.setZzdlcd(zzdlc);
-		brakRollerData.setYzdlcd(yzdlc);
-		brakRollerData.setJzzlh(jzzlh);
-		brakRollerData.setJzylh(jzylh);
+
+		if (brakRollerData.getSfjzz() == BrakRollerData.SFJZZ_YES) {
+			
+			//brakRollerData.setZzzl(zzzl);
+			//brakRollerData.setYzzl(yzzl);
+			brakRollerData.setJzzzdli(zzdl);
+			brakRollerData.setJzyzdli(yzdl);
+			brakRollerData.setJzzzdlcd(zzdlc);
+			brakRollerData.setJzyzdlcd(yzdlc);
+			brakRollerData.setJzzlh(jzzlh);
+			brakRollerData.setJzylh(jzylh);
+
+		} else {
+			brakRollerData.setGcc(gcc);
+			brakRollerData.setZzzl(zzzl);
+			brakRollerData.setYzzl(yzzl);
+			brakRollerData.setZzdl(zzdl);
+			brakRollerData.setYzdl(yzdl);
+			brakRollerData.setZzdlcd(zzdlc);
+			brakRollerData.setYzdlcd(yzdlc);
+		}
+
 	}
 
 	public void setCurrentData(Byte[] data) {
 
 		List<Integer> leftData = brakRollerData.getLeftData();
 		List<Integer> rigthData = brakRollerData.getRigthData();
+
 		for (int index = 0; index < data.length; index++) {
 			// 保护代码
 			if (data.length - index < 4) {
@@ -167,20 +181,13 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			deviceBrakRoller.clearDate();
 			dw(vehFlow, zw);
 
-			if (isPlusLoad) {
-				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_YES);
-				// 称重
-				cz();
-			} else {
-				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_NO);
-			}
-			
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
-
+				
 			// 等待检测数据返回
 			while (checkingFlage) {
 				if (this.getBrakRollerData().getZzdl() != null && this.getBrakRollerData().getYzdl() != null) {
+					deviceBrakRoller.setInfoData(brakRollerData);
 					break;
 				}
 				Thread.sleep(300);
@@ -188,6 +195,31 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 
 			if (isError) {
 				Thread.sleep(3000);
+			}
+
+			if (isPlusLoad) {
+				// 称重
+				cz();
+				
+				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_YES);
+				brakRollerData.getRigthData().clear();
+				brakRollerData.getLeftData().clear();
+				// 开始检测
+				deviceBrakRoller.sendMessage(ksjc);
+				// 等待检测数据返回
+				while (checkingFlage) {
+					if (this.getBrakRollerData().getJzzzdli() != null && this.getBrakRollerData().getJzyzdli() != null) {
+						deviceBrakRoller.setJZInfoData(brakRollerData);
+						break;
+					}
+					Thread.sleep(300);
+				}
+
+				if (isError) {
+					Thread.sleep(3000);
+				}
+			} else {
+				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_NO);
 			}
 
 			checkingFlage = false;
@@ -199,17 +231,15 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			}
 			return brakRollerData;
 		} finally {
-			
 			if (isPlusLoad) {
 				this.deviceBrakRoller.sendMessage(ttxj);
-				Thread.sleep(500);
-			} 
-			
+				Thread.sleep(5000);
+			}
 			if (nextVehFlow == null || !nextVehFlow.getJyxm().equals("B0")) {
 				this.deviceBrakRoller.sendMessage(jsqss);
 				Thread.sleep(500);
 			}
-			
+
 		}
 	}
 
@@ -221,24 +251,25 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 	 * @throws IOException
 	 */
 	private void cz() throws Exception, InterruptedException, IOException {
-		//保险一点，先结束称重
+		// 保险一点，先结束称重
 		deviceBrakRoller.sendMessage(jscz);
 		Thread.sleep(500);
-		
+
 		// 举升高度命令
 		deviceBrakRoller.sendMessage(ttssgd);
 		Thread.sleep(500);
-
 		// 举升命令
 		deviceBrakRoller.sendMessage(ttjs);
-		// 等待5秒
-		Thread.sleep(7000);
+		// 等待15秒
+		deviceBrakRoller.getDisplay().sendMessage("开始加载检测", DeviceDisplay.SP);
+		deviceBrakRoller.getDisplay().sendMessage("台体举升中", DeviceDisplay.XP);
+		
+		Thread.sleep(15000);
 
 		// 开始称重命令
 		deviceBrakRoller.sendMessage(kscz);
-		
 		deviceBrakRoller.getDisplay().sendMessage("开始加载称重", DeviceDisplay.SP);
-		
+
 		int i = 0;
 		while (true) {
 			if (this.brakRollerData.getJzzlh() != null && this.brakRollerData.getJzylh() != null) {
@@ -285,7 +316,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		if (!vehFlow.getJyxm().equals("B0")) {
 			// 举升下降
 			deviceBrakRoller.sendMessage(jsqxj);
-			Thread.sleep(7000);
+			Thread.sleep(5000);
 		}
 	}
 
@@ -351,6 +382,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 				weighDataTempByte.add(b);
 				Byte[] data = this.weighDataTempByte.toArray(new Byte[weighDataTempByte.size()]);
 				setWeighData(data);
+				weighDataTempByte.clear();
 			} else if (i == 0xAA || i == 0xBB) {
 				dataTempByte.clear();
 				dataTempByte.add(b);
@@ -358,6 +390,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 				dataTempByte.add(b);
 				Byte[] data = this.dataTempByte.toArray(new Byte[dataTempByte.size()]);
 				setCurrentData(data);
+				dataTempByte.clear();
 			} else if (this.tempByte.size() > 0) {
 				tempByte.add(b);
 			} else if (this.dataTempByte.size() > 0) {
@@ -369,17 +402,25 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 	}
 
 	private void setWeighData(Byte[] data) {
-		
-		if(data.length==4){
-			int type = CharUtil.byteToInt(data[0]);
+		if (data.length == 4) {
+			Integer type = CharUtil.byteToInt(data[0]);
 			String t1 = CharUtil.bcd2Str(new byte[] { data[1], data[2] });
-			if(type==0xCC){
+			
+			if (type == 0xCC) {
 				this.brakRollerData.setJzzlh(Integer.parseInt(t1));
-			}else if(type==0xDD){
+			} else if (type == 0xDD) {
 				this.brakRollerData.setJzylh(Integer.parseInt(t1));
 			}
 		}
 	}
+	
+	public static void main(String[] ages){
+		
+		Byte[] aa = new Byte[]{(byte) 0xDD};
+		
+		System.out.println(CharUtil.byteToInt(aa[0])==0xDD);
+	}
+	
 
 	public void process(Byte[] data) throws Exception {
 		String ml = CharUtil.byte2HexOfString(data);

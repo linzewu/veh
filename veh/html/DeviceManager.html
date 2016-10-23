@@ -184,6 +184,42 @@
 		}
 	}
 	
+	
+	workpointManager.stop=function(){
+		var row = $("#workpointManager").datagrid("getSelected");
+		if(!row){
+			$.messager.alert("提示","请选择工位！");
+			return;
+		}else{
+			$.post("/veh/workpoint/stop",{
+				id:row.id
+			},function(data){
+				$.messager.alert("提示",data.message,"info");
+				$("#workpointManager").datagrid("reload");
+			}).error(function(e){
+				$.messager.alert("错误","请求错误:"+e.status,"error");
+			});
+		}
+	}
+	
+	
+	workpointManager.reStart=function(){
+		var row = $("#workpointManager").datagrid("getSelected");
+		if(!row){
+			$.messager.alert("提示","请选择工位！");
+			return;
+		}else{
+			$.post("/veh/workpoint/reStart",{
+				id:row.id
+			},function(data){
+				$.messager.alert("提示",data.message,"info");
+				$("#workpointManager").datagrid("reload");
+			}).error(function(e){
+				$.messager.alert("错误","请求错误:"+e.status,"error");
+			});
+		}
+	}
+	
 	function brakRollerTest(){
 		var row = $("#deviceManager").datagrid("getSelected");
 		var call=function(data){
@@ -332,6 +368,8 @@
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="workpointManager.reject()">取消</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="workpointManager.accept()">保存</a>
 			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="workpointManager.start()">启动</a>
+			<a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="workpointManager.stop()">停止</a>
+			<a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="workpointManager.reStart()">重启</a>
 		</div>
 	</div>
 </div>

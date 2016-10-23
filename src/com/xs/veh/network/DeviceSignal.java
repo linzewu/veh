@@ -64,7 +64,6 @@ public class DeviceSignal extends SimpleRead {
 			break;
 		case SerialPortEvent.DATA_AVAILABLE:// 当有可用数据时读取数据,并且给串口返回数据
 
-			
 			byte[] readBuffer = new byte[1024];
 			int length = 0;
 			int lengthTemp = 0;
@@ -79,7 +78,8 @@ public class DeviceSignal extends SimpleRead {
 				}
 				byte[] endodedData = new byte[length];
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
-				this.setRtx(dsd.decode(endodedData));
+				dsd.decode(endodedData);
+				//this.setRtx();
 			} catch (IOException e) {
 				logger.error("光电开关读取数据流异常", e);
 			}
@@ -122,7 +122,7 @@ public class DeviceSignal extends SimpleRead {
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		// 初始化光电解码器
 		dsd = (AbstractDeviceSignal) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
-
+		dsd.init(this);
 	}
 	
 	/**

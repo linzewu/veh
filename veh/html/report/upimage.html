@@ -1,0 +1,99 @@
+<style>
+.upimage ul {
+	list-style: none;
+}
+
+.upimage ul li {
+	width: 220px;
+	height: 220px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 14px;
+	float: left;
+	margin: 5px 15px 5px 15px;
+}
+
+#addIamge {
+	width: 210px;
+	height: 210px;
+}
+
+.upimage ul li img:HOVER {
+	width: 200px;
+	height: 200px;
+	cursor: pointer;
+}
+
+.upimage ul li img {
+	width: 180px;
+	height: 180px;
+	margin: 3px 0px 5px 0px;
+}
+
+#webcam {
+	margin: 10px 10px 10px 10px;
+}
+
+.upimage-cam-top {
+	margin: 10px 10px 10px 10px;
+}
+</style>
+<script type="text/javascript">
+function openCamWin() {
+	$("#win_img_upload").window("open");
+	
+	
+	var deviceCount = ScanCtrl.GetDeviceCount();
+	var deviceData=[];
+	for(var i=0;i<deviceCount;i++){
+		deviceData[i]={"value":i,"text":"摄像头"+(i+1)};
+	}
+	$("#upimageCamDev").combobox("loadData",deviceData);
+	
+	var scanSizeCount = ScanCtrl.GetScanSizeCount();
+	var scanSizeData=[];
+	for(var i=0;i<scanSizeCount;i++){
+		var str = ScanCtrl.GetScanSizeName(i);
+		scanSizeData[i]={"value":i,"text":str};
+	}
+	$("#upimageScanSize").combobox("loadData",scanSizeData);
+	
+	var resolutionCount = ScanCtrl.GetResolutionCount();
+	var resolutionData=[];
+	for(var i=0;i<resolutionCount;i++){
+		var str = ScanCtrl.GetResolutionWidth(i)+"x"+ScanCtrl.GetResolutionHeight(i);
+		resolutionData[i]={"value":i,"text":str};
+	}
+	$("#upimageResolution").combobox("loadData",resolutionData);
+	
+	ScanCtrl.SetScanSize(0);
+	ScanCtrl.SetScanSize(0);
+	ScanCtrl.SetResolution(0);  
+	ScanCtrl.StartPreviewEx();
+}
+
+</script>
+<div class="upimage">
+	<ul>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><label>左前45度</label> <img
+			src="/veh/cache/a6fea9456510e4679d9ac82c919c0b1e.jpg"></li>
+		<li><img id="addIamge" src="/veh/images/addIamge.png"
+			onclick="openCamWin()"></li>
+	</ul>
+</div>

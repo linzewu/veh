@@ -49,8 +49,14 @@ public class WorkPointController {
 	}
 	
 	@RequestMapping(value = "stop", method = RequestMethod.POST)
-	public @ResponseBody Map stop(@RequestParam Integer id) {
+	public @ResponseBody Map stop(@RequestParam Integer id) throws InterruptedException {
 		Message message = workPointManager.stopWorkpoint(id);
+		return ResultHandler.toMessage(message);
+	}
+	
+	@RequestMapping(value = "reStart", method = RequestMethod.POST)
+	public @ResponseBody Map reStart(@RequestParam Integer id) throws InterruptedException {
+		Message message = workPointManager.reStartWorkpoint(id);
 		return ResultHandler.toMessage(message);
 	}
 	

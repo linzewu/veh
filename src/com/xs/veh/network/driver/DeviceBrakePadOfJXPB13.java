@@ -112,31 +112,43 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				// 读取前轴数据
 				logger.info("发送取前轴数据");
 				sendGetDataCommom(this.dqqzsj);
-
+				deviceBrakePad.getDisplay().sendMessage("获取前轴数据", DeviceDisplay.XP);
+				
+				Thread.sleep(200);
+				
 				logger.info("发送取前轴制动力曲线数据"); // 读取前制动力曲线
 				sendGetDataCommom(this.dqqzdlqx);
+				deviceBrakePad.getDisplay().sendMessage("获取前轴制动力曲线数据", DeviceDisplay.XP);
+				Thread.sleep(200);
 
 				logger.info("发送取前轴轮重曲线数据"); // 读取前轴轮重曲线
 				sendGetDataCommom(this.dqqzlzqx);
+				deviceBrakePad.getDisplay().sendMessage("获取前轴轮重曲线数据", DeviceDisplay.XP);
+				Thread.sleep(200);
 
 			}
 			if (hzflag) {
 				logger.info("发送后轴数据");
 				sendGetDataCommom(this.dqhzsj);
-
+				deviceBrakePad.getDisplay().sendMessage("获取后轴数据", DeviceDisplay.XP);
+				Thread.sleep(200);
 				// 读取后制动力曲线
 				logger.info("发送后制动力曲线");
 				sendGetDataCommom(this.dqhzdlqx);
-
+				deviceBrakePad.getDisplay().sendMessage("获取后轴制动力曲线", DeviceDisplay.XP);
+				Thread.sleep(200);
 				// 读取后轴轮重曲线 
 				logger.info("发送后轴轮重曲线");
 				sendGetDataCommom(this.dqhzlzqx);
-
+				deviceBrakePad.getDisplay().sendMessage("获取后轴轮重曲线", DeviceDisplay.XP);
+				Thread.sleep(200);
 			}
 			if (zcflag) {
 				// 读取驻车制动
 				logger.info("读取驻车制动");
 				sendGetDataCommom(this.dqszdsj);
+				deviceBrakePad.getDisplay().sendMessage("获取驻车制动数据", DeviceDisplay.XP);
+				Thread.sleep(200);
 			}
 			logger.info("brakRollerDatas: " + brakRollerDatas.size());
 			Thread.sleep(200);
@@ -194,10 +206,29 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 			}
 
 		} else {
-			
 			logger.info("返回数据：" + CharUtil.byte2HexOfString(data));
+			Integer index=null;
+			for(int z=0;z<data.length;z++){
+				if(data[z]==0x41){
+					int length = CharUtil.byteToInt(data[z+1]);
+					if(length==4){
+						index=z;
+						break;
+					}
+				}
+			}
 			
-			if (data[0] == 0x41) {
+			if(index!=null){
+				temp = new byte[4];
+				temp[0]=data[index];
+				temp[1]=data[index+1];
+				temp[2]=data[index+2];
+				temp[3]=data[index+3];
+				processData(temp);
+			}
+			
+			
+			/*if (data[0] == 0x41) {
 				int length = CharUtil.byteToInt(data[1]);
 				if (length == 4) {
 					temp = new byte[length];
@@ -209,7 +240,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 					}
 					processData(temp);
 				}
-			}
+			}*/
 		}
 
 	}

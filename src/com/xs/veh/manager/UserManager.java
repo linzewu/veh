@@ -94,6 +94,7 @@ public class UserManager {
 		
 		if(user.getId()==null){
 			user.setPassword(Constant.initPassword);
+			user.setUserState(User.USER_STATE_PASSWORD_INVALID);
 		}else{
 			User oldUser=this.hibernateTemplate.load(User.class, user.getId());
 			user.setPassword(oldUser.getPassword());
@@ -123,6 +124,7 @@ public class UserManager {
 		
 		User oldUser=  this.hibernateTemplate.load(User.class, user.getId());
 		oldUser.setPassword(Constant.initPassword);
+		oldUser.setUserState(User.USER_STATE_PASSWORD_INVALID);
 		this.hibernateTemplate.update(oldUser);
 	}
 	
@@ -130,6 +132,15 @@ public class UserManager {
 		
 		this.hibernateTemplate.delete(user);
 		
+	}
+	
+	
+	public void updateUser(User user){
+		this.hibernateTemplate.update(user);
+	}
+	
+	public User loadUser(Integer id){
+		return this.hibernateTemplate.load(User.class, id);
 	}
 
 }

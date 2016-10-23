@@ -19,7 +19,8 @@
 	<mvc:resources location="/css/" mapping="/css/**" />
 	<mvc:resources location="/codebase/" mapping="/codebase/**" />
 	<mvc:resources location="/datas/" mapping="/datas/**" />
-	<mvc:resources location="/html/" mapping="/html/**" />      
+	<mvc:resources location="/html/" mapping="/html/**" />
+	<mvc:resources location="/cache/" mapping="/cache/**" />     
      
 	<!-- 自动加载构建bean -->
 	<context:component-scan base-package="com.xs.veh.controller" />

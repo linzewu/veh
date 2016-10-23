@@ -26,6 +26,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.jdbc.ReturningWork;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -293,11 +294,11 @@ public class VehManager {
 		DetachedCriteria query = DetachedCriteria.forClass(VehCheckLogin.class);
 
 		if (vehCheckLogin.getHphm() != null && !"".equals(vehCheckLogin.getHphm())) {
-			query.add(Restrictions.like("hphm", vehCheckLogin.getHphm()));
+			query.add(Restrictions.like("hphm", "%"+vehCheckLogin.getHphm()+"%"));
 		}
 
 		if (vehCheckLogin.getClxh() != null && !"".equals(vehCheckLogin.getClxh())) {
-			query.add(Restrictions.like("clxh", vehCheckLogin.getClxh()));
+			query.add(Restrictions.like("clxh", "%"+vehCheckLogin.getClxh()+"%"));
 		}
 
 		if (vehCheckLogin.getHpzl() != null && !"".equals(vehCheckLogin.getHpzl())) {
@@ -306,13 +307,44 @@ public class VehManager {
 		if (jczt != null) {
 			query.add(Restrictions.in("vehjczt", jczt));
 		}
+		
 		query.addOrder(Order.desc("jylsh"));
+		
 
 		Integer firstResult = (page - 1) * rows;
 
 		List<VehCheckLogin> vcps = (List<VehCheckLogin>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
+		
 		return vcps;
+	}
+	
+	
+	public Integer getVehCheckingCount(Integer page, Integer rows, VehCheckLogin vehCheckLogin, Integer[] jczt) {
+
+		DetachedCriteria query = DetachedCriteria.forClass(VehCheckLogin.class);
+
+		if (vehCheckLogin.getHphm() != null && !"".equals(vehCheckLogin.getHphm())) {
+			query.add(Restrictions.like("hphm", "%"+vehCheckLogin.getHphm()+"%"));
+		}
+
+		if (vehCheckLogin.getClxh() != null && !"".equals(vehCheckLogin.getClxh())) {
+			query.add(Restrictions.like("clxh", "%"+vehCheckLogin.getClxh()+"%"));
+		}
+
+		if (vehCheckLogin.getHpzl() != null && !"".equals(vehCheckLogin.getHpzl())) {
+			query.add(Restrictions.eq("hpzl", vehCheckLogin.getHpzl()));
+		}
+		if (jczt != null) {
+			query.add(Restrictions.in("vehjczt", jczt));
+		}
+		
+		query.setProjection(Projections.rowCount());
+		
+		List<Long> count =  (List<Long>) hibernateTemplate.findByCriteria(query);
+		
+		
+		return count.get(0).intValue();
 	}
 
 	/**

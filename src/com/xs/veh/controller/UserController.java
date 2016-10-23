@@ -84,6 +84,19 @@ public class UserController {
 
 	}
 	
+	@RequestMapping(value = "validatePassworrd")
+	public @ResponseBody boolean validatePassworrd(HttpSession session,String oldPassword) {
+		User user = (User)session.getAttribute("user");
+		User querUser = userManager.loadUser(user.getId());
+		if(querUser.getPassword().equals(oldPassword)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	
+	
 	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
 	public @ResponseBody void resetPassword(User user){
 		this.userManager.resetPassword(user);
@@ -99,6 +112,18 @@ public class UserController {
 	public @ResponseBody User getCurrentUser(HttpSession session) {
 		User user = (User)session.getAttribute("user");
 		return user;
+	}
+	
+	@RequestMapping(value = "updatePassword", method = RequestMethod.POST)
+	public @ResponseBody Map updatePassword(HttpSession session,String newPassword) {
+		User sessionUser = (User)session.getAttribute("user");
+		User user = this.userManager.loadUser(sessionUser.getId());
+		
+		user.setPassword(newPassword);
+		user.setUserState(User.USER_STATE_NORMAL);
+		this.userManager.updateUser(user);
+		session.invalidate();
+		return ResultHandler.toSuccessJSON("密碼修改成功！");
 	}
 
 

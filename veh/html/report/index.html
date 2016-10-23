@@ -8,7 +8,110 @@ function queryReportList(){
 	$("#checkingVeh").datagrid("reload",{statusArry:status});
 }
 
+function camsChange(newValue,oldValue){
+	ScanCtrl.SetCurDev(newValue); 
+}
+
+function scanSizeChange(newValue,oldValue){
+	ScanCtrl.SetScanSize(newValue); 
+}
+
+function resolutionChange(newValue,oldValue){
+	ScanCtrl.SetResolution(newValue); 
+}
+
+
+function capture(){
+	var date=new Date();
+	var yy=date.getFullYear().toString();
+	var mm=(date.getMonth()+1).toString();
+	var dd=date.getDate().toString();
+	var hh=date.getHours().toString();
+	var nn=date.getMinutes().toString();
+	var ss=date.getSeconds().toString();
+	var mi=date.getMilliseconds().toString();
+	var picName=yy+mm+dd+hh+nn+ss+mi;
+	
+	var path="D:\\vehCache\\"+picName+".jpg";
+	ScanCtrl.EnableDateRecord(1);
+    //var flag=ScanCtrl.ScanToHTTPServer("http://localhost:8080/veh/common/uploadImage","imageData",path);
+    
+    var imageData = ScanCtrl.ScanBase64("");
+    
+    if(!imageData){
+    	$.messager.alert("提示","照片拍摄失败，可能原因：<br>1、缓存目录未创建，请点击“创建缓存目录“按钮。<br>2、请检查磁盘空间是否已满，可以删除vehCache目录下的缓存照片！","error");
+    }else{
+    	$.post("/veh/common/uploadImage", {"imageData":imageData},function(data){
+              $(".upImageInfo img").attr("src","/veh/"+data);
+    	}).error(function(e){
+    		$.messager.alert('错误', e, 'error');
+    	});
+    }
+    
+}
+
+function createCache(){
+	var objFSO = new ActiveXObject("Scripting.FileSystemObject");
+	var strFolder = "D:\\vehCache";
+    if (!objFSO.FolderExists(strFolder)){
+		// 创建文件夹
+		var strFolderName = objFSO.CreateFolder(strFolder);
+		$.messager.alert("提示","缓存目录已创建！","info");
+	}else{
+		$.messager.alert("提示","已存在缓存目录！","info");
+	}
+}
+
+function startPreview(){
+	ScanCtrl.StartPreviewEx();
+}
+
+function stopPreview(){
+	ScanCtrl.StopPreviewEx();
+}
+
+var regw=[640,800,1024,1280,1600,2048,2592];
+var regh=[480,600,768,960,1200,1536,1944];
+
+function zoomin(){
+	var cwidth =  $(".upImageInfo img").css("width");
+	var cheight =  $(".upImageInfo img").css("height");
+	
+	$.each(regw,function(i,n){
+		if(n+"px"==cwidth&&i<regw.length-1){
+			$(".upImageInfo img").css({"width":regw[i+1]+"px","height":regh[i+1]+"px"});
+		}
+	});
+}
+
+function zoomout(){
+	var cwidth =  $(".upImageInfo img").css("width");
+	var cheight =  $(".upImageInfo img").css("height");
+	
+	$.each(regw,function(i,n){
+		if(n+"px"==cwidth&&i>=1){
+			$(".upImageInfo img").css({"width":regw[i-1]+"px","height":regh[i-1]+"px"});
+		}
+	});
+}
+
 </script>
+<style>
+
+.upImageInfo{
+width: 640px;
+height: 480px;
+}
+
+.upImageInfo img{
+width: 640px;
+height: 480px;
+}
+
+.upImageInfo img:HOVER{
+cursor: pointer;
+}
+</style>
 
 <div class="easyui-layout" fit="true" >
 	<div data-options="region:'west'" title="检测信息" style="width: 300px;">
@@ -42,5 +145,51 @@ function queryReportList(){
 <label>号牌号码：</label><input class="easyui-textbox" value="苏J"><a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:queryReportList" >查询</a>
 </div>
 <div><label>检测状态：</label>&nbsp;&nbsp;<input name="statusArry"  type="radio" value="0,1" checked="checked"><label>未完成</label><input type="radio" name="statusArry" value="2"><label>已完成</label></div>
+</div>
+
+<div id="win_img_upload" class="easyui-window" data-options="width:1200,
+									    height:560,
+									    modal:true,
+									    title:'图片上传',
+									    minimizable:false,
+									    collapsible:false,
+									    maximizable:false,
+									    draggable:false,
+									    closed:true,
+									    onClose:stopPreview
+									    ">
+	<div class="easyui-layout" data-options="fit:true">
+	    <div data-options="region:'east'" style="width:360px;">
+    		<div id="webcam">
+				<object classid="clsid:090457CB-DF21-41EB-84BB-39AAFC9E271A"
+					id="ScanCtrl" codebase="*.cab#version=1,0,0,1" width="320"
+					height="240"></object>
+			</div>
+			<div class="upimage-cam-top">
+	    		<label>摄像头：</label><input class="easyui-combobox" id="upimageCamDev" data-options="onChange:camsChange" >
+	    	</div>
+	    	<div class="upimage-cam-top">
+	    		<label>扫描尺寸：</label><input class="easyui-combobox" id="upimageScanSize" data-options="onChange:scanSizeChange" >
+	    	</div>
+	    	<div class="upimage-cam-top">
+	    		<label>分辨率：</label><input class="easyui-combobox" id="upimageResolution" data-options="onChange:resolutionChange" >
+	    	</div>
+	    	<div class="upimage-cam-top">
+	    		<label>照片种类：</label><input class="easyui-combobox" id="upimageZPZL"  >
+	    	</div>
+	    	<div style="width: 240px;margin: 0 auto;">
+	    		<a href="#" class="easyui-linkbutton c1" data-options="onClick:capture">拍照</a>
+	    		<a href="#" class="easyui-linkbutton c6" data-options="onClick:zoomin">放大</a>
+	    		<a href="#" class="easyui-linkbutton c6" data-options="onClick:zoomout">缩小</a>
+	    		<a href="#" class="easyui-linkbutton c6" data-options="onClick:startPreview">预览</a>
+	    		<a href="#" class="easyui-linkbutton c6" data-options="onClick:stopPreview">停止</a>
+	    	</div>
+	    </div>
+	    <div data-options="region:'center',border:1" style="padding:5px;">
+	    	<div class="upImageInfo">
+	    		<img alt="" src="" >
+	    	</div>
+	    </div>
+	</div>
 </div>
 

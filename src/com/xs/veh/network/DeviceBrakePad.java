@@ -123,7 +123,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			// 非驻车制动则计算检测结果
 			if (!brakRollerData.getJyxm().equals("B0")) {
 				// 空载行车制动率
-				brakRollerData.setKzxczdl();
+				brakRollerData.setKzxczdl(vehCheckLogin);
 				// 空载制动率限制及判定
 				brakRollerData.setKzzdlxz(vehCheckLogin);
 				brakRollerData.setKzzdlpd();

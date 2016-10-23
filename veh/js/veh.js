@@ -1,3 +1,5 @@
+
+
 var userInfo = $.ajax({
 	url : "/veh/user/getCurrentUser",
 	async : false,
@@ -10,8 +12,15 @@ if(userInfo.state==600){
 	 window.location.href="/veh/html/login.html";
 }
 
+$(function(){
+	if(userInfo.userState==0||userInfo.userState==null){
+		$('#win_password').window('open');
+	}
+});
+
 document
 		.write("<script language='javascript' src='/veh/bps/all.js' ></script>");
+
 var veh = {
 	jgpd:function(jg){
 		if(jg==1){
@@ -842,6 +851,7 @@ var report={
 			$("#report2").panel({"href":"/veh/html/report/report2.html","onLoad":report.getReport2,baseInfo:row});
 			$("#report3").panel({"href":"/veh/html/report/report3.html","onLoad":report.getReport3,baseInfo:row});
 			$("#report4").panel({"href":"/veh/html/report/report4.html","onLoad":report.getReport4,baseInfo:row});
+			$("#upimage").panel({"href":"/veh/html/report/upimage.html",baseInfo:row});
 			$("#tab-report").tabs("getSelected").panel("refresh");
 		}
 	},
@@ -900,6 +910,13 @@ var report={
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_zlh]").text(n.zlh);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_ylh]").text(n.ylh);
 					$("#report1 tr[name="+tt[1]+"] td[name=dxcs]").text(n.dxcs);
+					
+					var jzzh=n.jzzlh+n.jzylh;
+					
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_jzzh]").text((jzzh==0||jzzh==null)?"":jzzh);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_jzzzdl]").text(n.jzzzdl==null?"":n.jzzzdl);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_jzbphl]").text(n.jzbphl==null?"":n.jzbphl);
+					
 					if(tt[1]=="B0"){
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_b"+n.zw+"_zczdl]").text((Number(n.zzdl)+Number(n.yzdl)))
 					}
@@ -962,7 +979,7 @@ var report={
 					jg="-";
 				}
 				
-				var tr="<tr><td class=l >"+n.xh+"</td><td class=l>"+n.yqjyxm+"</td><td class=l>"+		
+				var tr="<tr><td class=l >"+(i+1)+"</td><td class=l>"+n.yqjyxm+"</td><td class=l>"+		
 						n.yqjyjg+"</td><td class=l>"+n.yqbzxz+"</td><td class=l>"+jg+"</td><td class=l>"+
 						(n.yqjybz==null?"":n.yqjybz)+"</td></tr>";
 				$("#tbody_yqsbjyjg").append(tr);
@@ -1017,13 +1034,9 @@ var report={
 		 
 	    if(strRigthData!=null){
 			var temp=strRigthData.split(",");
-			
-			console.log(temp.length)
 			if(temp.length>700){
 				temp=temp.splice(300,700)
 			}
-			
-			
 			$.each(temp,function(i,n){
 				rdata.push(Number(n));
 			});
@@ -1032,7 +1045,6 @@ var report={
 		if(strLeftdata!=null){
 			var temp=strLeftdata.split(",");
 			
-			console.log(temp.length)
 			if(temp.length>700){
 				temp=temp.splice(300,700)
 			}
@@ -1071,15 +1083,21 @@ var report={
 			 iconCls: 'icon-search',
 			 text:'显示详细',
 			 onClick:function(){
-				 var temp= report.createReport4Teblae(ckey,data.zw, ldata, rdata);
+				 var temp= report.createReport4Teblae(ckey,data.zw, ldata, rdata,title);
+				// $("#report4Table"+ckey).remove();
 				 $("#report4Contex"+ckey).append(temp);
 			 }
 		 });
 		 
 	},
-	createReport4Teblae:function (ckey,zw,ldata,rdata){
+	createReport4Teblae:function (ckey,zw,ldata,rdata,title){
 		
-		var report4Table="<table id='report4Table"+ckey+"' class='reportTable4'><thead><tr><td colspan='8'><h4>"+zw+"轴制动力</h4></td></tr><tr><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td><td>序号</td><td>左制动力</td><td>右制动力</td><td>制动力差</td></tr></thead><tbody>";
+		var lStr=title.indexOf("动态轮荷")>=0?"左轮荷":"左制动力";
+		var rStr=title.indexOf("动态轮荷")>=0?"右轮荷":"右制动力";
+		
+		var cStr=title.indexOf("动态轮荷")>=0?"轮荷差":"制动力差";
+		
+		var report4Table="<table id='report4Table"+ckey+"' class='reportTable4'><thead><tr><td colspan='8'><h4>"+zw+title+"过程数据</h4></td></tr><tr><td>序号</td><td>"+lStr+"</td><td>"+rStr+"</td><td>"+cStr+"</td><td>序号</td><td>"+lStr+"</td><td>"+rStr+"</td><td>"+cStr+"</td></tr></thead><tbody>";
 		var size=ldata.length<=rdata.length?ldata.length:rdata.length;
 		size=size%2==1?(size-1):size;
 		for(var i=0;i<size;i++){

@@ -177,12 +177,56 @@ public class BrakRollerData extends BaseDeviceData {
 	@Column(length = 8000)
 	private String jzRigthDataStr;
 	
+	//加载左制动力
+	@Column
+	private Integer jzzzdli;
+	
+	//加载右制动力
+	@Column
+	private Integer jzyzdli;
+
+	//加载左制动力差点
+	@Column
+	private Integer jzzzdlcd;
+	
+	//加载右制动力差点
+	@Column
+	private Integer jzyzdlcd;
 	
 	
 	
 
-	
-	
+	public Integer getJzzzdlcd() {
+		return jzzzdlcd;
+	}
+
+	public Integer getJzyzdlcd() {
+		return jzyzdlcd;
+	}
+
+	public void setJzzzdlcd(Integer jzzzdlcd) {
+		this.jzzzdlcd = jzzzdlcd;
+	}
+
+	public void setJzyzdlcd(Integer jzyzdlcd) {
+		this.jzyzdlcd = jzyzdlcd;
+	}
+
+	public Integer getJzzzdli() {
+		return jzzzdli;
+	}
+
+	public Integer getJzyzdli() {
+		return jzyzdli;
+	}
+
+	public void setJzzzdli(Integer jzzzdli) {
+		this.jzzzdli = jzzzdli;
+	}
+
+	public void setJzyzdli(Integer jzyzdli) {
+		this.jzyzdli = jzyzdli;
+	}
 
 	public String getZdtlhStr() {
 		return zdtlhStr;
@@ -847,19 +891,19 @@ public class BrakRollerData extends BaseDeviceData {
 	 */
 	public void setJzbphl() {
 
-		if (yzdl == null || zzdl == null || gcc == null) {
+		if (jzyzdli == null || jzzzdli == null ) {
 			return;
 		}
 		
 		Float zdzdl=null;
 		
-		if(zw>1&&kzxczdl<60){
+		if(zw>1&&jzzzdl<60){
 			zdzdl= (jzzlh+jzylh)*0.98f;
 		}else{
-			zdzdl =  zzdl > yzdl ? zzdl.floatValue() : yzdl.floatValue();
+			zdzdl =  jzzzdli > jzyzdli ? jzzzdli.floatValue() : jzyzdli.floatValue();
 		}
 		
-		Float bphl = (float) (Math.abs(zzdlcd-yzdlcd) * 1.0 / zdzdl * 1.0) * 100;
+		Float bphl = (float) (Math.abs(jzzzdlcd-jzyzdlcd) * 1.0 / zdzdl * 1.0) * 100;
 		this.jzbphl = CheckDataManager.MathRound(bphl);
 
 	}
@@ -867,7 +911,15 @@ public class BrakRollerData extends BaseDeviceData {
 	/**
 	 * 设置空载行车制动率
 	 */
-	public void setKzxczdl() {		Integer zh = zlh + ylh;
+	public void setKzxczdl(VehCheckLogin vehCheckLogin) {		Integer zh = zlh + ylh;
+		
+		String cllx =vehCheckLogin.getCllx();
+		
+		//如果动态轮荷有值 而且是乘用车 则取动态轮荷
+		if(this.getZdtlh()!=null&&this.getYdtlh()!=null&&cllx.indexOf("K")==0){
+			zh=this.getZdtlh()+this.getYdtlh();
+		}
+		
 		Integer zdl = this.getZzdl() + this.getYzdl();
 		Float xczdl = (float) (zdl * 1.0 /(zh * 0.98)) * 100;
 		this.kzxczdl = CheckDataManager.MathRound(xczdl);
@@ -879,11 +931,11 @@ public class BrakRollerData extends BaseDeviceData {
 	 */
 	public void setJzzdl() {
 
-		if (sfjzz==SFJZZ_NO||this.getJzzlh()==null||this.getJzylh()==null) {
+		if (sfjzz==SFJZZ_NO||this.getJzzlh()==null||this.getJzylh()==null||this.getJzzzdli()==null||this.getJzyzdli()==null) {
 			return;
 		}
 		Integer zh = this.getJzzlh()+this.getJzylh();
-		Integer zdl = this.getZzdl() + this.getYzdl();
+		Integer zdl = this.getJzzzdli() + this.getJzyzdli();
 		Float xczdl = (float) (zdl * 1.0 / (zh * 0.98)) * 100;
 		this.jzzzdl = CheckDataManager.MathRound(xczdl);
 	}

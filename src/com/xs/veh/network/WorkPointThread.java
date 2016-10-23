@@ -14,7 +14,11 @@ import com.xs.veh.manager.WorkPointManager;
 
 @Component("workPointThread")
 @Scope("prototype")
-public class WorkPointThread implements Runnable {
+public class WorkPointThread extends Thread {
+	
+	private boolean active;
+	
+	
 
 	Logger logger = Logger.getLogger(WorkPointThread.class);
 
@@ -25,6 +29,16 @@ public class WorkPointThread implements Runnable {
 
 	@Resource(name = "workPointManager")
 	private WorkPointManager workPointManager;
+	
+	
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
 	public WorkPoint getWorkPoint() {
 		return workPoint;
@@ -36,13 +50,23 @@ public class WorkPointThread implements Runnable {
 
 	@Override
 	public void run() {
+		logger.info(workPoint.getJcxdh()+"号线"+workPoint.getSort()+"工位 启动");
 		while (true) {
 			try {
+				active=true;
 				Thread.sleep(1000);
 				workPointManager.check(workPoint);
-			} catch (InterruptedException | IOException e) {
+				logger.debug(workPoint.getJcxdh()+"号线  "+workPoint.getSort()+"工位");
+			} catch (InterruptedException  e) {
+				active=false;
+				logger.info(workPoint.getJcxdh()+"号线"+workPoint.getSort()+"工位 停止");
+				return;
+			}catch(IOException e){
+				e.printStackTrace();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+	
 }

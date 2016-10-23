@@ -94,9 +94,9 @@ public class WorkPointManager {
 			this.hibernateTemplate.flush();
 			this.hibernateTemplate.clear();
 			workPointThread.setWorkPoint(workPoint);
+			workPointThread.start();
 			servletContext.setAttribute(workPoint.getThreadKey(), workPointThread);
-			executor.execute(workPointThread);
-
+			
 			message.setState(Message.STATE_SUCCESS);
 			message.setMessage("启动成功");
 			
@@ -114,21 +114,62 @@ public class WorkPointManager {
 		return message;
 	}
 
-	public Message stopWorkpoint(Integer id) {
+	public Message stopWorkpoint(Integer id) throws InterruptedException {
 		WorkPoint workPoint = this.hibernateTemplate.load(WorkPoint.class, id);
 		Message message = new Message();
-		workPoint.setGwzt(WorkPoint.GWZT_TY);
-		this.hibernateTemplate.update(workPoint);
+		
 		WorkPointThread workPointThread = (WorkPointThread) this.servletContext.getAttribute(workPoint.getThreadKey());
-		workPointThread.setWorkPoint(workPoint);
-		this.servletContext.setAttribute(workPoint.getThreadKey(), null);
-
-		message.setState(Message.STATE_SUCCESS);
-		message.setMessage("工位停止成功");
-
+		if(workPointThread==null){
+			message.setState(Message.STATE_SUCCESS);
+			message.setMessage("工位已停止");
+			return message;
+		}
+		workPointThread.interrupt();
+		for(int i=0;i<30;i++){
+			Thread.sleep(100);
+			if(!workPointThread.isActive()){
+				workPoint.setGwzt(WorkPoint.GWZT_TY);
+				this.hibernateTemplate.update(workPoint);
+				this.servletContext.removeAttribute(workPoint.getThreadKey());
+				message.setState(Message.STATE_SUCCESS);
+				message.setMessage("工位停止成功");
+				return message;
+			}
+		}
+		
+		message.setMessage("工位停止失败！");
 		return message;
 
 	}
+	
+	public Message reStartWorkpoint(Integer id) throws InterruptedException {
+		WorkPoint workPoint = this.hibernateTemplate.load(WorkPoint.class, id);
+		Message message = new Message();
+		
+		WorkPointThread workPointThread = (WorkPointThread) this.servletContext.getAttribute(workPoint.getThreadKey());
+		if(workPointThread!=null){
+			workPointThread.interrupt();
+			for(int i=0;i<30;i++){
+				Thread.sleep(100);
+				if(!workPointThread.isActive()){
+					//workPointThread.start();
+					servletContext.removeAttribute(workPoint.getThreadKey());
+					startWorkpoint(id);
+					message.setState(Message.STATE_SUCCESS);
+					message.setMessage("工位重启成功");
+					return message;
+				}
+			}
+		}else{
+			return startWorkpoint(id);
+		}
+		message.setMessage("工位停止失败！");
+		return message;
+		
+		
+
+	}
+	
 
 	/**
 	 * 集合检测
@@ -137,15 +178,17 @@ public class WorkPointManager {
 	 * @param vehCheckLogin
 	 * @param checkQueue
 	 * @param lightVehFlow
+	 * @throws Exception 
 	 */
 	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue,
-			List<VehFlow> vehFlows) {
+			List<VehFlow> vehFlows) throws Exception {
 		try {
 			//VehFlow vehFlow = vehFlows.get(vehFlows.size() - 1);
 			checkDevice.startCheck(vehCheckLogin, vehFlows);
 			checkAfter(vehCheckLogin, vehFlows);
 		} catch (Exception e) {
 			logger.error("检测过程异常", e);
+			throw e;
 		}
 	}
 
@@ -202,8 +245,9 @@ public class WorkPointManager {
 	 * @param vehCheckLogin
 	 * @param checkQueue
 	 * @param vehFlow
+	 * @throws Exception 
 	 */
-	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue, VehFlow vehFlow) {
+	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue, VehFlow vehFlow) throws Exception {
 		try {
 			logger.info(vehFlow.getJyxm() + "项目开始检测");
 			checkDevice.startCheck(vehCheckLogin, vehFlow);
@@ -212,16 +256,16 @@ public class WorkPointManager {
 			checkAfter(vehCheckLogin, checkQueue, vehFlow);
 		} catch (Exception e) {
 			logger.error("检测过程异常", e);
+			throw e;
 		}
 	}
 
 	/**
 	 * 检测
 	 * @param workPoint
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @throws Exception 
 	 */
-	public void check(WorkPoint workPoint) throws IOException, InterruptedException {
+	public void check(WorkPoint workPoint) throws Exception {
 		CheckQueue checkQueue = getQueue(workPoint);
 		
 		if (checkQueue != null) {
@@ -294,75 +338,6 @@ public class WorkPointManager {
 			this.hibernateTemplate.evict(newVC);
 		}
 	}
-
-	// public void check(WorkPoint workPoint) {
-	//
-	// if (workPoint.getGwzt() == WorkPoint.GWZT_TY) {
-	// return;
-	// } else {
-	// CheckQueue checkQueue = getQueue(workPoint); // 获取工位排队队列
-	// if (checkQueue != null) { // 设置工位状态 setWorkPointState(workPoint,
-	// // checkQueue);
-	//
-	// List<VehFlow> vehFlows = getVehFlow(checkQueue);
-	//
-	// VehCheckLogin vehCheckLogin = getVehCheckLogin(checkQueue); // 灯光检测项目集合
-	// List<VehFlow> lightVehFlow = new ArrayList<VehFlow>();
-	//
-	// int dgcount = getDGCount(vehCheckLogin.getJyxm());
-	//
-	// for (VehFlow vehFlow : vehFlows) {
-	// Device device = this.hibernateTemplate.load(Device.class,
-	// vehFlow.getSbid());
-	// ICheckDevice checkDevice = (ICheckDevice)
-	// servletContext.getAttribute(device.getThredKey()); // 灯光项目
-	// // 特殊处理
-	// if (device.getType() == Device.DGJCSB) {
-	// lightVehFlow.add(vehFlow);
-	// if (lightVehFlow.size() == dgcount) {
-	// DeviceLight deviceLight = (DeviceLight) checkDevice;
-	// try {
-	// deviceLight.startCheck(vehCheckLogin, lightVehFlow);
-	// // 检测完成，删除队列
-	// this.hibernateTemplate.delete(checkQueue);
-	// // 创建一条新队列
-	// checkQueue = createNextQueue(vehFlow, vehCheckLogin);
-	// // 如果队列为空，则检测过程结束
-	// if (checkQueue == null) {
-	// checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
-	// }
-	// } catch (Exception e) {
-	// logger.error("检测过程异常", e);
-	// }
-	// }
-	// } else {
-	// // 非灯光设备
-	// try {
-	// logger.info(vehFlow.getJyxm() + "项目开始检测");
-	// checkDevice.startCheck(vehCheckLogin, vehFlow);
-	// // 检测完成，删除队列
-	// logger.info("检测结束");
-	// this.hibernateTemplate.delete(checkQueue);
-	// logger.info("删除队列完成");
-	// // 创建一条新队列
-	// logger.info("创建下一队列完成");
-	// checkQueue = createNextQueue(vehFlow, vehCheckLogin);
-	//
-	// // 如果队列为空，则检测过程结束
-	// if (checkQueue == null) {
-	// checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
-	// }
-	// } catch (Exception e) {
-	// logger.error("检测过程异常 :", e);
-	// }
-	// }
-	// }
-	// } else {
-	// // 设备工位为空闲状态
-	// setWorkPointIsNotUse(workPoint);
-	// }
-	// }
-	// }
 
 	public int getDGCount(String jyxm) {
 

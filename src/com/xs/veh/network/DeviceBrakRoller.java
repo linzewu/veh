@@ -171,7 +171,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		
 		
 		brakRollerData = dbrd.startCheck(vehFlow);
-		setInfoData(brakRollerData);
+		//setInfoData(brakRollerData);
 
 		
 		// 设置基础数据
@@ -180,7 +180,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		// 非驻车制动则计算检测结果
 		if (!brakRollerData.getJyxm().equals("B0")) {
 			// 空载行车制动率
-			brakRollerData.setKzxczdl();
+			brakRollerData.setKzxczdl(vehCheckLogin);
 			// 空载制动率限制及判定
 			brakRollerData.setKzzdlxz(vehCheckLogin);
 			brakRollerData.setKzzdlpd();
@@ -196,6 +196,9 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			// 加载制动率限制及判定
 			brakRollerData.setJzzdlxz(vehCheckLogin);
 			brakRollerData.setJzzdlpd();
+			
+			// 设置加载不平衡率
+			brakRollerData.setJzbphl();
 			// 加载不平衡率判定
 			brakRollerData.setJzbphlpd();
 		}
@@ -269,6 +272,32 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setRigthDataStr(rigthDataStr.toString());
 		}
 	}
+	
+	public void setJZInfoData(BrakRollerData brakRollerData) {
+		if (brakRollerData.getLeftData() != null && !brakRollerData.getLeftData().isEmpty()) {
+			StringBuffer leftDataStr = new StringBuffer();
+			for (Integer strData : brakRollerData.getLeftData()) {
+				leftDataStr.append("," + strData);
+			}
+			if (leftDataStr.length() > 0) {
+				leftDataStr.substring(1);
+			}
+			brakRollerData.setJzLeftDataStr(leftDataStr.toString());
+		}
+
+		if (brakRollerData.getRigthData() != null && !brakRollerData.getRigthData().isEmpty()) {
+			StringBuffer rigthDataStr = new StringBuffer();
+
+			for (Integer strData : brakRollerData.getRigthData()) {
+				rigthDataStr.append("," + strData);
+			}
+			if (rigthDataStr.length() > 0) {
+				rigthDataStr.substring(1);
+			}
+			brakRollerData.setJzRigthDataStr(rigthDataStr.toString());
+		}
+	}
+
 
 	@Override
 	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {

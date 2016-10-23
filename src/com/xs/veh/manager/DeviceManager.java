@@ -12,7 +12,6 @@ import com.xs.common.ResultHandler;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceMotion;
-import com.xs.veh.entity.Switch8;
 
 @Service("deviceManager")
 public class DeviceManager {
@@ -117,17 +116,5 @@ public class DeviceManager {
 		this.hibernateTemplate.delete(deviceMotion);
 	}
 
-	public List<Switch8> getSwitchs() {
-
-		List<Switch8> switchs = (List<Switch8>) this.hibernateTemplate.find("From Switch8");
-
-		return switchs;
-	}
-
-	public Switch8 saveSwitch8(Switch8 switch8) {
-
-		return this.hibernateTemplate.merge(switch8);
-
-	}
-
+	
 }

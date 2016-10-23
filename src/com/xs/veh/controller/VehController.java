@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,6 @@ import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -27,9 +27,7 @@ import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
-import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.VehManager;
-import com.xs.veh.util.RCAConstant;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -82,7 +80,7 @@ public class VehController {
 	}
 
 	@RequestMapping(value = "getVehChecking", method = RequestMethod.POST)
-	public @ResponseBody List<VehCheckLogin> getVehChecking(Integer page, Integer rows, VehCheckLogin vehCheckLogin,
+	public @ResponseBody Map<String,Object> getVehChecking(Integer page, Integer rows, VehCheckLogin vehCheckLogin,
 			@RequestParam(required = false) String statusArry) {
 
 		Integer[] jczt = null;
@@ -96,7 +94,16 @@ public class VehController {
 			}
 		}
 		List<VehCheckLogin> vcps = vehManager.getVehChecking(page, rows, vehCheckLogin, jczt);
-		return vcps;
+		
+		Integer total = vehManager.getVehCheckingCount(page, rows, vehCheckLogin, jczt);
+		
+		Map<String,Object> data =new HashMap<String,Object>();
+		
+		data.put("rows", vcps);
+		data.put("total", total);
+		
+		
+		return data;
 	}
 
 	@RequestMapping(value = "vehLogin", method = RequestMethod.POST)

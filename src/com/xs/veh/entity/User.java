@@ -22,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 })
 public class User extends BaseEntity {
 	
+	public final static Integer USER_STATE_PASSWORD_INVALID=0;
+	
+	public final static Integer USER_STATE_NORMAL=1; 
+	
 	@Column(unique=true,length=32)
 	@Pattern(regexp="^[a-zA-Z\\d]\\w{3,11}[a-zA-Z\\d]$",message="{user.userFomatterError}")
 	private String userName;
@@ -41,7 +45,20 @@ public class User extends BaseEntity {
 	@Column
 	private Integer roleId; 
 	
+	@Column
+	private Integer userState;
 	
+	
+
+
+	public Integer getUserState() {
+		return userState;
+	}
+
+	public void setUserState(Integer userState) {
+		this.userState = userState;
+	}
+
 	public Integer getRoleId() {
 		return roleId;
 	}

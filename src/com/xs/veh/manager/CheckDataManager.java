@@ -257,7 +257,7 @@ public class CheckDataManager {
 		if (otherInfoData != null) {
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setXh(xh);
-			dcj1.setYqjyxm("整车制动率");
+			dcj1.setYqjyxm("整车制动率(%)");
 			dcj1.setYqjyjg(otherInfoData.getZczdl() == null ? "" : otherInfoData.getZczdl().toString());
 			dcj1.setYqbzxz(otherInfoData.getZczdlxz() == null ? "" : ">=" + otherInfoData.getZczdlxz());
 			dcj1.setYqjgpd(otherInfoData.getZcpd() == null ? "" : otherInfoData.getZcpd().toString());
@@ -277,7 +277,7 @@ public class CheckDataManager {
 			SideslipData sideslipData = sideslipDatas.get(0);
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setXh(xh);
-			dcj1.setYqjyxm("侧滑检测值");
+			dcj1.setYqjyxm("侧滑检测值(m/km)");
 			dcj1.setYqjyjg(sideslipData.getSideslip() == null ? "" : sideslipData.getSideslip().toString());
 			dcj1.setYqbzxz(sideslipData.getChxz().replace(",", "~"));
 			dcj1.setYqjgpd(sideslipData.getChpd() == null ? "" : sideslipData.getChpd().toString());
@@ -295,7 +295,7 @@ public class CheckDataManager {
 			SpeedData speedData = speedDatas.get(0);
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setXh(xh);
-			dcj1.setYqjyxm("速度检测值");
+			dcj1.setYqjyxm("速度检测值(km/h)");
 			dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
 			dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
 			dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
@@ -326,7 +326,7 @@ public class CheckDataManager {
 				if (lightData.getGx() == LightData.GX_YGD) {
 					DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj1.setXh(xh);
-					dcj1.setYqjyxm(getLight(jyxm) + "光强");
+					dcj1.setYqjyxm(getLight(jyxm) + "光强(cd)");
 					dcj1.setYqjyjg(lightData.getGq() == null ? "" : lightData.getGq().toString());
 					dcj1.setYqbzxz(lightData.getGqxz() == null ? "" : ">=" + lightData.getGqxz().toString());
 					dcj1.setYqjgpd(lightData.getGqpd() == null ? "" : lightData.getGqpd().toString());
@@ -339,7 +339,7 @@ public class CheckDataManager {
 						&& syxz.equals("A"))) {
 					DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj2.setXh(xh);
-					dcj2.setYqjyxm(getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏");
+					dcj2.setYqjyxm(getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏(H)");
 					dcj2.setYqjyjg(lightData.getCzpy() == null ? "" : lightData.getCzpy().toString());
 					dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
 					dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
@@ -364,7 +364,7 @@ public class CheckDataManager {
 			if (flagMap.get(brd.getJyxm()) == null) {
 				DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
-				dcj1.setYqjyxm(getZW(brd.getZw()) + "制动率");
+				dcj1.setYqjyxm(getZW(brd.getZw()) + "制动率(%)");
 				dcj1.setYqjyjg(brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString());
 				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : ">=" + brd.getKzzdlxz().toString());
 				dcj1.setYqjgpd(brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString());
@@ -375,7 +375,7 @@ public class CheckDataManager {
 
 				DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj2.setXh(xh);
-				dcj2.setYqjyxm(getZW(brd.getZw()) + "不平衡率");
+				dcj2.setYqjyxm(getZW(brd.getZw()) + "不平衡率(%)");
 				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
 				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "<=" + brd.getBphlxz().toString());
 				dcj2.setYqjgpd(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString());
@@ -386,7 +386,7 @@ public class CheckDataManager {
 				if (brd.getJzzzdl() != null) {
 					DeviceCheckJudeg dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj3.setXh(xh);
-					dcj3.setYqjyxm(getZW(brd.getZw()) + "加载制动率");
+					dcj3.setYqjyxm(getZW(brd.getZw()) + "加载制动率(%)");
 					dcj3.setYqjyjg(brd.getJzzzdl() == null ? "" : brd.getJzzzdl().toString());
 					dcj3.setYqbzxz(brd.getJzzdlxz() == null ? "" : ">=" + brd.getJzzdlxz().toString());
 					dcj3.setYqjgpd(brd.getJzzdlpd() == null ? "" : brd.getJzzdlpd().toString());
@@ -396,7 +396,7 @@ public class CheckDataManager {
 
 					DeviceCheckJudeg dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj4.setXh(xh);
-					dcj4.setYqjyxm(getZW(brd.getZw()) + "加载不平衡率");
+					dcj4.setYqjyxm(getZW(brd.getZw()) + "加载不平衡率(%)");
 					dcj4.setYqjyjg(brd.getJzbphl() == null ? "" : brd.getJzbphl().toString());
 					dcj4.setYqbzxz(brd.getBphlxz() == null ? "" : "<=" + brd.getBphlxz().toString());
 					dcj4.setYqjgpd(brd.getJzbphlpd() == null ? "" : brd.getJzbphlpd().toString());
@@ -488,7 +488,7 @@ public class CheckDataManager {
 				"from BrakRollerData where jylsh=? and jycs=? and jyxm=?", vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), jyxm);
 
-		if (datas == null || datas.isEmpty()) {
+		if (datas == null || datas.isEmpty()||jyxm.equals("B0")) {
 			return null;
 		} else {
 			return datas.get(0);
