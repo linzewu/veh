@@ -63,7 +63,6 @@ public class CheckPhoto extends BaseEntity {
 	private Date pssj;
 	
 	@Column(length = 20)
-	@NotNull
 	private String jyxm;
 	
 	@Column(length = 20)
