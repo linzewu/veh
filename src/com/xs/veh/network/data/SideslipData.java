@@ -33,6 +33,7 @@ public class SideslipData extends BaseDeviceData {
 	@Column(length=4000)
 	private String strData;
 	
+	
 
 	public Integer getChpd() {
 		return chpd;
@@ -61,6 +62,20 @@ public class SideslipData extends BaseDeviceData {
 
 	public void setStrData(String strData) {
 		this.strData = strData;
+	}
+	
+	public void setStrData() {
+		
+		if(datas!=null&&!datas.isEmpty()){
+			StringBuilder sb=new StringBuilder();
+			for(Float f:datas){
+				sb.append(f);
+				sb.append(",");
+			}
+			
+			this.strData = sb.substring(0,sb.length()-1);
+			
+		}
 	}
 
 	public Float getSideslip() {
@@ -108,5 +123,7 @@ public class SideslipData extends BaseDeviceData {
 	public void setZpd() {
 		this.setZpd(chpd);
 	}
+	
+	
 
 }

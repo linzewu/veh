@@ -677,6 +677,15 @@ public class BrakRollerData extends BaseDeviceData {
 
 		String cllx = vehCheckLogin.getCllx();
 		Integer zbzl = vehCheckLogin.getZbzl();
+		
+		String qdxs=vehCheckLogin.getQdxs();
+		
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
+		
+		
 
 		if (cllx.indexOf("N") == 0 && zw > 1) {
 			this.kzzdlxz = 60;
@@ -688,7 +697,7 @@ public class BrakRollerData extends BaseDeviceData {
 			return;
 		}
 
-		if (zw > 1 && (cllx.indexOf("K") == 0 || zbzl < 3500)) {
+		if (zw > 1 && (cllx.indexOf("K") == 0 && zbzl < 3500)) {
 			this.kzzdlxz = 20;
 			return;
 		}
@@ -739,6 +748,13 @@ public class BrakRollerData extends BaseDeviceData {
 		String cllx = vehCheckLogin.getCllx();
 		Integer zbzl = vehCheckLogin.getZbzl();
 		Integer zs = vehCheckLogin.getZs();
+		
+		String qdxs=vehCheckLogin.getQdxs();
+		
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
 
 		// 三轴以上车辆需要加载
 		if (zs < 3) {
@@ -751,7 +767,7 @@ public class BrakRollerData extends BaseDeviceData {
 			return;
 		}
 		// 客车及3.5T以下车辆 后轴
-		if (zw > 1 && (cllx.indexOf("K") == 0 || zbzl < 3500)) {
+		if (zw > 1 && (cllx.indexOf("K") == 0 && zbzl < 3500)) {
 			this.jzzdlxz = 20;
 			return;
 		}
@@ -778,6 +794,13 @@ public class BrakRollerData extends BaseDeviceData {
 		Integer zdl = this.zzdl + this.yzdl;
 
 		Float temp = (float) (zh * 0.98 * 0.6);
+		
+		String qdxs=vehCheckLogin.getQdxs();
+		
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
 
 		// 注册登记
 		if (jylb.equals("00")) {
@@ -863,13 +886,19 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 
 	 * @return
 	 */
-	public void setKzbphl() {
+	public void setKzbphl(VehCheckLogin vehCheckLogin) {
 
 		if (yzdl == null || zzdl == null) {
 			return;
 		}
 		
 		Float zdzdl=null;
+		String qdxs=vehCheckLogin.getQdxs();
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
+
 		
 		if(zw>1&&kzxczdl<60){
 			zdzdl= (zlh + ylh)*0.98f;
@@ -880,7 +909,7 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		
 		Float bphl = (float) (Math.abs(zzdlcd-yzdlcd) * 1.0 / zdzdl * 1.0) * 100;
-		this.kzbphl = CheckDataManager.MathRound(bphl);
+		this.kzbphl = CheckDataManager.MathRound1(bphl);
 	}
 	
 	
@@ -889,13 +918,19 @@ public class BrakRollerData extends BaseDeviceData {
 	 * 
 	 * @return
 	 */
-	public void setJzbphl() {
+	public void setJzbphl(VehCheckLogin vehCheckLogin) {
 
 		if (jzyzdli == null || jzzzdli == null ) {
 			return;
 		}
 		
 		Float zdzdl=null;
+		
+		String qdxs=vehCheckLogin.getQdxs();
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
 		
 		if(zw>1&&jzzzdl<60){
 			zdzdl= (jzzlh+jzylh)*0.98f;
@@ -904,7 +939,7 @@ public class BrakRollerData extends BaseDeviceData {
 		}
 		
 		Float bphl = (float) (Math.abs(jzzzdlcd-jzyzdlcd) * 1.0 / zdzdl * 1.0) * 100;
-		this.jzbphl = CheckDataManager.MathRound(bphl);
+		this.jzbphl = CheckDataManager.MathRound1(bphl);
 
 	}
 
@@ -922,7 +957,7 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		Integer zdl = this.getZzdl() + this.getYzdl();
 		Float xczdl = (float) (zdl * 1.0 /(zh * 0.98)) * 100;
-		this.kzxczdl = CheckDataManager.MathRound(xczdl);
+		this.kzxczdl = CheckDataManager.MathRound1(xczdl);
 	}
 	
 	/**
@@ -937,14 +972,13 @@ public class BrakRollerData extends BaseDeviceData {
 		Integer zh = this.getJzzlh()+this.getJzylh();
 		Integer zdl = this.getJzzzdli() + this.getJzyzdli();
 		Float xczdl = (float) (zdl * 1.0 / (zh * 0.98)) * 100;
-		this.jzzzdl = CheckDataManager.MathRound(xczdl);
+		this.jzzzdl = CheckDataManager.MathRound1(xczdl);
 	}
 
 	@Override
 	public void setZpd() {
 		if (this.kzbphlpd == PDJG_BHG || this.kzzdlpd == PDJG_BHG || this.jzbphlpd == PDJG_BHG
 				|| this.jzzdlpd == PDJG_BHG) {
-			
 			this.setZpd(PDJG_BHG);
 		}else{
 			this.setZpd(PDJG_HG);

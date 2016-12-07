@@ -111,6 +111,7 @@ public class DataExchangeJobOfFolder  {
 		}
 	}
 	
+//	@Scheduled(fixedDelay = 1000*10)
 	private void validate() throws Exception{
 		
 		List<Map<String, Object>>  ipAndMac =  WindowsInfoUtil.getLocalInetMac();

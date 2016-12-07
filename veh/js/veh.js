@@ -56,6 +56,7 @@ var veh = {
 		}
 	},
 	loadVehCheckInfo:function(index,row){
+		
 		$("#win_form_veh").form("clear");
 		$("#win_checke_veh_info").window("open");
 		if(row){
@@ -842,11 +843,16 @@ var report={
 		LODOP.SET_PRINT_STYLE("Bold",1);
 		LODOP.ADD_PRINT_HTM("8mm",34,"RightMargin:0.9cm","BottomMargin:9mm",strStyleCSS+"<body>"+area.html()+"</body>");
 		// LODOP.PRINT();
-		LODOP.PREVIEW();
+		LODOP.PREVIEW(); 
 		
 	},	                     
 	loadVehCheckInfo:function(index,row){
 		if(row){
+			try {
+				if(ScanCtrl){
+					ScanCtrl.StopPreviewEx();
+				}
+			} catch (e) {}
 			$("#report1").panel({"href":"/veh/html/report/report1.html","onLoad":report.getReport1,baseInfo:row});
 			$("#report2").panel({"href":"/veh/html/report/report2.html","onLoad":report.getReport2,baseInfo:row});
 			$("#report3").panel({"href":"/veh/html/report/report3.html","onLoad":report.getReport3,baseInfo:row});
@@ -872,11 +878,40 @@ var report={
 				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 			});
 			
+			var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
+			var newJyxm="";
+			
+			if(jyxm.indexOf("B")>=0){
+				newJyxm+="B";
+			}
+			
+			if(jyxm.indexOf("H")>=0){
+				newJyxm+="H";
+			}
+			
+			
+			if(jyxm.indexOf("A")>=0){
+				newJyxm+="A";
+			}
+			
+			if(jyxm.indexOf("S")>=0){
+				newJyxm+="S";
+			}
+			
+			if(jyxm.indexOf("R")>=0){
+				newJyxm+="R";
+			}
+			
+			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
+			
 			$.each(data,function(i,n){
 				// 处理灯光
 				if(i.indexOf("H")==0){
 					var tt = i.split("_");
 					$.each(n,function(j,k){
+						if(j=="czpy"){
+							k+="H"; 
+						}
 						if(j=="czpy"&&n["czpypd"]==2){
 							k+="x";
 						}
@@ -936,6 +971,18 @@ var report={
 					$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl);
 					$("#report1 tr[name=ZC] td[name=zczdpd]").text(veh.jgpd(n.zczdpd));
 					$("#report1 tr[name=ZC] td[name=dxcs]").text(baseInfo.jycs);
+					
+					if(baseInfo.jylb=="00"){
+						$("#report1 [name=other_zczbzl]").text(n.jczczbzl);
+						$("#report1 [name=other_zczbzl_jycs]").text("1");
+						
+						var cz = n.jczczbzl-baseInfo.zbzl;
+						
+						var f = cz/baseInfo.zbzl
+						
+						$("#report1 [name=other_zczbzl_jgpd]").text(f>=-3&&f<=3 ?"O":"X");
+					}
+					
 				}else if(i.indexOf("par")==0){
 					$("#report1 tr[name=par] td[name=par_tczclh]").text(n.tczclh);
 					$("#report1 tr[name=par] td[name=par_tczdl]").text(n.tczdl);
@@ -1005,29 +1052,85 @@ var report={
 	getReport4:function(){
 		var baseInfo = $(this).panel("options").baseInfo;
 		$.post("/veh/report/getReport4",{jylsh:baseInfo.jylsh},function(datas){
-			if(datas.length==0){
+			
+			datas = $.parseJSON(datas);
+			
+			if(datas['zd'].length==0 && datas['ch'].length==0){
 				 $("#zdltabs").tabs("add",{
 					 title:"制动力曲线",
 					 content:"<div class='nullData'>无制动力过程数据</div>"
 				 });
 			}
-			 $.each(datas,function(i,data){
+			var index=0;
+			$.each(datas.zd,function(i,data){
 				 
-				 if(data.leftDataStr!=null){
+				 if(data.leftDataStr!=null&&data.leftDataStr!=""){
 					 report.processReport4(baseInfo, data, "zdlqx", data.leftDataStr, data.rigthDataStr, i, "轴制动力曲线","N");
 				 }
-				 
-				 if(data.zdtlhStr!=null){
+				 if(data.zdtlhStr!=null&&data.zdtlhStr!=""){
 					 report.processReport4(baseInfo, data, "dtlh", data.zdtlhStr, data.ydtlhStr, i, "动态轮荷曲线","KG");
 				 }
 				 
-				 if(data.jzLeftDataStr!=null){
+				 if(data.jzLeftDataStr!=null&&data.jzLeftDataStr!=""){
 					 report.processReport4(baseInfo, data, "jzzdlqx", data.jzLeftDataStr, data.jzRigthDataStr, i, "轴加载制动力曲线","N");
+				 }
+				 index=i;
+			 });
+			index++;
+			$.each(datas.ch,function(i,data){
+				 if(data.strData!=null&&data.strData!=""){
+					 report.processReport4CH(baseInfo, data,"chqx",i+index,"侧滑数据","m/km");
 				 }
 				 
 			 });
+			
 		});
 	},
+	processReport4CH:function(baseInfo,data,key,index,title,dw){
+		var template="<div style='text-align:center;margin-top: 10px;'><a id='report4Print"+key+"'></a>&nbsp;&nbsp;<a id='showReport4Detail"+key+"'></a><div/>"+
+		 "<div style='margin:0 auto;width:740px;' id='report4Contex"+key+"'><div id='container"+key+"'></div></div>";
+		
+		var temp = data.strData.split(",");
+		var ldata=[];
+		
+		$.each(temp,function(i,n){
+			ldata.push(Number(n));
+		});
+		
+		 $("#zdltabs").tabs("add",{
+			 title:title,
+			 index:index,
+			 content:template,
+			 selected:index==0?true:false,
+			 baseInfo:baseInfo,
+			 rdata:[],
+			 ldata:ldata,
+			 data:data,
+			 ckey:key,
+			 dw:dw
+		 });
+		 
+		 $("#report4Print"+key).linkbutton({
+			 iconCls: 'icon-print',
+			 text:'打印',
+			 onClick:function(){
+				 report.createReport($("#report4Contex"+key));
+			 }
+		 });
+		 
+		 $("#showReport4Detail"+key).linkbutton({
+			 iconCls: 'icon-search',
+			 text:'显示详细',
+			 onClick:function(){
+				 $("#report4Contex"+key+" .reportTable4").remove();
+				 var temp= report.createReport4CHTeblae(key,data.zw, ldata,title);
+				 $("#report4Contex"+key).append(temp);
+			 }
+		 });
+		 
+		
+	}
+	,
 	processReport4:function(baseInfo,data,key,strLeftdata,strRigthData,index,title,dw){
 		var rdata=[];
 		var ldata=[];
@@ -1084,7 +1187,7 @@ var report={
 			 text:'显示详细',
 			 onClick:function(){
 				 var temp= report.createReport4Teblae(ckey,data.zw, ldata, rdata,title);
-				// $("#report4Table"+ckey).remove();
+				 $("#report4Contex"+key+" .reportTable4").remove();
 				 $("#report4Contex"+ckey).append(temp);
 			 }
 		 });
@@ -1114,6 +1217,23 @@ var report={
 		report4Table+="</tbody></table>";
 		return report4Table;
 	},
+	createReport4CHTeblae:function (ckey,zw,ldata,title){
+		
+		
+		var report4Table="<table id='report4Table"+ckey+"' class='reportTable4'><thead><tr><td colspan='8'><h4>侧滑过程数据</h4></td></tr><tr><td>序号</td><td>侧滑值</td><td>序号</td><td>侧滑值</td></tr></thead><tbody>";
+		var size=ldata.length;
+		size=size%2==1?(size-1):size;
+		for(var i=0;i<size;i++){
+			report4Table+="<tr><td>"+(i+1)+"</td>"+
+			"<td>"+ldata[i]+"</td>";
+			i++;
+			report4Table+="<td>"+(i+1)+"</td>"+
+			"<td>"+ldata[i]+"</td></tr>";
+		}
+		report4Table+="</tbody></table>";
+		return report4Table;
+	},
+	
 	loadCheckItemInfo:function(jylsh,jyxm){
 		var center  = $("#layout-jyxm").layout("panel","center");
 		var url;

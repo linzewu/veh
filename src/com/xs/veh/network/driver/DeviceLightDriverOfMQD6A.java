@@ -72,6 +72,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	// -------------控制------------
 	// 仪器归位
 	private String mYqgw = "0201324D4737";
+	
+	private String mtz="0201324D3E40";
 
 	// ----------设置 ------------
 	// 设置左靠位
@@ -124,8 +126,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	private List<String> leftMessageList = new ArrayList<String>();
 	private List<String> rightMessageList = new ArrayList<String>();
-	
-	private List<Byte> dataList=new ArrayList<Byte>();
+
+	private List<Byte> dataList = new ArrayList<Byte>();
 
 	// 是否检测左灯光
 	private boolean isCheckLeft;
@@ -135,8 +137,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	// 是已经在检测
 	private boolean isChecking;
-	
-	//是否開始取數據
+
+	// 是否開始取數據
 	private boolean isGetData;
 
 	// 当前位置 L 左 R 右
@@ -145,17 +147,19 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	// 检测返回的数据
 	private byte[] checkData;
 
-	//检测状态
+	// 检测状态
 	private Integer checkState;
-	
-	//正常
-	public static Integer ZT_ZC=0;
-	
-	//无灯
-	public static Integer ZT_WD=1;
-	
-	//出错
-	public static Integer ZT_CC=2;
+
+	// 正常
+	public static Integer ZT_ZC = 0;
+
+	// 无灯
+	public static Integer ZT_WD = 1;
+
+	// 出错
+	public static Integer ZT_CC = 2;
+
+	public boolean isIllegal = false;
 
 	@Override
 	public void sysSetting() throws Exception {
@@ -168,7 +172,29 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		setting(vehCheckLogin, vheFlows);
 		// 等待到位
 		dw(vehCheckLogin);
-		
+
+		//检测是否违规操作
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				//保护 
+				int i=1000;
+				try {
+					while (!isGetData&&i<=1000) {
+						if (deviceSignal2.getSignal(s2)) {
+							// 仪器归位
+							isIllegal = true;
+							break;
+						}
+						Thread.sleep(300);
+						i++;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+
 		if (isCheckLeft) {
 			currentPosition = 'L';
 			checking();
@@ -182,29 +208,29 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		Thread.sleep(300);
 		// 取数据
 		this.deviceLight.sendMessage(gQqbclsj);
-		
-		isGetData=true;
-		
-		return  getData(vheFlows);
-		
+
+		isGetData = true;
+
+		return getData(vheFlows);
+
 	}
 
 	private List<LightData> getData(List<VehFlow> vheFlows) throws InterruptedException {
-		
-		if(checkState!=ZT_ZC){
+
+		if (checkState != ZT_ZC) {
 			return null;
 		}
 
-		while (dataList.size()<112) {
+		while (dataList.size() < 112) {
 			Thread.sleep(200);
 		}
-		
-		for(int i=0;i<112;i++){
-			checkData[i]=dataList.get(i);
+
+		for (int i = 0; i < 112; i++) {
+			checkData[i] = dataList.get(i);
 		}
-		
+
 		List<LightData> lightDatas = new ArrayList<LightData>();
-		
+
 		// 获取所有检测数据
 		byte[] leftMainHighBeamData = new byte[18];
 		System.arraycopy(checkData, 2, leftMainHighBeamData, 0, leftMainHighBeamData.length);
@@ -229,7 +255,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			this.lightDatas.add(data);
 			lightDatas.add(data);
 		}
-		
+
 		if (!isEmptyData(rightSideHighBeamData)) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Y);
@@ -239,7 +265,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			this.lightDatas.add(data);
 			lightDatas.add(data);
 		}
-		
+
 		if (!isEmptyData(rightMainHighBeamData)) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Y);
@@ -249,7 +275,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			this.lightDatas.add(data);
 			lightDatas.add(data);
 		}
-		
+
 		if (!isEmptyData(leftMainHighBeamData)) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Z);
@@ -267,7 +293,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			setCurrent(leftSideHighBeamData, data);
 			lightDatas.add(data);
 		}
-		
+
 		if (!isEmptyData(leftMainLowBeamData)) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Z);
@@ -276,7 +302,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			setCurrent(leftMainLowBeamData, data);
 			lightDatas.add(data);
 		}
-		
+
 		return lightDatas;
 
 	}
@@ -292,16 +318,15 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		byte[] data3 = new byte[4];
 		System.arraycopy(bs, 10, data3, 0, data3.length);
-		String gq =new String(data3);
-		if(CharUtil.isNumeric(gq)){
-			lightData.setGq(Integer.parseInt(gq)*100);
+		String gq = new String(data3);
+		if (CharUtil.isNumeric(gq)) {
+			lightData.setGq(Integer.parseInt(gq) * 100);
 		}
-		
 
 		byte[] data4 = new byte[4];
 		System.arraycopy(bs, 14, data4, 0, data4.length);
-		String dg =new String(data4);
-		if(CharUtil.isNumeric(dg)){
+		String dg = new String(data4);
+		if (CharUtil.isNumeric(dg)) {
 			lightData.setDg(Integer.parseInt(dg.trim()));
 		}
 
@@ -334,6 +359,16 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		while (true) {
 			if (!this.isChecking) {
 				break;
+			}
+			//违规操作
+			if (isIllegal) {
+				deviceLight.sendMessage(mtz);
+				Thread.sleep(300);
+				deviceLight.sendMessage(mYqgw);
+				deviceLight.getDisplay().sendMessage("违规操作", DeviceDisplay.SP);
+				deviceLight.getDisplay().sendMessage("停止检测", DeviceDisplay.XP);
+				Thread.sleep(1000 * 20);
+				throw new Exception("违规操作！");
 			}
 			Thread.sleep(100);
 		}
@@ -370,12 +405,13 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	private void reset() {
-		
-		checkState=ZT_ZC;
+
+		checkState = ZT_ZC;
 		isChecking = false;
 		isCheckLeft = false;
 		isCheckRight = false;
-		isGetData=false;
+		isGetData = false;
+		isIllegal = false;
 		currentPosition = null;
 		checkData = new byte[112];
 		leftMessageList.clear();
@@ -388,8 +424,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		// 重置设置
 		reset();
-		
-		List<String> settingList=new ArrayList<String>();
+
+		List<String> settingList = new ArrayList<String>();
 
 		List<VehFlow> zdList = new ArrayList<VehFlow>();
 		List<VehFlow> ydList = new ArrayList<VehFlow>();
@@ -410,8 +446,9 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			// 四灯 远近光
 			settingList.add(sSdz);
 			settingList.add(sYjgjc);
-			/*deviceLight.sendMessage(sSdz);
-			deviceLight.sendMessage(sYjgjc);*/
+			/*
+			 * deviceLight.sendMessage(sSdz); deviceLight.sendMessage(sYjgjc);
+			 */
 			if (zdList.size() == 2) {
 				leftMessageList.add("测量左主远光灯,请开启主远光灯");
 				leftMessageList.add("测量左副远光灯,请开启副远光灯");
@@ -425,9 +462,10 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		} else if (qzdz.equals("02")) {
 			// 四灯远光
-/*			deviceLight.sendMessage(sSdz);
-			deviceLight.sendMessage(sDcyg);*/
-			
+			/*
+			 * deviceLight.sendMessage(sSdz); deviceLight.sendMessage(sDcyg);
+			 */
+
 			settingList.add(sSdz);
 			settingList.add(sDcyg);
 
@@ -442,14 +480,15 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		} else if (qzdz.equals("03")) {
 			// 二灯远近光
-			/*deviceLight.sendMessage(sEdz);
-			deviceLight.sendMessage(sEdz);*/
-			
+			/*
+			 * deviceLight.sendMessage(sEdz); deviceLight.sendMessage(sEdz);
+			 */
+
 			settingList.add(sEdz);
 			settingList.add(sYjgjc);
-			
+
 			logger.info(sYjgjc);
-			
+
 			if (zdList.size() == 1) {
 				leftMessageList.add("测量左远光灯,请开主远光灯");
 				leftMessageList.add("测量左近光灯,请开启近光灯");
@@ -462,9 +501,10 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		} else if (qzdz.equals("04")) {
 			// 二灯近光
-			/*deviceLight.sendMessage(sEdz);
-			deviceLight.sendMessage(sDcjg);*/
-			
+			/*
+			 * deviceLight.sendMessage(sEdz); deviceLight.sendMessage(sDcjg);
+			 */
+
 			settingList.add(sEdz);
 			settingList.add(sDcjg);
 
@@ -475,24 +515,23 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 				rightMessageList.add("测量右近光灯,请开启近光灯");
 			}
 		}
-		
-		for(String str :  settingList){
+
+		for (String str : settingList) {
 			deviceLight.sendMessage(str);
 			Thread.sleep(300);
 		}
-		
+
 		// 不需要调整灯光
 		deviceLight.sendMessage(sBxytzjg);
 		Thread.sleep(300);
 		deviceLight.sendMessage(sBxytzyg);
 		Thread.sleep(300);
-		
-		if(this.deviceLight.getKw().equals("L")){
+
+		if (this.deviceLight.getKw().equals("L")) {
 			deviceLight.sendMessage(sXcjd);
-		}else{
+		} else {
 			deviceLight.sendMessage(sXcyd);
 		}
-		
 
 	}
 
@@ -500,21 +539,21 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	public void device2pc(byte[] data) throws Exception {
 		if (data.length == 5) {
 			String rtx = CharUtil.byte2HexOfString(data);
-			
-			if(rtx.equals(rClwd)){
+
+			if (rtx.equals(rClwd)) {
 				deviceLight.getDisplay().sendMessage("无法找到灯光", DeviceDisplay.XP);
 				Thread.sleep(2000);
 				this.isChecking = false;
 				return;
 			}
-			
-			if(rtx.equals(rClcc)){
+
+			if (rtx.equals(rClcc)) {
 				deviceLight.getDisplay().sendMessage("测量出错", DeviceDisplay.XP);
 				Thread.sleep(2000);
 				this.isChecking = false;
 				return;
 			}
-			
+
 			if (rZygclwc.equals(rtx) || rFygclwc.equals(rtx) || rJgclwc.equals(rtx)) {
 				String[] messageArry = null;
 				if (currentPosition == 'L') {
@@ -540,11 +579,11 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 				deviceLight.getDisplay().sendMessage(messageArry[1], DeviceDisplay.XP);
 			}
 		} else if (isGetData) {
-			for(byte b:data){
+			for (byte b : data) {
 				dataList.add(b);
 			}
-			if(dataList.size()==112){
-				isGetData=false;
+			if (dataList.size() == 112) {
+				isGetData = false;
 			}
 		}
 

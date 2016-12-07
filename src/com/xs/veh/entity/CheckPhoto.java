@@ -15,11 +15,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Scope("prototype")
 @Component("checkPhoto")
 @Entity
 @Table(name = "TM_CheckPhoto")
+@JsonIgnoreProperties(value ={"hibernateLazyInitializer","handler","fieldHandler","zp"})
 public class CheckPhoto extends BaseEntity {
 	
 	
@@ -158,8 +160,26 @@ public class CheckPhoto extends BaseEntity {
 	public void setZp(byte[] zp) {
 		this.zp = zp;
 	}
+
+	public CheckPhoto(Integer id,String jyjgbh, String jcxdh, String jylsh, String hphm, String hpzl, String clsbdh, Integer jycs,
+			Date pssj, String jyxm, String zpzl) {
+		super();
+		this.jyjgbh = jyjgbh;
+		this.jcxdh = jcxdh;
+		this.jylsh = jylsh;
+		this.hphm = hphm;
+		this.hpzl = hpzl;
+		this.clsbdh = clsbdh;
+		this.jycs = jycs;
+		this.pssj = pssj;
+		this.jyxm = jyxm;
+		this.zpzl = zpzl;
+		this.setId(id);
+	}
 	
 
-	
+	public CheckPhoto(){
+		
+	}
 
 }

@@ -129,7 +129,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				brakRollerData.setKzzdlpd();
 
 				// 设置空载不平衡率
-				brakRollerData.setKzbphl();
+				brakRollerData.setKzbphl(vehCheckLogin);
 				// 设置不平衡率限值
 				brakRollerData.setBphlxz(vehCheckLogin);
 				// 空载不平衡率判定

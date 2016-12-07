@@ -32,7 +32,7 @@
 	
 </script>
 <table id="userManager" class="easyui-datagrid"
-	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:userManagerToolbar,onBeginEdit:userBeginEidt">
+	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:'#userManagerToolbar',onBeginEdit:userBeginEidt">
 	<thead> 
 		<tr>
 			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:'',remote:['/veh/user/validateUserName','userName']}}}">用户名</th>

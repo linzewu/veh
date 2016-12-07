@@ -154,6 +154,7 @@ public class DeviceBrakRollerDriverOfJXFZ extends AbstractDeviceBrakRoller {
 			// 等待检测数据返回
 			while (checkingFlage) {
 				if (this.getBrakRollerData().getZzdl() != null && this.getBrakRollerData().getYzdl() != null) {
+					deviceBrakRoller.setInfoData(brakRollerData);
 					break;
 				}
 				Thread.sleep(300);

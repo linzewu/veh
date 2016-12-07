@@ -18,5 +18,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="veh/WEB-INF/lib/pass.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

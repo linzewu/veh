@@ -146,6 +146,8 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		// 侧滑判定
 		sideslipData.setChpd(vehCheckLogin);
 		sideslipData.setZpd();
+		sideslipData.setStrData();
+		
 		this.checkDataManager.saveData(sideslipData);
 		Thread.sleep(2000);
 		

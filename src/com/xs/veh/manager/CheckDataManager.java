@@ -11,9 +11,10 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
-import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
+import com.xs.common.MyHibernateTemplate;
+import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.VehCheckLogin;
@@ -25,6 +26,8 @@ import com.xs.veh.network.data.OtherInfoData;
 import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
+
+import net.sf.json.JSONObject;
 
 @Service("checkDataManager")
 public class CheckDataManager {
@@ -41,7 +44,7 @@ public class CheckDataManager {
 	public static final Integer PDJG_BHG = 2;
 
 	@Resource(name = "hibernateTemplate")
-	private HibernateTemplate hibernateTemplate;
+	private MyHibernateTemplate hibernateTemplate;
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
@@ -200,13 +203,13 @@ public class CheckDataManager {
 		otherInfoData.setZdlh(zdlh);
 		if (zclh != 0) {
 			Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
-			otherInfoData.setZczdl(MathRound(zczdl));
+			otherInfoData.setZczdl(MathRound1(zczdl));
 		}
 		if (parDataOfAnjian != null) {
 
 			Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			parDataOfAnjian.setTczclh(zclh);
-			parDataOfAnjian.setTczdl(MathRound(tczdl));
+			parDataOfAnjian.setTczdl(MathRound1(tczdl));
 			parDataOfAnjian.setTczdxz();
 			parDataOfAnjian.setTczdpd();
 			this.hibernateTemplate.save(parDataOfAnjian);
@@ -247,7 +250,7 @@ public class CheckDataManager {
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("整车手刹制动率");
 			dcj1.setYqjyjg(parDataOfAnjian.getTczdl() == null ? "" : parDataOfAnjian.getTczdl().toString());
-			dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : ">=" + parDataOfAnjian.getTczdxz());
+			dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : "≥" + parDataOfAnjian.getTczdxz());
 			dcj1.setYqjgpd(parDataOfAnjian.getTczdpd() == null ? "" : parDataOfAnjian.getTczdpd().toString());
 			dcj1.setXh(xh);
 			xh++;
@@ -259,7 +262,7 @@ public class CheckDataManager {
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("整车制动率(%)");
 			dcj1.setYqjyjg(otherInfoData.getZczdl() == null ? "" : otherInfoData.getZczdl().toString());
-			dcj1.setYqbzxz(otherInfoData.getZczdlxz() == null ? "" : ">=" + otherInfoData.getZczdlxz());
+			dcj1.setYqbzxz(otherInfoData.getZczdlxz() == null ? "" : "≥" + otherInfoData.getZczdlxz());
 			dcj1.setYqjgpd(otherInfoData.getZcpd() == null ? "" : otherInfoData.getZcpd().toString());
 			dcj1.setXh(xh);
 			xh++;
@@ -304,6 +307,20 @@ public class CheckDataManager {
 			this.hibernateTemplate.save(dcj1);
 		}
 
+		if (vehCheckLogin.getJylb().equals("00") && otherInfoData != null) {
+			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj1.setXh(xh);
+			dcj1.setYqjyxm("整备质量(KG)");
+			dcj1.setYqjyjg(otherInfoData.getJczczbzl() == null ? "" : otherInfoData.getJczczbzl().toString());
+			dcj1.setYqbzxz("±3%");
+			Integer cz = (otherInfoData.getJczczbzl() - vehCheckLogin.getZbzl());
+			Float f = (float) (cz * 1.0 / vehCheckLogin.getZbzl() * 1.0);
+			dcj1.setYqjgpd((f >= -3 && f <= 3 ? BaseDeviceData.PDJG_HG : BaseDeviceData.PDJG_BHG).toString());
+			dcj1.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj1);
+		}
+
 		// 修改上线状态
 		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
 		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
@@ -328,7 +345,7 @@ public class CheckDataManager {
 					dcj1.setXh(xh);
 					dcj1.setYqjyxm(getLight(jyxm) + "光强(cd)");
 					dcj1.setYqjyjg(lightData.getGq() == null ? "" : lightData.getGq().toString());
-					dcj1.setYqbzxz(lightData.getGqxz() == null ? "" : ">=" + lightData.getGqxz().toString());
+					dcj1.setYqbzxz(lightData.getGqxz() == null ? "" : "≥" + lightData.getGqxz().toString());
 					dcj1.setYqjgpd(lightData.getGqpd() == null ? "" : lightData.getGqpd().toString());
 					dcj1.setXh(xh);
 					xh++;
@@ -366,7 +383,7 @@ public class CheckDataManager {
 				dcj1.setXh(xh);
 				dcj1.setYqjyxm(getZW(brd.getZw()) + "制动率(%)");
 				dcj1.setYqjyjg(brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString());
-				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : ">=" + brd.getKzzdlxz().toString());
+				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString());
 				dcj1.setYqjgpd(brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString());
 				dcj1.setXh(xh);
 				xh++;
@@ -377,7 +394,7 @@ public class CheckDataManager {
 				dcj2.setXh(xh);
 				dcj2.setYqjyxm(getZW(brd.getZw()) + "不平衡率(%)");
 				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
-				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "<=" + brd.getBphlxz().toString());
+				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString());
 				dcj2.setYqjgpd(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString());
 				dcj2.setXh(xh);
 				xh++;
@@ -388,7 +405,7 @@ public class CheckDataManager {
 					dcj3.setXh(xh);
 					dcj3.setYqjyxm(getZW(brd.getZw()) + "加载制动率(%)");
 					dcj3.setYqjyjg(brd.getJzzzdl() == null ? "" : brd.getJzzzdl().toString());
-					dcj3.setYqbzxz(brd.getJzzdlxz() == null ? "" : ">=" + brd.getJzzdlxz().toString());
+					dcj3.setYqbzxz(brd.getJzzdlxz() == null ? "" : "≥" + brd.getJzzdlxz().toString());
 					dcj3.setYqjgpd(brd.getJzzdlpd() == null ? "" : brd.getJzzdlpd().toString());
 					dcj3.setXh(xh);
 					xh++;
@@ -398,7 +415,7 @@ public class CheckDataManager {
 					dcj4.setXh(xh);
 					dcj4.setYqjyxm(getZW(brd.getZw()) + "加载不平衡率(%)");
 					dcj4.setYqjyjg(brd.getJzbphl() == null ? "" : brd.getJzbphl().toString());
-					dcj4.setYqbzxz(brd.getBphlxz() == null ? "" : "<=" + brd.getBphlxz().toString());
+					dcj4.setYqbzxz(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString());
 					dcj4.setYqjgpd(brd.getJzbphlpd() == null ? "" : brd.getJzbphlpd().toString());
 					dcj4.setXh(xh);
 					xh++;
@@ -472,14 +489,29 @@ public class CheckDataManager {
 		return dcj;
 	}
 
-	public List<BrakRollerData> getReport4(String jylsh) {
+	public String getReport4(String jylsh) {
+
 		List<BrakRollerData> report4 = (List<BrakRollerData>) this.hibernateTemplate
 				.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm!=?", jylsh, BrakRollerData.SJZT_ZC, "B0");
-		return report4;
+
+		List<SideslipData> sides = (List<SideslipData>) this.hibernateTemplate
+				.find("from SideslipData  where jylsh=? and sjzt=? ", jylsh, BrakRollerData.SJZT_ZC);
+
+		JSONObject jo = new JSONObject();
+
+		jo.put("zd", report4);
+
+		jo.put("ch", sides);
+
+		return jo.toString();
 	}
 
 	public static Float MathRound(Float f) {
 		return (float) (Math.round(f * 100)) / 100;
+	}
+
+	public static Float MathRound1(Float f) {
+		return (float) (Math.round(f * 10)) / 10;
 	}
 
 	public BrakRollerData getBrakRollerDataOfVehLoginInfo(VehCheckLogin vehCheckLogin, String jyxm) {
@@ -488,12 +520,99 @@ public class CheckDataManager {
 				"from BrakRollerData where jylsh=? and jycs=? and jyxm=?", vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), jyxm);
 
-		if (datas == null || datas.isEmpty()||jyxm.equals("B0")) {
+		if (datas == null || datas.isEmpty() || jyxm.equals("B0")) {
 			return null;
 		} else {
 			return datas.get(0);
 		}
 
+	}
+
+	public void updateBrakRollerDataByJylsh(String jylsh) {
+
+		VehCheckLogin vehCheckLogin = (VehCheckLogin) this.hibernateTemplate
+				.find("from VehCheckLogin where jylsh =?", jylsh).get(0);
+
+		List<BrakRollerData> datas = (List<BrakRollerData>) this.hibernateTemplate
+				.find("from  BrakRollerData where jylsh = ?", jylsh);
+
+		for (BrakRollerData brakRollerData : datas) {
+			// 非驻车制动则计算检测结果
+			if (!brakRollerData.getJyxm().equals("B0")) {
+				// 空载行车制动率
+				brakRollerData.setKzxczdl(vehCheckLogin);
+				// 空载制动率限制及判定
+				brakRollerData.setKzzdlxz(vehCheckLogin);
+				brakRollerData.setKzzdlpd();
+
+				// 设置空载不平衡率
+				brakRollerData.setKzbphl(vehCheckLogin);
+				// 设置不平衡率限值
+				brakRollerData.setBphlxz(vehCheckLogin);
+				// 空载不平衡率判定
+				brakRollerData.setKzbphlpd();
+
+				brakRollerData.setJzzdl();
+				// 加载制动率限制及判定
+				brakRollerData.setJzzdlxz(vehCheckLogin);
+				brakRollerData.setJzzdlpd();
+
+				// 设置加载不平衡率
+				brakRollerData.setJzbphl(vehCheckLogin);
+				// 加载不平衡率判定
+				brakRollerData.setJzbphlpd();
+			}
+			brakRollerData.setZpd();
+		}
+
+		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find("from  LightData where jylsh = ?",
+				jylsh);
+
+		for (LightData data : lightDatas) {
+			data.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), data.getJyxm());
+			data.setCzpy();
+			// 设置灯光光强的判定限制
+			data.setDgpdxz(vehCheckLogin);
+			// 设置光强判定
+			data.setGqpd();
+			// 设置垂直偏移限值
+			data.setCzpyxz(vehCheckLogin);
+			data.setCzpypd();
+			data.setZpd();
+			this.saveData(data);
+		}
+
+		this.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
+
+	}
+
+	public List<CheckPhoto> getCheckPhotos(String jylsh) {
+		List<CheckPhoto> datas = (List<CheckPhoto>) this.hibernateTemplate.find(
+				"select new CheckPhoto(id,jyjgbh,jcxdh,jylsh,hphm,hpzl,clsbdh, jycs,pssj,jyxm,zpzl) from CheckPhoto where jylsh=?",
+				jylsh);
+
+		return datas;
+	}
+	
+	
+	public CheckPhoto getCheckPhoto(Integer id) {
+
+		return this.hibernateTemplate.load(CheckPhoto.class, id);
+	}
+	
+	
+	public void saveCheckPhoto(CheckPhoto checkPhoto){
+		
+		this.hibernateTemplate.saveOrUpdate(checkPhoto);
+		
+	}
+	
+	public void deleteImage(Integer id){
+		
+		CheckPhoto cp = new CheckPhoto();
+		cp.setId(id);
+		this.hibernateTemplate.delete(cp);
+		
 	}
 
 }
