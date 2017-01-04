@@ -301,8 +301,35 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-d ", timezone = "GMT+8")
 	private Date externalCheckDate;
 	
+	@Column
+	private String wtjgdm;
+	
+	@Column
+	private String wtjgmc;
 	
 	
+	
+	
+	public String getWtjgdm() {
+		return wtjgdm;
+	}
+
+
+	public String getWtjgmc() {
+		return wtjgmc;
+	}
+
+
+	public void setWtjgdm(String wtjgdm) {
+		this.wtjgdm = wtjgdm;
+	}
+
+
+	public void setWtjgmc(String wtjgmc) {
+		this.wtjgmc = wtjgmc;
+	}
+
+
 	public Integer getVehlszt() {
 		return vehlszt;
 	}
