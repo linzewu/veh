@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,6 +31,38 @@ public class IamgeBase64Cash {
 		
 		return iamgeBase64Cash;
 	}
+	
+	public  void cashIamge(byte[] res, String id) throws IOException {
+		
+		FileOutputStream fos=null;
+		
+		try {
+			
+			File distFile = new File(path+id+".jpg");
+			
+			if (!distFile.getParentFile().exists()){
+				distFile.getParentFile().mkdirs();
+			}
+			
+			if(distFile.exists()){
+				distFile.delete();
+			}
+			fos = new FileOutputStream(distFile);
+			fos.write(res);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					throw e;
+				}
+			}
+		}
+	}
+
 
 
 	public  void cashBase64Iamge(String res, String id) throws IOException {

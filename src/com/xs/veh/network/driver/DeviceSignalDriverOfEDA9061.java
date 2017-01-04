@@ -13,6 +13,7 @@ public class DeviceSignalDriverOfEDA9061 extends AbstractDeviceSignal {
 		while (b.length() < 8) {
 			b.insert(0, '0');
 		}
+		this.getDeviceSignal().setRtx(b.toString());
 		//return b.toString();
 	}
 	

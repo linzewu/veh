@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -157,6 +158,7 @@ public class VehController {
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
+			
 			return json.toString();
 		} else {
 			JSONObject head = new JSONObject();

@@ -40,6 +40,7 @@ import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.BaseParams;
+import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.ExternalCheck;
@@ -180,7 +181,7 @@ public class VehManager {
 		// 默认情况下为成功
 		head.put("code", "1");
 
-		if (isNetwork) {
+		/*if (isNetwork) {
 			JSONObject param = JSONObject.fromObject(vehCheckLogin);
 			Document document = this.write(RCAConstant.V18C51, param);
 			JSON json = new XMLSerializer().read(document.asXML());
@@ -194,13 +195,12 @@ public class VehManager {
 				head = jo.getJSONObject("head");
 				messager = jo;
 			}
-		}
+		}*/
 
 		if (head.get("code").equals("1")) {
 			this.hibernateTemplate.save(vehCheckLogin);
 			String jyxm = vehCheckLogin.getJyxm();
 			String[] jyxmArray = jyxm.split(",");
-
 			List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
 			for (String jyxmItem : jyxmArray) {
 				VehCheckProcess vcp = new VehCheckProcess();
@@ -215,6 +215,29 @@ public class VehManager {
 			}
 			addVehFlow(vehCheckLogin, processArray, flow);
 			createExternalCheck(vehCheckLogin);
+			
+			CheckEvents ce=new CheckEvents();
+			ce.setClsbdh(vehCheckLogin.getClsbdh());
+			ce.setEvent("18C51");
+			ce.setHpzl(vehCheckLogin.getHpzl());
+			ce.setJylsh(vehCheckLogin.getJylsh());
+			ce.setHphm(vehCheckLogin.getHphm());
+			ce.setCreateDate(new Date());
+			ce.setState(0);
+			ce.setJycs(vehCheckLogin.getJycs());
+			this.hibernateTemplate.save(ce);
+			
+			CheckEvents ce2=new CheckEvents();
+			ce2.setClsbdh(vehCheckLogin.getClsbdh());
+			ce2.setEvent("18C52");
+			ce2.setHpzl(vehCheckLogin.getHpzl());
+			ce2.setJylsh(vehCheckLogin.getJylsh());
+			ce2.setHphm(vehCheckLogin.getHphm());
+			ce2.setCreateDate(new Date());
+			ce2.setState(0);
+			ce2.setJycs(vehCheckLogin.getJycs()); 
+			this.hibernateTemplate.save(ce2);
+			
 		}
 
 		if (!isNetwork) {

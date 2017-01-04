@@ -368,7 +368,6 @@ var veh = {
 		}
 		this.ajaxVeh("/veh/veh/getVehCheckItem", param, function(data) {
 			data = $.parseJSON(data);
-			console.log(data);
 		});
 	},
 
@@ -858,6 +857,8 @@ var report={
 			$("#report3").panel({"href":"/veh/html/report/report3.html","onLoad":report.getReport3,baseInfo:row});
 			$("#report4").panel({"href":"/veh/html/report/report4.html","onLoad":report.getReport4,baseInfo:row});
 			$("#upimage").panel({"href":"/veh/html/report/upimage.html",baseInfo:row});
+			$("#process").panel({"href":"/veh/html/report/process.html",baseInfo:row});
+			$("#online").panel({"href":"/veh/html/report/online.html",baseInfo:row});
 			$("#tab-report").tabs("getSelected").panel("refresh");
 		}
 	},

@@ -14,10 +14,13 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.MyHibernateTemplate;
+import com.xs.veh.entity.CheckEvents;
+import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
@@ -613,6 +616,33 @@ public class CheckDataManager {
 		cp.setId(id);
 		this.hibernateTemplate.delete(cp);
 		
+	}
+	
+	
+	public VehCheckProcess getVehCheckProces(String jylsh,Integer jycs,String jyxm){
+		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jylsh=? and jycs=?  and jyxm=?", jylsh,jycs,jyxm);
+		
+		if(data!=null&&!data.isEmpty()){
+			return data.get(0);
+		}
+		return null;
+		
+	}
+	
+	public List<CheckLog> getCheckLogs(String jylsh){
+		List<CheckLog> data = (List<CheckLog>) this.hibernateTemplate.find("from CheckLog where jylsh=?", jylsh);
+		return data;
+	}
+	
+	public List<CheckEvents> getCheckEvents(String jylsh){
+		List<CheckEvents> data = (List<CheckEvents>) this.hibernateTemplate.find("from CheckEvents where jylsh=?", jylsh);
+		return data;
+	}
+	
+	
+	public List<VehCheckProcess> getVehCheckProcess(String jylsh){
+		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jylsh=?", jylsh);
+		return data;
 	}
 
 }

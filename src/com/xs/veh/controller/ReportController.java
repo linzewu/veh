@@ -96,5 +96,20 @@ public class ReportController {
 		return ResultHandler.toSuccessJSON("删除成功");
 		
 	}
+	
+	@RequestMapping(value = "getProcess")
+	public @ResponseBody List getProcess(@RequestParam String jylsh){
+		return this.checkDataManager.getVehCheckProcess(jylsh);
+	}
+	
+	@RequestMapping(value = "getCheckLogs")
+	public @ResponseBody List getCheckLogs(@RequestParam String jylsh){
+		return this.checkDataManager.getCheckLogs(jylsh);
+	}
+
+	@RequestMapping(value = "getCheckEvents")
+	public @ResponseBody List getCheckEvents(@RequestParam String jylsh){
+		return this.checkDataManager.getCheckEvents(jylsh);
+	}
 
 }
