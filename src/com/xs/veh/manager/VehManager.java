@@ -90,6 +90,9 @@ public class VehManager {
 	@Resource(name = "flowManager")
 	private FlowManager flowManager;
 
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
+
 	@Autowired
 	private HttpSession session;
 
@@ -181,21 +184,16 @@ public class VehManager {
 		// 默认情况下为成功
 		head.put("code", "1");
 
-		/*if (isNetwork) {
-			JSONObject param = JSONObject.fromObject(vehCheckLogin);
-			Document document = this.write(RCAConstant.V18C51, param);
-			JSON json = new XMLSerializer().read(document.asXML());
-			String josnStr = json.toString();
-			if (json.isArray()) {
-				JSONArray ja = JSONArray.fromObject(josnStr);
-				head = ja.getJSONObject(0);
-				messager = head;
-			} else {
-				JSONObject jo = JSONObject.fromObject(josnStr);
-				head = jo.getJSONObject("head");
-				messager = jo;
-			}
-		}*/
+		/*
+		 * if (isNetwork) { JSONObject param =
+		 * JSONObject.fromObject(vehCheckLogin); Document document =
+		 * this.write(RCAConstant.V18C51, param); JSON json = new
+		 * XMLSerializer().read(document.asXML()); String josnStr =
+		 * json.toString(); if (json.isArray()) { JSONArray ja =
+		 * JSONArray.fromObject(josnStr); head = ja.getJSONObject(0); messager =
+		 * head; } else { JSONObject jo = JSONObject.fromObject(josnStr); head =
+		 * jo.getJSONObject("head"); messager = jo; } }
+		 */
 
 		if (head.get("code").equals("1")) {
 			this.hibernateTemplate.save(vehCheckLogin);
@@ -215,8 +213,8 @@ public class VehManager {
 			}
 			addVehFlow(vehCheckLogin, processArray, flow);
 			createExternalCheck(vehCheckLogin);
-			
-			CheckEvents ce=new CheckEvents();
+
+			CheckEvents ce = new CheckEvents();
 			ce.setClsbdh(vehCheckLogin.getClsbdh());
 			ce.setEvent("18C51");
 			ce.setHpzl(vehCheckLogin.getHpzl());
@@ -226,8 +224,8 @@ public class VehManager {
 			ce.setState(0);
 			ce.setJycs(vehCheckLogin.getJycs());
 			this.hibernateTemplate.save(ce);
-			
-			CheckEvents ce2=new CheckEvents();
+
+			CheckEvents ce2 = new CheckEvents();
 			ce2.setClsbdh(vehCheckLogin.getClsbdh());
 			ce2.setEvent("18C52");
 			ce2.setHpzl(vehCheckLogin.getHpzl());
@@ -235,9 +233,9 @@ public class VehManager {
 			ce2.setHphm(vehCheckLogin.getHphm());
 			ce2.setCreateDate(new Date());
 			ce2.setState(0);
-			ce2.setJycs(vehCheckLogin.getJycs()); 
+			ce2.setJycs(vehCheckLogin.getJycs());
 			this.hibernateTemplate.save(ce2);
-			
+
 		}
 
 		if (!isNetwork) {
@@ -317,11 +315,11 @@ public class VehManager {
 		DetachedCriteria query = DetachedCriteria.forClass(VehCheckLogin.class);
 
 		if (vehCheckLogin.getHphm() != null && !"".equals(vehCheckLogin.getHphm())) {
-			query.add(Restrictions.like("hphm", "%"+vehCheckLogin.getHphm()+"%"));
+			query.add(Restrictions.like("hphm", "%" + vehCheckLogin.getHphm() + "%"));
 		}
 
 		if (vehCheckLogin.getClxh() != null && !"".equals(vehCheckLogin.getClxh())) {
-			query.add(Restrictions.like("clxh", "%"+vehCheckLogin.getClxh()+"%"));
+			query.add(Restrictions.like("clxh", "%" + vehCheckLogin.getClxh() + "%"));
 		}
 
 		if (vehCheckLogin.getHpzl() != null && !"".equals(vehCheckLogin.getHpzl())) {
@@ -330,29 +328,27 @@ public class VehManager {
 		if (jczt != null) {
 			query.add(Restrictions.in("vehjczt", jczt));
 		}
-		
+
 		query.addOrder(Order.desc("jylsh"));
-		
 
 		Integer firstResult = (page - 1) * rows;
 
 		List<VehCheckLogin> vcps = (List<VehCheckLogin>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
-		
+
 		return vcps;
 	}
-	
-	
+
 	public Integer getVehCheckingCount(Integer page, Integer rows, VehCheckLogin vehCheckLogin, Integer[] jczt) {
 
 		DetachedCriteria query = DetachedCriteria.forClass(VehCheckLogin.class);
 
 		if (vehCheckLogin.getHphm() != null && !"".equals(vehCheckLogin.getHphm())) {
-			query.add(Restrictions.like("hphm", "%"+vehCheckLogin.getHphm()+"%"));
+			query.add(Restrictions.like("hphm", "%" + vehCheckLogin.getHphm() + "%"));
 		}
 
 		if (vehCheckLogin.getClxh() != null && !"".equals(vehCheckLogin.getClxh())) {
-			query.add(Restrictions.like("clxh", "%"+vehCheckLogin.getClxh()+"%"));
+			query.add(Restrictions.like("clxh", "%" + vehCheckLogin.getClxh() + "%"));
 		}
 
 		if (vehCheckLogin.getHpzl() != null && !"".equals(vehCheckLogin.getHpzl())) {
@@ -361,12 +357,11 @@ public class VehManager {
 		if (jczt != null) {
 			query.add(Restrictions.in("vehjczt", jczt));
 		}
-		
+
 		query.setProjection(Projections.rowCount());
-		
-		List<Long> count =  (List<Long>) hibernateTemplate.findByCriteria(query);
-		
-		
+
+		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
+
 		return count.get(0).intValue();
 	}
 
@@ -383,54 +378,24 @@ public class VehManager {
 
 		VehCheckLogin vheLogininfo = this.hibernateTemplate.load(VehCheckLogin.class, id);
 		final String jylsh = vheLogininfo.getJylsh();
-		if (isNetwork) {
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("jylsh", jylsh);
-			map.put("jyjgbh", jyjgbh);
-			map.put("hpzl", vheLogininfo.getHpzl());
-			map.put("hpzl", vheLogininfo.getHphm());
-			Document document = this.write(RCAConstant.V18C72, map);
-			Element head = document.getRootElement().element("head");
-			if (head.element("code").getText().equals("1")) {
-				vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
-				this.hibernateTemplate.update(vheLogininfo);
+		JSONObject jo = new JSONObject();
+		JSONObject jsonHead = new JSONObject();
+		jsonHead.put("code", "1");
+		jsonHead.put("isNetwork", isNetwork);
+		jo.put("head", jsonHead);
 
-				this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
-					@Override
-					public Integer doInHibernate(Session session) throws HibernateException {
-						return session.createQuery("delete CheckQueue where jylsh=?").setParameter(0, jylsh)
-								.executeUpdate();
-					}
-
-				});
-
-				// 同时修改 上线表 队列表 状态 为退办
+		vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
+		this.hibernateTemplate.update(vheLogininfo);
+		// 同时修改 上线表 队列表 状态 为退办
+		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				return session.createQuery("delete CheckQueue where jylsh=?").setParameter(0, jylsh).executeUpdate();
 			}
-			JSON json = new XMLSerializer().read(document.asXML());
-			JSONObject jo = JSONObject.fromObject(json.toString());
-			return jo;
 
-		} else {
-			JSONObject jo = new JSONObject();
-			JSONObject jsonHead = new JSONObject();
-			jsonHead.put("code", "1");
-			jsonHead.put("isNetwork", isNetwork);
-			jo.put("head", jsonHead);
+		});
 
-			vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
-			this.hibernateTemplate.update(vheLogininfo);
-			// 同时修改 上线表 队列表 状态 为退办
-			this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
-				@Override
-				public Integer doInHibernate(Session session) throws HibernateException {
-					return session.createQuery("delete CheckQueue where jylsh=?").setParameter(0, jylsh)
-							.executeUpdate();
-				}
-
-			});
-			
-			return jo;
-		}
+		return jo;
 	}
 
 	private List<VehFlow> addVehFlow(VehCheckLogin vcl, List<VehCheckProcess> process, Flow flow) {
@@ -477,7 +442,7 @@ public class VehManager {
 					for (String jyxm : jyxmArray) {
 						// 如果是驻车制动 需要根据驻车轴为来生成
 						if (jyxm.equals("B0")) {
-							if (device.getType() == Device.ZDJCSB||device.getType() == Device.ZDPBSB) {
+							if (device.getType() == Device.ZDJCSB || device.getType() == Device.ZDPBSB) {
 								String zczw = vcl.getZczw();
 								for (int k = 0; k < zczw.length(); k++) {
 									VehFlow v = new VehFlow();
@@ -648,6 +613,12 @@ public class VehManager {
 							|| vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_BJC)
 					&& (vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_JYJS
 							|| vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_BJC)) {
+
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C59", null,
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+				
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", null,
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 
 				vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
 			}

@@ -19,6 +19,7 @@ import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 
 @Service("externalCheckManager")
 public class ExternalCheckManager {
@@ -33,6 +34,13 @@ public class ExternalCheckManager {
 
 	@Autowired
 	private HttpSession session;
+	
+
+	@Resource(name = "checkDataManager")
+	private CheckDataManager checkDataManager;
+
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 
 	private void createExternalCheckJudge(ExternalCheck externalCheck) {
 
@@ -281,6 +289,15 @@ public class ExternalCheckManager {
 				vehCheckLogin.setWjysfzh(user.getIdCard());
 			}
 			this.hibernateTemplate.update(vehCheckLogin);
+			
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),"F1");
+			vehCheckProcess.setJssj(new Date());
+			this.checkDataManager.updateProcess(vehCheckProcess);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "F1", vehCheckLogin.getHphm(),
+					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "F1", vehCheckLogin.getHphm(),
+					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 			message.setMessage("上传成功");
@@ -311,6 +328,15 @@ public class ExternalCheckManager {
 			vehCheckLogin.setVehdtdpzt(VehCheckLogin.ZT_JYJS);
 			this.hibernateTemplate.update(vehCheckLogin);
 			// 判断项目的状态
+			
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),"DC");
+			vehCheckProcess.setJssj(new Date());
+			this.checkDataManager.updateProcess(vehCheckProcess);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "DC", vehCheckLogin.getHphm(),
+					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "DC", vehCheckLogin.getHphm(),
+					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 			message.setMessage("上传成功");
 			message.setState(Message.STATE_SUCCESS);
@@ -339,6 +365,16 @@ public class ExternalCheckManager {
 			this.hibernateTemplate.update(ec);
 			vehCheckLogin.setVehdpzt(VehCheckLogin.ZT_JYJS);
 			this.hibernateTemplate.update(vehCheckLogin);
+			
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),"C1");
+			vehCheckProcess.setJssj(new Date());
+			this.checkDataManager.updateProcess(vehCheckProcess);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "C1", vehCheckLogin.getHphm(),
+					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1", vehCheckLogin.getHphm(),
+					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			
+			
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 			message.setMessage("上传成功");

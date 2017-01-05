@@ -54,6 +54,9 @@ public class CheckDataManager {
 
 	@Value("${jyjgmc}")
 	private String jyjgmc;
+	
+	@Resource(name="checkEventManger")
+	private CheckEventManger checkEventManger;
 
 	public void saveData(BaseDeviceData data) {
 		this.hibernateTemplate.save(data);
@@ -643,6 +646,27 @@ public class CheckDataManager {
 	public List<VehCheckProcess> getVehCheckProcess(String jylsh){
 		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jylsh=?", jylsh);
 		return data;
+	}
+	
+	
+	public void updateProcess(VehCheckProcess vehCheckProcess){
+		this.hibernateTemplate.save(vehCheckProcess);
+	}
+	
+	public void createCheckEventOnLine(String jylsh,Integer jycs){
+		
+		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jylsh=? and jycs=? and jyxm in('H1','H2','H3','H4','B0','B1','B2','B3','B4','B5','A1','S1')", jylsh,jycs);
+		
+		for(VehCheckProcess vp:data){
+			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(),
+					vp.getHphm(), vp.getHpzl(), vp.getClsbdh());
+			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(),
+					vp.getHphm(), vp.getHpzl(), vp.getClsbdh());
+			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(),
+					vp.getHphm(), vp.getHpzl(), vp.getClsbdh());
+		}
+		
+		
 	}
 
 }

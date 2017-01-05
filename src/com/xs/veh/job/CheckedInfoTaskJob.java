@@ -56,6 +56,9 @@ public class CheckedInfoTaskJob {
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger eventManger;
+	
+	@Value("${isNetwork}")
+	private boolean isNetwork;
 
 	public CheckedInfoTaskJob() {
 		try {
@@ -169,6 +172,11 @@ public class CheckedInfoTaskJob {
 
 	@Scheduled(fixedDelay = 2000)
 	public void scanEventJob() throws Exception {
+		
+		if(!isNetwork){
+			return ;
+		}
+		
 		List<CheckEvents> list = (List<CheckEvents>) eventManger.getEvents();
 		for (CheckEvents e : list) {
 			try{
@@ -180,13 +188,14 @@ public class CheckedInfoTaskJob {
 					uploadImage(e);
 					continue;
 				}*/
-				if ((RCAConstant.V18C53.equals(viewName)
-						|| RCAConstant.V18C80.equals(viewName)
-						|| RCAConstant.V18C54.equals(viewName)
-						|| RCAConstant.V18C81.equals(viewName) || RCAConstant.V18C64
-							.equals(viewName))
+				if ((RCAConstant.V18C53.equals(e.getEvent())
+						|| RCAConstant.V18C80.equals(e.getEvent())
+						|| RCAConstant.V18C54.equals(e.getEvent())
+						|| RCAConstant.V18C81.equals(e.getEvent()) || RCAConstant.V18C64
+							.equals(e.getEvent()))
 						&& checkItem != null
 						&& !"".equals(checkItem)) {
+					
 					viewName += "_" + checkItem;
 				}
 

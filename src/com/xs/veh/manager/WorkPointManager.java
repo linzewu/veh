@@ -208,6 +208,7 @@ public class WorkPointManager {
 		// 如果队列为空，则检测过程结束
 		if (checkQueue == null) {
 			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
+			checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
 		}
 	}
 
@@ -237,6 +238,8 @@ public class WorkPointManager {
 		// 如果队列为空，则检测过程结束
 		if (checkQueue == null) {
 			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
+			checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
+			
 		}
 	}
 
@@ -287,36 +290,35 @@ public class WorkPointManager {
 
 				VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehFlow.getJylsh(), vehFlow.getJycs(),
 						vehFlow.getJyxm());
-
+				
 				if (vehFlow.getSbid() == -1) {
 					// 底盘检测
-					process.setKssj(new Date());
-					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C55", "C1",
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 					checkDP(vehCheckLogin, checkQueue, vehFlow);
-					process.setJssj(new Date());
-					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "C1",
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1",
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-
 				} else {
 					Device device = this.hibernateTemplate.load(Device.class, vehFlow.getSbid());
-					// 过程开始时间
-					if (device.getType() != Device.CZJCSB) {
-						process.setKssj(new Date());
-						checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C55",vehFlow.getJyxm() ,
-								vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-						
-					}
-
 					ICheckDevice checkDevice = (ICheckDevice) servletContext.getAttribute(device.getThredKey());
+					
+					if(device.getType()!=Device.CZJCSB){
+						if(process.getKssj()==null){
+							process.setKssj(new Date());
+							this.checkDataManager.updateProcess(process);
+						}
+					}
+					
+					
 					if (device.getType() == Device.DGJCSB) {
 						cc.add(vehFlow);
 						if (cc.size() == dgcount) {
-							// DeviceLight deviceLight = (DeviceLight)
-							// checkDevice;
 							check(checkDevice, vehCheckLogin, checkQueue, cc);
+							
+							for(VehFlow dg:  cc){
+								VehCheckProcess dgProcess = this.checkDataManager.getVehCheckProces(dg.getJylsh(), dg.getJycs(),
+										dg.getJyxm());
+								dgProcess.setJssj(new Date());
+								this.checkDataManager.updateProcess(dgProcess);
+								
+							}
+							
 						}
 					} else if (device.getType() == Device.ZDPBSB) {
 						// 平板检测
@@ -324,23 +326,20 @@ public class WorkPointManager {
 						if (cc.size() == vehFlows.size()) {
 							logger.info("开始检测平板");
 							check(checkDevice, vehCheckLogin, checkQueue, cc);
+							for(VehFlow dg:  cc){
+								VehCheckProcess dgProcess = this.checkDataManager.getVehCheckProces(dg.getJylsh(), dg.getJycs(),
+										dg.getJyxm());
+								dgProcess.setJssj(new Date());
+								this.checkDataManager.updateProcess(dgProcess);
+								
+							}
 						}
-
 					} else {
 						// 普通单项检测
 						check(checkDevice, vehCheckLogin, checkQueue, vehFlow);
-					}
-
-					// 过程结束时间
-					if (device.getType() != Device.CZJCSB) {
 						process.setJssj(new Date());
-						checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C81",vehFlow.getJyxm(),
-								vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-						checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", vehFlow.getJyxm(),
-								vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-						
+						this.checkEventManger.update(process);
 					}
-
 				}
 			}
 		}

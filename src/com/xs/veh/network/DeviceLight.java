@@ -1,7 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TooManyListenersException;
 
@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.network.data.LightData;
 
 import gnu.io.NoSuchPortException;
@@ -56,6 +58,9 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 	
 	
 
@@ -134,9 +139,11 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
 
 		dld.createNewList();
+		
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
+		
+		
 		String jg = (datas == null || datas.size() == 0) ? "X" : "O";
-
 		for (LightData data : datas) {
 			data.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), data.getJyxm());
 			data.setCzpy();

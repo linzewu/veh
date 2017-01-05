@@ -1,5 +1,6 @@
 package com.xs.veh.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,9 @@ import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
+import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
 
@@ -34,6 +38,12 @@ public class PDAServiceController {
 
 	@Resource(name = "externalCheckManager")
 	private ExternalCheckManager externalCheckManager;
+
+	@Resource(name = "checkDataManager")
+	private CheckDataManager checkDataManager;
+
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 
 	@RequestMapping(value = "getCheckList")
 	public @ResponseBody String getCheckList(HttpServletRequest request, @RequestParam Integer status)
@@ -110,6 +120,21 @@ public class PDAServiceController {
 			Map msg = ResultHandler.resultHandle(result, null, "校验出错");
 			return msg;
 		}
+	}
+
+	@RequestMapping(value = "processStart")
+	public @ResponseBody Map processStart(@RequestParam("jyxm") String jyxm, @RequestParam("jylsh") String jylsh,
+			@RequestParam("jycs") Integer jycs) {
+
+		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
+		vehCheckProcess.setKssj(new Date());
+		this.checkDataManager.updateProcess(vehCheckProcess);
+		checkEventManger.createEvent(jylsh, jycs, "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),
+				vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh());
+		
+		this.checkDataManager.updateProcess(vehCheckProcess);
+		
+		return ResultHandler.toSuccessJSON("过程开始成功");
 	}
 
 }
