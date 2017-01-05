@@ -25,7 +25,7 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 
 	public void setData(byte[] bs, BrakRollerData brakRollerData) {
 
-		if (brakRollerData != null && bs.length == 8) {
+		if (brakRollerData != null && bs.length == 8&&isChecking) {
 			String t1 = CharUtil.bcd2Str(new byte[] { bs[1], bs[2] });
 			String t2 = CharUtil.bcd2Str(new byte[] { bs[5], bs[6] });
 			brakRollerData.setZlh(Integer.parseInt(t1));
@@ -66,6 +66,7 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 			}
 
 			if (i >= 6) {
+				isChecking=false;
 				break;
 			}
 
