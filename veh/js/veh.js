@@ -917,8 +917,14 @@ var report={
 							k+="x";
 						}
 						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k);
+						
 					});
-					$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					
+					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					}
+					
+					
 					$("#report1 tr[name="+tt[0]+"] td[name=dxcs]").text(n.dxcs);
 				}else if(i.indexOf("S1")==0){
 					$("#report1 tr[name=S1] div[name=speed]").text(n.speed);
@@ -964,7 +970,6 @@ var report={
 						$("#report1 span[name=zd_dtzlh_"+tt[1]+"]").text(0);
 						$("#report1 span[name=zd_dtylh_"+tt[1]+"]").text(0);
 					}
-					
 				}else if(i.indexOf("other")==0){
 					$("#report1 tr[name=ZC] td[name=other_jczczbzl]").text(n.jczczbzl);
 					$("#report1 tr[name=ZC] td[name=other_zdlh]").text(n.zdlh);

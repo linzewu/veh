@@ -16,6 +16,8 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 	private String kscz;
 
 	private String jscz;
+	
+	private boolean isChecking=false;
 
 	public ProtocolType getProtocolType(byte[] bs) {
 		return ProtocolType.DATA;
@@ -40,6 +42,8 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 
 		// 开始新的一次检测
 		createNew();
+		
+		isChecking = true;
 		// 显示屏显示信息
 		this.display.sendMessage(hphm, DeviceDisplay.SP);
 		this.display.sendMessage(zs + "轴称重请到位", DeviceDisplay.XP);
