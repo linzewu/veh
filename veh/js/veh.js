@@ -304,8 +304,6 @@ var veh = {
 				body[0]['jyrq'] = body['djrq']
 				body[0]['jyyxqz'] = body['yxqz']
 				$("#vehinfo").form("load", body[0]);
-
-				console.log("did" + did);
 				if (did) {
 					clearInterval(did);
 					did = null;
@@ -315,7 +313,7 @@ var veh = {
 				if (!did) {
 					did = setInterval(
 							function() {
-								if (veh.tempCount >= 3) {
+								if (tempCount >= 3) {
 									clearInterval(did);
 									tempCount = 0;
 									did = null;
@@ -328,7 +326,7 @@ var veh = {
 									$.messager.progress({
 										title : "请稍等",
 										msg : "获取车辆基本信息",
-										text : "第" + veh.tempCount + 1
+										text : "第" + (tempCount + 1)
 												+ "次尝试获取基本信息"
 									});
 									veh.ajaxVeh("/veh/veh/getVehInfo", param,
@@ -859,6 +857,8 @@ var report={
 			$("#upimage").panel({"href":"/veh/html/report/upimage.html",baseInfo:row});
 			$("#process").panel({"href":"/veh/html/report/process.html",baseInfo:row});
 			$("#online").panel({"href":"/veh/html/report/online.html",baseInfo:row});
+			$("#commit").panel({"href":"/veh/html/report/commit.html",baseInfo:row});
+			$("#roadCheck").panel({"href":"/veh/html/report/roadCheck.html",baseInfo:row});
 			$("#tab-report").tabs("getSelected").panel("refresh");
 		}
 	},
@@ -923,8 +923,6 @@ var report={
 					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
 						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
 					}
-					
-					
 					$("#report1 tr[name="+tt[0]+"] td[name=dxcs]").text(n.dxcs);
 				}else if(i.indexOf("S1")==0){
 					$("#report1 tr[name=S1] div[name=speed]").text(n.speed);
@@ -995,6 +993,28 @@ var report={
 					$("#report1 tr[name=par] td[name=par_zczczdl]").text(n.zczczdl);
 					$("#report1 tr[name=par] td[name=xmpd]").text(veh.jgpd(n.tczdpd));
 					$("#report1 tr[name=par] td[name=dxcs]").text(n.dxcs);
+				}else if(i.indexOf("roadChecks")==0){
+					
+					var lsjg=1;
+					var temStr="";
+					$.each(n,function(j,k){
+						var jg="—";
+						if(k.yqjgpd==1){
+							jg="合格";
+						}else if(k.yqjgpd==2){
+							jg="不合格";
+							lsjg=2;
+						}else if(k.yqjgpd==0){
+							jg="—";
+						}
+						temStr+=k.yqjyxm+":"+k.yqjgpd+"("+k.yqbzxz+")"+jg+"  |  "
+					});
+					$("#report1 td[name=roadCheck_info]").text(temStr);
+					$("#report1 td[name=roadCheck_pd]").text(veh.jgpd(lsjg));
+					$("#report1 td[name=roadCheck_dxcs]").text(1);
+					
+				}else if(i.indexOf("lsy")==0){
+					$("#report1 td[name=roadCheck_lsy]").text(n);
 				}
 			});
 		}).error(function(e){
@@ -1041,8 +1061,19 @@ var report={
 				if(n.rgjgpd==2){
 					jyjl="不合格";
 				}
-				var tr="<tr><td>"+n.xh+"</td><td>"+n.rgjyxm+"</td><td>"+n.rgjgpd+"</td><td>"+
-				n.rgjysm+"</td><td>"+n.rgjybz+"</td><td>";
+				
+				var jg="-";
+				if(n.rgjgpd==1){
+					jg="合格";
+				}else if(n.rgjgpd==2){
+					jg="不合格";
+				}else if(n.rgjgpd==0){
+					jg="-";
+				}
+				
+				var tr="<tr><td class=l>"+n.xh+"</td><td class=l>"+n.rgjyxm+"</td><td class=l>"+jg+"</td><td class=l colSpan=2>"+
+				(n.rgjysm==null?"":n.rgjysm)+"</td><td class=l>"+(n.rgjybz==null?"":n.rgjybz)+"</td></tr>";
+				$("#tbody_rgjyjg").append(tr);
 			});
 			
 			$("#report2 td[name=report-baseInfo-jyjl]").text(jyjl);
@@ -1144,7 +1175,7 @@ var report={
 	    if(strRigthData!=null){
 			var temp=strRigthData.split(",");
 			if(temp.length>700){
-				temp=temp.splice(300,700)
+				temp=temp.splice(300,700);
 			}
 			$.each(temp,function(i,n){
 				rdata.push(Number(n));
@@ -1308,7 +1339,7 @@ $(function($){
     };  
 });
 
-var progressFlag=false;
+/*var progressFlag=false;
 $(document).ajaxStart(function(){
 	if(!progressFlag){
 		$.messager.progress({
@@ -1317,12 +1348,12 @@ $(document).ajaxStart(function(){
 		});
 		progressFlag=true;
 	}
-});
+});*/
 
-$(document).ajaxComplete(function(){
+/*$(document).ajaxComplete(function(){
 	if(progressFlag){
 		$.messager.progress('close');
 		progressFlag=false;
 	}
 });
-
+*/

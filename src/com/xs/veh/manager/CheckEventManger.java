@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
@@ -18,43 +21,34 @@ import com.xs.veh.entity.CheckLog;
 
 @Scope("prototype")
 @Service("checkEventManger")
-public class CheckEventManger  {
+public class CheckEventManger {
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
 
 	public List<?> queryEntity(final String entity) {
 
-		List<?> entitys = hibernateTemplate.execute(
-				new HibernateCallback<List<?>>() {
-					@Override
-					public List<?> doInHibernate(Session session)
-							throws HibernateException {
-						List<?> entitys = session
-								.createQuery(
-										"From " + entity
-												+ " where rccysbzt='0'")
-								.setFirstResult(0).setMaxResults(1).list();
-						return entitys;
-					}
-				});
+		List<?> entitys = hibernateTemplate.execute(new HibernateCallback<List<?>>() {
+			@Override
+			public List<?> doInHibernate(Session session) throws HibernateException {
+				List<?> entitys = session.createQuery("From " + entity + " where rccysbzt='0'").setFirstResult(0)
+						.setMaxResults(1).list();
+				return entitys;
+			}
+		});
 		return entitys;
 	}
 
 	public List<?> getEvents() {
-		
-		return hibernateTemplate.execute(
-				new HibernateCallback<List<?>>() {
-					@Override
-					public List<?> doInHibernate(Session session)
-							throws HibernateException {
-						List<?> entitys = session
-								.createQuery(
-										" from CheckEvents where state=0 order by  id asc")
-								.setFirstResult(0).setMaxResults(100).list();
-						return entitys;
-					}
-				});
+
+		return hibernateTemplate.execute(new HibernateCallback<List<?>>() {
+			@Override
+			public List<?> doInHibernate(Session session) throws HibernateException {
+				List<?> entitys = session.createQuery(" from CheckEvents where state=0 order by  id asc")
+						.setFirstResult(0).setMaxResults(100).list();
+				return entitys;
+			}
+		});
 	}
 
 	public Integer saveLog(CheckLog rz) {
@@ -74,43 +68,34 @@ public class CheckEventManger  {
 		hibernateTemplate.save(entity);
 	}
 
-
 	public String getDetLineSelect(final String code) {
-		String line = hibernateTemplate.execute(
-				new HibernateCallback<String>() {
-					@Override
-					public String doInHibernate(Session session)
-							throws HibernateException {
-						String sql = "SELECT DetLineSelect from registbak where regist_code=:code ";
-						Object line = session.createSQLQuery(sql)
-								.setString("code", code).uniqueResult();
-						return (String) line;
-					}
-				});
+		String line = hibernateTemplate.execute(new HibernateCallback<String>() {
+			@Override
+			public String doInHibernate(Session session) throws HibernateException {
+				String sql = "SELECT DetLineSelect from registbak where regist_code=:code ";
+				Object line = session.createSQLQuery(sql).setString("code", code).uniqueResult();
+				return (String) line;
+			}
+		});
 		return line;
 	}
-		
-	public List<?> getViewData(final String viewName,final String jylsh) {
-		return hibernateTemplate.execute(
-				new HibernateCallback<List<?>>() {
-					@Override
-					public List<?> doInHibernate(Session session)
-							throws HibernateException {
-						List<?> entitys = session
-								.createSQLQuery("select * from "+viewName + "  where jylsh=:jylsh")
-								.setString("jylsh",jylsh)
-								.setFirstResult(0)
-								.setMaxResults(1)
-								.setResultTransformer(
-										Transformers.ALIAS_TO_ENTITY_MAP).list();
-						return entitys;
-					}
-				});
+
+	public List<?> getViewData(final String viewName, final String jylsh) {
+		return hibernateTemplate.execute(new HibernateCallback<List<?>>() {
+			@Override
+			public List<?> doInHibernate(Session session) throws HibernateException {
+				List<?> entitys = session.createSQLQuery("select * from " + viewName + "  where jylsh=:jylsh")
+						.setString("jylsh", jylsh).setFirstResult(0).setMaxResults(1)
+						.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+				return entitys;
+			}
+		});
 	}
-	
-	public void createEvent(String jylsh,Integer jycs,String event,String jyxm,String hphm,String hpzl,String clsbdh){
-		
-		CheckEvents e=new CheckEvents();
+
+	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
+			String clsbdh) {
+
+		CheckEvents e = new CheckEvents();
 		e.setJylsh(jylsh);
 		e.setJycs(jycs);
 		e.setEvent(event);
@@ -121,9 +106,47 @@ public class CheckEventManger  {
 		e.setState(0);
 		e.setCreateDate(new Date());
 		this.hibernateTemplate.save(e);
-		
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
+
+	}
+
+	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
+			String clsbdh, String zpzl) {
+
+		CheckEvents e = new CheckEvents();
+		e.setJylsh(jylsh);
+		e.setJycs(jycs);
+		e.setEvent(event);
+		e.setJyxm(jyxm);
+		e.setHphm(hphm);
+		e.setHpzl(hpzl);
+		e.setClsbdh(clsbdh);
+		e.setState(0);
+		e.setCreateDate(new Date());
+		e.setZpzl(zpzl);
+		this.hibernateTemplate.save(e);
+
 	}
 	
 	
+	public String getCheckItem(String jylsh,String type) throws DocumentException{
+		
+		List<CheckLog> checkLogs =(List<CheckLog>) this.hibernateTemplate.find("from CheckLog where jylsh=? and jkbmc=?", jylsh,"18C51");
+		
+		if(checkLogs!=null&&!checkLogs.isEmpty()){
+			
+			CheckLog checkLog = checkLogs.get(0);
+			
+			Document doc = DocumentHelper.parseText(checkLog.getXml());
+			
+			String item = doc.getRootElement().element("head").element(type).getText();
+			
+			return item;
+			
+		}
+		return "";
+		
+	}
 
 }

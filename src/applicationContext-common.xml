@@ -71,7 +71,7 @@
 			<tx:method name="stop*" propagation="REQUIRED" />
 			<tx:method name="reStart*" propagation="REQUIRED" />
 			<tx:method name="upLine" propagation="REQUIRED" />
-			<tx:method name="check" propagation="REQUIRED" />
+			<tx:method name="check*" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true" />
 		</tx:attributes>
 	</tx:advice>

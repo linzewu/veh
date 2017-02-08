@@ -206,7 +206,7 @@ public class DeviceLightDriverOfMQD6A2 extends AbstractDeviceLight {
 	}
 
 	@Override
-	public void sysSetting() throws Exception {
+	public void sysSetting() throws IOException, InterruptedException {
 
 		String qtxx = deviceLight.getDevice().getQtxx();
 		// 获取开机设置信息
@@ -294,7 +294,7 @@ public class DeviceLightDriverOfMQD6A2 extends AbstractDeviceLight {
 		return data;
 	}
 
-	private void setting(Map<String, String> setting, DeviceLight deviceLight) throws Exception {
+	private void setting(Map<String, String> setting, DeviceLight deviceLight) throws IOException, InterruptedException {
 
 		Set<String> array = setting.keySet();
 		for (String ml : array) {
@@ -304,7 +304,7 @@ public class DeviceLightDriverOfMQD6A2 extends AbstractDeviceLight {
 	}
 
 	@Override
-	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
+	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException{
 
 		// 等待到位
 		String hphm = vehCheckLogin.getHphm();
@@ -423,7 +423,7 @@ public class DeviceLightDriverOfMQD6A2 extends AbstractDeviceLight {
 
 	}
 
-	private void getMainBeamData(String qsml) throws Exception {
+	private void getMainBeamData(String qsml) throws IOException, InterruptedException {
 		mainBeam = new byte[39];
 		deviceLight.sendMessage(qsml);
 		this.getMainBeamDataFlag = true;

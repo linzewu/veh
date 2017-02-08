@@ -1,19 +1,23 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TooManyListenersException;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -31,6 +35,17 @@ import net.sf.json.JSONObject;
 @Service("deviceLight")
 @Scope("prototype")
 public class DeviceLight extends SimpleRead implements ICheckDevice {
+	
+	private VehCheckLogin vehCheckLogin;
+	
+
+	public VehCheckLogin getVehCheckLogin() {
+		return vehCheckLogin;
+	}
+
+	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		this.vehCheckLogin = vehCheckLogin;
+	}
 
 	@Autowired
 	private ServletContext servletContext;
@@ -61,6 +76,10 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 	
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
+
+	@Value("${czpypdFlag}")
+	private boolean czpypdFlag;
+
 	
 	
 
@@ -133,15 +152,21 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 	 * 
 	 * @param vehCheckLogin
 	 * @param vheFlows
+	 * @throws SystemException 
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
-
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows,Map<String,Object> otherParam) throws IOException, InterruptedException, SystemException {
+		
+		this.vehCheckLogin=vehCheckLogin;
+		
 		dld.createNewList();
 		
-		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
+		Date kssj=new Date();
 		
+	
+		
+		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
 		
 		String jg = (datas == null || datas.size() == 0) ? "X" : "O";
 		for (LightData data : datas) {
@@ -155,8 +180,12 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			// 设置垂直偏移限值
 			data.setCzpyxz(vehCheckLogin);
 			data.setCzpypd();
+			
+			if(!czpypdFlag){
+				data.setCzpypd(LightData.PDJG_WJ);
+			}
+			
 			data.setZpd();
-			this.checkDataManager.saveData(data);
 			if (data.getZpd() == CheckDataManager.PDJG_BHG) {
 				jg = "X";
 			}
@@ -176,6 +205,18 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			Thread.sleep(300);
 		}
 		display.setDefault();
+		
+		for (LightData data : datas){
+			this.checkDataManager.saveData(data);
+		}
+		
+		for(VehFlow vehFlow: vheFlows){
+			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
+					vehFlow.getJyxm());
+			process.setKssj(kssj);
+			process.setJssj(new Date());
+			this.checkDataManager.updateProcess(process);
+		}
 	}
 
 	@Override
@@ -214,7 +255,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		dld.setDeviceLight(this);
 	}
 
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam){
 		// TODO Auto-generated method stub
 	}
 

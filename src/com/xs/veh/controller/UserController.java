@@ -1,5 +1,6 @@
 package com.xs.veh.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -53,7 +54,10 @@ public class UserController {
 		return ResultHandler.toSuccessJSON("注销成功");
 	}
 	
-	
+	@RequestMapping(value = "getAllUsers", method = RequestMethod.POST)
+	public @ResponseBody List getUsers() {
+		return userManager.getUsers();
+	}
 
 	@RequestMapping(value = "getUsers", method = RequestMethod.POST)
 	public @ResponseBody Map getUsers(User user, PageInfo pageInfo) {

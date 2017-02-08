@@ -35,7 +35,7 @@ public class CheckLog  {
 	@Column(name = "xml",length=8000)
 	private String xml;
 	
-	@Column(name = "bo",length=4000)
+	@Column(name = "bo",length=8000)
 	private String bo;
 	
 	//接口表名称

@@ -439,7 +439,7 @@ public class DeviceController {
 			public void run() {
 				try {
 					VehFlow vheFlow = new VehFlow();
-					deviceBrakRoller.startCheck(null, vheFlow);
+					deviceBrakRoller.startCheck(null, vheFlow,null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -567,7 +567,7 @@ public class DeviceController {
 				try {
 
 					VehFlow vehFlow = new VehFlow();
-					deviceSideslip.startCheck(null, vehFlow);
+					deviceSideslip.startCheck(null, vehFlow,null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -617,7 +617,7 @@ public class DeviceController {
 			public void run() {
 				try {
 					VehFlow vehflow = new VehFlow();
-					deviceWeigh.startCheck(null, vehflow);
+					deviceWeigh.startCheck(null, vehflow,null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

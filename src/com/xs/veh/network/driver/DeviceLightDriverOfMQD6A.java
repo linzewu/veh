@@ -7,11 +7,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.xs.common.CharUtil;
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceLight;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceLight;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.LightData;
 
 public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
@@ -137,6 +139,11 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	// 是已经在检测
 	private boolean isChecking;
+	
+	//是否错误
+	private boolean isError=false;
+	
+	private String errorMessage;
 
 	// 是否開始取數據
 	private boolean isGetData;
@@ -162,11 +169,11 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	public boolean isIllegal = false;
 
 	@Override
-	public void sysSetting() throws Exception {
+	public void sysSetting() {
 	}
 
 	@Override
-	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
+	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException, SystemException {
 
 		// 设置检测参数
 		setting(vehCheckLogin, vheFlows);
@@ -198,10 +205,12 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		if (isCheckLeft) {
 			currentPosition = 'L';
 			checking();
+			TakePicture.createNew(this.deviceLight.getVehCheckLogin(),"H1",2000);
 		}
 		if (isCheckRight) {
 			currentPosition = 'R';
 			checking();
+			TakePicture.createNew(this.deviceLight.getVehCheckLogin(),"H4",2000);
 		}
 		// 仪器归位
 		this.deviceLight.sendMessage(mYqgw);
@@ -215,7 +224,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	}
 
-	private List<LightData> getData(List<VehFlow> vheFlows) throws InterruptedException {
+	private List<LightData> getData(List<VehFlow> vheFlows) throws InterruptedException, IOException, SystemException {
 
 		if (checkState != ZT_ZC) {
 			return null;
@@ -307,7 +316,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	}
 
-	private void setCurrent(byte[] bs, LightData lightData) {
+	private void setCurrent(byte[] bs, LightData lightData) throws IOException, InterruptedException, SystemException {
 		byte[] data1 = new byte[5];
 		System.arraycopy(bs, 0, data1, 0, data1.length);
 		lightData.setSppc(new String(data1));
@@ -321,6 +330,14 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		String gq = new String(data3);
 		if (CharUtil.isNumeric(gq)) {
 			lightData.setGq(Integer.parseInt(gq) * 100);
+		}else{
+			deviceLight.sendMessage(mtz);
+			Thread.sleep(300);
+			deviceLight.sendMessage(mYqgw);
+			deviceLight.getDisplay().sendMessage("仪器数据异常", DeviceDisplay.SP);
+			deviceLight.getDisplay().sendMessage("重检测，请等待", DeviceDisplay.XP);
+			Thread.sleep(1000 * 20);
+			throw new SystemException("仪器数据异常！");
 		}
 
 		byte[] data4 = new byte[4];
@@ -341,8 +358,9 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	// 开始检测
-	private void checking() throws Exception, InterruptedException {
+	private void checking() throws  InterruptedException, IOException, SystemException {
 		this.isChecking = true;
+		this.isError=false;
 
 		// 按检测顺序 获取提示消息
 		String[] messageArray = null;
@@ -357,6 +375,15 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		deviceLight.sendMessage(currentPosition == 'L' ? tCzd : tCyd);
 		while (true) {
+			
+			if(this.isError){
+				deviceLight.getDisplay().sendMessage(errorMessage, DeviceDisplay.XP);
+				// 仪器归位
+				this.deviceLight.sendMessage(mYqgw);
+				Thread.sleep(1000*20);
+				throw new SystemException(errorMessage);
+			}
+			
 			if (!this.isChecking) {
 				break;
 			}
@@ -368,7 +395,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 				deviceLight.getDisplay().sendMessage("违规操作", DeviceDisplay.SP);
 				deviceLight.getDisplay().sendMessage("停止检测", DeviceDisplay.XP);
 				Thread.sleep(1000 * 20);
-				throw new Exception("违规操作！");
+				throw new SystemException("违规操作！");
 			}
 			Thread.sleep(100);
 		}
@@ -420,7 +447,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	// 设置检测参数
-	private void setting(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws Exception {
+	private void setting(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException{
 
 		// 重置设置
 		reset();
@@ -536,20 +563,20 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	@Override
-	public void device2pc(byte[] data) throws Exception {
+	public void device2pc(byte[] data) throws IOException, InterruptedException {
 		if (data.length == 5) {
 			String rtx = CharUtil.byte2HexOfString(data);
 
 			if (rtx.equals(rClwd)) {
-				deviceLight.getDisplay().sendMessage("无法找到灯光", DeviceDisplay.XP);
-				Thread.sleep(2000);
+				errorMessage="无法找到灯光";
+				this.isError=true;
 				this.isChecking = false;
 				return;
 			}
 
 			if (rtx.equals(rClcc)) {
-				deviceLight.getDisplay().sendMessage("测量出错", DeviceDisplay.XP);
-				Thread.sleep(2000);
+				errorMessage="测量出错";
+				this.isError=true;
 				this.isChecking = false;
 				return;
 			}

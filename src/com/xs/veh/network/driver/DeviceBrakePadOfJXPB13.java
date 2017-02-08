@@ -1,5 +1,6 @@
 package com.xs.veh.network.driver;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceBrakePad;
 import com.xs.veh.network.DeviceBrakePad;
 import com.xs.veh.network.DeviceDisplay;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.BrakRollerData;
 
 public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
@@ -58,15 +60,17 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 
 	private byte[] qxsj = new byte[1600];
 	
+	private List<VehFlow> vehFlows;
+	
 
 
 	@Override
-	public List<BrakRollerData> startCheck(List<VehFlow> vehFlows) throws Exception {
+	public List<BrakRollerData> startCheck(List<VehFlow> vehFlows) throws InterruptedException, IOException {
 
 		if (vehFlows == null) {
 			return null;
 		}
-
+		this.vehFlows=vehFlows;
 		try {
 			resetCheckStatus();
 			sendCommom(ybfw);
@@ -159,7 +163,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 	}
 
 	@Override
-	public void device2pc(byte[] data) throws Exception {
+	public void device2pc(byte[] data) throws IOException {
 //		logger.info("数据长度：" + data.length + "  currntIndex : " + currntIndex);
 
 		if (currentComm.equals(dqqzsj) || currentComm.equals(dqhzsj)) {
@@ -315,7 +319,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 
 	}
 
-	private void processData(byte[] data) throws Exception {
+	private void processData(byte[] data) throws IOException  {
 		int length = data.length;
 		if (length == 4) {
 			logger.info("返回数据：" + CharUtil.byte2HexOfString(data));
@@ -326,12 +330,15 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 					break;
 				case 0x32:
 					this.getDeviceBrakePad().getDisplay().sendMessage("请踩刹车", DeviceDisplay.XP);
+					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B1");
+					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B2");
 					break;
 				case 0x35:
 					this.getDeviceBrakePad().getDisplay().sendMessage("前进！检测手制动", DeviceDisplay.XP);
 					break;
 				case 0x36:
 					this.getDeviceBrakePad().getDisplay().sendMessage("请拉手刹", DeviceDisplay.XP);
+					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B0");
 					break;
 				case 0x37:
 					this.getDeviceBrakePad().getDisplay().sendMessage("检测结束", DeviceDisplay.XP);
@@ -411,14 +418,14 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 		this.deviceBrakePad = deviceBrakePad;
 	}
 
-	private void sendCommom(String common) throws Exception {
+	private void sendCommom(String common) throws IOException, InterruptedException  {
 		deviceBrakePad.sendMessage(common);
 		currentComm = common;
 		logger.info(common);
 		Thread.sleep(300);
 	}
 
-	private void sendGetDataCommom(String common) throws Exception {
+	private void sendGetDataCommom(String common) throws InterruptedException, IOException {
 
 		Thread.sleep(100);
 		deviceBrakePad.sendMessage(common);

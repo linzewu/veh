@@ -15,9 +15,9 @@ public abstract class AbstractDeviceSideslip {
 	
 	protected SideslipData sideslipData;
 
-	public abstract SideslipData startCheck(VehFlow vehFlow) throws Exception;
+	public abstract SideslipData startCheck(VehFlow vehFlow) throws IOException, InterruptedException;
 
-	public abstract void device2pc(byte[] data) throws Exception;
+	public abstract void device2pc(byte[] data) throws IOException;
 
 	public void init(DeviceSideslip deviceSideslip) {
 		this.deviceSideslip = deviceSideslip;

@@ -2,6 +2,7 @@ package com.xs.veh.network;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -48,6 +49,18 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
+	
+	private VehCheckLogin vehCheckLogin;
+	
+	
+
+	public VehCheckLogin getVehCheckLogin() {
+		return vehCheckLogin;
+	}
+
+	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		this.vehCheckLogin = vehCheckLogin;
+	}
 
 	public Integer getS1() {
 		return s1;
@@ -143,7 +156,10 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws IOException, InterruptedException {
+		
+		this.vehCheckLogin=vehCheckLogin;
+		
 		BrakRollerData brakRollerData = dw.startCheck(vehFlow);
 
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
@@ -161,7 +177,7 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows,Map<String,Object> otherParam) {
 		// TODO Auto-generated method stub
 
 	}

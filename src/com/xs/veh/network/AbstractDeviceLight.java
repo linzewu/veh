@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.LightData;
@@ -119,12 +120,11 @@ public abstract class AbstractDeviceLight {
 	protected Integer kwfx;
 	
 
-	public abstract void sysSetting() throws Exception;
+	public abstract void sysSetting() throws IOException, InterruptedException;
 
-	public abstract List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
-			throws Exception;
+	public abstract List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException, SystemException;
 
-	public abstract void device2pc(byte[] data) throws Exception;
+	public abstract void device2pc(byte[] data) throws IOException, InterruptedException;
 
 	public abstract void setDeviceLight(DeviceLight deviceLight);
 

@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +23,14 @@ import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
+import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.network.TakePicture;
 
 @Controller
 @RequestMapping(value = "/pda")
@@ -61,7 +64,8 @@ public class PDAServiceController {
 	}
 
 	@RequestMapping(value = "external", method = RequestMethod.POST)
-	public @ResponseBody Map externalUpload(@Valid ExternalCheck externalCheck, BindingResult result) {
+	public @ResponseBody Map externalUpload(@Valid ExternalCheck externalCheck, BindingResult result)
+			throws InterruptedException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheck(externalCheck);
 			return ResultHandler.toMessage(message);
@@ -71,7 +75,8 @@ public class PDAServiceController {
 	}
 
 	@RequestMapping(value = "externalDC", method = RequestMethod.POST)
-	public @ResponseBody Map externalDCUpload(@Valid ExternalCheck externalCheck, BindingResult result) {
+	public @ResponseBody Map externalDCUpload(@Valid ExternalCheck externalCheck, BindingResult result)
+			throws InterruptedException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckDC(externalCheck);
 			return ResultHandler.toMessage(message);
@@ -81,7 +86,8 @@ public class PDAServiceController {
 	}
 
 	@RequestMapping(value = "externalC1", method = RequestMethod.POST)
-	public @ResponseBody Map externalC1Upload(@Valid ExternalCheck externalCheck, BindingResult result) {
+	public @ResponseBody Map externalC1Upload(@Valid ExternalCheck externalCheck, BindingResult result)
+			throws InterruptedException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckC1(externalCheck);
 			return ResultHandler.toMessage(message);
@@ -107,6 +113,61 @@ public class PDAServiceController {
 		List<VehCheckLogin> data = externalCheckManager.getExternalC1(hphm);
 		return data;
 	}
+	
+	@RequestMapping(value = "getExternalR")
+	public @ResponseBody List getExternalR(String hphm) {
+		List<VehCheckLogin> data = externalCheckManager.getExternalR(hphm);
+		return data;
+	}
+	
+	@RequestMapping(value = "getRoadProcess")
+	public @ResponseBody List getRoadProcess(String jylsh) {
+		List<VehCheckProcess> data = externalCheckManager.getRoadProcess(jylsh);
+		return data;
+	}
+	
+	@RequestMapping(value = "roadProcess")
+	public @ResponseBody Map roadProcess(@RequestParam String jylsh,@RequestParam String jyxm,@RequestParam Integer type) {
+		List<VehCheckProcess> datas = externalCheckManager.getRoadProcess(jylsh);
+		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		VehCheckProcess vehCheckProcess=null;
+		for(VehCheckProcess process:datas){
+			if(jyxm.equals(process.getJyxm())){
+				vehCheckProcess=process;
+				break;
+			}
+		}
+		if(vehCheckProcess==null){
+			return ResultHandler.toMyJSON(2, "未找到检验项目");
+		}else{
+			if(type==0){
+				
+				if(jyxm.equals("R1")){
+					TakePicture.createNew(vehCheckLogin, "R1", 1000,"0341");
+				}
+				if(jyxm.equals("R2")){
+					TakePicture.createNew(vehCheckLogin, "R2", 1000,"0345");
+				}
+				vehCheckProcess.setKssj(new Date());
+				this.checkDataManager.updateProcess(vehCheckProcess);
+				checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C55", jyxm, vehCheckLogin.getHphm(),
+						vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			}else if(type==1){
+				if(jyxm.equals("R1")){
+					TakePicture.createNew(vehCheckLogin, "R1", 1000,"0343");
+				}
+				if(jyxm.equals("R2")){
+					TakePicture.createNew(vehCheckLogin, "R2", 1000,"0351");
+				}
+				vehCheckProcess.setJssj(new Date());
+				this.checkDataManager.updateProcess(vehCheckProcess);
+			}
+		}
+		
+		
+		
+		return ResultHandler.toSuccessJSON("时间更新成功");
+	}
 
 	@RequestMapping(value = "uploadPhoto")
 	public @ResponseBody Map uploadPhoto(@RequestParam("photo") CommonsMultipartFile[] photo,
@@ -129,12 +190,31 @@ public class PDAServiceController {
 		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
 		vehCheckProcess.setKssj(new Date());
 		this.checkDataManager.updateProcess(vehCheckProcess);
+
+		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+
+		if (vehCheckProcess.getJyxm().equals("C1")) {
+			TakePicture.createNew(vehCheckLogin, "C1", 5000);
+		}
+
 		checkEventManger.createEvent(jylsh, jycs, "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),
 				vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh());
-		
+
 		this.checkDataManager.updateProcess(vehCheckProcess);
-		
 		return ResultHandler.toSuccessJSON("过程开始成功");
+	}
+
+	@RequestMapping(value = "getChekcItem")
+	public @ResponseBody String getChekcItem(@RequestParam("jylsh") String jylsh, @RequestParam("type") String type)
+			throws DocumentException {
+		String item = checkEventManger.getCheckItem(jylsh, type);
+		return item;
+	}
+	
+	@RequestMapping(value = "getVehInOfHphm")
+	public @ResponseBody List getVehInOfHphm(@RequestParam("hphm") String hphm) {
+		List<VehCheckLogin> data = externalCheckManager.getVheInfoOfHphm(hphm);
+		return data;
 	}
 
 }

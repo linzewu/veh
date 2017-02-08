@@ -24,9 +24,9 @@ public abstract class BaseDeviceData extends BaseEntity {
 	public static final Integer SJZT_ZC = 0;
 
 	/**
-	 * 数据状态，作废
+	 * 数据状态，复检
 	 */
-	public static final Integer SJZT_ZF = 1;
+	public static final Integer SJZT_FJ = 1;
 
 	@Column(length = 25)
 	private String jylsh;

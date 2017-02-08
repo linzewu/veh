@@ -1,7 +1,9 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.SideslipData;
@@ -32,6 +35,8 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	private AbstractDeviceSideslip sd;
 
 	private DeviceDisplay display;
+	
+	private VehCheckLogin vehCheckLogin;
 
 	@Autowired
 	private ServletContext servletContext;
@@ -40,6 +45,16 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	private CheckDataManager checkDataManager;
 
 	private DeviceSignal signal;
+	
+	
+
+	public VehCheckLogin getVehCheckLogin() {
+		return vehCheckLogin;
+	}
+
+	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		this.vehCheckLogin = vehCheckLogin;
+	}
 
 	public DeviceDisplay getDisplay() {
 		return display;
@@ -134,8 +149,19 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	 * @throws InterruptedException
 	 * @throws SystemException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws InterruptedException, IOException{
+		
+		this.vehCheckLogin=vehCheckLogin;
+		
+		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
+				vehFlow.getJyxm());
+		process.setKssj(new Date());
+		
 		SideslipData sideslipData = sd.startCheck(vehFlow);
+		
+		process.setJssj(new Date());
+		this.checkDataManager.updateProcess(process);
+		
 		sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
 
 		sideslipData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, sideslipData),
@@ -166,7 +192,7 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows,Map<String,Object> otherParam){
 		// TODO Auto-generated method stub
 		
 	}

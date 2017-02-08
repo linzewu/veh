@@ -123,8 +123,9 @@ function captureConfirm() {
         }
         
     	$.post("/veh/report/uploadPhoto",uploadData,function(data){
-        	if(data.state=="1"){
-        		$("#image"+zpzl+"1").attr("src","data:image/jpeg;base64,"+imageData);
+        	if(data.state=="1"||data.state==1){
+            	console.log(data)
+        		$("#image"+zpzl).attr("src","data:image/jpeg;base64,"+data.img);
         		robject.attr("zid",data.id);
             }else{
             	$.messager.alert('错误', data.message, 'error');
@@ -198,15 +199,28 @@ function deleteImage(){
 
 var reportData;
 
+var checkItem="";
+
 $(function(){
-	init();
+
+	reportData = $("#checkingVeh").datagrid("getSelected");
+	$.post("/veh/pda/getChekcItem",{jylsh:reportData.jylsh,type:'zlzp'},function(data){
+		checkItem=data;
+		init();
+	});
+	
 });
 
 function init(){
 	var zpzl = comm.getBaseParames('zpzl');
 	var temp="uploadIamge";
 	$.each(zpzl,function(i,n){
-		var img = $("<li><img src=\"/veh/images/mr.jpg\" id=image"+n.id+"1 ><br><input type=\"radio\" name=\"zpzl\" value="+n.id+" id="+temp+n.id+"1 zpid=\"\" /><label for="+temp+n.id+">"+n.value+"</label></li>");
+
+		if(n.value==0207){
+			alert(checkItem.indexOf(n.value)>=0?"showItem":"")
+		}
+		
+		var img = $("<li><img src=\"/veh/images/mr.jpg\" id=image"+n.id+" ><br><input type=\"radio\" name=\"zpzl\" value="+n.id+" id="+temp+n.id+" zpid=\"\" /><label for="+temp+n.id+" class='"+(checkItem.indexOf(n.id)>=0?"showItem":"")+"'>"+n.value+"</label></li>");
 		img.find("img").click(function(){
 			onClickPic(img.find("img").attr("src"));
 		});
@@ -221,15 +235,12 @@ function init(){
 		}
 		
 	});
-
-	reportData = $("#checkingVeh").datagrid("getSelected");
-	
 	if(reportData){
 		$.post("/veh/report/getCheckPhotos",{jylsh:reportData.jylsh},function(data){
 			$.each(data,function(i,n){
 				$.post("/veh/report/getCheckPhoto",{id:n.id},function(data){
-					$("#image"+n.zpzl+n.jycs).attr("src","data:image/jpeg;base64,"+data);
-					$("#"+temp+n.zpzl+n.jycs).attr("zid",n.id);
+					$("#image"+n.zpzl).attr("src","data:image/jpeg;base64,"+data);
+					$("#"+temp+n.zpzl).attr("zid",n.id);
 					
 				});
 			});
@@ -243,6 +254,12 @@ function init(){
 }
 
 </script>
+<style>
+	.showItem{
+		color: red;
+	}
+</style>
+
 <div class="easyui-layout" data-options="fit:true">
 	 <div data-options="region:'center'" data-options="border:0" >
 	 	<div class="easyui-tabs" data-options="fit:true,border:0">

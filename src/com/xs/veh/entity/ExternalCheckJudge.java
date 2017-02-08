@@ -42,6 +42,19 @@ public class ExternalCheckJudge extends BaseEntity {
 	
 	@Column
 	private String rgjybz;
+	
+	@Column(length=400)
+	private String bz1;
+	
+	
+
+	public String getBz1() {
+		return bz1;
+	}
+
+	public void setBz1(String bz1) {
+		this.bz1 = bz1;
+	}
 
 	public String getJylsh() {
 		return jylsh;

@@ -661,11 +661,19 @@ public class BrakRollerData extends BaseDeviceData {
 		this.rigthDataStr = rigthDataStr;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "BrakRollerData [zzzl=" + zzzl + ", yzzl=" + yzzl + ", zzdl=" + zzdl + ", yzdl=" + yzdl + ", zzdlcd="
 				+ zzdlcd + ", yzdlcd=" + yzdlcd + ", gcc=" + gcc + ", leftData=" + leftData + ", rigthData=" + rigthData
-				+ ", jszt=" + jszt + ", leftDataStr=" + leftDataStr + ", rigthDataStr=" + rigthDataStr + "]";
+				+ ", jszt=" + jszt + ", zw=" + zw + ", kzxczdl=" + kzxczdl + ", kzbphl=" + kzbphl + ", jzzzdl=" + jzzzdl
+				+ ", jzzh=" + jzzh + ", jzbphl=" + jzbphl + ", kzzdlxz=" + kzzdlxz + ", kzzdlpd=" + kzzdlpd
+				+ ", jzzdlxz=" + jzzdlxz + ", jzzdlpd=" + jzzdlpd + ", bphlxz=" + bphlxz + ", kzbphlpd=" + kzbphlpd
+				+ ", jzbphlpd=" + jzbphlpd + ", sfjzz=" + sfjzz + ", jzzlh=" + jzzlh + ", jzylh=" + jzylh + ", zlh="
+				+ zlh + ", ylh=" + ylh + ", zdtlh=" + zdtlh + ", ydtlh=" + ydtlh + ", leftDataStr=" + leftDataStr
+				+ ", rigthDataStr=" + rigthDataStr + ", zdtlhStr=" + zdtlhStr + ", ydtlhStr=" + ydtlhStr
+				+ ", jzLeftDataStr=" + jzLeftDataStr + ", jzRigthDataStr=" + jzRigthDataStr + ", jzzzdli=" + jzzzdli
+				+ ", jzyzdli=" + jzyzdli + ", jzzzdlcd=" + jzzzdlcd + ", jzyzdlcd=" + jzyzdlcd + "]";
 	}
 
 	/**
@@ -773,13 +781,13 @@ public class BrakRollerData extends BaseDeviceData {
 		}
 
 		// 其他汽车
-		if (zw == 1 && zbzl >= 3500) {
+		if (zw == 1) {
 			this.jzzdlxz = 60;
 			return;
 		}
 
 		// 其他汽车
-		if (zw > 1 && zbzl >= 3500) {
+		if (zw > 1 ) {
 			this.kzzdlxz = 50;
 			return;
 		}

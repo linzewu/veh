@@ -18,9 +18,9 @@ public abstract class AbstractDeviceSpeed {
 	
 	protected Integer s1;
 	
-	public abstract SpeedData startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws Exception;
+	public abstract SpeedData startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException;
 
-	public abstract void device2pc(byte[] data) throws Exception;
+	public abstract void device2pc(byte[] data) throws IOException ;
 	
 	public void init(DeviceSpeed deviceSpeed) {
 		this.deviceSpeed = deviceSpeed;

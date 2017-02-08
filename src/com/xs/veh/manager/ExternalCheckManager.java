@@ -34,7 +34,6 @@ public class ExternalCheckManager {
 
 	@Autowired
 	private HttpSession session;
-	
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
@@ -270,17 +269,18 @@ public class ExternalCheckManager {
 	 * 
 	 * @param externalCheck
 	 * @return
+	 * @throws InterruptedException
 	 */
-	public Message saveExternalCheck(ExternalCheck externalCheck) {
+	public Message saveExternalCheck(ExternalCheck externalCheck) throws InterruptedException {
 		VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(externalCheck.getJyjgbh(),
 				externalCheck.getJylsh());
-		
+
 		ExternalCheck ec = setExternalCheck(vehCheckLogin, externalCheck);
 
 		Message message = new Message();
 		if (vehCheckLogin != null) {
 			this.hibernateTemplate.update(ec);
-			
+
 			vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_JYJS);
 			vehCheckLogin.setExternalCheckDate(new Date());
 			User user = (User) session.getAttribute("user");
@@ -289,15 +289,23 @@ public class ExternalCheckManager {
 				vehCheckLogin.setWjysfzh(user.getIdCard());
 			}
 			this.hibernateTemplate.update(vehCheckLogin);
-			
-			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),"F1");
+
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+					vehCheckLogin.getJycs(), "F1");
 			vehCheckProcess.setJssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "F1", vehCheckLogin.getHphm(),
-					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "F1", vehCheckLogin.getHphm(),
-					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "F1",
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			Thread.sleep(1000);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "F1",
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 			
+			if((vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_JYJS)&&
+					(vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_JYJS)&&
+					(vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_JYJS)){
+				checkDataManager.createExternalCheckJudge(vehCheckLogin);
+			}
+
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 			message.setMessage("上传成功");
@@ -308,18 +316,18 @@ public class ExternalCheckManager {
 		}
 		return message;
 	}
-	
-	
+
 	/**
 	 * 动态底盘
 	 * 
 	 * @param externalCheck
 	 * @return
+	 * @throws InterruptedException
 	 */
-	public Message saveExternalCheckDC(ExternalCheck externalCheck) {
+	public Message saveExternalCheckDC(ExternalCheck externalCheck) throws InterruptedException {
 		VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(externalCheck.getJyjgbh(),
 				externalCheck.getJylsh());
-		
+
 		ExternalCheck ec = setExternalCheckDC(vehCheckLogin, externalCheck);
 
 		Message message = new Message();
@@ -328,16 +336,27 @@ public class ExternalCheckManager {
 			vehCheckLogin.setVehdtdpzt(VehCheckLogin.ZT_JYJS);
 			this.hibernateTemplate.update(vehCheckLogin);
 			// 判断项目的状态
-			
-			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),"DC");
+
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+					vehCheckLogin.getJycs(), "DC");
 			vehCheckProcess.setJssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "DC", vehCheckLogin.getHphm(),
-					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "DC", vehCheckLogin.getHphm(),
-					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "DC",
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			Thread.sleep(1000);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "DC",
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+
+			
+			
+			if((vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_JYJS)&&
+					(vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_JYJS)&&
+					(vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_JYJS)){
+				checkDataManager.createExternalCheckJudge(vehCheckLogin);
+			}
 			
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
+			
 			message.setMessage("上传成功");
 			message.setState(Message.STATE_SUCCESS);
 		} else {
@@ -346,18 +365,18 @@ public class ExternalCheckManager {
 		}
 		return message;
 	}
-	
-	
+
 	/**
 	 * 动态底盘
 	 * 
 	 * @param externalCheck
 	 * @return
+	 * @throws InterruptedException
 	 */
-	public Message saveExternalCheckC1(ExternalCheck externalCheck) {
+	public Message saveExternalCheckC1(ExternalCheck externalCheck) throws InterruptedException {
 		VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(externalCheck.getJyjgbh(),
 				externalCheck.getJylsh());
-		
+
 		ExternalCheck ec = setExternalCheckC1(vehCheckLogin, externalCheck);
 
 		Message message = new Message();
@@ -365,15 +384,22 @@ public class ExternalCheckManager {
 			this.hibernateTemplate.update(ec);
 			vehCheckLogin.setVehdpzt(VehCheckLogin.ZT_JYJS);
 			this.hibernateTemplate.update(vehCheckLogin);
-			
-			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),"C1");
+
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+					vehCheckLogin.getJycs(), "C1");
 			vehCheckProcess.setJssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "C1", vehCheckLogin.getHphm(),
-					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1", vehCheckLogin.getHphm(),
-					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "C1",
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+			Thread.sleep(1000);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1",
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 			
+			if((vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_JYJS)&&
+					(vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_JYJS)&&
+					(vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_JYJS)){
+				checkDataManager.createExternalCheckJudge(vehCheckLogin);
+			}
 			
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
@@ -385,14 +411,14 @@ public class ExternalCheckManager {
 		}
 		return message;
 	}
-	
 
 	public List<VehCheckLogin> getExternalCheckVhe(String hphm) {
 
-		String sql = "from VehCheckLogin where vehwjzt=?";
+		String sql = "from VehCheckLogin where vehjczt!=? and vehwjzt=?";
 
 		List values = new ArrayList();
 
+		values.add(VehCheckLogin.JCZT_TB);
 		values.add(VehCheckLogin.ZT_WKS);
 
 		if (hphm != null) {
@@ -408,12 +434,20 @@ public class ExternalCheckManager {
 
 	}
 
+	public List<VehCheckLogin> getVheInfoOfHphm(String hphm) {
+		String sql = "from VehCheckLogin where hphm like ? and dlsj>=?";
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.MONTH, -3);
+		return (List<VehCheckLogin>) this.hibernateTemplate.find(sql, "%"+hphm+"%",c.getTime());
+	}
+
 	public List<VehCheckLogin> getExternalC1(String hphm) {
 
-		String sql = "from VehCheckLogin where vehdpzt=?";
+		String sql = "from VehCheckLogin where vehjczt!=?  and vehdpzt=?";
 
 		List values = new ArrayList();
 
+		values.add(VehCheckLogin.JCZT_TB);
 		values.add(VehCheckLogin.ZT_WKS);
 
 		if (hphm != null) {
@@ -431,17 +465,17 @@ public class ExternalCheckManager {
 
 	public List<VehCheckLogin> getExternalDC(String hphm) {
 
-		String sql = "from VehCheckLogin where vehdtdpzt=?";
+		String sql = "from VehCheckLogin where  vehjczt!=? and vehdtdpzt=? ";
 
 		List values = new ArrayList();
-
+		values.add(VehCheckLogin.JCZT_TB);
 		values.add(VehCheckLogin.ZT_WKS);
 
 		if (hphm != null) {
 			sql += " and hphm=?";
 			values.add(hphm);
 		} else {
-			sql += " and dlsj>=?";
+			sql += " and dlsj>=? ";
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.MONTH, -1);
 			values.add(c.getTime());
@@ -453,6 +487,8 @@ public class ExternalCheckManager {
 	public Message savePhoto(CheckPhoto checkPhoto) {
 
 		this.hibernateTemplate.save(checkPhoto);
+		checkEventManger.createEvent(checkPhoto.getJylsh(), checkPhoto.getJycs(), "18C63", checkPhoto.getJyxm(),
+				checkPhoto.getHphm(), checkPhoto.getHpzl(), checkPhoto.getClsbdh(), checkPhoto.getZpzl());
 
 		Message message = new Message();
 		message.setMessage("上传成功");
@@ -460,6 +496,35 @@ public class ExternalCheckManager {
 
 		return message;
 
+	}
+
+	public List<VehCheckLogin> getExternalR(String hphm) {
+		
+		String sql = "from VehCheckLogin where  vehjczt!=? and (vehlszt=? or vehlszt=?) ";
+		List values = new ArrayList();
+		values.add(VehCheckLogin.JCZT_TB);
+		values.add(VehCheckLogin.ZT_JCZ);
+		values.add(VehCheckLogin.ZT_WKS);
+
+		if (hphm != null) {
+			sql += " and hphm=?";
+			values.add(hphm);
+		} else {
+			sql += " and dlsj>=? ";
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.MONTH, -1);
+			values.add(c.getTime());
+		}
+		return (List<VehCheckLogin>) this.hibernateTemplate.find(sql, values.toArray());
+
+	}
+	
+	public List<VehCheckProcess> getRoadProcess(String jylsh) {
+		
+		List<VehCheckProcess> datas = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jylsh=? and jyxm in('R1','R2','R3')", jylsh);
+		
+		return datas;
+		
 	}
 
 }

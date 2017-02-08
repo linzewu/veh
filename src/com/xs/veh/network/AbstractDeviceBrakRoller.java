@@ -1,5 +1,8 @@
 package com.xs.veh.network;
 
+import java.io.IOException;
+
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
 
@@ -20,9 +23,9 @@ public abstract class AbstractDeviceBrakRoller {
 	
 	protected boolean isPlusLoad = false;
 
-	public abstract BrakRollerData startCheck(VehFlow vehFlow) throws Exception;
+	public abstract BrakRollerData startCheck(VehFlow vehFlow) throws SystemException, IOException, InterruptedException;
 	
-	public abstract void device2pc(byte[] data) throws Exception;
+	public abstract void device2pc(byte[] data) throws IOException ;
 	
 	public abstract void init(DeviceBrakRoller deviceBrakRoller);
 	

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.xs.common.CharUtil;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceSideslip;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceSideslip;
 import com.xs.veh.network.SimpleRead.ProtocolType;
@@ -80,7 +81,7 @@ public class DeviceSideslipDriverOfJxch extends AbstractDeviceSideslip {
 	}
 
 	@Override
-	public void device2pc(byte[] endodedData) throws Exception {
+	public void device2pc(byte[] endodedData) throws IOException{
 		
 		if(checkingFlag){
 			setData(endodedData, sideslipData);
@@ -89,7 +90,7 @@ public class DeviceSideslipDriverOfJxch extends AbstractDeviceSideslip {
 			
 			if(ml.equals(sjjcjs)){
 				deviceSideslip.sendMessage(qs);
-				System.out.println("发送取数命令："+qs);
+				TakePicture.createNew(this.deviceSideslip.getVehCheckLogin(),"A1");
 				this.isGetData=true;
 				return;
 			}

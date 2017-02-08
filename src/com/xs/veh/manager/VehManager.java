@@ -10,7 +10,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,13 +42,22 @@ import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.ExternalCheck;
+import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.Flow;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLog;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.network.data.BaseDeviceData;
+import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.network.data.LightData;
+import com.xs.veh.network.data.OtherInfoData;
+import com.xs.veh.network.data.ParDataOfAnjian;
+import com.xs.veh.network.data.SideslipData;
+import com.xs.veh.network.data.SpeedData;
 import com.xs.veh.util.BeanXMLUtil;
 import com.xs.veh.util.RCAConstant;
 
@@ -167,8 +175,8 @@ public class VehManager {
 		return new XMLSerializer().read(document.asXML());
 	}
 
-	public JSONObject vehLogin(VehCheckLogin vehCheckLogin)
-			throws RemoteException, UnsupportedEncodingException, DocumentException {
+	public JSONObject vehLogin(VehCheckLogin vehCheckLogin){
+		
 		Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
 		JSONObject head = new JSONObject();
 		JSONObject messager = null;
@@ -183,68 +191,51 @@ public class VehManager {
 
 		// 默认情况下为成功
 		head.put("code", "1");
-
-		/*
-		 * if (isNetwork) { JSONObject param =
-		 * JSONObject.fromObject(vehCheckLogin); Document document =
-		 * this.write(RCAConstant.V18C51, param); JSON json = new
-		 * XMLSerializer().read(document.asXML()); String josnStr =
-		 * json.toString(); if (json.isArray()) { JSONArray ja =
-		 * JSONArray.fromObject(josnStr); head = ja.getJSONObject(0); messager =
-		 * head; } else { JSONObject jo = JSONObject.fromObject(josnStr); head =
-		 * jo.getJSONObject("head"); messager = jo; } }
-		 */
-
-		if (head.get("code").equals("1")) {
-			this.hibernateTemplate.save(vehCheckLogin);
-			String jyxm = vehCheckLogin.getJyxm();
-			String[] jyxmArray = jyxm.split(",");
-			List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
-			for (String jyxmItem : jyxmArray) {
-				VehCheckProcess vcp = new VehCheckProcess();
-				vcp.setClsbdh(vehCheckLogin.getClsbdh());
-				vcp.setHphm(vehCheckLogin.getHphm());
-				vcp.setHpzl(vehCheckLogin.getHpzl());
-				vcp.setJylsh(vehCheckLogin.getJylsh());
-				vcp.setJyxm(jyxmItem);
-				vcp.setJycs(vehCheckLogin.getJycs());
-				this.hibernateTemplate.save(vcp);
-				processArray.add(vcp);
-			}
-			addVehFlow(vehCheckLogin, processArray, flow);
-			createExternalCheck(vehCheckLogin);
-
-			CheckEvents ce = new CheckEvents();
-			ce.setClsbdh(vehCheckLogin.getClsbdh());
-			ce.setEvent("18C51");
-			ce.setHpzl(vehCheckLogin.getHpzl());
-			ce.setJylsh(vehCheckLogin.getJylsh());
-			ce.setHphm(vehCheckLogin.getHphm());
-			ce.setCreateDate(new Date());
-			ce.setState(0);
-			ce.setJycs(vehCheckLogin.getJycs());
-			this.hibernateTemplate.save(ce);
-
-			CheckEvents ce2 = new CheckEvents();
-			ce2.setClsbdh(vehCheckLogin.getClsbdh());
-			ce2.setEvent("18C52");
-			ce2.setHpzl(vehCheckLogin.getHpzl());
-			ce2.setJylsh(vehCheckLogin.getJylsh());
-			ce2.setHphm(vehCheckLogin.getHphm());
-			ce2.setCreateDate(new Date());
-			ce2.setState(0);
-			ce2.setJycs(vehCheckLogin.getJycs());
-			this.hibernateTemplate.save(ce2);
-
+		this.hibernateTemplate.save(vehCheckLogin);
+		String jyxm = vehCheckLogin.getJyxm();
+		String[] jyxmArray = jyxm.split(",");
+		List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
+		for (String jyxmItem : jyxmArray) {
+			VehCheckProcess vcp = new VehCheckProcess();
+			vcp.setClsbdh(vehCheckLogin.getClsbdh());
+			vcp.setHphm(vehCheckLogin.getHphm());
+			vcp.setHpzl(vehCheckLogin.getHpzl());
+			vcp.setJylsh(vehCheckLogin.getJylsh());
+			vcp.setJyxm(jyxmItem);
+			vcp.setJycs(vehCheckLogin.getJycs());
+			this.hibernateTemplate.save(vcp);
+			processArray.add(vcp);
 		}
+		addVehFlow(vehCheckLogin, processArray, flow);
+		createExternalCheck(vehCheckLogin);
 
-		if (!isNetwork) {
-			head = new JSONObject();
-			head.put("code", 1);
-			head.put("isNetwork", false);
-			messager = new JSONObject();
-			messager.put("head", head);
-		}
+		CheckEvents ce = new CheckEvents();
+		ce.setClsbdh(vehCheckLogin.getClsbdh());
+		ce.setEvent("18C51");
+		ce.setHpzl(vehCheckLogin.getHpzl());
+		ce.setJylsh(vehCheckLogin.getJylsh());
+		ce.setHphm(vehCheckLogin.getHphm());
+		ce.setCreateDate(new Date());
+		ce.setState(0);
+		ce.setJycs(vehCheckLogin.getJycs());
+		this.hibernateTemplate.save(ce);
+
+		CheckEvents ce2 = new CheckEvents();
+		ce2.setClsbdh(vehCheckLogin.getClsbdh());
+		ce2.setEvent("18C52");
+		ce2.setHpzl(vehCheckLogin.getHpzl());
+		ce2.setJylsh(vehCheckLogin.getJylsh());
+		ce2.setHphm(vehCheckLogin.getHphm());
+		ce2.setCreateDate(new Date());
+		ce2.setState(0);
+		ce2.setJycs(vehCheckLogin.getJycs());
+		this.hibernateTemplate.save(ce2);
+
+		head = new JSONObject();
+		head.put("code", 1);
+		head.put("isNetwork", false);
+		messager = new JSONObject();
+		messager.put("head", head);
 
 		return messager;
 	}
@@ -401,8 +392,14 @@ public class VehManager {
 	private List<VehFlow> addVehFlow(VehCheckLogin vcl, List<VehCheckProcess> process, Flow flow) {
 
 		JSONArray flowJsons = JSONArray.fromObject(flow.getFlow());
-
 		List<VehFlow> vehFlows = new ArrayList<VehFlow>();
+		
+		String allJyxm=vcl.getJyxm();
+		
+		if(vcl.getJycs()>1){
+			allJyxm=vcl.getFjjyxm();
+		}
+		
 
 		for (int i = 0; i < flowJsons.size(); i++) {
 
@@ -422,7 +419,7 @@ public class VehManager {
 
 				String strJyxm = getDeivceItem(device, process);
 
-				if (deviceId == -1 && vcl.getJyxm().indexOf("C1") != -1) {
+				if (deviceId == -1 && allJyxm.indexOf("C1") != -1) {
 					VehFlow v = new VehFlow();
 					v.setGw(gwid);
 					v.setHphm(vcl.getHphm());
@@ -498,7 +495,6 @@ public class VehManager {
 		if (device == null || vehCheckProcessArray == null) {
 			return null;
 		}
-
 		BaseParams param = baseParamsManager.getBaseParam("deviceType", device.getType().toString());
 
 		String strConfig = param.getMemo();
@@ -526,7 +522,7 @@ public class VehManager {
 
 		DetachedCriteria detachedCrit = DetachedCriteria.forClass(VehCheckLogin.class);
 		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
-				.find("from VehCheckLogin where vehsxzt = ?", zt);
+				.find("from VehCheckLogin where vehsxzt = ? and vehjczt!=?", zt, VehCheckLogin.JCZT_TB);
 		return vheCheckLogins;
 	}
 
@@ -614,17 +610,188 @@ public class VehManager {
 					&& (vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_JYJS
 							|| vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_BJC)) {
 
+				List<DeviceCheckJudeg> deviceCheckJudegs = (List<DeviceCheckJudeg>) this.hibernateTemplate
+						.find("from DeviceCheckJudeg where jylsh=?", vehCheckLogin.getJylsh());
+
+				List<ExternalCheckJudge> externalCheckJudges = (List<ExternalCheckJudge>) this.hibernateTemplate
+						.find("from ExternalCheckJudge where jylsh=?", vehCheckLogin.getJylsh());
+
+				String jyjl = "合格";
+				for (DeviceCheckJudeg deviceCheckJudeg : deviceCheckJudegs) {
+					if (deviceCheckJudeg.getYqjgpd().equals("2")) {
+						jyjl = "不合格";
+					}
+				}
+
+				for (ExternalCheckJudge externalCheckJudge : externalCheckJudges) {
+					if (externalCheckJudge.getRgjgpd().equals("2")) {
+						jyjl = "不合格";
+					}
+				}
+				
+				vehCheckLogin.setJyjl(jyjl);
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", null,
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C59", null,
 						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 				
-				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", null,
-						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+				//复检
+				repeatLogin(vehCheckLogin);
+				this.hibernateTemplate.update(vehCheckLogin);
 
-				vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
+				
+				
+				if(vehCheckLogin.getFjjyxm()==null||vehCheckLogin.getFjjyxm().equals("")){
+					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C62", null,
+							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+				}else{
+					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C65", null,
+							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C52", null,
+							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+				}
+
 			}
-
 		}
-
 	}
 
+	// 复检项目
+	public VehCheckLogin repeatLogin(VehCheckLogin vehCheckLogin) {
+		
+		String jylsh=vehCheckLogin.getJylsh();
+		
+		String fjjyxm = "";
+		List<OtherInfoData> otherInfoData = (List<OtherInfoData>) this.hibernateTemplate
+				.find("from OtherInfoData where jylsh=? and zczdpd=?", jylsh,BaseDeviceData.PDJG_BHG.toString());
+ 
+		// 整车不合格则全部复检
+		if (otherInfoData != null && !otherInfoData.isEmpty()) {
+			logger.info("整车不合格");
+			if (vehCheckLogin.getJyxm().indexOf("B1") >= 0) {
+				fjjyxm += "B1,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B2") >= 0) {
+				fjjyxm += "B2,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B3") >= 0) {
+				fjjyxm += "B3,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B4") >= 0) {
+				fjjyxm += "B4,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B5") >= 0) {
+				fjjyxm += "B5,";
+			}
+			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
+					"from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0'", jylsh,
+					BaseDeviceData.SJZT_ZC);
+			for (BrakRollerData brakRollerData : brakRollerDatas) {
+				brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
+				this.hibernateTemplate.save(brakRollerData);
+			}
+			
+		} else {
+			// 制动复检
+			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
+					"from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0' and zpd=?", jylsh,
+					BaseDeviceData.SJZT_ZC, BaseDeviceData.PDJG_BHG);
+			for (BrakRollerData brakRollerData : brakRollerDatas) {
+				logger.info(brakRollerData.getJyxm()+"不合格");
+				fjjyxm += brakRollerData.getJyxm() + ",";
+				brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
+				this.hibernateTemplate.save(brakRollerData);
+			}
+		}
+
+		// 灯光复检
+		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
+				"from LightData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (lightDatas != null && !lightDatas.isEmpty()) {
+			if (vehCheckLogin.getJyxm().indexOf("H1") >= 0) {
+				fjjyxm += "H1,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("H2") >= 0) {
+				fjjyxm += "H2,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("H3") >= 0) {
+				fjjyxm += "H3,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("H4") >= 0) {
+				fjjyxm += "H4,";
+			}
+		}
+		for (LightData lightData : lightDatas) {
+			lightData.setSjzt(BaseDeviceData.SJZT_FJ);
+			this.hibernateTemplate.save(lightData);
+		}
+
+		// 速度复检
+		List<SpeedData> speedDatas = (List<SpeedData>) this.hibernateTemplate.find(
+				"from SpeedData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (speedDatas != null && !speedDatas.isEmpty()) {
+			fjjyxm += "S1";
+			speedDatas.get(0).setSjzt(SpeedData.SJZT_FJ);
+			this.hibernateTemplate.save(speedDatas.get(0));
+		}
+
+		// 侧滑复检
+		List<SideslipData> sideslipDatas = (List<SideslipData>) this.hibernateTemplate.find(
+				"from SideslipData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (sideslipDatas != null && !sideslipDatas.isEmpty()) {
+			fjjyxm += "A1";
+			sideslipDatas.get(0).setSjzt(SpeedData.SJZT_FJ);
+			this.hibernateTemplate.save(sideslipDatas.get(0));
+		}
+
+		// 驻车复检
+		List<ParDataOfAnjian> parDataOfAnjian = (List<ParDataOfAnjian>) this.hibernateTemplate.find(
+				"from ParDataOfAnjian where jylsh=? and sjzt=?  and tczdpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (parDataOfAnjian != null && !parDataOfAnjian.isEmpty()) {
+			fjjyxm += "B0,";
+			parDataOfAnjian.get(0).setSjzt(ParDataOfAnjian.SJZT_FJ);
+			this.hibernateTemplate.save(parDataOfAnjian.get(0));
+		}
+		
+		if(!fjjyxm.trim().equals("")){
+			fjjyxm =fjjyxm.substring(0, fjjyxm.length()-1);
+			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
+			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
+			
+			vehCheckLogin.setJycs(vehCheckLogin.getJycs()+1);
+			vehCheckLogin.setFjjyxm(fjjyxm);
+			
+			Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
+			
+			String[] jyxmArray = fjjyxm.split(",");
+			List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
+			for (String jyxmItem : jyxmArray) {
+				VehCheckProcess vcp = new VehCheckProcess();
+				vcp.setClsbdh(vehCheckLogin.getClsbdh());
+				vcp.setHphm(vehCheckLogin.getHphm());
+				vcp.setHpzl(vehCheckLogin.getHpzl());
+				vcp.setJylsh(vehCheckLogin.getJylsh());
+				vcp.setJyxm(jyxmItem);
+				vcp.setJycs(vehCheckLogin.getJycs());
+				this.hibernateTemplate.save(vcp);
+				processArray.add(vcp);
+			}
+			addVehFlow(vehCheckLogin, processArray, flow);
+			
+		}else{
+			vehCheckLogin.setFjjyxm("");
+			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
+			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_JYJS);
+		}
+		
+		logger.info("复检项目："+fjjyxm);
+		
+		vehCheckLogin.setJyxm(fjjyxm);
+		
+		return vehCheckLogin;
+
+	}
 }

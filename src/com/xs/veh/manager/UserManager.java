@@ -64,6 +64,10 @@ public class UserManager {
 		return list;
 	}
 	
+	public List<User> getUsers(){
+		return  (List<User>) this.hibernateTemplate.find("from User  where userName!='admin'");
+	}
+	
 	public Integer getUserCount(final User user,final PageInfo pageInfo) {
 
 		Integer count = (Integer)hibernateTemplate.executeWithNativeSession(new HibernateCallback<Integer>() {

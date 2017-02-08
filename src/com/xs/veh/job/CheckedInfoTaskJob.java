@@ -5,17 +5,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder.Case;
 
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
@@ -28,28 +25,29 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
+import com.xs.veh.entity.CheckPhoto;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
+import com.xs.veh.manager.VehManager;
 import com.xs.veh.util.BeanXMLUtil;
 import com.xs.veh.util.RCAConstant;
+
+import sun.misc.BASE64Encoder;
 
 @Component("CheckedInfoTaskJob")
 public class CheckedInfoTaskJob {
 
 	private static Logger logger = Logger.getLogger(CheckedInfoTaskJob.class);
 
-	private Properties properties = null;
-
 	private TmriJaxRpcOutAccessServiceStub tro = null;
 	
 	@Value("${jkxlh}")
 	private String jkxlh;
 
-	@Value("${jyjgbh}")
-	private String jyjgbh;
 
 /*	@Resource(name = "imageDBManger")
 	private ImageDBManger imageDBManger;*/
@@ -57,8 +55,22 @@ public class CheckedInfoTaskJob {
 	@Resource(name = "checkEventManger")
 	private CheckEventManger eventManger;
 	
+	@Resource(name = "checkDataManager")
+	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "vehManager")
+	private VehManager vehManager;
+	
+	
+	
 	@Value("${isNetwork}")
 	private boolean isNetwork;
+	
+	@Value("${sqrqz}")
+	private String pzrxm;
+	
+	@Value("${jyjgbh}")
+	private String jyjgbh;
 
 	public CheckedInfoTaskJob() {
 		try {
@@ -122,6 +134,12 @@ public class CheckedInfoTaskJob {
 		try {
 			TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutAccessServiceStub.WriteObjectOut();
 			String jkid = event.getEvent();
+			if(jkid.equals("18C55_R")){
+				jkid="18C55";
+			}
+			if(jkid.equals("18C58_R")){
+				jkid="18C58";
+			}
 			woo.setJkid(jkid);
 			woo.setXtlb(RCAConstant.XTLB);
 			woo.setJkxlh(jkxlh);
@@ -179,18 +197,18 @@ public class CheckedInfoTaskJob {
 		
 		List<CheckEvents> list = (List<CheckEvents>) eventManger.getEvents();
 		for (CheckEvents e : list) {
+			Thread.sleep(1000);
 			try{
 				String viewName = "V" + e.getEvent();
 				
 				String checkItem = e.getJyxm();
 				
-				/*if (RCAConstant.V18C63.equals(viewName)) {
+				if (RCAConstant.V18C63.equals(e.getEvent())) {
 					uploadImage(e);
 					continue;
-				}*/
+				}
 				if ((RCAConstant.V18C53.equals(e.getEvent())
 						|| RCAConstant.V18C80.equals(e.getEvent())
-						|| RCAConstant.V18C54.equals(e.getEvent())
 						|| RCAConstant.V18C81.equals(e.getEvent()) || RCAConstant.V18C64
 							.equals(e.getEvent()))
 						&& checkItem != null
@@ -211,6 +229,27 @@ public class CheckedInfoTaskJob {
 				}
 
 				for (Map data : datas) {
+					
+					if(e.getEvent().equals(RCAConstant.V18C62)){
+						
+						List yqjg =  checkDataManager.getDeviceCheckJudeg(e.getJylsh());
+						Document docYqjg = BeanXMLUtil.list2xml(yqjg, "yqsbjyjg");
+						if(docYqjg!=null){
+							data.put("yqsbjyjgs", docYqjg.asXML());
+						}
+						
+						//人工检验项目结果
+						List rgjg =  checkDataManager.getExternalCheckJudge(e.getJylsh());
+						if(rgjg!=null){
+							Document docRgjg = BeanXMLUtil.list2xml(rgjg, "rgjyjg");
+							data.put("rgjyjgs", docRgjg.asXML());
+						}
+						data.put("pzrxm", pzrxm);
+						VehCheckLogin info = vehManager.getVehCheckLoginByJylsh(jyjgbh, e.getJylsh());
+						data.put("jyjl", info.getJyjl());
+						
+					}
+					
 					Document document = this.write(e, data);
 					Element root = document.getRootElement();
 					Element head = root.element("head");
@@ -239,15 +278,35 @@ public class CheckedInfoTaskJob {
 	
 	
 
-/*	public void uploadImage(Event e) {
+	public void uploadImage(CheckEvents e) {
 
-		String jyxm = e.getCheckItem();
 		String zpzl = e.getZpzl();
-		Map zpMap = imageDBManger.getImage(e.getLsh(), zpzl, jyxm);
-		if (zpMap != null) {
-			zpMap.put("jyxm", jyxm);
-			zpMap.put("zpzl", zpzl);
+		
+		CheckPhoto photo = checkDataManager.getCheckPhoto(e.getJylsh(),zpzl,e.getJycs());
+		
+		if (photo != null) {
+		
+			Map zpMap = new HashMap();
+			zpMap.put("jylsh", photo.getJylsh());
 			zpMap.put("jyjgbh", jyjgbh);
+			zpMap.put("zpMap", photo.getJcxdh());
+			zpMap.put("jycs", photo.getJycs());
+			zpMap.put("hphm", photo.getHphm());
+			zpMap.put("hpzl", photo.getHpzl());
+			zpMap.put("clsbdh", photo.getClsbdh());
+			
+			SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			zpMap.put("pssj", sd.format(photo.getPssj()));
+			zpMap.put("jyxm", photo.getJyxm());
+			zpMap.put("zpzl", photo.getZpzl());
+			
+			if (photo.getZp() != null) {
+				BASE64Encoder encode = new BASE64Encoder();
+				String imageCode = encode.encode(photo.getZp());
+				zpMap.put("zp",imageCode);
+			}
+	
 			try {
 				Document document = this.write(e, zpMap);
 				Element root = document.getRootElement();
@@ -271,6 +330,6 @@ public class CheckedInfoTaskJob {
 		}
 		
 	}
-	*/
+	
 
 }

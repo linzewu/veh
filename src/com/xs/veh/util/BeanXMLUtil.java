@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,7 +62,18 @@ public class BeanXMLUtil {
 			Element felement = subelement.addElement(key);
 			try {
 				if(map.get(key)!=null){
-						felement.setText( URLEncoder.encode(map.get(key).toString().trim(),"UTF-8"));
+					String val=map.get(key).toString().trim();
+					if("rgjyjgs".equals(key)||"yqsbjyjgs".equals(key)){
+						if(val!=null&&!"".equals(val.trim())){
+							Document sd = DocumentHelper.parseText(val);
+							List<Element> list = sd.getRootElement().elements();
+							for(Element e:list){
+								felement.add(e.detach());
+							}
+						}
+					}else{
+						felement.setText(URLEncoder.encode(val,"UTF-8"));
+					}
 				}
 			} catch (Exception e) {
 				logger.error("map2xml执行异常",e);
@@ -71,7 +83,35 @@ public class BeanXMLUtil {
 		return document;
 	} 
 	
-	
+public static Document list2xml(List<Map> data,String element){
+		
+		logger.debug("list:+"+data);
+		Document document=DocumentHelper.createDocument();
+		document.setXMLEncoding("GBK");
+		Element  root =  document.addElement("root");
+		for(Map map:data){
+			Element  subElement = root.addElement(element);
+			
+			Set<String> keys = map.keySet();
+			
+			for(String key:keys){
+				Element e = subElement.addElement(key);
+				Object o= map.get(key);
+				String val=null;
+				if(o!=null){
+					val=o.toString();
+				}
+				val=val==null?"":val;
+				try {
+					e.setText(URLEncoder.encode(val,"UTF-8"));
+				} catch (UnsupportedEncodingException e1) {
+					logger.error("map2xml执行异常",e1);
+				}
+			}
+		}
+		
+		return document;
+	}
 
 	public static void main(String[] arg) {
 //		JYDLXX jydxx = new JYDLXX();

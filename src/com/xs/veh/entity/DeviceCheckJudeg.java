@@ -45,6 +45,19 @@ public class DeviceCheckJudeg extends BaseEntity {
 
 	@Column(length = 1024)
 	private String yqjybz;
+	
+	@Column(length=400)
+	private String bz1;
+	
+	
+
+	public String getBz1() {
+		return bz1;
+	}
+
+	public void setBz1(String bz1) {
+		this.bz1 = bz1;
+	}
 
 	public String getJylsh() {
 		return jylsh;

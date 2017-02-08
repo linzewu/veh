@@ -12,6 +12,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceBrakRoller;
 import com.xs.veh.network.DeviceBrakRoller;
 import com.xs.veh.network.DeviceDisplay;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.BrakRollerData;
 
 /**
@@ -87,6 +88,8 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 
 	private List<Byte> weighDataTempByte;
 
+	private VehFlow vehFlow;
+
 	public void setCheckedData(Byte[] data, BrakRollerData brakRollerData) {
 
 		Integer jzzlh = Integer.parseInt(CharUtil.bcd2Str(new byte[] { data[1], data[2] }));
@@ -114,9 +117,9 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		}
 
 		if (brakRollerData.getSfjzz() == BrakRollerData.SFJZZ_YES) {
-			
-			//brakRollerData.setZzzl(zzzl);
-			//brakRollerData.setYzzl(yzzl);
+
+			// brakRollerData.setZzzl(zzzl);
+			// brakRollerData.setYzzl(yzzl);
 			brakRollerData.setJzzzdli(zzdl);
 			brakRollerData.setJzyzdli(yzdl);
 			brakRollerData.setJzzzdlcd(zzdlc);
@@ -161,8 +164,8 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 	}
 
 	@Override
-	public BrakRollerData startCheck(VehFlow vehFlow) throws Exception {
-
+	public BrakRollerData startCheck(VehFlow vehFlow) throws SystemException, IOException, InterruptedException {
+		this.vehFlow = vehFlow;
 		try {
 			Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
 			scMessage = vehFlow.getJyxm().equals("B0") ? "请拉手刹" : "请踩刹车";
@@ -183,24 +186,22 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
-				
+
 			// 等待检测数据返回
 			while (checkingFlage) {
-				if (this.getBrakRollerData().getZzdl() != null && this.getBrakRollerData().getYzdl() != null) {
-					deviceBrakRoller.setInfoData(brakRollerData);
-					break;
-				}
 				Thread.sleep(300);
 			}
 
 			if (isError) {
 				Thread.sleep(3000);
+			} else {
+				Thread.sleep(2000);
+				deviceBrakRoller.setInfoData(brakRollerData);
 			}
 
 			if (isPlusLoad) {
 				// 称重
 				cz();
-				
 				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_YES);
 				brakRollerData.getRigthData().clear();
 				brakRollerData.getLeftData().clear();
@@ -208,15 +209,14 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 				deviceBrakRoller.sendMessage(ksjc);
 				// 等待检测数据返回
 				while (checkingFlage) {
-					if (this.getBrakRollerData().getJzzzdli() != null && this.getBrakRollerData().getJzyzdli() != null) {
-						deviceBrakRoller.setJZInfoData(brakRollerData);
-						break;
-					}
 					Thread.sleep(300);
 				}
 
 				if (isError) {
 					Thread.sleep(3000);
+				} else {
+					Thread.sleep(2000);
+					deviceBrakRoller.setJZInfoData(brakRollerData);
 				}
 			} else {
 				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_NO);
@@ -235,7 +235,8 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 				this.deviceBrakRoller.sendMessage(ttxj);
 				Thread.sleep(5000);
 			}
-			if (nextVehFlow == null || !nextVehFlow.getJyxm().equals("B0")) {
+			if (nextVehFlow == null || !nextVehFlow.getJyxm().equals("B0")
+					|| (nextVehFlow.getJyxm().equals("B0") && vehFlow.getJyxm().equals("B0"))) {
 				this.deviceBrakRoller.sendMessage(jsqss);
 				Thread.sleep(500);
 			}
@@ -250,7 +251,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	private void cz() throws Exception, InterruptedException, IOException {
+	private void cz() throws InterruptedException, IOException {
 		// 保险一点，先结束称重
 		deviceBrakRoller.sendMessage(jscz);
 		Thread.sleep(500);
@@ -263,7 +264,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		// 等待15秒
 		deviceBrakRoller.getDisplay().sendMessage("开始加载检测", DeviceDisplay.SP);
 		deviceBrakRoller.getDisplay().sendMessage("台体举升中", DeviceDisplay.XP);
-		
+
 		Thread.sleep(15000);
 
 		// 开始称重命令
@@ -287,7 +288,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		// 结束称重
 	}
 
-	private void dw(VehFlow vehFlow, String zw) throws Exception, InterruptedException, IOException {
+	private void dw(VehFlow vehFlow, String zw) throws InterruptedException, IOException {
 		// 发送到位延时时间
 		deviceBrakRoller.sendMessage(dwysqdsj);
 		Thread.sleep(200);
@@ -313,15 +314,15 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			Thread.sleep(500);
 		}
 
-		if (!vehFlow.getJyxm().equals("B0")) {
-			// 举升下降
-			deviceBrakRoller.sendMessage(jsqxj);
-			Thread.sleep(5000);
-		}
+		// if (!vehFlow.getJyxm().equals("B0")) {
+		// 举升下降
+		deviceBrakRoller.sendMessage(jsqxj);
+		Thread.sleep(5000);
+		// }
 	}
 
 	@Override
-	public void device2pc(byte[] endodedData) throws Exception {
+	public void device2pc(byte[] endodedData) throws IOException {
 
 		// logger.info("制动数据：" + CharUtil.byte2HexOfString(endodedData));
 
@@ -335,6 +336,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		deviceBrakRoller.getExecutor().execute(new Runnable() {
 			public void run() {
 				try {
+					Thread.sleep(300);
 					deviceBrakRoller.getDisplay().sendMessage(title, DeviceDisplay.SP);
 					for (int i = 1; i <= ms; i++) {
 						if (isbs) {
@@ -354,7 +356,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 
 	}
 
-	private void setTempByte(byte[] endodedData) throws Exception {
+	private void setTempByte(byte[] endodedData) throws IOException {
 
 		for (byte b : endodedData) {
 			int i = CharUtil.byteToInt(b);
@@ -405,7 +407,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		if (data.length == 4) {
 			Integer type = CharUtil.byteToInt(data[0]);
 			String t1 = CharUtil.bcd2Str(new byte[] { data[1], data[2] });
-			
+
 			if (type == 0xCC) {
 				this.brakRollerData.setJzzlh(Integer.parseInt(t1));
 			} else if (type == 0xDD) {
@@ -413,16 +415,15 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			}
 		}
 	}
-	
-	public static void main(String[] ages){
-		
-		Byte[] aa = new Byte[]{(byte) 0xDD};
-		
-		System.out.println(CharUtil.byteToInt(aa[0])==0xDD);
-	}
-	
 
-	public void process(Byte[] data) throws Exception {
+	public static void main(String[] ages) {
+
+		Byte[] aa = new Byte[] { (byte) 0xDD };
+
+		System.out.println(CharUtil.byteToInt(aa[0]) == 0xDD);
+	}
+
+	public void process(Byte[] data) throws IOException {
 		String ml = CharUtil.byte2HexOfString(data);
 		logger.info("仪表返回命令：" + ml);
 		if (ml.equalsIgnoreCase(qdzdj)) {
@@ -438,6 +439,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 
 		if (ml.equalsIgnoreCase(jczdl)) {
 			ds(scMessage, 7, "制动力检测完成");
+			TakePicture.createNew(this.deviceBrakRoller.getVehCheckLogin(), vehFlow.getJyxm(), 1000);
 			return;
 		}
 		// 制动检测结束
@@ -455,6 +457,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			}
 			// 发送取数数据
 			deviceBrakRoller.sendMessage(qjcjg);
+			checkingFlage = false;
 			logger.info("发送取数据命令");
 		}
 		if (ml.equalsIgnoreCase(zlbs) || ml.equalsIgnoreCase(ylbs) || ml.equalsIgnoreCase(zylbs)) {

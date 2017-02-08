@@ -1,5 +1,6 @@
 package com.xs.veh.network;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,9 @@ public abstract class AbstractDeviceBrakePad {
 	protected boolean zcflag=false;
 	
 
-	public abstract List<BrakRollerData> startCheck(List<VehFlow> vehFlows) throws Exception;
+	public abstract List<BrakRollerData> startCheck(List<VehFlow> vehFlows) throws InterruptedException, IOException ;
 
-	public abstract void device2pc(byte[] data) throws Exception;
+	public abstract void device2pc(byte[] data) throws IOException;
 	
 	public abstract void init(DeviceBrakePad deviceBrakePad);
 	

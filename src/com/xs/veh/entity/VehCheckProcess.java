@@ -7,8 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Scope("prototype")
@@ -33,9 +35,13 @@ public class VehCheckProcess extends BaseEntity {
 	@Column(length=10)
 	private String jyxm;
 	
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	@Column(length=32)
 	private Date kssj;
 	
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	@Column(length=32)
 	private Date jssj;
 	

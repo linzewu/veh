@@ -1,7 +1,10 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TooManyListenersException;
 
 import javax.annotation.Resource;
@@ -9,12 +12,15 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.WorkPointManager;
@@ -28,6 +34,16 @@ import gnu.io.UnsupportedCommOperationException;
 @Service("deviceBrakRoller")
 @Scope("prototype")
 public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
+
+	private VehCheckLogin vehCheckLogin;
+
+	public VehCheckLogin getVehCheckLogin() {
+		return vehCheckLogin;
+	}
+
+	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		this.vehCheckLogin = vehCheckLogin;
+	}
 
 	public DeviceBrakRoller() {
 	}
@@ -53,6 +69,9 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+
+	@Value("${plusLoadFlag}")
+	private boolean plusLoadFlag;
 
 	private DeviceSignal signal;
 
@@ -138,42 +157,49 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 	public void run() {
 	}
 
-	public synchronized void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+	public synchronized void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow, Map<String, Object> otherParam)
+			throws IOException, InterruptedException, SystemException {
+
+		this.vehCheckLogin = vehCheckLogin;
+
 		dbrd.resetCheckStatus();
-		
+
 		VehFlow nextVehFlow = workPointManager.getNextFlow(vehFlow);
 		dbrd.setNextVehFlow(nextVehFlow);
 		Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
-		
-		logger.info("vehCheckLogin.getZs()"+vehCheckLogin.getZs());
-		logger.info("vehCheckLogin.getCllx()"+vehCheckLogin.getCllx());
-		logger.info("intZw"+intZw);
-		
+
+		logger.info("vehCheckLogin.getZs()" + vehCheckLogin.getZs());
+		logger.info("vehCheckLogin.getCllx()" + vehCheckLogin.getCllx());
+		logger.info("intZw" + intZw);
+
 		if (vehCheckLogin.getZs() >= 3
 				&& (vehCheckLogin.getCllx().indexOf("G") == 0 || vehCheckLogin.getCllx().indexOf("B") == 0)
-				&& vehCheckLogin.getZs() != intZw&&intZw!=0) {
+				&& vehCheckLogin.getZs() != intZw && intZw != 0 && plusLoadFlag) {
 			dbrd.isPlusLoad = true;
 		} else if (vehCheckLogin.getCllx().indexOf("H") == 0 && vehCheckLogin.getZs() >= 3 && intZw > 1
-				&& vehCheckLogin.getZs() != intZw&&intZw!=0) {
+				&& vehCheckLogin.getZs() != intZw && intZw != 0 && plusLoadFlag) {
 			dbrd.isPlusLoad = true;
 		} else {
 			dbrd.isPlusLoad = false;
 		}
-		logger.info("dbrd.isPlusLoad:"+dbrd.isPlusLoad);
-		
-		BrakRollerData brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
-		
-		if(brakRollerData==null){
+		logger.info("dbrd.isPlusLoad:" + dbrd.isPlusLoad);
+
+		BrakRollerData brakRollerData = (BrakRollerData) otherParam.get("brakRollerData");
+
+		logger.info("brakRollerData:" + brakRollerData);
+
+		if (brakRollerData == null) {
 			dbrd.setBrakRollerData(new BrakRollerData());
-		}else{
+		} else {
 			dbrd.setBrakRollerData(brakRollerData);
 		}
-		
-		
-		brakRollerData = dbrd.startCheck(vehFlow);
-		//setInfoData(brakRollerData);
 
-		
+		Date kssj = new Date();
+
+		brakRollerData = dbrd.startCheck(vehFlow);
+
+		// setInfoData(brakRollerData);
+
 		// 设置基础数据
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
 
@@ -191,38 +217,63 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setBphlxz(vehCheckLogin);
 			// 空载不平衡率判定
 			brakRollerData.setKzbphlpd();
-			
+
 			brakRollerData.setJzzdl();
 			// 加载制动率限制及判定
 			brakRollerData.setJzzdlxz(vehCheckLogin);
 			brakRollerData.setJzzdlpd();
-			
+
 			// 设置加载不平衡率
 			brakRollerData.setJzbphl(vehCheckLogin);
 			// 加载不平衡率判定
 			brakRollerData.setJzbphlpd();
+			brakRollerData.setZpd();
 		}
-		brakRollerData.setZpd();
-		this.checkDataManager.saveData(brakRollerData);
-		if (nextVehFlow!=null&&nextVehFlow.getJyxm().equals("B0")) {
-			display.sendMessage("请等待", DeviceDisplay.XP);
-		} else {
+
+		if (brakRollerData.getKzxczdl() != null) {
+			DecimalFormat decimalFormat = new DecimalFormat(".0");
+			display.sendMessage(decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
+					+ decimalFormat.format(brakRollerData.getKzbphl()), DeviceDisplay.SP);
+		}
+
+		if (nextVehFlow != null && nextVehFlow.getJyxm().equals("B0")) {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
 				display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+				Thread.sleep(2000);
 			} else {
 				display.sendMessage("检判定结果：X", DeviceDisplay.XP);
+				Thread.sleep(5000);
+				display.sendMessage("等待是否复位,20秒", DeviceDisplay.XP);
+				// 不合格等待15秒
+				Thread.sleep(20000);
 			}
-			Thread.sleep(1500);
+		} else {
+			if (!vehFlow.getJyxm().equals("B0")) {
+				if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
+					display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+				} else {
+					display.sendMessage("检判定结果：X", DeviceDisplay.XP);
+				}
+				Thread.sleep(1500);
+			}
 			display.sendMessage("请向前行驶", DeviceDisplay.XP);
 		}
-		if (nextVehFlow != null && nextVehFlow.getJyxm().equals("B0")) {
-			Thread.sleep(1500);
+
+		if (nextVehFlow != null && nextVehFlow.getJyxm().equals("B0") && !vehFlow.getJyxm().equals("B0")) {
+			display.sendMessage("请等待，检测驻车！", DeviceDisplay.XP);
+			Thread.sleep(1000);
 		} else {
 			while (this.getSignal()) {
 				Thread.sleep(500);
 			}
 			this.display.setDefault();
 		}
+		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+				vehCheckLogin.getJycs(), vehFlow.getJyxm());
+		process.setJssj(new Date());
+		process.setKssj(kssj);
+		this.checkDataManager.updateProcess(process);
+		this.checkDataManager.saveData(brakRollerData);
 	}
 
 	@Override
@@ -272,7 +323,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setRigthDataStr(rigthDataStr.toString());
 		}
 	}
-	
+
 	public void setJZInfoData(BrakRollerData brakRollerData) {
 		if (brakRollerData.getLeftData() != null && !brakRollerData.getLeftData().isEmpty()) {
 			StringBuffer leftDataStr = new StringBuffer();
@@ -298,11 +349,10 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		}
 	}
 
-
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows, Map<String, Object> otherParam) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

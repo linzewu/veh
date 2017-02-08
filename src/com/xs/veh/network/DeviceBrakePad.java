@@ -1,7 +1,9 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TooManyListenersException;
 
 import javax.annotation.Resource;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.BrakRollerData;
@@ -35,9 +38,21 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 	private AbstractDeviceBrakePad dbp;
 
 	private DeviceDisplay display;
+	
+	private VehCheckLogin vehCheckLogin;
 
 	@Autowired
 	private ServletContext servletContext;
+	
+	
+
+	public VehCheckLogin getVehCheckLogin() {
+		return vehCheckLogin;
+	}
+
+	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		this.vehCheckLogin = vehCheckLogin;
+	}
 
 	public DeviceDisplay getDisplay() {
 		return display;
@@ -105,17 +120,20 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows,Map<String,Object> otherParam) throws InterruptedException, IOException  {
+		
+		this.vehCheckLogin=vehCheckLogin;
+		
+		Date startDate=new Date();
 		
 		List<BrakRollerData> datas = dbp.startCheck(vehFlows);
 		
 		boolean sfhg=true;
-
 		for (BrakRollerData brakRollerData : datas) {
 			
 			// 设置基础数据
@@ -143,10 +161,6 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				brakRollerData.setJzbphlpd();
 			}
 			brakRollerData.setZpd();
-			this.checkDataManager.saveData(brakRollerData);
-			
-			brakRollerData.getZpd();
-			
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_BHG){
 				sfhg=false;
 			}
@@ -159,25 +173,31 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 		
 		Thread.sleep(1500);
 		display.sendMessage("请向前行驶", DeviceDisplay.XP);
-		
 		Thread.sleep(2000);
 		this.display.setDefault();
-
+		
+		for (BrakRollerData brakRollerData : datas){
+			this.checkDataManager.saveData(brakRollerData);
+		}
+		for(VehFlow vehFlow:vehFlows){
+			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
+					vehFlow.getJyxm());
+			process.setKssj(startDate);
+			process.setJssj(new Date());
+			this.checkDataManager.updateProcess(process);
+		}
 	}
 
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		// 初始化制动设备
 		dbp = (AbstractDeviceBrakePad) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
-
-		
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		// 加载挂载设备
 		if (temp != null) {
 			Integer deviceid = Integer.parseInt(temp);
 			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
 		}
-		
 		dbp.init(this);
 		
 	}

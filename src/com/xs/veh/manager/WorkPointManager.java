@@ -2,8 +2,9 @@ package com.xs.veh.manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -20,16 +21,17 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.xs.common.Message;
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.Flow;
 import com.xs.veh.entity.VehCheckLogin;
-import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.entity.WorkPoint;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.ICheckDevice;
 import com.xs.veh.network.WorkPointThread;
+import com.xs.veh.network.data.BrakRollerData;
 
 @Service("workPointManager")
 public class WorkPointManager {
@@ -85,7 +87,7 @@ public class WorkPointManager {
 	}
 
 	public Message startWorkpoint(Integer id) {
-		WorkPoint workPoint = this.hibernateTemplate.load(WorkPoint.class, id);
+		WorkPoint workPoint = this.hibernateTemplate.get(WorkPoint.class, id);
 		Message message = new Message();
 
 		WorkPointThread workPointThread = (WorkPointThread) servletContext.getAttribute(workPoint.getThreadKey());
@@ -140,7 +142,6 @@ public class WorkPointManager {
 				return message;
 			}
 		}
-
 		message.setMessage("工位停止失败！");
 		return message;
 
@@ -179,18 +180,18 @@ public class WorkPointManager {
 	 * @param vehCheckLogin
 	 * @param checkQueue
 	 * @param lightVehFlow
+	 * @throws SystemException
+	 * @throws IOException
+	 * @throws InterruptedException
 	 * @throws Exception
 	 */
 	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue,
-			List<VehFlow> vehFlows) throws Exception {
-		try {
-			// VehFlow vehFlow = vehFlows.get(vehFlows.size() - 1);
-			checkDevice.startCheck(vehCheckLogin, vehFlows);
-			checkAfter(vehCheckLogin, vehFlows);
-		} catch (Exception e) {
-			logger.error("检测过程异常", e);
-			throw e;
-		}
+			List<VehFlow> vehFlows) throws InterruptedException, IOException, SystemException {
+		// VehFlow vehFlow = vehFlows.get(vehFlows.size() - 1);
+		checkDevice.startCheck(vehCheckLogin, vehFlows, null);
+		checkAfter(vehCheckLogin, vehFlows);
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
 	}
 
 	/**
@@ -209,6 +210,7 @@ public class WorkPointManager {
 		if (checkQueue == null) {
 			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
 			checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
+			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 		}
 	}
 
@@ -239,7 +241,7 @@ public class WorkPointManager {
 		if (checkQueue == null) {
 			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
 			checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
-			
+			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 		}
 	}
 
@@ -249,103 +251,65 @@ public class WorkPointManager {
 	 * @param vehCheckLogin
 	 * @param checkQueue
 	 * @param vehFlow
+	 * @throws SystemException
+	 * @throws InterruptedException
+	 * @throws IOException
 	 * @throws Exception
 	 */
-	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue, VehFlow vehFlow)
-			throws Exception {
-		try {
-			logger.info(vehFlow.getJyxm() + "项目开始检测");
-			checkDevice.startCheck(vehCheckLogin, vehFlow);
-			// 检测完成，删除队列
-			logger.info("检测结束");
-			checkAfter(vehCheckLogin, checkQueue, vehFlow);
-		} catch (Exception e) {
-			logger.error("检测过程异常", e);
-			throw e;
-		}
+	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue, VehFlow vehFlow,
+			Map<String, Object> param) throws IOException, InterruptedException, SystemException {
+		logger.info(vehFlow.getJyxm() + "项目开始检测");
+		checkDevice.startCheck(vehCheckLogin, vehFlow, param);
+		// 检测完成，删除队列
+		logger.info("检测结束");
+		checkAfter(vehCheckLogin, checkQueue, vehFlow);
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
 	}
 
 	/**
 	 * 检测
 	 * 
 	 * @param workPoint
+	 * @throws InterruptedException
+	 * @throws IOException
+	 * @throws SystemException
 	 * @throws Exception
-	 */
-	public void check(WorkPoint workPoint) throws Exception {
-		CheckQueue checkQueue = getQueue(workPoint);
+	 *//*
+		 * public void check(WorkPoint workPoint) throws IOException,
+		 * InterruptedException, SystemException { CheckQueue checkQueue =
+		 * getQueue(workPoint);
+		 * 
+		 * if (checkQueue != null) { //setWorkPointState(workPoint, checkQueue);
+		 * List<VehFlow> vehFlows = getVehFlow(checkQueue); // 灯光检测项目集合
+		 * List<VehFlow> cc = new ArrayList<VehFlow>();
+		 * 
+		 * VehCheckLogin vehCheckLogin = getVehCheckLogin(checkQueue);
+		 * 
+		 * int dgcount = getDGCount(vehCheckLogin.getJyxm());
+		 * 
+		 * logger.info("vehFlows:" + vehFlows.size());
+		 * 
+		 * for (VehFlow vehFlow : vehFlows) {
+		 * 
+		 * if (vehFlow.getSbid() == -1) { // 底盘检测 checkDP(vehCheckLogin,
+		 * checkQueue, vehFlow); } else { Device device =
+		 * this.hibernateTemplate.load(Device.class, vehFlow.getSbid());
+		 * ICheckDevice checkDevice = (ICheckDevice)
+		 * servletContext.getAttribute(device.getThredKey());
+		 * 
+		 * if (device.getType() == Device.DGJCSB) { cc.add(vehFlow); if
+		 * (cc.size() == dgcount) { check(checkDevice, vehCheckLogin,
+		 * checkQueue, cc);
+		 * 
+		 * } } else if (device.getType() == Device.ZDPBSB) { // 平板检测
+		 * cc.add(vehFlow); if (cc.size() == vehFlows.size()) {
+		 * logger.info("开始检测平板"); check(checkDevice, vehCheckLogin, checkQueue,
+		 * cc); } } else { // 普通单项检测 check(checkDevice, vehCheckLogin,
+		 * checkQueue, vehFlow); } } } } }
+		 */
 
-		if (checkQueue != null) {
-			setWorkPointState(workPoint, checkQueue);
-			List<VehFlow> vehFlows = getVehFlow(checkQueue);
-			// 灯光检测项目集合
-			List<VehFlow> cc = new ArrayList<VehFlow>();
-
-			VehCheckLogin vehCheckLogin = getVehCheckLogin(checkQueue);
-
-			int dgcount = getDGCount(vehCheckLogin.getJyxm());
-
-			logger.info("vehFlows:" + vehFlows.size());
-
-			for (VehFlow vehFlow : vehFlows) {
-
-				VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehFlow.getJylsh(), vehFlow.getJycs(),
-						vehFlow.getJyxm());
-				
-				if (vehFlow.getSbid() == -1) {
-					// 底盘检测
-					checkDP(vehCheckLogin, checkQueue, vehFlow);
-				} else {
-					Device device = this.hibernateTemplate.load(Device.class, vehFlow.getSbid());
-					ICheckDevice checkDevice = (ICheckDevice) servletContext.getAttribute(device.getThredKey());
-					
-					if(device.getType()!=Device.CZJCSB){
-						if(process.getKssj()==null){
-							process.setKssj(new Date());
-							this.checkDataManager.updateProcess(process);
-						}
-					}
-					
-					
-					if (device.getType() == Device.DGJCSB) {
-						cc.add(vehFlow);
-						if (cc.size() == dgcount) {
-							check(checkDevice, vehCheckLogin, checkQueue, cc);
-							
-							for(VehFlow dg:  cc){
-								VehCheckProcess dgProcess = this.checkDataManager.getVehCheckProces(dg.getJylsh(), dg.getJycs(),
-										dg.getJyxm());
-								dgProcess.setJssj(new Date());
-								this.checkDataManager.updateProcess(dgProcess);
-								
-							}
-							
-						}
-					} else if (device.getType() == Device.ZDPBSB) {
-						// 平板检测
-						cc.add(vehFlow);
-						if (cc.size() == vehFlows.size()) {
-							logger.info("开始检测平板");
-							check(checkDevice, vehCheckLogin, checkQueue, cc);
-							for(VehFlow dg:  cc){
-								VehCheckProcess dgProcess = this.checkDataManager.getVehCheckProces(dg.getJylsh(), dg.getJycs(),
-										dg.getJyxm());
-								dgProcess.setJssj(new Date());
-								this.checkDataManager.updateProcess(dgProcess);
-								
-							}
-						}
-					} else {
-						// 普通单项检测
-						check(checkDevice, vehCheckLogin, checkQueue, vehFlow);
-						process.setJssj(new Date());
-						this.checkEventManger.update(process);
-					}
-				}
-			}
-		}
-	}
-
-	private void checkDP(VehCheckLogin vehCheckLogin, CheckQueue checkQueue, VehFlow vehFlow)
+	public void checkDP(VehCheckLogin vehCheckLogin, CheckQueue checkQueue, VehFlow vehFlow)
 			throws IOException, InterruptedException {
 
 		Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
@@ -368,6 +332,7 @@ public class WorkPointManager {
 				break;
 			}
 			this.hibernateTemplate.evict(newVC);
+			Thread.sleep(500);
 		}
 	}
 

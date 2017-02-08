@@ -1,6 +1,9 @@
 package com.xs.veh.network;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.SpeedData;
@@ -29,6 +33,8 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 	
 	private Integer s1;
 	
+	private VehCheckLogin vehCheckLogin;
+	
 	
 	
 	@Autowired
@@ -37,6 +43,14 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
 	
+
+	public VehCheckLogin getVehCheckLogin() {
+		return vehCheckLogin;
+	}
+
+	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		this.vehCheckLogin = vehCheckLogin;
+	}
 
 	public Integer getS1() {
 		return s1;
@@ -116,9 +130,18 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 		sd.init(this);
 	}
 
-	public void startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws Exception {
+	public void startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow,Map<String,Object> otherParam) throws IOException, InterruptedException {
+		
+		this.vehCheckLogin=vehCheckLogin;
+		
+		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
+				vehFlow.getJyxm());
+		process.setKssj(new Date());
 		
 		SpeedData speedData = sd.startCheck(vehCheckLogin,vehFlow);
+		
+		process.setJssj(new Date());
+		this.checkDataManager.updateProcess(process);
 		
 		speedData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, speedData),
 				vehFlow.getJyxm());
@@ -152,8 +175,7 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows) throws Exception {
-		// TODO Auto-generated method stub
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows,Map<String,Object> otherParam) {
 		
 	}
 

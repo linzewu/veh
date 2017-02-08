@@ -1,5 +1,7 @@
 package com.xs.veh.network.driver;
 
+import java.io.IOException;
+
 import com.xs.common.CharUtil;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
@@ -7,6 +9,7 @@ import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.AbstractDeviceSpeed;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceSpeed;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.SimpleRead.ProtocolType;
 import com.xs.veh.network.data.SpeedData;
 
@@ -49,7 +52,7 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 	}
 
 	@Override
-	public SpeedData startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws Exception {
+	public SpeedData startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow) throws IOException, InterruptedException {
 		// 开始新的一次检测
 		createNew();
 		// 显示屏显示信息
@@ -95,7 +98,7 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 	}
 
 	@Override
-	public void device2pc(byte[] endodedData) throws Exception {
+	public void device2pc(byte[] endodedData) throws IOException {
 		
 		
 		System.out.println("数据：" + CharUtil.byte2HexOfString(endodedData));
@@ -121,6 +124,7 @@ public class DeviceSpeedDriverOfJxsd extends AbstractDeviceSpeed {
 		if (type == ProtocolType.DATA &&checkingFlag) {
 			setData(endodedData, speedData);
 			checkingFlag=false;
+			TakePicture.createNew(this.deviceSpeed.getVehCheckLogin(),"S1",1000);
 		}
 		// 响应通知的方法
 		if (type == ProtocolType.NOTICE) {
