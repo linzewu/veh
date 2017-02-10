@@ -205,6 +205,12 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		brakRollerData.setZpd();
 		this.checkDataManager.saveData(brakRollerData);
 		if (nextVehFlow!=null&&nextVehFlow.getJyxm().equals("B0")) {
+			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
+				display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+			} else {
+				display.sendMessage("检判定结果：X", DeviceDisplay.XP);
+			}
+			Thread.sleep(2000);
 			display.sendMessage("请等待", DeviceDisplay.XP);
 		} else {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {

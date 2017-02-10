@@ -701,6 +701,11 @@ public class BrakRollerData extends BaseDeviceData {
 			this.kzzdlxz = 20;
 			return;
 		}
+		
+		if (zw > 1 && (cllx.indexOf("K") == 0 && zbzl >= 3500)) {
+			this.kzzdlxz = 40;
+			return;
+		}
 
 		// 普通摩托车
 		if (zw == 1 && (cllx.indexOf("M11") == 0 || cllx.indexOf("M21") == 0)) {
