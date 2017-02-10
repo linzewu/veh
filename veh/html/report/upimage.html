@@ -253,6 +253,10 @@ function init(){
 	$("#img_hpzl").text(reportData.hpzl);
 }
 
+function imageUpload(){
+	
+}
+
 </script>
 <style>
 	.showItem{
@@ -300,6 +304,23 @@ function init(){
     	</div>
     	<div class="upimage-cam-top">
     		<label>分辨率：</label><input class="easyui-combobox" id="upimageResolution" data-options="onChange:resolutionChange,editable:false" >
+    	</div>
+    	<div class="upimage-cam-top">
+    		<form action="/veh/report/" method="post" enctype="multipart/form-data" id="imgfileForm">
+    		<label>本地图片：</label><input class="easyui-filebox" name="imgFile" style="width: 120px;" data-options="accept:'image/*',buttonText:'请选择...'">
+    		<input name="jylsh">
+    		<input name="jyjgbh">
+    		<input name="hphm">
+    		<input name="hpzl">
+    		<input name="clsbdh">
+    		<input name="jycs">
+    		<input name="zpzl">
+    		<input name="jcxdh">
+    		<a href="#" class="easyui-linkbutton c6" data-options="onClick:imageUpload">上传</a>
+    		</form>
+    	</div>
+    	<div class="upimage-cam-top">
+    		
     	</div>
     	<div class="upimage-cam-top">
     		<table>

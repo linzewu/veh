@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
+
 import com.xs.veh.entity.VehCheckLogin;
 
 public class TakePicture implements Runnable {
+	
+	private static Logger logger = Logger.getLogger(TakePicture.class);
 	
 	private Integer yc;
 	
@@ -17,7 +21,6 @@ public class TakePicture implements Runnable {
 		this.yc = yc;
 	}
 	public static void createNew(VehCheckLogin vehCheckLogin, String jyxm) {
-
 		TakePicture tp = new TakePicture(vehCheckLogin.getJylsh(), vehCheckLogin.getJcxdh(), vehCheckLogin.getJycs(),
 				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(), jyxm, 0);
 		tp.setYc(0);
@@ -30,6 +33,7 @@ public class TakePicture implements Runnable {
 		tp.setYc(yc);
 		Thread t=new Thread(tp);
 		t.start();
+		
 	}
 	
 	public static void createNew(VehCheckLogin vehCheckLogin, String jyxm,Integer yc,String zpzl) {
@@ -46,11 +50,13 @@ public class TakePicture implements Runnable {
 	private TakePicture(String jylsh, String jcxdh, Integer jycs, String hphm, String hpzl, String clsbdh, String jyxm,
 			Integer jyzt) {
 		ml = jylsh + "," + jcxdh + "," + jycs + "," + hphm + ","+hpzl+"," + clsbdh + "," + jyxm + "," + jyzt + ",by1,by2";
+		logger.info("拍照命令="+ml);
 	}
 	
 	private TakePicture(String jylsh, String jcxdh, Integer jycs, String hphm, String hpzl, String clsbdh, String jyxm,
 			Integer jyzt,String zpzl) {
 		ml = jylsh + "," + jcxdh + "," + jycs + "," + hphm + ","+hpzl+"," + clsbdh + "," + jyxm + "," + jyzt + ","+zpzl+",by2";
+		logger.info("拍照命令="+ml);
 	}
 
 	@Override

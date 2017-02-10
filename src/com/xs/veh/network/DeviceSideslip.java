@@ -173,8 +173,6 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		sideslipData.setChpd(vehCheckLogin);
 		sideslipData.setZpd();
 		sideslipData.setStrData();
-		
-		this.checkDataManager.saveData(sideslipData);
 		Thread.sleep(2000);
 		
 		String jg="-";
@@ -189,6 +187,7 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		this.display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
 		Thread.sleep(1500);
 		display.setDefault();
+		this.checkDataManager.saveData(sideslipData);
 	}
 
 	@Override

@@ -152,8 +152,6 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 		speedData.setSdpd();
 		speedData.setZpd();
 		// 保存检测数据 
-		this.checkDataManager.saveData(speedData);
-		
 		this.display.sendMessage("速度：" + CheckDataManager.MathRound(speedData.getSpeed()/1f), DeviceDisplay.XP);
 		Thread.sleep(1500);
 		
@@ -171,6 +169,8 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 			flag = this.signal.getSignal(s1);
 			Thread.sleep(200);
 		}
+		
+		this.checkDataManager.saveData(speedData);
 		display.setDefault();
 	}
 

@@ -22,7 +22,7 @@ public abstract class AbstractDeviceBrakePad {
 
 	public abstract List<BrakRollerData> startCheck(List<VehFlow> vehFlows) throws InterruptedException, IOException ;
 
-	public abstract void device2pc(byte[] data) throws IOException;
+	public abstract void device2pc(byte[] data) throws IOException,InterruptedException;
 	
 	public abstract void init(DeviceBrakePad deviceBrakePad);
 	

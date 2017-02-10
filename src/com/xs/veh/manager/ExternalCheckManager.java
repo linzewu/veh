@@ -9,7 +9,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -299,10 +302,13 @@ public class ExternalCheckManager {
 			Thread.sleep(1000);
 			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "F1",
 					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-			
-			if((vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_JYJS)&&
-					(vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_JYJS)&&
-					(vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_JYJS)){
+
+			if ((vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_BJC
+					|| vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_JYJS)) {
 				checkDataManager.createExternalCheckJudge(vehCheckLogin);
 			}
 
@@ -347,16 +353,17 @@ public class ExternalCheckManager {
 			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "DC",
 					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
 
-			
-			
-			if((vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_JYJS)&&
-					(vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_JYJS)&&
-					(vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_JYJS)){
+			if ((vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_BJC
+					|| vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_JYJS)) {
 				checkDataManager.createExternalCheckJudge(vehCheckLogin);
 			}
-			
+
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
-			
+
 			message.setMessage("上传成功");
 			message.setState(Message.STATE_SUCCESS);
 		} else {
@@ -394,13 +401,16 @@ public class ExternalCheckManager {
 			Thread.sleep(1000);
 			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1",
 					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-			
-			if((vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdpzt()==VehCheckLogin.ZT_JYJS)&&
-					(vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehdtdpzt()==VehCheckLogin.ZT_JYJS)&&
-					(vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_BJC||vehCheckLogin.getVehwjzt()==VehCheckLogin.ZT_JYJS)){
+
+			if ((vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_BJC
+					|| vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_JYJS)) {
 				checkDataManager.createExternalCheckJudge(vehCheckLogin);
 			}
-			
+
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 			message.setMessage("上传成功");
@@ -438,7 +448,7 @@ public class ExternalCheckManager {
 		String sql = "from VehCheckLogin where hphm like ? and dlsj>=?";
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.MONTH, -3);
-		return (List<VehCheckLogin>) this.hibernateTemplate.find(sql, "%"+hphm+"%",c.getTime());
+		return (List<VehCheckLogin>) this.hibernateTemplate.find(sql, "%" + hphm + "%", c.getTime());
 	}
 
 	public List<VehCheckLogin> getExternalC1(String hphm) {
@@ -484,7 +494,16 @@ public class ExternalCheckManager {
 
 	}
 
-	public Message savePhoto(CheckPhoto checkPhoto) {
+	public Message savePhoto(final CheckPhoto checkPhoto) {
+
+		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				return session.createQuery("delete CheckPhoto where jylsh=:jylsh and zpzl=:zpzl")
+						.setParameter("jylsh", checkPhoto.getJylsh()).setParameter("zpzl", checkPhoto.getZpzl())
+						.executeUpdate();
+			}
+		});
 
 		this.hibernateTemplate.save(checkPhoto);
 		checkEventManger.createEvent(checkPhoto.getJylsh(), checkPhoto.getJycs(), "18C63", checkPhoto.getJyxm(),
@@ -499,7 +518,7 @@ public class ExternalCheckManager {
 	}
 
 	public List<VehCheckLogin> getExternalR(String hphm) {
-		
+
 		String sql = "from VehCheckLogin where  vehjczt!=? and (vehlszt=? or vehlszt=?) ";
 		List values = new ArrayList();
 		values.add(VehCheckLogin.JCZT_TB);
@@ -518,13 +537,14 @@ public class ExternalCheckManager {
 		return (List<VehCheckLogin>) this.hibernateTemplate.find(sql, values.toArray());
 
 	}
-	
+
 	public List<VehCheckProcess> getRoadProcess(String jylsh) {
-		
-		List<VehCheckProcess> datas = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jylsh=? and jyxm in('R1','R2','R3')", jylsh);
-		
+
+		List<VehCheckProcess> datas = (List<VehCheckProcess>) this.hibernateTemplate
+				.find("from VehCheckProcess where jylsh=? and jyxm in('R1','R2','R3')", jylsh);
+
 		return datas;
-		
+
 	}
 
 }

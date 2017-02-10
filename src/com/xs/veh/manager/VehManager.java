@@ -731,7 +731,7 @@ public class VehManager {
 				"from SpeedData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
 				BaseDeviceData.PDJG_BHG);
 		if (speedDatas != null && !speedDatas.isEmpty()) {
-			fjjyxm += "S1";
+			fjjyxm += "S1,";
 			speedDatas.get(0).setSjzt(SpeedData.SJZT_FJ);
 			this.hibernateTemplate.save(speedDatas.get(0));
 		}
@@ -741,7 +741,7 @@ public class VehManager {
 				"from SideslipData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
 				BaseDeviceData.PDJG_BHG);
 		if (sideslipDatas != null && !sideslipDatas.isEmpty()) {
-			fjjyxm += "A1";
+			fjjyxm += "A1,";
 			sideslipDatas.get(0).setSjzt(SpeedData.SJZT_FJ);
 			this.hibernateTemplate.save(sideslipDatas.get(0));
 		}

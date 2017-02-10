@@ -197,6 +197,14 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		Date kssj = new Date();
 
 		brakRollerData = dbrd.startCheck(vehFlow);
+		
+		//如果检测结果制动力为空 则检测异常
+		if(brakRollerData.getZzdl()==null||brakRollerData.getYzdl()==null){
+			display.sendMessage("异常，5秒后重检", DeviceDisplay.SP);
+			display.sendMessage("获取不到制动力", DeviceDisplay.XP);
+			Thread.sleep(5000);
+			throw new SystemException("获取不到制动力");
+		}
 
 		// setInfoData(brakRollerData);
 

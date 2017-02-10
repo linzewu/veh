@@ -163,7 +163,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 	}
 
 	@Override
-	public void device2pc(byte[] data) throws IOException {
+	public void device2pc(byte[] data) throws IOException, InterruptedException {
 //		logger.info("数据长度：" + data.length + "  currntIndex : " + currntIndex);
 
 		if (currentComm.equals(dqqzsj) || currentComm.equals(dqhzsj)) {
@@ -319,7 +319,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 
 	}
 
-	private void processData(byte[] data) throws IOException  {
+	private void processData(byte[] data) throws IOException, InterruptedException  {
 		int length = data.length;
 		if (length == 4) {
 			logger.info("返回数据：" + CharUtil.byte2HexOfString(data));
@@ -331,6 +331,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				case 0x32:
 					this.getDeviceBrakePad().getDisplay().sendMessage("请踩刹车", DeviceDisplay.XP);
 					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B1");
+					Thread.sleep(200);
 					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B2");
 					break;
 				case 0x35:
