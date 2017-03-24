@@ -186,9 +186,9 @@ public class WorkPointManager {
 	 * @throws Exception
 	 */
 	public void check(ICheckDevice checkDevice, VehCheckLogin vehCheckLogin, CheckQueue checkQueue,
-			List<VehFlow> vehFlows) throws InterruptedException, IOException, SystemException {
+			List<VehFlow> vehFlows,Map<String, Object> otherParam) throws InterruptedException, IOException, SystemException {
 		// VehFlow vehFlow = vehFlows.get(vehFlows.size() - 1);
-		checkDevice.startCheck(vehCheckLogin, vehFlows, null);
+		checkDevice.startCheck(vehCheckLogin, vehFlows, otherParam);
 		checkAfter(vehCheckLogin, vehFlows);
 		this.hibernateTemplate.flush();
 		this.hibernateTemplate.clear();

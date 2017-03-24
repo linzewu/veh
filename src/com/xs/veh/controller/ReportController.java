@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,7 @@ import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.Insurance;
 import com.xs.veh.entity.RoadCheck;
+import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.RoadCheackManager;
 
@@ -63,7 +65,16 @@ public class ReportController {
 
 	@RequestMapping(value = "test")
 	public void saveTT(@RequestParam String jylsh) {
-		checkDataManager.updateBrakRollerDataByJylsh(jylsh);
+		
+		VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(jylsh);
+		checkDataManager.createDeviceCheckJudeg(vehCheckLogin);
+		System.out.println("更新完成");
+	}
+	
+	@RequestMapping(value = "test2")
+	public void saveET(@RequestParam String jylsh) {
+		VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(jylsh);
+		checkDataManager.createExternalCheckJudge(vehCheckLogin);
 		System.out.println("更新完成");
 	}
 
@@ -83,7 +94,6 @@ public class ReportController {
 		if(checkPhoto.getZpzl().indexOf("02")==0){
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zp);
 			BufferedImage bufferedImage = ImageIO.read(byteArrayInputStream);
-			System.out.println("图片旋转");
 			bufferedImage =  ImageChange.Rotate(bufferedImage, 90);
             // 创建字节输入流
 			ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
@@ -103,6 +113,35 @@ public class ReportController {
 		resulMap.put("img", imageData);
 
 		return resulMap;
+	}
+	
+	@RequestMapping(value = "uploadFileImag")
+	public @ResponseBody String uploadFileImag(CheckPhoto checkPhoto, MultipartFile imgFile) throws IOException {
+		byte[] zp = imgFile.getBytes();
+		if(checkPhoto.getZpzl().indexOf("02")==0){
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zp);
+			BufferedImage bufferedImage = ImageIO.read(byteArrayInputStream);
+			bufferedImage =  ImageChange.Rotate(bufferedImage, 90);
+            // 创建字节输入流
+			ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
+			ImageIO.write(bufferedImage, "JPEG", byteArrayOutputStream);
+			zp =byteArrayOutputStream.toByteArray();
+		}
+		
+		checkPhoto.setZp(zp);
+		checkPhoto.setPssj(new Date());
+		this.checkDataManager.saveCheckPhoto(checkPhoto);
+		
+		BASE64Encoder encoder = new BASE64Encoder();
+		String imageData = encoder.encode(checkPhoto.getZp());
+		IamgeBase64Cash.getInstance().cashBase64Iamge(imageData, checkPhoto.getId().toString());
+		Map resulMap = ResultHandler.toSuccessJSON("保存成功！");
+		resulMap.put("id", checkPhoto.getId());
+		resulMap.put("img", imageData);
+		
+		ObjectMapper om=new ObjectMapper();
+
+		return om.writeValueAsString(resulMap);
 	}
 
 	@RequestMapping(value = "getCheckPhoto")
@@ -170,7 +209,7 @@ public class ReportController {
 		map.put("data", roadCheck);
 		
 		 ObjectMapper objectMapper = new ObjectMapper();
-	        String jsonString=objectMapper.writeValueAsString(map);
+	     String jsonString=objectMapper.writeValueAsString(map);
 		
 		return jsonString;
 	}

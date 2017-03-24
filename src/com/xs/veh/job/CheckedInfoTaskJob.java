@@ -1,7 +1,6 @@
 package com.xs.veh.job;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
@@ -13,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
@@ -20,19 +20,24 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
+import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
+import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.network.data.Outline;
 import com.xs.veh.util.BeanXMLUtil;
 import com.xs.veh.util.RCAConstant;
 
@@ -44,33 +49,37 @@ public class CheckedInfoTaskJob {
 	private static Logger logger = Logger.getLogger(CheckedInfoTaskJob.class);
 
 	private TmriJaxRpcOutAccessServiceStub tro = null;
-	
+
 	@Value("${jkxlh}")
 	private String jkxlh;
 
-
-/*	@Resource(name = "imageDBManger")
-	private ImageDBManger imageDBManger;*/
+	/*
+	 * @Resource(name = "imageDBManger") private ImageDBManger imageDBManger;
+	 */
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger eventManger;
-	
+
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
-	
+
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
-	
-	
-	
+
 	@Value("${isNetwork}")
 	private boolean isNetwork;
-	
+
 	@Value("${sqrqz}")
 	private String pzrxm;
-	
+
 	@Value("${jyjgbh}")
 	private String jyjgbh;
+
+	@Autowired
+	private ServletContext servletContext;
+
+	@Resource(name = "baseParamsManager")
+	private BaseParamsManager baseParamsManager;
 
 	public CheckedInfoTaskJob() {
 		try {
@@ -86,8 +95,26 @@ public class CheckedInfoTaskJob {
 	public void intJob() {
 	}
 
-	private Document write(TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo,
-			Object o) throws Exception {
+	private Document queryws(String jkid, Map param)
+			throws RemoteException, UnsupportedEncodingException, DocumentException {
+
+		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+		param.put("jyjgbh", jyjgbh);
+
+		qoo.setJkid(jkid);
+		qoo.setXtlb(RCAConstant.XTLB);
+		qoo.setJkxlh(jkxlh);
+		Document xml = BeanXMLUtil.map2xml(param, "QueryCondition");
+		qoo.setUTF8XmlDoc(xml.asXML());
+		QueryObjectOutResponse qoor = tro.queryObjectOut(qoo);
+
+		String response = qoor.getQueryObjectOutReturn();
+		response = URLDecoder.decode(response, "utf-8");
+		Document document = DocumentHelper.parseText(response);
+		return document;
+	}
+
+	private Document write(TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo, Object o) throws Exception {
 		try {
 			Document xml = BeanXMLUtil.bean2xml(o, "vehispara");
 			logger.debug("bo:" + xml.asXML());
@@ -103,10 +130,8 @@ public class CheckedInfoTaskJob {
 
 			CheckLog sbrz = new CheckLog();
 			sbrz.setSbsj(new Date());
-			sbrz.setJkbid(Integer.parseInt(xml.getRootElement()
-					.element("vehispara").element("id").getText()));
-			sbrz.setJylsh(xml.getRootElement().element("vehispara")
-					.element("jylsh").getText());
+			sbrz.setJkbid(Integer.parseInt(xml.getRootElement().element("vehispara").element("id").getText()));
+			sbrz.setJylsh(xml.getRootElement().element("vehispara").element("jylsh").getText());
 			sbrz.setJkbmc("JYDLXX");
 			sbrz.setMessage(message.getText());
 			sbrz.setCode(code.getText());
@@ -134,11 +159,11 @@ public class CheckedInfoTaskJob {
 		try {
 			TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutAccessServiceStub.WriteObjectOut();
 			String jkid = event.getEvent();
-			if(jkid.equals("18C55_R")){
-				jkid="18C55";
+			if (jkid.equals("18C55_R")) {
+				jkid = "18C55";
 			}
-			if(jkid.equals("18C58_R")){
-				jkid="18C58";
+			if (jkid.equals("18C58_R")) {
+				jkid = "18C58";
 			}
 			woo.setJkid(jkid);
 			woo.setXtlb(RCAConstant.XTLB);
@@ -188,68 +213,120 @@ public class CheckedInfoTaskJob {
 		}
 	}
 
-	@Scheduled(fixedDelay = 2000)
-	public void scanEventJob() throws Exception {
-		
-		if(!isNetwork){
-			return ;
+	public boolean getUploadSwitch() {
+
+		String uploadSwitch = (String) servletContext.getAttribute("uploadSwitch");
+		if (uploadSwitch != null && uploadSwitch.equals("1")) {
+			return false;
 		}
-		
+		return true;
+	}
+
+	@Scheduled(fixedDelay = 5000)
+	private void vehOutlineReport() {
+		List<Outline> outlines = this.vehManager.getOutlineOfReportFlag();
+		if(outlines!=null&&!outlines.isEmpty()){
+			for(Outline outline : outlines){
+				outline.setReportFlag(Outline.FLAG_Y);
+				vehManager.updateVehCheckLoginState(outline.getJylsh());
+				vehManager.updateOutline(outline);
+			}
+		}
+	}
+
+	@Scheduled(fixedDelay = 1000 * 3600 * 12)
+	public void synTime() throws RemoteException, UnsupportedEncodingException, DocumentException {
+
+		logger.info("开始同步监管系统时间！");
+		Map<String, String> data = new HashMap<String, String>();
+		Document doc = this.queryws("18C50", data);
+		Element body = doc.getRootElement().element("body");
+		if (body != null) {
+			Element para = body.element("vehispara");
+			if (para != null) {
+				String sj = para.element("sj").getText();
+				logger.info("监管平台时间" + sj);
+				String[] sjs = sj.split(" ");
+				String osName = System.getProperty("os.name");
+				String cmd = "";
+				try {
+					if (osName.matches("^(?i)Windows.*$")) {// Window 系统
+						// 格式 HH:mm:ss
+						cmd = "  cmd /c time " + sjs[1].substring(0, 8);
+
+						logger.info("设置时间：" + cmd);
+
+						Runtime.getRuntime().exec(cmd);
+						// 格式：yyyy-MM-dd
+						cmd = " cmd /c date " + sjs[0];
+
+						logger.info("设置日期：" + cmd);
+						Runtime.getRuntime().exec(cmd);
+
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+	@Scheduled(fixedDelay = 1000)
+	public void scanEventJob() throws Exception {
+		if (!isNetwork || !getUploadSwitch()) {
+			return;
+		}
 		List<CheckEvents> list = (List<CheckEvents>) eventManger.getEvents();
 		for (CheckEvents e : list) {
 			Thread.sleep(1000);
-			try{
+			try {
 				String viewName = "V" + e.getEvent();
-				
+
 				String checkItem = e.getJyxm();
-				
+
 				if (RCAConstant.V18C63.equals(e.getEvent())) {
 					uploadImage(e);
 					continue;
 				}
-				if ((RCAConstant.V18C53.equals(e.getEvent())
-						|| RCAConstant.V18C80.equals(e.getEvent())
-						|| RCAConstant.V18C81.equals(e.getEvent()) || RCAConstant.V18C64
-							.equals(e.getEvent()))
-						&& checkItem != null
-						&& !"".equals(checkItem)) {
-					
+				if ((RCAConstant.V18C53.equals(e.getEvent()) || RCAConstant.V18C80.equals(e.getEvent())
+						|| RCAConstant.V18C81.equals(e.getEvent()) || RCAConstant.V18C64.equals(e.getEvent()))
+						&& checkItem != null && !"".equals(checkItem)) {
+
 					viewName += "_" + checkItem;
 				}
 
-				List<Map> datas = (List<Map>) eventManger.getViewData(
-						viewName, e.getJylsh());
+				List<Map> datas = (List<Map>) eventManger.getViewData(viewName, e.getJylsh());
 
 				if (datas == null || datas.isEmpty()) {
 					e.setState(2);
-					e.setMessage("该事件无法找到视图：" + viewName + " 条件为jylsh ="
-							+ e.getJylsh() + "对应的数据。请检查上传的数据是否已经产生！");
+					e.setMessage("该事件无法找到视图：" + viewName + " 条件为jylsh =" + e.getJylsh() + "对应的数据。请检查上传的数据是否已经产生！");
 					eventManger.update(e);
 					continue;
 				}
 
 				for (Map data : datas) {
-					
-					if(e.getEvent().equals(RCAConstant.V18C62)){
-						
-						List yqjg =  checkDataManager.getDeviceCheckJudeg(e.getJylsh());
+
+					if (e.getEvent().equals(RCAConstant.V18C62)) {
+
+						List yqjg = checkDataManager.getDeviceCheckJudeg(e.getJylsh());
 						Document docYqjg = BeanXMLUtil.list2xml(yqjg, "yqsbjyjg");
-						if(docYqjg!=null){
+						if (docYqjg != null) {
 							data.put("yqsbjyjgs", docYqjg.asXML());
 						}
-						
-						//人工检验项目结果
-						List rgjg =  checkDataManager.getExternalCheckJudge(e.getJylsh());
-						if(rgjg!=null){
+
+						// 人工检验项目结果
+						List rgjg = checkDataManager.getExternalCheckJudge(e.getJylsh());
+						if (rgjg != null) {
 							Document docRgjg = BeanXMLUtil.list2xml(rgjg, "rgjyjg");
 							data.put("rgjyjgs", docRgjg.asXML());
 						}
 						data.put("pzrxm", pzrxm);
 						VehCheckLogin info = vehManager.getVehCheckLoginByJylsh(jyjgbh, e.getJylsh());
 						data.put("jyjl", info.getJyjl());
-						
+
 					}
-					
+
 					Document document = this.write(e, data);
 					Element root = document.getRootElement();
 					Element head = root.element("head");
@@ -258,7 +335,7 @@ public class CheckedInfoTaskJob {
 					if ("1".equals(code.getText())) {
 						System.out.println("delete event id" + e.getId());
 						eventManger.delete(e);
-						logger.info("viewName:"+viewName);
+						logger.info("viewName:" + viewName);
 					} else {
 						e.setState(2);
 						e.setMessage(message.getText());
@@ -266,7 +343,7 @@ public class CheckedInfoTaskJob {
 						eventManger.update(e);
 					}
 				}
-			}catch(Exception et){
+			} catch (Exception et) {
 				e.setState(2);
 				e.setMessage(et.getMessage());
 				et.printStackTrace();
@@ -275,17 +352,15 @@ public class CheckedInfoTaskJob {
 			}
 		}
 	}
-	
-	
 
 	public void uploadImage(CheckEvents e) {
 
 		String zpzl = e.getZpzl();
-		
-		CheckPhoto photo = checkDataManager.getCheckPhoto(e.getJylsh(),zpzl,e.getJycs());
-		
+
+		CheckPhoto photo = checkDataManager.getCheckPhoto(e.getJylsh(), zpzl, e.getJycs());
+
 		if (photo != null) {
-		
+
 			Map zpMap = new HashMap();
 			zpMap.put("jylsh", photo.getJylsh());
 			zpMap.put("jyjgbh", jyjgbh);
@@ -294,19 +369,19 @@ public class CheckedInfoTaskJob {
 			zpMap.put("hphm", photo.getHphm());
 			zpMap.put("hpzl", photo.getHpzl());
 			zpMap.put("clsbdh", photo.getClsbdh());
-			
-			SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			
+
+			SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 			zpMap.put("pssj", sd.format(photo.getPssj()));
 			zpMap.put("jyxm", photo.getJyxm());
 			zpMap.put("zpzl", photo.getZpzl());
-			
+
 			if (photo.getZp() != null) {
 				BASE64Encoder encode = new BASE64Encoder();
 				String imageCode = encode.encode(photo.getZp());
-				zpMap.put("zp",imageCode);
+				zpMap.put("zp", imageCode);
 			}
-	
+
 			try {
 				Document document = this.write(e, zpMap);
 				Element root = document.getRootElement();
@@ -323,13 +398,12 @@ public class CheckedInfoTaskJob {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-		}else{
+		} else {
 			e.setState(2);
 			e.setMessage("无法找到该照片的数据");
 			eventManger.update(e);
 		}
-		
+
 	}
-	
 
 }

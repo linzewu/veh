@@ -255,6 +255,9 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	/** 送检人身份证号 */
 	@Column(length = 30)
 	private String sjrsfzh;
+	
+	@Column(nullable=false)
+	private int vehcsbj;
 
 	@Column
 	private Integer hdzk;
@@ -308,7 +311,47 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	private String fjjyxm;
 	
 	
+	//外廓状态
+	@Column
+	private Integer vehwkzt;
 	
+	
+	//整备质量状态
+	@Column
+	private Integer vehzbzlzt;
+	
+	
+	
+
+	public Integer getVehzbzlzt() {
+		return vehzbzlzt;
+	}
+
+
+	public void setVehzbzlzt(Integer vehzbzlzt) {
+		this.vehzbzlzt = vehzbzlzt;
+	}
+
+
+	public Integer getVehwkzt() {
+		return vehwkzt;
+	}
+
+
+	public void setVehwkzt(Integer vehwkzt) {
+		this.vehwkzt = vehwkzt;
+	}
+
+
+	public int getVehcsbj() {
+		return vehcsbj;
+	}
+
+
+	public void setVehcsbj(int vehcsbj) {
+		this.vehcsbj = vehcsbj;
+	}
+
 
 	public String getFjjyxm() {
 		return fjjyxm;

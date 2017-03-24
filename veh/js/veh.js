@@ -154,7 +154,12 @@ var veh = {
 						// veh.setDefaultConfig();
 							$(":checkbox[name=jyxm]").prop("checked",false);
 							$("#checkingVehList").datagrid("reload");
-							$.messager.alert("提示","车辆登录成功。");
+							if(data["checkLog"]){
+								$.messager.alert("提示","本地登录成功！\n监控平台登录："+data["checkLog"].message);
+							}else{
+								$.messager.alert("提示","本地登录成功！");
+							}
+							
 						}else{
 							$.messager.alert("提示",head.message,"error");
 						}
@@ -521,6 +526,16 @@ var veh = {
 				veh.setVehB0();
 			}
 		});
+		
+		$("input[textboxname=zxzxjxs]").combobox({
+			"onChange" : function(newValue, oldValue) {
+				if(newValue==1){
+					$("#i_ch").prop("checked", true);
+				}else{
+					$("#i_ch").prop("checked", false);
+				}
+			}
+		});
 
 		$("input[textboxname=cllx]").combobox(
 				{
@@ -541,6 +556,9 @@ var veh = {
 		},"json").error(function(e){
 			$.messager.alert("获取默认配置错误","错误类型:"+e.status);
 		});
+	},
+	loginPageReload:function(){
+		$("#panel-vheInfo").panel("refresh");
 	}
 }
 
@@ -911,12 +929,12 @@ var report={
 					var tt = i.split("_");
 					$.each(n,function(j,k){
 						if(j=="czpy"){
-							k+="H"; 
+							k==null?"":(k+"H"); 
 						}
 						if(j=="czpy"&&n["czpypd"]==2){
 							k+="x";
 						}
-						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k);
+						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
 						
 					});
 					
@@ -1015,6 +1033,10 @@ var report={
 					
 				}else if(i.indexOf("lsy")==0){
 					$("#report1 td[name=roadCheck_lsy]").text(n);
+				}else if(i.indexOf("wkcc")==0){
+					$("#report1 [name=wkcc]").text(n.cwkc+"x"+n.cwkk+"x"+n.cwkg);
+					$("#report1 [name=wkcc_pd]").text(veh.jgpd(n.clwkccpd));
+					$("#report1 [name=wkcc_jycs]").text(n.jycs);
 				}
 			});
 		}).error(function(e){

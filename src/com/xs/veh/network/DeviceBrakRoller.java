@@ -25,6 +25,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.network.data.ParDataOfAnjian;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -263,6 +264,43 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 					display.sendMessage("检判定结果：X", DeviceDisplay.XP);
 				}
 				Thread.sleep(1500);
+			}else{
+				String zczw = vehCheckLogin.getZczw();
+				Integer maxzw = this.getMaxZw(zczw);
+				List<BrakRollerData> b0s = (List<BrakRollerData>) otherParam.get("B0");
+				ParDataOfAnjian parDataOfAnjian=new ParDataOfAnjian();
+				
+				if(b0s!=null&&!b0s.isEmpty()){
+					for(BrakRollerData brd:b0s){
+						Integer zczczdl = parDataOfAnjian.getZczczdl();
+						zczczdl = zczczdl == null ? 0 : zczczdl;
+						parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
+					}
+				}
+				Integer zclh =(Integer) otherParam.get("zclh");
+				
+				
+				Integer zczczdl = parDataOfAnjian.getZczczdl();
+				zczczdl = zczczdl == null ? 0 : zczczdl;
+				parDataOfAnjian.setZczczdl(zczczdl + brakRollerData.getZzdl() + brakRollerData.getYzdl());
+				parDataOfAnjian.setTczclh(zclh);
+				Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
+				
+				display.sendMessage(parDataOfAnjian.getZczczdl()+"/"+CheckDataManager.MathRound1(tczdl), DeviceDisplay.SP);
+				
+				if(maxzw==brakRollerData.getZw()){
+					parDataOfAnjian.setTczclh(zclh);
+					parDataOfAnjian.setTczdl(CheckDataManager.MathRound1(tczdl));
+					parDataOfAnjian.setTczdxz();
+					parDataOfAnjian.setTczdpd();
+					if (parDataOfAnjian.getTczdpd() == BrakRollerData.PDJG_HG) {
+						display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+						Thread.sleep(1500);
+					} else {
+						display.sendMessage("检判定结果：X", DeviceDisplay.XP);
+						Thread.sleep(5000);
+					}
+				}
 			}
 			display.sendMessage("请向前行驶", DeviceDisplay.XP);
 		}
@@ -363,4 +401,16 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 	}
 
+	
+	private Integer getMaxZw(String zw){
+		char[] zws = zw.toCharArray();
+		char max='0';
+		for(char c:zws){
+			if(c>max){
+				max=c;
+			}
+		}
+		return Integer.parseInt(String.valueOf(max));
+	}
+	
 }

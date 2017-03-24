@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.xs.veh.entity.CheckEvents;
+import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -109,7 +109,7 @@ public class VehController {
 
 	@RequestMapping(value = "vehLogin", method = RequestMethod.POST)
 	public @ResponseBody String vehLogin(VehCheckLogin vehCheckLogin, VehInfo vehInfo)
-			throws RemoteException, UnsupportedEncodingException, DocumentException {
+			throws RemoteException, UnsupportedEncodingException, DocumentException, InterruptedException {
 
 		if (!vehManager.isLoged(vehCheckLogin)) {
 			String jylsh = this.vehManager.getJylsh();
@@ -144,6 +144,20 @@ public class VehController {
 			} else {
 				vehCheckLogin.setVehlszt(VehCheckLogin.ZT_BJC);
 			}
+			
+			// 整备质量测量
+			if (jyxm.indexOf("Z") != -1) {
+				vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_BJC);
+			}
+			
+			// 外廓尺寸测量
+			if (jyxm.indexOf("M") != -1) {
+				vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_BJC);
+			}
 
 			// 上线状态
 			if (jyxm.indexOf("H") != -1 || jyxm.indexOf("B") != -1 || jyxm.indexOf("S") != -1
@@ -158,6 +172,15 @@ public class VehController {
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
+			
+			for(int i=0;i<50;i++){
+				Thread.sleep(100);
+				CheckLog checkLog = vehManager.getLoginCheckLog(vehCheckLogin.getJylsh());
+				if(checkLog!=null){
+					json.put("checkLog", checkLog);
+					break;
+				}
+			}
 			
 			return json.toString();
 		} else {

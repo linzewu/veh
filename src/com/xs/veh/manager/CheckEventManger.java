@@ -93,7 +93,7 @@ public class CheckEventManger {
 	}
 
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
-			String clsbdh) {
+			String clsbdh,Integer csbj) {
 
 		CheckEvents e = new CheckEvents();
 		e.setJylsh(jylsh);
@@ -103,7 +103,7 @@ public class CheckEventManger {
 		e.setHphm(hphm);
 		e.setHpzl(hpzl);
 		e.setClsbdh(clsbdh);
-		e.setState(0);
+		e.setState(csbj);
 		e.setCreateDate(new Date());
 		this.hibernateTemplate.save(e);
 		this.hibernateTemplate.flush();
@@ -112,7 +112,7 @@ public class CheckEventManger {
 	}
 
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
-			String clsbdh, String zpzl) {
+			String clsbdh, String zpzl,Integer csbj) {
 
 		CheckEvents e = new CheckEvents();
 		e.setJylsh(jylsh);

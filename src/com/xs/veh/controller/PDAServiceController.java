@@ -151,7 +151,7 @@ public class PDAServiceController {
 				vehCheckProcess.setKssj(new Date());
 				this.checkDataManager.updateProcess(vehCheckProcess);
 				checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C55", jyxm, vehCheckLogin.getHphm(),
-						vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+						vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
 			}else if(type==1){
 				if(jyxm.equals("R1")){
 					TakePicture.createNew(vehCheckLogin, "R1", 1000,"0343");
@@ -163,9 +163,6 @@ public class PDAServiceController {
 				this.checkDataManager.updateProcess(vehCheckProcess);
 			}
 		}
-		
-		
-		
 		return ResultHandler.toSuccessJSON("时间更新成功");
 	}
 
@@ -198,7 +195,7 @@ public class PDAServiceController {
 		}
 
 		checkEventManger.createEvent(jylsh, jycs, "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),
-				vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh());
+				vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh(),vehCheckLogin.getVehcsbj());
 
 		this.checkDataManager.updateProcess(vehCheckProcess);
 		return ResultHandler.toSuccessJSON("过程开始成功");

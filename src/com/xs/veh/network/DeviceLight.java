@@ -169,6 +169,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
 		
 		String jg = (datas == null || datas.size() == 0) ? "X" : "O";
+		String strgq="";
 		for (LightData data : datas) {
 			data.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), data.getJyxm());
 			data.setCzpy();
@@ -189,15 +190,19 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			if (data.getZpd() == CheckDataManager.PDJG_BHG) {
 				jg = "X";
 			}
+			
+			if(data.getGx()==LightData.GX_YGD){
+				strgq+=data.getJyxm()+":"+data.getGq();
+			}
 		}
 		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
-		display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
+		display.sendMessage(strgq, DeviceDisplay.XP);
 
 		// 灯光检测完成后等待8秒 仪器归为时间
 		Thread.sleep(3000);
 		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
-		display.sendMessage("请等待！", DeviceDisplay.XP);
-		Thread.sleep(3000);
+		display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
+		Thread.sleep(4000);
 		display.sendMessage(vehCheckLogin.getHphm() + "检测完成", DeviceDisplay.SP);
 		display.sendMessage("请向前行驶", DeviceDisplay.XP);
 		// 判定车是否离开 如果没有离开，则等待是否复位 ，如果离开则结束检测

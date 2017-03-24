@@ -189,7 +189,7 @@
 		<td class="tl"><label>远光单独调整：</label></td>
 		<td class="tc">
 			<label></label><input data-options="readonly:true,editable:false,data:comm.getBaseParames('ygddtz'),	valueField: 'id',
-		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="ygddtz" " value="0" required="true">
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="ygddtz" value="0" required="true">
 		</td>
 		<td class="tl"><label>前轴悬架形式：</label></td >
 		<td class="tc">
@@ -215,5 +215,19 @@
 		textField: 'value',editable:false"  prompt='用途属性' >
 		</td>
 	</tr>
+	
+	<tr>
+		<td class="tl"><label>机动车状态：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('dybj'),	valueField: 'id',
+		textField: 'value',editable:false"  name="zt" disabled="disabled">
+		</td>
+		<td class="tl"><label>抵押标记：</label></td>
+		<td class="tc" colspan="3">
+			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('dybj'),	valueField: 'id',
+		textField: 'value',editable:false"  name="dybj" disabled="disabled" >
+		</td>
+	</tr>
+	
 </table>
 <input name="jyxm" id="str_jyxm" type="hidden">

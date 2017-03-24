@@ -230,21 +230,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				temp[3]=data[index+3];
 				processData(temp);
 			}
-			
-			
-			/*if (data[0] == 0x41) {
-				int length = CharUtil.byteToInt(data[1]);
-				if (length == 4) {
-					temp = new byte[length];
-					for (int i = 0; i < data.length; i++) {
-						temp[i] = data[i];
-						if (i == length - 1) {
-							break;
-						}
-					}
-					processData(temp);
-				}
-			}*/
+		
 		}
 
 	}

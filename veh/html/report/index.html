@@ -4,8 +4,9 @@
 //-->
 
 function queryReportList(){
-	var status = $("input[name=statusArry]:checked").val();
-	$("#checkingVeh").datagrid("reload",{statusArry:status});
+	var status =$("input[name=statusArry]:checked").val();
+	var hphm=$("input[name=query_report_hphm]").val();
+	$("#checkingVeh").datagrid("reload",{statusArry:status,hphm:hphm});
 }
 
 
@@ -35,7 +36,7 @@ cursor: pointer;
 				<tr>
 					<th data-options="field:'jylsh',width:100">检验流水号</th>
 					<th data-options="field:'hphm',width:60">号牌号码</th>
-					<th data-options="field:'hpzl',width:40">号牌种类</th>
+					<th data-options="field:'jcxdh',width:40">检测线</th>
 				</tr>
 			</thead>
 		</table>
@@ -60,7 +61,7 @@ cursor: pointer;
 </div>
 <div id="checkingVehTool">
 <div>
-<label>号牌号码：</label><input class="easyui-textbox" value="苏J"><a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:queryReportList" >查询</a>
+<label>号牌号码：</label><input class="easyui-textbox" value="苏D" name="query_report_hphm"><a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:queryReportList" >查询</a>
 </div>
 <div><label>检测状态：</label>&nbsp;&nbsp;<input name="statusArry"  type="radio" value="0,1" checked="checked"><label>未完成</label><input type="radio" name="statusArry" value="2"><label>已完成</label>
 	<input type="radio" name="statusArry" value="3"><label>退办</label>

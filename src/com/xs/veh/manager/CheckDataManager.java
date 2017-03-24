@@ -29,6 +29,7 @@ import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.OtherInfoData;
+import com.xs.veh.network.data.Outline;
 import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
@@ -86,7 +87,7 @@ public class CheckDataManager {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate
-				.find("from LightData where jylsh=? and sjzt=? and jyxm like 'H%' ", jylsh, LightData.SJZT_ZC);
+				.find("from LightData where jylsh=? and jyxm like 'H%' order by id asc", jylsh);
 
 		for (LightData lightData : lightDatas) {
 			lightData.setCzpy();
@@ -94,8 +95,8 @@ public class CheckDataManager {
 		}
 		data.put("title", jyjgmc);
 
-		List<SpeedData> sds = (List<SpeedData>) this.hibernateTemplate.find("from SpeedData where jylsh=? and sjzt=? ",
-				jylsh, SpeedData.SJZT_ZC);
+		List<SpeedData> sds = (List<SpeedData>) this.hibernateTemplate
+				.find("from SpeedData where jylsh=? order by id desc", jylsh);
 		if (sds != null && !sds.isEmpty()) {
 			data.put("S1", sds.get(0));
 		}
@@ -122,15 +123,14 @@ public class CheckDataManager {
 
 			}
 
-		}
-		List otherInfoArray = this.hibernateTemplate.find("from OtherInfoData where jylsh=? ", jylsh);
+		} 
+		List otherInfoArray = this.hibernateTemplate.find("from OtherInfoData where jylsh=? order by id desc ", jylsh);
 
 		if (otherInfoArray != null && !otherInfoArray.isEmpty()) {
 			OtherInfoData otherInfo = (OtherInfoData) otherInfoArray.get(0);
 			data.put("other", otherInfo);
 		}
-		List plist = this.hibernateTemplate.find("from ParDataOfAnjian where jylsh=? and sjzt=?", jylsh,
-				BrakRollerData.SJZT_ZC);
+		List plist = this.hibernateTemplate.find("from ParDataOfAnjian where jylsh=? order by id desc ", jylsh);
 		if (plist != null && !plist.isEmpty()) {
 			ParDataOfAnjian parDataOfAnjian = (ParDataOfAnjian) plist.get(0);
 			data.put("par", parDataOfAnjian);
@@ -145,6 +145,12 @@ public class CheckDataManager {
 		List<RoadCheck> lsys = (List<RoadCheck>) this.hibernateTemplate.find("from RoadCheck where jylsh=?", jylsh);
 		if (lsys != null && !lsys.isEmpty()) {
 			data.put("lsy", lsys.get(0).getLsy());
+		}
+		
+		List<Outline> outlines=(List<Outline>) this.hibernateTemplate.find("from Outline where jylsh=? order by id desc", jylsh);
+		
+		if(outlines!=null&&!outlines.isEmpty()){
+			data.put("wkcc", outlines.get(0));
 		}
 
 		return data;
@@ -241,7 +247,6 @@ public class CheckDataManager {
 			otherInfoData.setZczdl(MathRound1(zczdl));
 		}
 		if (parDataOfAnjian != null) {
-
 			Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			parDataOfAnjian.setTczclh(zclh);
 			parDataOfAnjian.setTczdl(MathRound1(tczdl));
@@ -254,17 +259,42 @@ public class CheckDataManager {
 
 		otherInfoData.setZjccs(vehCheckLogin.getJycs());
 		this.hibernateTemplate.save(otherInfoData);
-
-		createDeviceCheckJudeg(vehCheckLogin, otherInfoData, parDataOfAnjian);
+		
+		// 修改上线状态
+		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
+		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
+		this.hibernateTemplate.update(vehInfo);
 	}
 
 	/**
 	 * 生成报告单
 	 */
-	private void createDeviceCheckJudeg(final VehCheckLogin vehCheckLogin, OtherInfoData otherInfoData,
-			ParDataOfAnjian parDataOfAnjian) {
+	public void createDeviceCheckJudeg(final VehCheckLogin vehCheckLogin) {
 
 		Map<String, Object> flagMap = new HashMap<String, Object>();
+		
+		List otherInfoDatas =this.hibernateTemplate.find("from OtherInfoData where jylsh=? order by id desc", vehCheckLogin.getJylsh());
+		
+		List parDataOfAnjians =this.hibernateTemplate.find("from ParDataOfAnjian where jylsh=? order by id desc", vehCheckLogin.getJylsh());
+		
+		List outlines =this.hibernateTemplate.find("from Outline where jylsh=? order by id desc ", vehCheckLogin.getJylsh());
+		
+		OtherInfoData otherInfoData = null;
+		ParDataOfAnjian parDataOfAnjian=null;
+		
+		Outline outline=null;
+		
+		if(otherInfoDatas!=null&&!otherInfoDatas.isEmpty()){
+			otherInfoData=(OtherInfoData) otherInfoDatas.get(0);
+		}
+		
+		if(parDataOfAnjians!=null&&!parDataOfAnjians.isEmpty()){
+			parDataOfAnjian=(ParDataOfAnjian) parDataOfAnjians.get(0);
+		}
+		
+		if(outlines!=null&&!outlines.isEmpty()){
+			 outline =(Outline) outlines.get(0);
+		}
 
 		Integer xh = 1;
 
@@ -274,12 +304,6 @@ public class CheckDataManager {
 			public Integer doInHibernate(Session session) throws HibernateException {
 				int res = session.createQuery("delete DeviceCheckJudeg where jylsh=? and jyjgbh=? ")
 						.setString(0, vehCheckLogin.getJylsh()).setString(1, vehCheckLogin.getJyjgbh()).executeUpdate();
-				/*
-				 * session.
-				 * createQuery("delete ExternalCheckJudge where jylsh=? and jyjgbh=? "
-				 * ) .setString(0, vehCheckLogin.getJylsh()).setString(1,
-				 * vehCheckLogin.getJyjgbh()).executeUpdate();
-				 */
 				return res;
 			}
 		});
@@ -362,18 +386,38 @@ public class CheckDataManager {
 			xh++;
 			this.hibernateTemplate.save(dcj1);
 		}
-
-		/*
-		 * //外加報告 createExternalCheckJudge(vehCheckLogin);
-		 */
-
-		// 修改上线状态
-		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
-		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
-		this.hibernateTemplate.update(vehInfo);
+		
+		//外廓尺寸测量报告
+		if(outline!=null){
+			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj1.setXh(xh);
+			dcj1.setYqjyxm("外廓尺寸(mmxmmxmm)");
+			dcj1.setYqjyjg(outline.getCwkc()+"x"+outline.getCwkk()+"x"+outline.getCwkg());
+			
+			if(vehCheckLogin.getJylb().equals("00")){
+				dcj1.setYqbzxz("±1%或50mm");
+			}else{
+				dcj1.setYqbzxz("±2%或100mm");
+			}
+			dcj1.setYqjgpd(outline.getClwkccpd().toString());
+			dcj1.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj1);
+		}
 	}
 
 	public void createExternalCheckJudge(VehCheckLogin vehCheckLogin) {
+
+		final String jylsh = vehCheckLogin.getJylsh();
+		final String jyjgbh = vehCheckLogin.getJyjgbh();
+		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				return  session.createQuery("delete ExternalCheckJudge where jylsh=? and jyjgbh=?").setString(0, jylsh)
+						.setString(1, jyjgbh).executeUpdate();
+			}
+		});
+
 		int i = 1;
 		if (vehCheckLogin.getJyxm().indexOf("F1") >= 0) {
 			for (; i <= 5; i++) {
@@ -580,7 +624,8 @@ public class CheckDataManager {
 				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
 						&& syxz.equals("A"))) {
 					DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-					dcj2.setYqjyxm(getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏(H)");
+					dcj2.setYqjyxm(
+							getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(H)");
 					dcj2.setYqjyjg(lightData.getCzpy() == null ? "" : lightData.getCzpy().toString());
 					dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
 					dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
@@ -720,10 +765,28 @@ public class CheckDataManager {
 	public String getReport4(String jylsh) {
 
 		List<BrakRollerData> report4 = (List<BrakRollerData>) this.hibernateTemplate
-				.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm!=?", jylsh, BrakRollerData.SJZT_ZC, "B0");
+				.find("from BrakRollerData where jylsh=?  and jyxm!=? order by id desc", jylsh, "B0");
+		
+		if(report4!=null&&!report4.isEmpty()){
+			Integer jycs = report4.get(0).getJycs();
+			for(BrakRollerData brakRollerData:report4){
+				if(brakRollerData.getJycs()!=jycs){
+					report4.remove(brakRollerData);
+				}
+			}
+		}
 
 		List<SideslipData> sides = (List<SideslipData>) this.hibernateTemplate
-				.find("from SideslipData  where jylsh=? and sjzt=? ", jylsh, BrakRollerData.SJZT_ZC);
+				.find("from SideslipData  where jylsh=? order by id desc", jylsh);
+		
+		if(sides!=null&&!sides.isEmpty()){
+			Integer jycs = sides.get(0).getJycs();
+			for(SideslipData side:sides){
+				if(side.getJycs()!=jycs){
+					sides.remove(side);
+				}
+			}
+		}
 
 		JSONObject jo = new JSONObject();
 
@@ -753,7 +816,26 @@ public class CheckDataManager {
 		} else {
 			return datas.get(0);
 		}
+	}
 
+	public List<BrakRollerData> getBrakRollerDataB0(VehCheckLogin vehCheckLogin) {
+		List<BrakRollerData> datas = (List<BrakRollerData>) this.hibernateTemplate.find(
+				"from BrakRollerData where jylsh=? and jyxm='B0' and jycs=?", vehCheckLogin.getJylsh(),
+				vehCheckLogin.getJycs());
+		return datas;
+	}
+
+	// 获取整车轴荷
+	public Integer getZCZH(VehCheckLogin vehCheckLogin) {
+		List<BrakRollerData> list = (List<BrakRollerData>) this.hibernateTemplate.find(
+				"from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=?", vehCheckLogin.getJylsh(),
+				BrakRollerData.SJZT_ZC);
+		// 整车轮荷
+		Integer zclh = 0;
+		for (BrakRollerData brakRollerData : list) {
+			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+		}
+		return zclh;
 	}
 
 	public void updateBrakRollerDataByJylsh(String jylsh) {
@@ -855,7 +937,7 @@ public class CheckDataManager {
 				+ ",照片种类：" + checkPhoto.getZpzl());
 
 		checkEventManger.createEvent(checkPhoto.getJylsh(), checkPhoto.getJycs(), "18C63", checkPhoto.getJyxm(),
-				checkPhoto.getHphm(), checkPhoto.getHpzl(), checkPhoto.getClsbdh(), checkPhoto.getZpzl());
+				checkPhoto.getHphm(), checkPhoto.getHpzl(), checkPhoto.getClsbdh(), checkPhoto.getZpzl(),0);
 
 	}
 
@@ -904,14 +986,16 @@ public class CheckDataManager {
 		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate.find(
 				"from VehCheckProcess where jylsh=? and jycs=? and jyxm in('H1','H2','H3','H4','B0','B1','B2','B3','B4','B5','A1','S1')",
 				jylsh, jycs);
+		
+		VehCheckLogin vehCheckLogin = this.getVehCheckLogin(jylsh);
 
 		for (VehCheckProcess vp : data) {
 			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
-					vp.getClsbdh());
+					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
 			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
-					vp.getClsbdh());
+					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
 			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
-					vp.getClsbdh());
+					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
 		}
 	}
 
@@ -946,10 +1030,13 @@ public class CheckDataManager {
 	public void saveInsurance(Insurance insurance) {
 
 		this.hibernateTemplate.saveOrUpdate(insurance);
+		
+		VehCheckLogin vehCheckLogin =  this.getVehCheckLogin(insurance.getJylsh());
+		
 		checkEventManger.createEvent(insurance.getJylsh(), null, "18C61", null, insurance.getHphm(),
-				insurance.getHpzl(), insurance.getClsbdh());
+				insurance.getHpzl(), insurance.getClsbdh(),vehCheckLogin.getVehcsbj());
 		checkEventManger.createEvent(insurance.getJylsh(), null, "18C64", null, insurance.getHphm(),
-				insurance.getHpzl(), insurance.getClsbdh());
+				insurance.getHpzl(), insurance.getClsbdh(),vehCheckLogin.getVehcsbj());
 	}
 
 	public Insurance getInsurance(String jylsh) {

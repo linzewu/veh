@@ -18,7 +18,7 @@ public class BaseParamsManager {
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
-	
+
 	@Autowired
 	private ServletContext servletContext;
 
@@ -26,23 +26,29 @@ public class BaseParamsManager {
 		DetachedCriteria dc = DetachedCriteria.forClass(BaseParams.class);
 		dc.addOrder(Order.asc("type"));
 		dc.addOrder(Order.asc("seq"));
-		List<BaseParams> bps = (List<BaseParams>) this.hibernateTemplate
-				.findByCriteria(dc);
+		List<BaseParams> bps = (List<BaseParams>) this.hibernateTemplate.findByCriteria(dc);
 		return bps;
 	}
-	
-	public BaseParams getBaseParam(String type,String value){
-		
-		List<BaseParams> bps = (List<BaseParams>) servletContext
-				.getAttribute("bps");
-		for(BaseParams param:bps){
-			if(param.getType().equals(type)&&param.getParamValue().equals(value)){
+
+	public BaseParams getBaseParam(String type, String value) {
+		List<BaseParams> bps = (List<BaseParams>) servletContext.getAttribute("bps");
+		for (BaseParams param : bps) {
+			if (param.getType().equals(type) && param.getParamValue().equals(value)) {
 				return param;
 			}
 		}
-		
-		
 		return null;
+	}
+	
+	
+
+	public BaseParams saveBaseParam(BaseParams baseParams) {
+		
+		BaseParams bp=new BaseParams();
+		
+		this.hibernateTemplate.saveOrUpdate(baseParams);
+		
+		return baseParams;
 	}
 
 }

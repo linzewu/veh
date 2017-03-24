@@ -65,7 +65,7 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 				i = 0;
 			}
 
-			if (i >= 6) {
+			if (i >= 12) {
 				isChecking=false;
 				break;
 			}

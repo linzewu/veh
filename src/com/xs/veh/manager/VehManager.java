@@ -40,6 +40,7 @@ import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutRespons
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
+import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckQueue;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceCheckJudeg;
@@ -55,6 +56,7 @@ import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.OtherInfoData;
+import com.xs.veh.network.data.Outline;
 import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
@@ -100,6 +102,9 @@ public class VehManager {
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
+
+	@Resource(name = "checkDataManager")
+	private CheckDataManager checkDataManager;
 
 	@Autowired
 	private HttpSession session;
@@ -175,8 +180,8 @@ public class VehManager {
 		return new XMLSerializer().read(document.asXML());
 	}
 
-	public JSONObject vehLogin(VehCheckLogin vehCheckLogin){
-		
+	public JSONObject vehLogin(VehCheckLogin vehCheckLogin) {
+
 		Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
 		JSONObject head = new JSONObject();
 		JSONObject messager = null;
@@ -191,6 +196,7 @@ public class VehManager {
 
 		// 默认情况下为成功
 		head.put("code", "1");
+		vehCheckLogin.setVehcsbj(0);
 		this.hibernateTemplate.save(vehCheckLogin);
 		String jyxm = vehCheckLogin.getJyxm();
 		String[] jyxmArray = jyxm.split(",");
@@ -216,7 +222,7 @@ public class VehManager {
 		ce.setJylsh(vehCheckLogin.getJylsh());
 		ce.setHphm(vehCheckLogin.getHphm());
 		ce.setCreateDate(new Date());
-		ce.setState(0);
+		ce.setState(vehCheckLogin.getVehcsbj());
 		ce.setJycs(vehCheckLogin.getJycs());
 		this.hibernateTemplate.save(ce);
 
@@ -227,7 +233,7 @@ public class VehManager {
 		ce2.setJylsh(vehCheckLogin.getJylsh());
 		ce2.setHphm(vehCheckLogin.getHphm());
 		ce2.setCreateDate(new Date());
-		ce2.setState(0);
+		ce2.setState(vehCheckLogin.getVehcsbj());
 		ce2.setJycs(vehCheckLogin.getJycs());
 		this.hibernateTemplate.save(ce2);
 
@@ -236,8 +242,18 @@ public class VehManager {
 		head.put("isNetwork", false);
 		messager = new JSONObject();
 		messager.put("head", head);
-
 		return messager;
+	}
+
+	public CheckLog getLoginCheckLog(String jylsh) {
+		List<CheckLog> checkLogs = (List<CheckLog>) this.hibernateTemplate
+				.find("from CheckLog where jylsh=? and jkbmc=?", jylsh, "18C51");
+		if (checkLogs != null && !checkLogs.isEmpty()) {
+			return checkLogs.get(0);
+		} else {
+			return null;
+		}
+
 	}
 
 	private void createExternalCheck(VehCheckLogin vehCheckLogin) {
@@ -393,13 +409,12 @@ public class VehManager {
 
 		JSONArray flowJsons = JSONArray.fromObject(flow.getFlow());
 		List<VehFlow> vehFlows = new ArrayList<VehFlow>();
-		
-		String allJyxm=vcl.getJyxm();
-		
-		if(vcl.getJycs()>1){
-			allJyxm=vcl.getFjjyxm();
+
+		String allJyxm = vcl.getJyxm();
+
+		if (vcl.getJycs() > 1) {
+			allJyxm = vcl.getFjjyxm();
 		}
-		
 
 		for (int i = 0; i < flowJsons.size(); i++) {
 
@@ -545,6 +560,17 @@ public class VehManager {
 							vehCheckLogin.getJycs())
 					.get(0);
 
+			int gwxs = firstVehFlow.getGwsx();
+
+			List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
+					.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
+
+			if (checkQueues != null && !checkQueues.isEmpty()) {
+				message.setState(Message.STATE_ERROR);
+				message.setMessage("线上有车，请稍等！");
+				return message;
+			}
+
 			// 获取同一工位的流程
 			List<VehFlow> vehFlows = (List<VehFlow>) this.hibernateTemplate.find(
 					"from VehFlow where jylsh=? and jycs=? and gw=? order by sx asc", vehCheckLogin.getJylsh(),
@@ -599,6 +625,24 @@ public class VehManager {
 
 		if (array != null && !array.isEmpty()) {
 			VehCheckLogin vehCheckLogin = array.get(0);
+			// 仪器报告单
+			if ((vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JYJS
+					|| vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_BJC)) {
+				checkDataManager.createDeviceCheckJudeg(vehCheckLogin);
+			}
+
+			// 外检报告
+			if ((vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_BJC
+					|| vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehdtdpzt() == VehCheckLogin.ZT_JYJS)
+					&& (vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_BJC
+							|| vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_JYJS)) {
+				checkDataManager.createExternalCheckJudge(vehCheckLogin);
+			}
+
 			if ((vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_JYJS
 					|| vehCheckLogin.getVehwjzt() == VehCheckLogin.ZT_BJC)
 					&& (vehCheckLogin.getVehdpzt() == VehCheckLogin.ZT_JYJS
@@ -608,7 +652,11 @@ public class VehManager {
 					&& (vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JYJS
 							|| vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_BJC)
 					&& (vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_JYJS
-							|| vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_BJC)) {
+							|| vehCheckLogin.getVehlszt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehzbzlzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehzbzlzt() == VehCheckLogin.ZT_BJC)
+					&& (vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_BJC)) {
 
 				List<DeviceCheckJudeg> deviceCheckJudegs = (List<DeviceCheckJudeg>) this.hibernateTemplate
 						.find("from DeviceCheckJudeg where jylsh=?", vehCheckLogin.getJylsh());
@@ -628,27 +676,37 @@ public class VehManager {
 						jyjl = "不合格";
 					}
 				}
-				
+
 				vehCheckLogin.setJyjl(jyjl);
 				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", null,
-						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+						vehCheckLogin.getVehcsbj());
 				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C59", null,
-						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-				
-				//复检
-				repeatLogin(vehCheckLogin);
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+						vehCheckLogin.getVehcsbj());
+
+				// 复检
+				if (vehCheckLogin.getVehcsbj() == 0) {
+					repeatLogin(vehCheckLogin);
+				} else {
+					vehCheckLogin.setFjjyxm("");
+					vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
+					vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_JYJS);
+				}
+
 				this.hibernateTemplate.update(vehCheckLogin);
 
-				
-				
-				if(vehCheckLogin.getFjjyxm()==null||vehCheckLogin.getFjjyxm().equals("")){
+				if (vehCheckLogin.getFjjyxm() == null || vehCheckLogin.getFjjyxm().equals("")) {
 					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C62", null,
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-				}else{
+							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+							vehCheckLogin.getVehcsbj());
+				} else {
 					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C65", null,
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+							vehCheckLogin.getVehcsbj());
 					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C52", null,
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+							vehCheckLogin.getVehcsbj());
 				}
 
 			}
@@ -657,13 +715,13 @@ public class VehManager {
 
 	// 复检项目
 	public VehCheckLogin repeatLogin(VehCheckLogin vehCheckLogin) {
-		
-		String jylsh=vehCheckLogin.getJylsh();
-		
+
+		String jylsh = vehCheckLogin.getJylsh();
+
 		String fjjyxm = "";
 		List<OtherInfoData> otherInfoData = (List<OtherInfoData>) this.hibernateTemplate
-				.find("from OtherInfoData where jylsh=? and zczdpd=?", jylsh,BaseDeviceData.PDJG_BHG.toString());
- 
+				.find("from OtherInfoData where jylsh=? and zczdpd=?", jylsh, BaseDeviceData.PDJG_BHG.toString());
+
 		// 整车不合格则全部复检
 		if (otherInfoData != null && !otherInfoData.isEmpty()) {
 			logger.info("整车不合格");
@@ -682,21 +740,20 @@ public class VehManager {
 			if (vehCheckLogin.getJyxm().indexOf("B5") >= 0) {
 				fjjyxm += "B5,";
 			}
-			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
-					"from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0'", jylsh,
-					BaseDeviceData.SJZT_ZC);
+			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate
+					.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0'", jylsh, BaseDeviceData.SJZT_ZC);
 			for (BrakRollerData brakRollerData : brakRollerDatas) {
 				brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
 				this.hibernateTemplate.save(brakRollerData);
 			}
-			
+
 		} else {
 			// 制动复检
 			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
 					"from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0' and zpd=?", jylsh,
 					BaseDeviceData.SJZT_ZC, BaseDeviceData.PDJG_BHG);
 			for (BrakRollerData brakRollerData : brakRollerDatas) {
-				logger.info(brakRollerData.getJyxm()+"不合格");
+				logger.info(brakRollerData.getJyxm() + "不合格");
 				fjjyxm += brakRollerData.getJyxm() + ",";
 				brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
 				this.hibernateTemplate.save(brakRollerData);
@@ -732,8 +789,11 @@ public class VehManager {
 				BaseDeviceData.PDJG_BHG);
 		if (speedDatas != null && !speedDatas.isEmpty()) {
 			fjjyxm += "S1,";
-			speedDatas.get(0).setSjzt(SpeedData.SJZT_FJ);
-			this.hibernateTemplate.save(speedDatas.get(0));
+		}
+
+		for (SpeedData speedData : speedDatas) {
+			speedData.setSjzt(SpeedData.SJZT_FJ);
+			this.hibernateTemplate.save(speedData);
 		}
 
 		// 侧滑复检
@@ -746,6 +806,11 @@ public class VehManager {
 			this.hibernateTemplate.save(sideslipDatas.get(0));
 		}
 
+		for (SideslipData sideslipDat : sideslipDatas) {
+			sideslipDat.setSjzt(SpeedData.SJZT_FJ);
+			this.hibernateTemplate.save(sideslipDat);
+		}
+
 		// 驻车复检
 		List<ParDataOfAnjian> parDataOfAnjian = (List<ParDataOfAnjian>) this.hibernateTemplate.find(
 				"from ParDataOfAnjian where jylsh=? and sjzt=?  and tczdpd=?", jylsh, BaseDeviceData.SJZT_ZC,
@@ -756,16 +821,29 @@ public class VehManager {
 			this.hibernateTemplate.save(parDataOfAnjian.get(0));
 		}
 		
-		if(!fjjyxm.trim().equals("")){
-			fjjyxm =fjjyxm.substring(0, fjjyxm.length()-1);
+		List<Outline> outlines =(List<Outline>) this.hibernateTemplate.find("from Outline where jylsh=? order by id desc", jylsh);
+		
+		if(outlines!=null&&!outlines.isEmpty()){
+			Outline outline=outlines.get(0);
+			if(outline.getClwkccpd()==BaseDeviceData.PDJG_BHG){
+				fjjyxm += "M1,";
+				outline.setSjzt(ParDataOfAnjian.SJZT_FJ);
+				this.hibernateTemplate.save(outline);
+				vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_JCZ);
+			}
+		}
+		
+		
+		if (!fjjyxm.trim().equals("")) {
+			fjjyxm = fjjyxm.substring(0, fjjyxm.length() - 1);
 			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
 			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
-			
-			vehCheckLogin.setJycs(vehCheckLogin.getJycs()+1);
+
+			vehCheckLogin.setJycs(vehCheckLogin.getJycs() + 1);
 			vehCheckLogin.setFjjyxm(fjjyxm);
-			
+
 			Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
-			
+
 			String[] jyxmArray = fjjyxm.split(",");
 			List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
 			for (String jyxmItem : jyxmArray) {
@@ -780,18 +858,33 @@ public class VehManager {
 				processArray.add(vcp);
 			}
 			addVehFlow(vehCheckLogin, processArray, flow);
-			
-		}else{
+
+		} else {
 			vehCheckLogin.setFjjyxm("");
 			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
 			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_JYJS);
 		}
-		
-		logger.info("复检项目："+fjjyxm);
-		
-		vehCheckLogin.setJyxm(fjjyxm);
-		
+		logger.info("复检项目：" + fjjyxm);
 		return vehCheckLogin;
 
+	}
+
+	public List<Outline> getOutlineOfReportFlag() {
+
+		return (List<Outline>) this.hibernateTemplate.find("from Outline where reportFlag!=? or reportFlag is null ",Outline.FLAG_Y);
+
+	}
+
+	public void updateOutline(Outline outline) {
+		this.hibernateTemplate.save(outline);
+
+	}
+
+	public void deleteDeviceCheckJudegOfOutline(String jylsh) {
+		List<DeviceCheckJudeg> dcs = (List<DeviceCheckJudeg>) this.hibernateTemplate
+				.find("from DeviceCheckJudeg where jylsh=? and yqjyxm=?", jylsh, Outline.STR_JYXM);
+		for (DeviceCheckJudeg dc : dcs) {
+			this.hibernateTemplate.delete(dc);
+		}
 	}
 }

@@ -38,6 +38,12 @@
 </table>
 </form>
 <script type="text/javascript">
+
+function sxrqSelect(date){
+	$("#zzrq").datebox("clear");
+	$("#zzrq").datebox("setValue",(date.getFullYear()+1)+"-"+(date.getMonth()+1)+"-"+(date.getDate()-1));
+}
+
 var reportData = $("#checkingVeh").datagrid("getSelected");
 $("#commit_jylsh").text(reportData.jylsh);
 $("#commit_hphm").text(reportData.hphm);
@@ -51,7 +57,8 @@ $("#commit_hphm").text(reportData.hphm);
 	function commitForm(){
 
 		if(reportData.vehjczt!=2){
-			$.messager.alert("提示","车辆未检测结束，不允许提交审核！","info")
+			$.messager.alert("提示","车辆未检测结束，不允许提交审核！","info");
+			return;
 		}
 		
 		 var flag = $("#commitForm").form("validate");
@@ -86,7 +93,6 @@ $("#commit_hphm").text(reportData.hphm);
 	        	 $("#commitForm [name=id]").val(data.id);
 		    }
          },"json")
-		
 		//$("#commitForm").form("submit");
 	}
 	

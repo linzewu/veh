@@ -207,6 +207,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 				brakRollerData.getLeftData().clear();
 				// 开始检测
 				deviceBrakRoller.sendMessage(ksjc);
+				checkingFlage=true;
 				// 等待检测数据返回
 				while (checkingFlage) {
 					Thread.sleep(300);

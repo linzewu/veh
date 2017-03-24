@@ -1,6 +1,7 @@
 package com.xs.veh.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,11 +44,12 @@ public class SystemController {
 	@RequestMapping(value = "getInfo", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> getSystemInfo(@RequestParam Map param) {
 
-		String jyjgmc = "";
-		List<BaseParams> bps = BaseParamsUtil.getBaseParamsByType("jyjgmc");
+		String uploadSwitch = "";
+		List<BaseParams> bps = BaseParamsUtil.getBaseParamsByType("uploadSwitch");
 		if (bps.size() > 0) {
-			jyjgmc = bps.get(0).getParamName();
+			uploadSwitch = bps.get(0).getParamName();
 		}
+		
 
 		List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
 
@@ -60,7 +62,7 @@ public class SystemController {
 
 		Map<String, String> sm2 = new HashMap<String, String>();
 		sm2.put("name", "检验机构名称");
-		sm2.put("value", jyjgmc);
+		sm2.put("value", systemInfo.getJyjgmc());
 		sm2.put("group", SETTING);
 		rows.add(sm2);
 
@@ -87,6 +89,36 @@ public class SystemController {
 		sm6.put("value", systemInfo.getDbInfo());
 		sm6.put("group", SETTING);
 		rows.add(sm6);
+		
+		Map<String, String> sm7 = new HashMap<String, String>();
+		sm7.put("name", "联网标记");
+		sm7.put("value", systemInfo.getIsNetwork());
+		sm7.put("group", SETTING);
+		rows.add(sm7);
+		
+		Map<String, String> sm8 = new HashMap<String, String>();
+		sm8.put("name", "加载制动标记");
+		sm8.put("value", systemInfo.getPlusLoadFlag());
+		sm8.put("group", SETTING);
+		rows.add(sm8);
+		
+		Map<String, String> sm9 = new HashMap<String, String>();
+		sm9.put("name", "垂直偏移标记");
+		sm9.put("value", systemInfo.getCzpypdFlag());
+		sm9.put("group", SETTING);
+		rows.add(sm9);
+		
+		Map<String, String> sm10 = new HashMap<String, String>();
+		sm10.put("name", "系统有效期");
+		sm10.put("value", systemInfo.getStartData()+"至"+systemInfo.getEndData());
+		sm10.put("group", SETTING);
+		rows.add(sm10);
+		
+		Map<String, String> sm11 = new HashMap<String, String>();
+		sm11.put("name", "联网开关");
+		sm11.put("value", uploadSwitch);
+		sm11.put("group", SETTING);
+		rows.add(sm11);
 
 		getComputerInfo(rows);
 
@@ -145,5 +177,36 @@ public class SystemController {
 		servletContext.setAttribute("bps", bps);
 		return ResultHandler.toSuccessJSON("系统参数刷新成功");
 	}
+	
+	@RequestMapping(value = "uploadSwitch", method = RequestMethod.POST)
+	public @ResponseBody Map<String, Object> uploadSwitch(String state) {
+		
+		List<BaseParams> bps =  (List<BaseParams>) servletContext.getAttribute("bps");
+		BaseParams uploadSwitch=null;
+		for(BaseParams param:bps){
+			if(param.getType().equals("uploadSwitch")){
+				uploadSwitch=param;
+			}
+		}
+		if(uploadSwitch==null){
+			uploadSwitch=new BaseParams();
+			uploadSwitch.setCreateTime(new Date());
+			uploadSwitch.setParamName("1".equals(state)?"关":"开");
+			uploadSwitch.setParamValue(state);
+			uploadSwitch.setType("uploadSwitch");
+			uploadSwitch.setSeq(1);
+			this.baseParamsManager.saveBaseParam(uploadSwitch);
+			bps.add(uploadSwitch);
+			servletContext.setAttribute("bps", bps);
+			servletContext.setAttribute("uploadSwitch", state);
+		}else{
+			uploadSwitch.setParamValue(state);
+			this.baseParamsManager.saveBaseParam(uploadSwitch);
+			uploadSwitch.setParamName("1".equals(state)?"关":"开");
+			servletContext.setAttribute("uploadSwitch", state);
+		}
+		return ResultHandler.toSuccessJSON("操作成功");
+	}
+	
 
 }

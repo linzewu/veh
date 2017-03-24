@@ -79,10 +79,22 @@ public class WorkPointThread extends Thread {
 				logger.info(workPoint.getJcxdh()+"号线"+workPoint.getSort()+"工位 停止");
 				return;
 			}catch(IOException e){
-				e.printStackTrace();
+				logger.error(e.getMessage());
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					logger.error(e1);
+				}
 			} catch (SystemException e) {
+				logger.error(e.getMessage());
+			}catch(Exception e){
 				logger.info(e.getMessage());
-			} 
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					logger.error(e1);
+				}
+			}
 		}
 	}
 	
@@ -126,7 +138,7 @@ public class WorkPointThread extends Thread {
 					if (device.getType() == Device.DGJCSB) {
 						cc.add(vehFlow);
 						if (cc.size() == dgcount) {
-							workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc);
+							workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,null);
 
 						}
 					} else if (device.getType() == Device.ZDPBSB) {
@@ -134,15 +146,30 @@ public class WorkPointThread extends Thread {
 						cc.add(vehFlow);
 						if (cc.size() == vehFlows.size()) {
 							logger.info("开始检测平板");
-							workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc);
+							if(cc.size()==1&&cc.get(0).getJyxm().equals("B0")){
+								workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,null);
+							}else{
+								Map<String,Object> param=new HashMap<String,Object>();
+								Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
+								param.put("zclh", zclh);
+								workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,param);
+							}
+							
 						}
 					} else {
 						// 普通单项检测
 						Map<String,Object> param=new HashMap<String,Object>();
 						if(device.getType()==Device.ZDJCSB){
 							BrakRollerData brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
-							logger.info("brakRollerData:"+brakRollerData);
 							param.put("brakRollerData", brakRollerData);
+							
+							if(vehFlow.getJyxm().equals("B0")){
+								List<BrakRollerData> brakRollerB0Datas = checkDataManager.getBrakRollerDataB0(vehCheckLogin);
+								param.put("B0", brakRollerB0Datas);
+								Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
+								param.put("zclh", zclh);
+							}
+							
 						}
 						workPointManager.check(checkDevice, vehCheckLogin, checkQueue, vehFlow,param);
 					}

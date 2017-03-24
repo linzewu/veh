@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.network.data.OtherInfoData;
+import com.xs.veh.network.data.ParDataOfAnjian;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -38,13 +41,11 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 	private AbstractDeviceBrakePad dbp;
 
 	private DeviceDisplay display;
-	
+
 	private VehCheckLogin vehCheckLogin;
 
 	@Autowired
 	private ServletContext servletContext;
-	
-	
 
 	public VehCheckLogin getVehCheckLogin() {
 		return vehCheckLogin;
@@ -68,9 +69,9 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 		super(device);
 		init();
 	}
-	
-	public DeviceBrakePad(){
-		
+
+	public DeviceBrakePad() {
+
 	}
 
 	@Override
@@ -116,26 +117,29 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow, Map<String, Object> otherParam) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows,Map<String,Object> otherParam) throws InterruptedException, IOException  {
-		
-		this.vehCheckLogin=vehCheckLogin;
-		
-		Date startDate=new Date();
-		
+	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows, Map<String, Object> otherParam)
+			throws InterruptedException, IOException {
+
+		this.vehCheckLogin = vehCheckLogin;
+
+		Date startDate = new Date();
+		DecimalFormat decimalFormat = new DecimalFormat(".0");
 		List<BrakRollerData> datas = dbp.startCheck(vehFlows);
-		
-		boolean sfhg=true;
+		// 驻车结果
+		ParDataOfAnjian parDataOfAnjian = null;
+		OtherInfoData otherInfoData = new OtherInfoData();
+		Integer zclh = 0;
+		Integer zdlh = 0;
+		boolean sfhg = true;
 		for (BrakRollerData brakRollerData : datas) {
-			
 			// 设置基础数据
 			brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), brakRollerData.getJyxm());
 			// 非驻车制动则计算检测结果
@@ -152,36 +156,104 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				brakRollerData.setBphlxz(vehCheckLogin);
 				// 空载不平衡率判定
 				brakRollerData.setKzbphlpd();
+				brakRollerData.setZpd();
 
-				brakRollerData.setJzzdl();
-				// 加载制动率限制及判定
-				brakRollerData.setJzzdlxz(vehCheckLogin);
-				brakRollerData.setJzzdlpd();
-				// 加载不平衡率判定
-				brakRollerData.setJzbphlpd();
-			}
-			brakRollerData.setZpd();
-			if (brakRollerData.getZpd() == BrakRollerData.PDJG_BHG){
-				sfhg=false;
+				String strpd = "O";
+
+				if (brakRollerData.getZpd() == BrakRollerData.PDJG_BHG) {
+					sfhg = false;
+					strpd = "X";
+				}
+				display.sendMessage(
+						brakRollerData.getZw() + "轴：" + decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
+								+ decimalFormat.format(brakRollerData.getKzbphl()) + "/" + strpd,
+						brakRollerData.getZw() == 1 ? DeviceDisplay.SP : DeviceDisplay.XP);
+				zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
+				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+			} else {
+				parDataOfAnjian = new ParDataOfAnjian();
+				parDataOfAnjian.setZczczdl(brakRollerData.getZzdl() + brakRollerData.getYzdl());
 			}
 		}
-		if(sfhg){
-			display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+
+		Thread.sleep(2000);
+
+		if (parDataOfAnjian != null) {
+			logger.info("驻车判定！");
+			Integer zczczdl = parDataOfAnjian.getZczczdl();
+			zczczdl = zczczdl == null ? 0 : zczczdl;
+			
+			Integer oldzclh=(Integer) otherParam.get("zclh");
+			
+			
+			zclh=zclh==0&&oldzclh!=null?oldzclh:zclh;
+			
+			if(zclh>0){
+				parDataOfAnjian.setTczclh(zclh);
+				Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
+				parDataOfAnjian.setTczclh(zclh);
+				parDataOfAnjian.setTczdl(CheckDataManager.MathRound1(tczdl));
+				parDataOfAnjian.setTczdxz();
+				parDataOfAnjian.setTczdpd();
+				String strpd = "O";
+				if (parDataOfAnjian.getTczdpd() == BrakRollerData.PDJG_BHG) {
+					logger.info("驻车判定不合格！");
+					sfhg = false;
+					strpd = "X";
+				}
+				display.sendMessage("驻车：" + decimalFormat.format(CheckDataManager.MathRound1(tczdl)) + "/" + strpd,
+						DeviceDisplay.SP);
+			}
+			
+			
 		}else{
-			display.sendMessage("检判定结果：X", DeviceDisplay.XP);
+			display.sendMessage(vehCheckLogin.getHphm(),DeviceDisplay.SP);
+		}
+
+		
+		if(zdlh>0){
+			otherInfoData.setJczczbzl(zclh);
+			otherInfoData.setZdlh(zdlh);
+			if (zclh != 0) {
+				Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
+				otherInfoData.setZczdl(CheckDataManager.MathRound1(zczdl));
+			}
+			otherInfoData.setZczdlxz();
+			otherInfoData.setZczdlpd();
+			
+			String strpd = "O";
+			if (otherInfoData.getZcpd().equals(BrakRollerData.PDJG_BHG.toString())) {
+				logger.info("整车判定不合格！");
+				strpd="X";
+				sfhg = false;
+			}
+			
+			display.sendMessage("整车：" + decimalFormat.format(otherInfoData.getZczdl()) + "/" + strpd,
+					DeviceDisplay.XP);
+			Thread.sleep(2000);
 		}
 		
-		Thread.sleep(1500);
+		
+		if (sfhg) {
+			display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+		} else {
+			display.sendMessage("检判定结果：X", DeviceDisplay.SP);
+			display.sendMessage("是否复位，等待30S", DeviceDisplay.XP);
+			Thread.sleep(30 * 1000);
+		}
+
+		Thread.sleep(2000);
 		display.sendMessage("请向前行驶", DeviceDisplay.XP);
+
 		Thread.sleep(2000);
 		this.display.setDefault();
-		
-		for (BrakRollerData brakRollerData : datas){
+
+		for (BrakRollerData brakRollerData : datas) {
 			this.checkDataManager.saveData(brakRollerData);
 		}
-		for(VehFlow vehFlow:vehFlows){
-			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
-					vehFlow.getJyxm());
+		for (VehFlow vehFlow : vehFlows) {
+			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+					vehCheckLogin.getJycs(), vehFlow.getJyxm());
 			process.setKssj(startDate);
 			process.setJssj(new Date());
 			this.checkDataManager.updateProcess(process);
@@ -199,7 +271,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
 		}
 		dbp.init(this);
-		
+
 	}
 
 }

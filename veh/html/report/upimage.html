@@ -254,7 +254,43 @@ function init(){
 }
 
 function imageUpload(){
-	
+
+	$("#imgfileForm input[name=jylsh]").val(reportData.jylsh);
+	$("#imgfileForm input[name=jyjgbh]").val(reportData.jyjgbh);
+	$("#imgfileForm input[name=hphm]").val(reportData.hphm);
+	$("#imgfileForm input[name=hpzl]").val(reportData.hpzl);
+	$("#imgfileForm input[name=clsbdh]").val(reportData.clsbdh);
+	$("#imgfileForm input[name=jycs]").val(reportData.jycs);
+	$("#imgfileForm input[name=jcxdh]").val(reportData.jcxdh);
+	var robject =$(".upimage input[name=zpzl]:checked");
+	var zpzl = robject.val();
+	$("#imgfileForm").form("submit",{
+		onSubmit: function(){
+			var filename = $("#imgFile").filebox("getValue");
+			if(robject.length==0){
+				$.messager.alert("提示","请选择照片类型");
+				return false;
+			}
+			$("#imgfileForm input[name=zpzl]").val(zpzl);
+			if(filename==""){
+				$.messager.alert("提示","请选择照片文件");
+				return false;
+			}else{
+				return true;
+			}
+				
+		},
+		success: function(data){
+			data = $.parseJSON(data);
+			if(data.state=="1"||data.state==1){
+        		$("#image"+zpzl).attr("src","data:image/jpeg;base64,"+data.img);
+        		robject.attr("zid",data.id);
+        		$("#imgfileForm").form("clear");
+            }else{
+            	$.messager.alert('错误', data.message, 'error');
+            }
+		}
+	})
 }
 
 </script>
@@ -306,16 +342,16 @@ function imageUpload(){
     		<label>分辨率：</label><input class="easyui-combobox" id="upimageResolution" data-options="onChange:resolutionChange,editable:false" >
     	</div>
     	<div class="upimage-cam-top">
-    		<form action="/veh/report/" method="post" enctype="multipart/form-data" id="imgfileForm">
-    		<label>本地图片：</label><input class="easyui-filebox" name="imgFile" style="width: 120px;" data-options="accept:'image/*',buttonText:'请选择...'">
-    		<input name="jylsh">
-    		<input name="jyjgbh">
-    		<input name="hphm">
-    		<input name="hpzl">
-    		<input name="clsbdh">
-    		<input name="jycs">
-    		<input name="zpzl">
-    		<input name="jcxdh">
+    		<form action="/veh/report/uploadFileImag" method="post" enctype="multipart/form-data" id="imgfileForm">
+    		<label>本地图片：</label><input class="easyui-filebox" name="imgFile" id="imgFile" style="width: 120px;" data-options="accept:'image/*',buttonText:'请选择...'">
+    		<input name="jylsh" type="hidden">
+    		<input name="jyjgbh" type="hidden">
+    		<input name="hphm" type="hidden">
+    		<input name="hpzl" type="hidden">
+    		<input name="clsbdh" type="hidden">
+    		<input name="jycs" type="hidden">
+    		<input name="zpzl" type="hidden">
+    		<input name="jcxdh" type="hidden">
     		<a href="#" class="easyui-linkbutton c6" data-options="onClick:imageUpload">上传</a>
     		</form>
     	</div>

@@ -74,8 +74,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	// -------------控制------------
 	// 仪器归位
 	private String mYqgw = "0201324D4737";
-	
-	private String mtz="0201324D3E40";
+
+	private String mtz = "0201324D3E40";
 
 	// ----------设置 ------------
 	// 设置左靠位
@@ -139,10 +139,10 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 	// 是已经在检测
 	private boolean isChecking;
-	
-	//是否错误
-	private boolean isError=false;
-	
+
+	// 是否错误
+	private boolean isError = false;
+
 	private String errorMessage;
 
 	// 是否開始取數據
@@ -173,21 +173,22 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	@Override
-	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException, SystemException {
+	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
+			throws IOException, InterruptedException, SystemException {
 
 		// 设置检测参数
 		setting(vehCheckLogin, vheFlows);
 		// 等待到位
 		dw(vehCheckLogin);
 
-		//检测是否违规操作
+		// 检测是否违规操作
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				//保护 
-				int i=1000;
+				// 保护
+				int i = 1000;
 				try {
-					while (!isGetData&&i<=1000) {
+					while (!isGetData && i <= 1000) {
 						if (deviceSignal2.getSignal(s2)) {
 							// 仪器归位
 							isIllegal = true;
@@ -205,12 +206,12 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		if (isCheckLeft) {
 			currentPosition = 'L';
 			checking();
-			TakePicture.createNew(this.deviceLight.getVehCheckLogin(),"H1",2000);
+			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H1", 2000);
 		}
 		if (isCheckRight) {
 			currentPosition = 'R';
 			checking();
-			TakePicture.createNew(this.deviceLight.getVehCheckLogin(),"H4",2000);
+			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4", 2000);
 		}
 		// 仪器归位
 		this.deviceLight.sendMessage(mYqgw);
@@ -220,11 +221,12 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		isGetData = true;
 
-		return getData(vheFlows);
+		return getData(vheFlows, vehCheckLogin);
 
 	}
 
-	private List<LightData> getData(List<VehFlow> vheFlows) throws InterruptedException, IOException, SystemException {
+	private List<LightData> getData(List<VehFlow> vheFlows, VehCheckLogin vehCheckLogin)
+			throws InterruptedException, IOException, SystemException {
 
 		if (checkState != ZT_ZC) {
 			return null;
@@ -236,6 +238,12 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		for (int i = 0; i < 112; i++) {
 			checkData[i] = dataList.get(i);
+		}
+
+		String jyxm = "";
+
+		for (VehFlow vehFlow : vheFlows) {
+			jyxm += vehFlow.getJyxm() + ",";
 		}
 
 		List<LightData> lightDatas = new ArrayList<LightData>();
@@ -255,27 +263,50 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		byte[] rightMainLowBeamData = new byte[18];
 		System.arraycopy(checkData, 93, rightMainLowBeamData, 0, rightMainLowBeamData.length);
 
-		if (!isEmptyData(rightMainLowBeamData)) {
+		if (jyxm.indexOf("H4") >= 0 && "无法找到灯光".equals(errorMessage) && (vehCheckLogin.getQzdz().equals("01")
+				|| vehCheckLogin.getQzdz().equals("03") || vehCheckLogin.getQzdz().equals("04"))) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Y);
 			data.setDx(LightData.DX_ZD);
 			data.setGx(LightData.GX_JGD);
 			setCurrent(rightMainLowBeamData, data);
-			this.lightDatas.add(data);
+			lightDatas.add(data);
+		} else if (!isEmptyData(rightMainLowBeamData) && jyxm.indexOf("H4") >= 0) {
+			LightData data = new LightData();
+			data.setWz(LightData.WZ_Y);
+			data.setDx(LightData.DX_ZD);
+			data.setGx(LightData.GX_JGD);
+			setCurrent(rightMainLowBeamData, data);
 			lightDatas.add(data);
 		}
 
-		if (!isEmptyData(rightSideHighBeamData)) {
+		if (jyxm.indexOf("H3") >= 0 && "无法找到灯光".equals(errorMessage)
+				&& (vehCheckLogin.getQzdz().equals("01") || vehCheckLogin.getQzdz().equals("02"))) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Y);
 			data.setDx(LightData.DX_FD);
 			data.setGx(LightData.GX_YGD);
 			setCurrent(rightSideHighBeamData, data);
-			this.lightDatas.add(data);
+			lightDatas.add(data);
+		} else if (!isEmptyData(rightSideHighBeamData) && jyxm.indexOf("H3") >= 0) {
+			LightData data = new LightData();
+			data.setWz(LightData.WZ_Y);
+			data.setDx(LightData.DX_FD);
+			data.setGx(LightData.GX_YGD);
+			setCurrent(rightSideHighBeamData, data);
 			lightDatas.add(data);
 		}
 
-		if (!isEmptyData(rightMainHighBeamData)) {
+		if (jyxm.indexOf("H4") >= 0 && "无法找到灯光".equals(errorMessage) && (vehCheckLogin.getQzdz().equals("01")
+				|| vehCheckLogin.getQzdz().equals("02") || vehCheckLogin.getQzdz().equals("03"))) {
+			LightData data = new LightData();
+			data.setWz(LightData.WZ_Y);
+			data.setDx(LightData.DX_ZD);
+			data.setGx(LightData.GX_YGD);
+			setCurrent(rightMainHighBeamData, data);
+			this.lightDatas.add(data);
+			lightDatas.add(data);
+		} else if (!isEmptyData(rightMainHighBeamData) && jyxm.indexOf("H4") >= 0) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Y);
 			data.setDx(LightData.DX_ZD);
@@ -285,16 +316,33 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			lightDatas.add(data);
 		}
 
-		if (!isEmptyData(leftMainHighBeamData)) {
+		if (jyxm.indexOf("H1") >= 0 && "无法找到灯光".equals(errorMessage)
+				&& (vehCheckLogin.getQzdz().equals("01") || vehCheckLogin.getQzdz().equals("02")
+						|| vehCheckLogin.getQzdz().equals("03") || vehCheckLogin.getQzdz().equals("05"))) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Z);
 			data.setDx(LightData.DX_ZD);
 			data.setGx(LightData.GX_YGD);
 			setCurrent(leftMainHighBeamData, data);
-			this.lightDatas.add(data);
+			lightDatas.add(data);
+		} else if (!isEmptyData(leftMainHighBeamData) && jyxm.indexOf("H1") >= 0) {
+			LightData data = new LightData();
+			data.setWz(LightData.WZ_Z);
+			data.setDx(LightData.DX_ZD);
+			data.setGx(LightData.GX_YGD);
+			setCurrent(leftMainHighBeamData, data);
 			lightDatas.add(data);
 		}
-		if (!isEmptyData(leftSideHighBeamData)) {
+
+		if (jyxm.indexOf("H2") >= 0 && "无法找到灯光".equals(errorMessage)
+				&& (vehCheckLogin.getQzdz().equals("01") || vehCheckLogin.getQzdz().equals("02"))) {
+			LightData data = new LightData();
+			data.setWz(LightData.WZ_Z);
+			data.setDx(LightData.DX_FD);
+			data.setGx(LightData.GX_YGD);
+			setCurrent(leftSideHighBeamData, data);
+			lightDatas.add(data);
+		} else if (!isEmptyData(leftSideHighBeamData) && jyxm.indexOf("H2") >= 0) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Z);
 			data.setDx(LightData.DX_FD);
@@ -303,7 +351,15 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			lightDatas.add(data);
 		}
 
-		if (!isEmptyData(leftMainLowBeamData)) {
+		if (jyxm.indexOf("H1") >= 0 && "无法找到灯光".equals(errorMessage) && (vehCheckLogin.getQzdz().equals("01")
+				|| vehCheckLogin.getQzdz().equals("03") || vehCheckLogin.getQzdz().equals("04"))) {
+			LightData data = new LightData();
+			data.setWz(LightData.WZ_Z);
+			data.setDx(LightData.DX_ZD);
+			data.setGx(LightData.GX_JGD);
+			setCurrent(leftMainLowBeamData, data);
+			lightDatas.add(data);
+		} else if (!isEmptyData(leftMainLowBeamData) && jyxm.indexOf("H1") >= 0) {
 			LightData data = new LightData();
 			data.setWz(LightData.WZ_Z);
 			data.setDx(LightData.DX_ZD);
@@ -319,18 +375,30 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	private void setCurrent(byte[] bs, LightData lightData) throws IOException, InterruptedException, SystemException {
 		byte[] data1 = new byte[5];
 		System.arraycopy(bs, 0, data1, 0, data1.length);
-		lightData.setSppc(new String(data1));
+
+		if ("无法找到灯光".equals(errorMessage)) {
+			lightData.setSppc("0");
+		} else {
+			lightData.setSppc(new String(data1));
+		}
 
 		byte[] data2 = new byte[5];
 		System.arraycopy(bs, 5, data2, 0, data2.length);
-		lightData.setCzpc(new String(data2));
+		if ("无法找到灯光".equals(errorMessage)) {
+			lightData.setCzpc("0");
+		} else {
+			lightData.setCzpc(new String(data2));
+		}
 
 		byte[] data3 = new byte[4];
 		System.arraycopy(bs, 10, data3, 0, data3.length);
 		String gq = new String(data3);
-		if (CharUtil.isNumeric(gq)) {
+
+		if ("无法找到灯光".equals(errorMessage)) {
+			lightData.setGq(0);
+		} else if (CharUtil.isNumeric(gq)) {
 			lightData.setGq(Integer.parseInt(gq) * 100);
-		}else{
+		} else {
 			deviceLight.sendMessage(mtz);
 			Thread.sleep(300);
 			deviceLight.sendMessage(mYqgw);
@@ -343,7 +411,9 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		byte[] data4 = new byte[4];
 		System.arraycopy(bs, 14, data4, 0, data4.length);
 		String dg = new String(data4);
-		if (CharUtil.isNumeric(dg)) {
+		if ("无法找到灯光".equals(errorMessage)) {
+			lightData.setDg(1);
+		} else if (CharUtil.isNumeric(dg)) {
 			lightData.setDg(Integer.parseInt(dg.trim()));
 		}
 
@@ -358,9 +428,9 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	// 开始检测
-	private void checking() throws  InterruptedException, IOException, SystemException {
+	private void checking() throws InterruptedException, IOException, SystemException {
 		this.isChecking = true;
-		this.isError=false;
+		this.isError = false;
 
 		// 按检测顺序 获取提示消息
 		String[] messageArray = null;
@@ -375,19 +445,22 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		deviceLight.sendMessage(currentPosition == 'L' ? tCzd : tCyd);
 		while (true) {
-			
-			if(this.isError){
+
+			if (this.isError) {
 				deviceLight.getDisplay().sendMessage(errorMessage, DeviceDisplay.XP);
-				// 仪器归位
-				this.deviceLight.sendMessage(mYqgw);
-				Thread.sleep(1000*20);
-				throw new SystemException(errorMessage);
+				Thread.sleep(1000 * 2);
+				if (!"无法找到灯光".equals(errorMessage)) {
+					// 仪器归位
+					this.deviceLight.sendMessage(mYqgw);
+					Thread.sleep(1000 * 20);
+					throw new SystemException(errorMessage);
+				}
 			}
-			
+
 			if (!this.isChecking) {
 				break;
 			}
-			//违规操作
+			// 违规操作
 			if (isIllegal) {
 				deviceLight.sendMessage(mtz);
 				Thread.sleep(300);
@@ -440,6 +513,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		isGetData = false;
 		isIllegal = false;
 		currentPosition = null;
+		errorMessage = "";
 		checkData = new byte[112];
 		leftMessageList.clear();
 		rightMessageList.clear();
@@ -447,7 +521,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	// 设置检测参数
-	private void setting(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException{
+	private void setting(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows) throws IOException, InterruptedException {
 
 		// 重置设置
 		reset();
@@ -568,15 +642,15 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			String rtx = CharUtil.byte2HexOfString(data);
 
 			if (rtx.equals(rClwd)) {
-				errorMessage="无法找到灯光";
-				this.isError=true;
+				errorMessage = "无法找到灯光";
+				this.isError = true;
 				this.isChecking = false;
 				return;
 			}
 
 			if (rtx.equals(rClcc)) {
-				errorMessage="测量出错";
-				this.isError=true;
+				errorMessage = "测量出错";
+				this.isError = true;
 				this.isChecking = false;
 				return;
 			}

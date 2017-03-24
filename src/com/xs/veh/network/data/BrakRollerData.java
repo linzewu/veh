@@ -990,8 +990,7 @@ public class BrakRollerData extends BaseDeviceData {
 
 	@Override
 	public void setZpd() {
-		if (this.kzbphlpd == PDJG_BHG || this.kzzdlpd == PDJG_BHG || this.jzbphlpd == PDJG_BHG
-				|| this.jzzdlpd == PDJG_BHG) {
+		if (this.kzbphlpd == PDJG_BHG || this.kzzdlpd == PDJG_BHG) {
 			this.setZpd(PDJG_BHG);
 		}else{
 			this.setZpd(PDJG_HG);
