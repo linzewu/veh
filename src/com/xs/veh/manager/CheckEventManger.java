@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.springframework.context.annotation.Scope;
@@ -18,10 +20,13 @@ import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
+import com.xs.veh.job.CheckedInfoTaskJob;
 
 @Scope("prototype")
 @Service("checkEventManger")
 public class CheckEventManger {
+	
+	private static Logger logger = Logger.getLogger(CheckedInfoTaskJob.class);
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
@@ -80,13 +85,30 @@ public class CheckEventManger {
 		return line;
 	}
 
-	public List<?> getViewData(final String viewName, final String jylsh) {
+	public List<?> getViewData(final String viewName, final String jylsh,final String jyxm) {
 		return hibernateTemplate.execute(new HibernateCallback<List<?>>() {
 			@Override
 			public List<?> doInHibernate(Session session) throws HibernateException {
-				List<?> entitys = session.createSQLQuery("select * from " + viewName + "  where jylsh=:jylsh")
-						.setString("jylsh", jylsh).setFirstResult(0).setMaxResults(1)
-						.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+				
+				String jyxmSql="";
+				
+				boolean jyxmFlag=viewName.equals("V18C55")||viewName.equals("V18C58");
+				
+				if(jyxmFlag){
+					jyxmSql=" and jyxm=:jyxm";
+				}
+				
+				SQLQuery sq=session.createSQLQuery("select * from " + viewName + "  where jylsh=:jylsh "+jyxmSql);
+				
+				sq.setString("jylsh", jylsh);
+						
+				if(jyxmFlag){
+					sq.setString("jyxm", jyxm);
+					logger.info("sql:"+"select * from " + viewName + "  where jylsh=:jylsh "+jyxmSql);
+				}
+				
+				List<?> entitys =sq.setFirstResult(0).setMaxResults(1)
+						.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list(); 
 				return entitys;
 			}
 		});

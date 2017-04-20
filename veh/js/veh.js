@@ -427,6 +427,9 @@ var veh = {
 			}
 		}
 	},
+	setVehL14:function(){
+		
+	},
 	setVehB0 : function() {
 		// var zs = $("input[numberboxname=zs]").numberbox("getValue");
 		var ccdjrq = $("input[textboxname=ccdjrq]").datebox("getValue");
@@ -480,11 +483,87 @@ var veh = {
 		}
 
 		if (cllxChar == "K") {
-			if (syxz != "A" || (cllxChar2 != "K3" && cllxChar2 != "K4")) {
+			if (syxz != "A" || (cllxChar2 != "K3" && cllxChar2 != "`")) {
 				$(":checkbox[name=jyxm][value=S1]").prop("checked", true);
 			}
 		}
 
+	},
+	setVehDC:function(){
+		var ccdjrq = $("input[textboxname=ccdjrq]").datebox("getValue");
+		var hdzk = $("input[textboxname=hdzk]").numberbox("getValue");
+		var cllx = $("input[textboxname=cllx]").combobox("getValue");
+		var syxz = $("input[textboxname=syxz]").combobox("getValue");
+		
+		$(":checkbox[name=jyxm][value=DC]").prop("checked", false);
+
+		var cllxChar = cllx.substring(0, 1);
+		var cllxChar2 = cllx.substring(0, 2);
+
+		var isTimeout = true;
+
+		if (ccdjrq != "") {
+			var dateArray = ccdjrq.split("-");
+			var djrqDate = new Date(Number(dateArray[0]) + 10,
+					dateArray[1] - 1, dateArray[2]);
+			var nowTime = new Date();
+			var nowDate = new Date(nowTime.getFullYear(), nowTime.getMonth(),
+					nowTime.getDate());
+
+			if (djrqDate.getTime() > nowDate.getTime()) {
+				isTimeout = false;
+			}
+		}
+
+		if (cllxChar == "M"||cllxChar=="B"||cllxChar=="G") {
+			return;
+		} else {
+			if (syxz != "A" || cllxChar != "K" || cllxChar2 == "K1"
+					|| cllxChar2 == "K2" || isTimeout || hdzk >= 7
+					|| cllx == "K39" || cllx == "K49") {
+				$(":checkbox[name=jyxm][value=DC]").prop("checked", true);
+
+			}
+		}
+		
+	},
+	setVehC1:function(){
+		var ccdjrq = $("input[textboxname=ccdjrq]").datebox("getValue");
+		var hdzk = $("input[textboxname=hdzk]").numberbox("getValue");
+		var cllx = $("input[textboxname=cllx]").combobox("getValue");
+		var syxz = $("input[textboxname=syxz]").combobox("getValue");
+		
+		$(":checkbox[name=jyxm][value=C1]").prop("checked", false);
+
+		var cllxChar = cllx.substring(0, 1);
+		var cllxChar2 = cllx.substring(0, 2);
+
+		var isTimeout = true;
+
+		if (ccdjrq != "") {
+			var dateArray = ccdjrq.split("-");
+			var djrqDate = new Date(Number(dateArray[0]) + 10,
+					dateArray[1] - 1, dateArray[2]);
+			var nowTime = new Date();
+			var nowDate = new Date(nowTime.getFullYear(), nowTime.getMonth(),
+					nowTime.getDate());
+
+			if (djrqDate.getTime() > nowDate.getTime()) {
+				isTimeout = false;
+			}
+		}
+
+		if (cllxChar == "M") {
+			return;
+		} else {
+			if (syxz != "A" || cllxChar != "K" || cllxChar2 == "K1"
+					|| cllxChar2 == "K2" || isTimeout || hdzk >= 7
+					|| cllx == "K39" || cllx == "K49") {
+				$(":checkbox[name=jyxm][value=C1]").prop("checked", true);
+
+			}
+		}
+		
 	},
 	intiEvents : function() {
 		$("input[numberboxname=zs]").numberbox({
@@ -498,6 +577,8 @@ var veh = {
 				veh.setVehH14();
 				veh.setVehB0();
 				veh.setVehS1();
+				veh.setVehDC();
+				veh.setVehC1();
 			}
 		});
 
@@ -512,18 +593,24 @@ var veh = {
 			"onChange" : function(newValue, oldValue) {
 				veh.setVehB0();
 				veh.setVehS1();
+				veh.setVehDC();
+				veh.setVehC1();
 			}
 		});
 
 		$("input[textboxname=ccdjrq]").datebox({
 			"onChange" : function(newValue, oldValue) {
 				veh.setVehB0();
+				veh.setVehDC();
+				veh.setVehC1();
 			}
 		});
 
 		$("input[textboxname=hdzk]").numberbox({
 			"onChange" : function(newValue, oldValue) {
 				veh.setVehB0();
+				veh.setVehDC();
+				veh.setVehC1();
 			}
 		});
 		

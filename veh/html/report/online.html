@@ -28,6 +28,16 @@ $(function(){
 
 
 	$("#grid_checkEvent").datagrid({
+		toolbar: [{
+			iconCls: 'icon-reload',
+			text:'重新上传',
+			handler: function(){
+				$.post("/veh/report/updateEventState",{jylsh:reportData.jylsh},function(data){
+					$.messager.alert("提示","刷新成功");
+					$("#grid_checkEvent").datagrid("reload");
+				})
+			}
+		}],
 		url:'/veh/report/getCheckEvents?jylsh='+reportData.jylsh,
 		title:'上传事件',
 	    columns:[[

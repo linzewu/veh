@@ -100,7 +100,6 @@ public class CheckedInfoTaskJob {
 
 		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
 		param.put("jyjgbh", jyjgbh);
-
 		qoo.setJkid(jkid);
 		qoo.setXtlb(RCAConstant.XTLB);
 		qoo.setJkxlh(jkxlh);
@@ -228,8 +227,8 @@ public class CheckedInfoTaskJob {
 		if(outlines!=null&&!outlines.isEmpty()){
 			for(Outline outline : outlines){
 				outline.setReportFlag(Outline.FLAG_Y);
-				vehManager.updateVehCheckLoginState(outline.getJylsh());
 				vehManager.updateOutline(outline);
+				vehManager.updateVehCheckLoginState(outline.getJylsh());
 			}
 		}
 	}
@@ -296,7 +295,7 @@ public class CheckedInfoTaskJob {
 					viewName += "_" + checkItem;
 				}
 
-				List<Map> datas = (List<Map>) eventManger.getViewData(viewName, e.getJylsh());
+				List<Map> datas = (List<Map>) eventManger.getViewData(viewName, e.getJylsh(),e.getJyxm());
 
 				if (datas == null || datas.isEmpty()) {
 					e.setState(2);

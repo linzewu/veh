@@ -88,7 +88,7 @@ public class WorkPointThread extends Thread {
 			} catch (SystemException e) {
 				logger.error(e.getMessage());
 			}catch(Exception e){
-				logger.info(e.getMessage());
+				logger.error(e);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {

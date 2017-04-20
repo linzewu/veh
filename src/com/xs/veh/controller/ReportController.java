@@ -213,5 +213,14 @@ public class ReportController {
 		
 		return jsonString;
 	}
+	
+	@RequestMapping(value = "updateEventState")
+	public @ResponseBody Map updateEventState(@RequestParam String jylsh) throws JsonProcessingException, InterruptedException {
+		
+		this.checkDataManager.resetEventState(jylsh);
+		
+		return ResultHandler.toSuccessJSON("更新成功！");
+		
+	}
 
 }

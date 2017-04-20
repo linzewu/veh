@@ -184,13 +184,14 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			zczczdl = zczczdl == null ? 0 : zczczdl;
 			
 			Integer oldzclh=(Integer) otherParam.get("zclh");
+			zclh=(zclh==0&&oldzclh!=null)?oldzclh:zclh;
 			
-			
-			zclh=zclh==0&&oldzclh!=null?oldzclh:zclh;
-			
+			logger.info("驻车轮荷："+zclh);
+			logger.info("驻车制动力："+parDataOfAnjian.getZczczdl());
 			if(zclh>0){
 				parDataOfAnjian.setTczclh(zclh);
 				Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
+				logger.info("驻车制动率："+CheckDataManager.MathRound1(tczdl));
 				parDataOfAnjian.setTczclh(zclh);
 				parDataOfAnjian.setTczdl(CheckDataManager.MathRound1(tczdl));
 				parDataOfAnjian.setTczdxz();

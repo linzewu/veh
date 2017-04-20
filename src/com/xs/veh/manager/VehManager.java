@@ -876,8 +876,7 @@ public class VehManager {
 	}
 
 	public void updateOutline(Outline outline) {
-		this.hibernateTemplate.save(outline);
-
+		this.hibernateTemplate.update(outline);
 	}
 
 	public void deleteDeviceCheckJudegOfOutline(String jylsh) {

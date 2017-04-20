@@ -768,10 +768,18 @@ public class CheckDataManager {
 				.find("from BrakRollerData where jylsh=?  and jyxm!=? order by id desc", jylsh, "B0");
 		
 		if(report4!=null&&!report4.isEmpty()){
-			Integer jycs = report4.get(0).getJycs();
+			//Integer jycs = report4.get(0).getJycs();
+			Map<String,Object> tempMap=new HashMap<String,Object>();
 			for(BrakRollerData brakRollerData:report4){
-				if(brakRollerData.getJycs()!=jycs){
+				Integer jycs = brakRollerData.getJycs();
+				String jyxm= brakRollerData.getJyxm();
+				
+				String key=jycs+"_"+jyxm;
+				
+				if(tempMap.get(key)!=null){
 					report4.remove(brakRollerData);
+				}else{
+					tempMap.put(key, brakRollerData);
 				}
 			}
 		}
@@ -828,7 +836,7 @@ public class CheckDataManager {
 	// 获取整车轴荷
 	public Integer getZCZH(VehCheckLogin vehCheckLogin) {
 		List<BrakRollerData> list = (List<BrakRollerData>) this.hibernateTemplate.find(
-				"from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=?", vehCheckLogin.getJylsh(),
+				"from BrakRollerData where jylsh=? and jyxm<>'B0' and jyxm<>'L1' and jyxm<>'L2' and jyxm<>'L3' and jyxm<>'L4'  and sjzt=? ", vehCheckLogin.getJylsh(),
 				BrakRollerData.SJZT_ZC);
 		// 整车轮荷
 		Integer zclh = 0;
@@ -978,7 +986,7 @@ public class CheckDataManager {
 	}
 
 	public void updateProcess(VehCheckProcess vehCheckProcess) {
-		this.hibernateTemplate.save(vehCheckProcess);
+		this.hibernateTemplate.update(vehCheckProcess);
 	}
 
 	public void createCheckEventOnLine(String jylsh, Integer jycs) {
@@ -1059,5 +1067,19 @@ public class CheckDataManager {
 			return list.get(0);
 		}
 		return null;
+	}
+	
+	public void resetEventState(final String jylsh){
+		
+		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				
+				return session.createQuery("update CheckEvents set state=0 where jylsh=? ").setParameter(0, jylsh).executeUpdate();
+				
+			}
+		});
+		
 	}
 }
