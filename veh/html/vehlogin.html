@@ -34,7 +34,7 @@
 		<div class="easyui-layout" data-options="fit:true">
 			<div data-options="region:'center',title:'车辆基本信息',href:'vehInfo_.html',onLoad:veh.intiEvents" id="panel-vheInfo" style="padding: 10px;">
 			</div>
-			<div data-options="region:'south',border:0" style="height: 160px;" >
+			<div data-options="region:'south',border:0" style="height: 180px;" >
 				<div title="车辆检验项目"  class="easyui-panel panel_cyxm" data-options="fit:true">
 					<table  cellspacing="0" border="0" cellpadding="1" style="min-width: 872px;">
 						<tr>
@@ -58,14 +58,20 @@
 							<td><span><label for="i_ywd">右外灯:</label><input id="i_ywd" name="jyxm" type="checkbox" value="H4"></span></td>
 							<td><span><label for="i_csb">车速表:</label><input id="i_csb" name="jyxm" type="checkbox" value="S1"></span></td>
 							<td ><span><label for="i_ch">侧滑:</label><input id="i_ch" name="jyxm" type="checkbox" value="A1"></span></td>
-							<td><span><label for="i_lszd">路试制动:</label><input id="i_lszd" name="jyxm" type="checkbox" value="R1"></span></td>
-							<td><span><label for="i_lspdzc">路试坡道驻车:</label><input id="i_lspdzc" name="jyxm" type="checkbox" value="R2"></span></td>
+							<td><span><label for="i_lszd">一轴加载:</label><input id="i_lszd" name="jyxm" type="checkbox" value="L1"></span></td>
+							<td><span><label for="i_lspdzc">二轴加载:</label><input id="i_lspdzc" name="jyxm" type="checkbox" value="L2"></span></td>
 						</tr>
 						<tr>
+							<td><span><label for="i_ynd">三轴加载:</label><input id="i_ynd" name="jyxm" type="checkbox" value="L3"></span></td>
+							<td><span><label for="i_ywd">四轴加载:</label><input id="i_ywd" name="jyxm" type="checkbox" value="L4"></span></td>
+							<td><span><label for="i_lszd">路试制动:</label><input id="i_lszd" name="jyxm" type="checkbox" value="R1"></span></td>
+							<td><span><label for="i_lspdzc">路试坡道驻车:</label><input id="i_lspdzc" name="jyxm" type="checkbox" value="R2"></span></td>
 							<td><span><label for="i_lscsb">路试车速表:</label><input id="i_lscsb" name="jyxm" type="checkbox" value="R3"></span></td>
 							<td><span><label for="i_wkcc">外廓尺寸测量:</label><input id="i_wkcc" name="jyxm" type="checkbox" value="M1"></span></td>
+						</tr>
+						<tr>
 							<td><span><label for="i_zbzl">整备质量测量:</label><input id="i_zbzl" name="jyxm" type="checkbox" value="Z1"></span></td>
-							<td >&nbsp;</td>
+							<td  colspan="3">&nbsp;</td>
 							<td  style="" >
 								<label>检测线:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="editable:false,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'" value="1" style="width: 55px;" name="jcxdh" id="_jcxdh" >
 							</td>
