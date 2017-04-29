@@ -5,7 +5,7 @@
   
 <hibernate-configuration>  
     <session-factory> 
-       <property name="dialect">com.xs.common.MySQLServerDialect</property> 
+       	<property name="dialect">com.xs.common.MySQLServerDialect</property> 
         <property name="jdbc.batch_size">20</property>  
         <property name="connection.autocommit">true</property>  
         <property name="hibernate.hbm2ddl.auto" >update</property>

@@ -206,12 +206,12 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		if (isCheckLeft) {
 			currentPosition = 'L';
 			checking();
-			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H1", 2000);
+			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H1");
 		}
 		if (isCheckRight) {
 			currentPosition = 'R';
 			checking();
-			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4", 2000);
+			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4");
 		}
 		// 仪器归位
 		this.deviceLight.sendMessage(mYqgw);

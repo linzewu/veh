@@ -230,7 +230,7 @@ public class CheckDataManager {
 
 		// 计算整车制动力
 		List<BrakRollerData> list = (List<BrakRollerData>) this.hibernateTemplate
-				.find("from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=?", jylsh, BrakRollerData.SJZT_ZC);
+				.find("from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=? and jyxm<>'L1' and jyxm<>'L2' and jyxm<>'L3' and jyxm<>'L4'", jylsh, BrakRollerData.SJZT_ZC);
 
 		// 制动力和
 		Integer zdlh = 0;
@@ -651,9 +651,12 @@ public class CheckDataManager {
 
 		for (BrakRollerData brd : brds) {
 			if (flagMap.get(brd.getJyxm()) == null) {
+				
+				String temp = brd.getJyxm().indexOf("L")==0?"加载":"";
+				
 				DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
-				dcj1.setYqjyxm(getZW(brd.getZw()) + "制动率(%)");
+				dcj1.setYqjyxm(getZW(brd.getZw()) +temp+ "制动率(%)");
 				dcj1.setYqjyjg(brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString());
 				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString());
 				dcj1.setYqjgpd(brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString());
@@ -664,7 +667,7 @@ public class CheckDataManager {
 
 				DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj2.setXh(xh);
-				dcj2.setYqjyxm(getZW(brd.getZw()) + "不平衡率(%)");
+				dcj2.setYqjyxm(getZW(brd.getZw()) +temp+ "不平衡率(%)");
 				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
 				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString());
 				dcj2.setYqjgpd(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString());
@@ -672,7 +675,7 @@ public class CheckDataManager {
 				xh++;
 				this.hibernateTemplate.save(dcj2);
 
-				if (brd.getJzzzdl() != null) {
+			/*	if (brd.getJzzzdl() != null) {
 					DeviceCheckJudeg dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj3.setXh(xh);
 					dcj3.setYqjyxm(getZW(brd.getZw()) + "加载制动率(%)");
@@ -692,7 +695,7 @@ public class CheckDataManager {
 					dcj4.setXh(xh);
 					xh++;
 					this.hibernateTemplate.save(dcj4);
-				}
+				}*/
 			}
 			flagMap.put(brd.getJyxm(), brd);
 		}
@@ -992,7 +995,7 @@ public class CheckDataManager {
 	public void createCheckEventOnLine(String jylsh, Integer jycs) {
 
 		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate.find(
-				"from VehCheckProcess where jylsh=? and jycs=? and jyxm in('H1','H2','H3','H4','B0','B1','B2','B3','B4','B5','A1','S1')",
+				"from VehCheckProcess where jylsh=? and jycs=? and jyxm in('H1','H2','H3','H4','B0','B1','B2','B3','B4','B5','A1','S1','L1','L2','L3','L4')",
 				jylsh, jycs);
 		
 		VehCheckLogin vehCheckLogin = this.getVehCheckLogin(jylsh);

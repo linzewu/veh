@@ -414,13 +414,11 @@ var veh = {
 			} else if (qzdz == "03" || qzdz == "04") {
 				$(":checkbox[name=jyxm][value=H1]").prop("checked", true);
 				$(":checkbox[name=jyxm][value=H4]").prop("checked", true);
-				
 				$(":checkbox[name=jyxm][value=H2]").prop("disabled", true);
 				$(":checkbox[name=jyxm][value=H3]").prop("disabled", true);
 				
 			} else if (qzdz == "05") {
 				$(":checkbox[name=jyxm][value=H1]").prop("checked", true);
-				
 				$(":checkbox[name=jyxm][value=H2]").prop("disabled", true);
 				$(":checkbox[name=jyxm][value=H3]").prop("disabled", true);
 				$(":checkbox[name=jyxm][value=H4]").prop("disabled", true);
@@ -428,6 +426,42 @@ var veh = {
 		}
 	},
 	setVehL14:function(){
+		var zs = $("input[textboxname=zs]").numberbox("getValue");
+		var cllx = $("input[textboxname=cllx]").combobox("getValue");
+		for (var i = 1; i <= 4; i++){
+			$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
+					false);
+			$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+					false);
+		}
+		
+		if(zs&&zs>=3){
+			for (var i = 1; i <= zs; i++) {
+				if (i == zs) {
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
+							false);
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+							true);
+				}else if(i ==1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0)){
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+							false);
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
+							true);
+				}else if(i >1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0||cllx.indexOf("H")>=0)){
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+							false);
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
+							true);
+				} else {
+					console.log(i);
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
+							false);
+					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+							true);
+				}
+			}
+		}
+		
 		
 	},
 	setVehB0 : function() {
@@ -472,11 +506,16 @@ var veh = {
 	setVehS1 : function() {
 		var cllx = $("input[textboxname=cllx]").combobox("getValue");
 		var syxz = $("input[textboxname=syxz]").combobox("getValue");
+		var jylb = $("input[textboxname=jylb]").combobox("getValue");
 
 		var cllxChar = cllx.substring(0, 1);
 		var cllxChar2 = cllx.substring(0, 2);
 
 		$(":checkbox[name=jyxm][value=S1]").prop("checked", false);
+		
+		if(jylb!="00"){
+			return;
+		}
 
 		if (cllxChar == "H") {
 			$(":checkbox[name=jyxm][value=S1]").prop("checked", true);
@@ -487,7 +526,6 @@ var veh = {
 				$(":checkbox[name=jyxm][value=S1]").prop("checked", true);
 			}
 		}
-
 	},
 	setVehDC:function(){
 		var ccdjrq = $("input[textboxname=ccdjrq]").datebox("getValue");
@@ -569,6 +607,13 @@ var veh = {
 		$("input[numberboxname=zs]").numberbox({
 			"onChange" : function(newValue, oldValue) {
 				veh.setVehB16(newValue);
+				veh.setVehL14();
+			}
+		});
+		
+		$("input[textboxname=jylb]").combobox({
+			"onChange" : function(newValue, oldValue) {
+				veh.setVehS1(newValue);
 			}
 		});
 
@@ -579,6 +624,7 @@ var veh = {
 				veh.setVehS1();
 				veh.setVehDC();
 				veh.setVehC1();
+				veh.setVehL14();
 			}
 		});
 
@@ -1058,9 +1104,19 @@ var report={
 					
 					var jzzh=n.jzzlh+n.jzylh;
 					
-					$("#report1 tr[name="+tt[1]+"] td[name=zd_jzzh]").text((jzzh==0||jzzh==null)?"":jzzh);
-					$("#report1 tr[name="+tt[1]+"] td[name=zd_jzzzdl]").text(n.jzzzdl==null?"":n.jzzzdl);
-					$("#report1 tr[name="+tt[1]+"] td[name=zd_jzbphl]").text(n.jzbphl==null?"":n.jzbphl);
+					if(tt[1].indexOf("L")==0){
+						$("#report1 tr[name=B"+n.zw+"] td[name=zd_jzzh]").text(n.zlh+n.ylh);
+						$("#report1 tr[name=B"+n.zw+"] td[name=zd_jzzzdl]").text(n.kzxczdl);
+						$("#report1 tr[name=B"+n.zw+"] td[name=zd_jzbphl]").text(n.kzbphl);
+						
+						var objpd=$("#report1 tr[name=B"+n.zw+"] td[name=xmpd]");
+						
+						if(objpd.text()!="X"){
+							objpd.text(veh.jgpd(n.zpd));
+						}
+						
+						
+					}
 					
 					if(tt[1]=="B0"){
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_b"+n.zw+"_zczdl]").text((Number(n.zzdl)+Number(n.yzdl)))

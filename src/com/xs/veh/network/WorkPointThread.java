@@ -169,7 +169,6 @@ public class WorkPointThread extends Thread {
 								Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
 								param.put("zclh", zclh);
 							}
-							
 						}
 						workPointManager.check(checkDevice, vehCheckLogin, checkQueue, vehFlow,param);
 					}

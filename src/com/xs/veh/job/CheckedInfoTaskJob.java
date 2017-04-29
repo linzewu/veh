@@ -273,9 +273,9 @@ public class CheckedInfoTaskJob {
 
 	@Scheduled(fixedDelay = 1000)
 	public void scanEventJob() throws Exception {
-		if (!isNetwork || !getUploadSwitch()) {
-			return;
-		}
+//		if (!isNetwork || !getUploadSwitch()) {
+//			return;
+//		}
 		List<CheckEvents> list = (List<CheckEvents>) eventManger.getEvents();
 		for (CheckEvents e : list) {
 			Thread.sleep(1000);
@@ -307,7 +307,6 @@ public class CheckedInfoTaskJob {
 				for (Map data : datas) {
 
 					if (e.getEvent().equals(RCAConstant.V18C62)) {
-
 						List yqjg = checkDataManager.getDeviceCheckJudeg(e.getJylsh());
 						Document docYqjg = BeanXMLUtil.list2xml(yqjg, "yqsbjyjg");
 						if (docYqjg != null) {

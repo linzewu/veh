@@ -172,19 +172,22 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		logger.info("vehCheckLogin.getZs()" + vehCheckLogin.getZs());
 		logger.info("vehCheckLogin.getCllx()" + vehCheckLogin.getCllx());
 		logger.info("intZw" + intZw);
-
-		if (vehCheckLogin.getZs() >= 3
-				&& (vehCheckLogin.getCllx().indexOf("G") == 0 || vehCheckLogin.getCllx().indexOf("B") == 0)
-				&& vehCheckLogin.getZs() != intZw && intZw != 0 && plusLoadFlag) {
-			dbrd.isPlusLoad = true;
-		} else if (vehCheckLogin.getCllx().indexOf("H") == 0 && vehCheckLogin.getZs() >= 3 && intZw > 1
-				&& vehCheckLogin.getZs() != intZw && intZw != 0 && plusLoadFlag) {
-			dbrd.isPlusLoad = true;
-		} else {
-			dbrd.isPlusLoad = false;
+		
+		if(intZw==0){
+			intZw=Integer.parseInt(vehFlow.getMemo());
 		}
-		logger.info("dbrd.isPlusLoad:" + dbrd.isPlusLoad);
-
+		
+		int nexzw=-1;
+		if(nextVehFlow!=null){
+			nexzw=Integer.parseInt(nextVehFlow.getJyxm().substring(1,2));
+			if(nexzw==0){
+				nexzw =Integer.parseInt(nextVehFlow.getMemo());
+			}
+		}
+		
+		logger.info("intZw:" + intZw);
+		logger.info("nexzw:" + nexzw);
+		
 		BrakRollerData brakRollerData = (BrakRollerData) otherParam.get("brakRollerData");
 
 		logger.info("brakRollerData:" + brakRollerData);
@@ -238,14 +241,17 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setJzbphlpd();
 			brakRollerData.setZpd();
 		}
+		
+		
 
 		if (brakRollerData.getKzxczdl() != null) {
 			DecimalFormat decimalFormat = new DecimalFormat(".0");
 			display.sendMessage(decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
 					+ decimalFormat.format(brakRollerData.getKzbphl()), DeviceDisplay.SP);
 		}
+		
 
-		if (nextVehFlow != null && nextVehFlow.getJyxm().equals("B0")) {
+		if (nextVehFlow != null && nexzw==intZw) {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
 				display.sendMessage("检判定结果：O", DeviceDisplay.XP);
 				Thread.sleep(2000);
@@ -278,8 +284,6 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 					}
 				}
 				Integer zclh =(Integer) otherParam.get("zclh");
-				
-				
 				Integer zczczdl = parDataOfAnjian.getZczczdl();
 				zczczdl = zczczdl == null ? 0 : zczczdl;
 				parDataOfAnjian.setZczczdl(zczczdl + brakRollerData.getZzdl() + brakRollerData.getYzdl());
@@ -304,11 +308,17 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			}
 			display.sendMessage("请向前行驶", DeviceDisplay.XP);
 		}
-
-		if (nextVehFlow != null && nextVehFlow.getJyxm().equals("B0") && !vehFlow.getJyxm().equals("B0")) {
-			display.sendMessage("请等待，检测驻车！", DeviceDisplay.XP);
+		
+		if (nexzw != -1 &&nexzw==intZw ) {
+			String mes ="";
+			if(nextVehFlow.getJyxm().equals("B0")){
+				mes ="请等待，检测驻车！";
+			}else{
+				mes ="请等待，检测加载！";
+			}
+			display.sendMessage(mes, DeviceDisplay.XP);
 			Thread.sleep(1000);
-		} else {
+		}else {
 			while (this.getSignal()) {
 				Thread.sleep(500);
 			}

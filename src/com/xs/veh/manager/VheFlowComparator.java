@@ -2,10 +2,14 @@ package com.xs.veh.manager;
 
 import java.util.Comparator;
 
+import org.apache.log4j.Logger;
+
 import com.xs.veh.entity.Flow;
 import com.xs.veh.entity.VehFlow;
 
 public class VheFlowComparator implements Comparator<VehFlow> {
+	
+	private static Logger logger = Logger.getLogger(VheFlowComparator.class);
 	
 	public VheFlowComparator(Flow flow){
 		this.flow=flow;
@@ -86,7 +90,11 @@ public class VheFlowComparator implements Comparator<VehFlow> {
 		String jyxm1=o1.getJyxm().substring(0, 1);
 		String jyxm2=o2.getJyxm().substring(0, 1);
 		
-		if(o1.getJyxm().substring(0, 1).equals("B")){
+		logger.info("jyxm1:"+jyxm1 +" "+o1.getMemo());
+		logger.info("jyxm2:"+jyxm2 +" "+o2.getMemo());
+
+		
+		if(o1.getJyxm().substring(0, 1).equals("B")||o1.getJyxm().substring(0, 1).equals("L")){
 			Integer zw1 = Integer.parseInt(o1.getJyxm().substring(1,2));
 			Integer zw2 = Integer.parseInt(o2.getJyxm().substring(1,2));
 			
@@ -103,7 +111,17 @@ public class VheFlowComparator implements Comparator<VehFlow> {
 			}else if(zw1<zw2){
 				return -1;
 			}else{
-				return retzw;
+				char c1=o1.getJyxm().charAt(0);
+				char c2=o2.getJyxm().charAt(0);
+				if(c1>c2){
+					return 1;
+				}else if(c1<c2){
+					return -1;
+				}else{
+					return retzw;
+				}
+				
+				
 			}
 		}
 		//灯光
@@ -120,5 +138,5 @@ public class VheFlowComparator implements Comparator<VehFlow> {
 		}
 		return 0;
 	}
-
+	
 }

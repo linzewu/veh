@@ -86,7 +86,9 @@ public class CheckEventManger {
 	}
 
 	public List<?> getViewData(final String viewName, final String jylsh,final String jyxm) {
-		return hibernateTemplate.execute(new HibernateCallback<List<?>>() {
+		
+		
+		return hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<?>>() {
 			@Override
 			public List<?> doInHibernate(Session session) throws HibernateException {
 				
@@ -106,7 +108,7 @@ public class CheckEventManger {
 					sq.setString("jyxm", jyxm);
 					logger.info("sql:"+"select * from " + viewName + "  where jylsh=:jylsh "+jyxmSql);
 				}
-				
+				logger.info("ViewName " + viewName ); 
 				List<?> entitys =sq.setFirstResult(0).setMaxResults(1)
 						.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list(); 
 				return entitys;
