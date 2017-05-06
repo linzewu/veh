@@ -21,9 +21,9 @@ import com.xs.veh.network.data.BrakRollerData;
  * @author linze
  *
  */
-public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
+public class DeviceBrakRollerDriverOfJXFJZ2 extends AbstractDeviceBrakRoller {
 
-	private static Logger logger = Logger.getLogger(DeviceBrakRollerDriverOfJXFJZ.class);
+	private static Logger logger = Logger.getLogger(DeviceBrakRollerDriverOfJXFJZ2.class);
 
 	// 启动左电机
 	private String qdzdj = "FF0001EE";
@@ -183,6 +183,13 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			// 清理数据
 			deviceBrakRoller.clearDate();
 			dw(vehFlow, zw);
+			
+			
+			if(vehFlow.getJyxm().indexOf("L")==0){
+				cz();
+			}
+			
+			
 
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
@@ -198,31 +205,6 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 				Thread.sleep(2000);
 				deviceBrakRoller.setInfoData(brakRollerData);
 			}
-
-			if (isPlusLoad) {
-				// 称重
-				cz();
-				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_YES);
-				brakRollerData.getRigthData().clear();
-				brakRollerData.getLeftData().clear();
-				// 开始检测
-				deviceBrakRoller.sendMessage(ksjc);
-				checkingFlage=true;
-				// 等待检测数据返回
-				while (checkingFlage) {
-					Thread.sleep(300);
-				}
-
-				if (isError) {
-					Thread.sleep(3000);
-				} else {
-					Thread.sleep(2000);
-					deviceBrakRoller.setJZInfoData(brakRollerData);
-				}
-			} else {
-				brakRollerData.setSfjzz(BrakRollerData.SFJZZ_NO);
-			}
-
 			checkingFlage = false;
 			deviceBrakRoller.getDisplay().sendMessage(zw + "制动检测完成", DeviceDisplay.SP);
 			if (intZw != 0) {
@@ -232,14 +214,14 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			}
 			return brakRollerData;
 		} finally {
-			if (isPlusLoad) {
-				this.deviceBrakRoller.sendMessage(ttxj);
-				Thread.sleep(5000);
-			}
 			if (nextVehFlow == null || !nextVehFlow.getJyxm().equals("B0")
 					|| (nextVehFlow.getJyxm().equals("B0") && vehFlow.getJyxm().equals("B0"))) {
 				this.deviceBrakRoller.sendMessage(jsqss);
 				Thread.sleep(500);
+			}
+			if (vehFlow.getJyxm().indexOf("L")==0) {
+				this.deviceBrakRoller.sendMessage(ttxj);
+				Thread.sleep(5000);
 			}
 
 		}
@@ -410,9 +392,9 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 			String t1 = CharUtil.bcd2Str(new byte[] { data[1], data[2] });
 
 			if (type == 0xCC) {
-				this.brakRollerData.setJzzlh(Integer.parseInt(t1));
+				this.brakRollerData.setZlh(Integer.parseInt(t1));
 			} else if (type == 0xDD) {
-				this.brakRollerData.setJzylh(Integer.parseInt(t1));
+				this.brakRollerData.setYlh(Integer.parseInt(t1));
 			}
 		}
 	}

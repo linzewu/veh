@@ -50,25 +50,13 @@ public class DeviceBrakRollerDriverOfJXGT2 extends AbstractDeviceBrakRoller {
 	private String scMessage;
 
 
-	private List<Byte> temp = new LinkedList<Byte>();
-
-
 	@Override
 	public BrakRollerData startCheck(VehFlow vehFlow) throws SystemException, IOException, InterruptedException {
 		try {
 			Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
 			scMessage = vehFlow.getJyxm().equals("B0") ? "请拉手刹" : "请踩刹车";
 			String zw = getZW(intZw);
-			temp.clear();
-			
-			/*if(vehFlow.getJyxm().indexOf("L")!=0){
-				// 仪表清0
-				logger.info("仪表清0命令：" + ybql);
-				deviceBrakRoller.sendMessage(ybql);
-				logger.info("仪表清零返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
-			}*/
-			
-		
+			this.getTemp().clear();
 			
 			Thread.sleep(1000);
 			// 清理数据
@@ -230,24 +218,9 @@ public class DeviceBrakRollerDriverOfJXGT2 extends AbstractDeviceBrakRoller {
 		Thread.sleep(5000);
 	}
 
-	@Override
-	public void device2pc(byte[] ed) throws IOException {
-		for (byte b : ed) {
-			temp.add(b);
-		}
-	}
+	
 
-	public byte[] getDevData(byte[] contex) throws InterruptedException {
-
-		for (int i = 0; i < contex.length; i++) {
-			while (temp.isEmpty()) {
-				Thread.sleep(50);
-			}
-			contex[i] = temp.remove(0);
-		}
-
-		return contex;
-	}
+	
 
 	// 倒数计时线程
 	public void ds(final String title, final Integer ms, final String afterTitle) {

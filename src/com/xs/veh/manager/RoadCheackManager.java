@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,8 @@ import com.xs.veh.entity.VehCheckLogin;
 
 @Service("roadCheackManager")
 public class RoadCheackManager {
+	
+	Logger logger = Logger.getLogger(RoadCheackManager.class);
 	
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
@@ -71,6 +74,8 @@ public class RoadCheackManager {
 		DeviceCheckJudeg deviceCheckJudegZcpd=new DeviceCheckJudeg();
 		setDeviceCheckJudeg(deviceCheckJudegZcpd,vehCheckLogin);
 		
+		
+		
 		//行车路试制动判定
 		if(roadCheck.getLscsdpd()==new Integer(2)||roadCheck.getLskzzdjlpd()==new Integer(2)||roadCheck.getLskzmfddpd()==new Integer(2)){
 			roadCheck.setLszdpd(2);
@@ -78,10 +83,15 @@ public class RoadCheackManager {
 			roadCheck.setLszdpd(1);
 		}
 		
-		if(roadCheck.getLszdpd()==new Integer(2)||roadCheck.getLszczdpd()!=new Integer(1)||roadCheck.getCsbpd()==new Integer(2)){
+		logger.info("路试结论："+(roadCheck.getLszdpd()==new Integer(2)));
+		logger.info("路试结论："+(roadCheck.getLszczdpd()==new Integer(2)));
+		logger.info("路试结论："+((roadCheck.getCsbpd()!=null&&roadCheck.getCsbpd()==new Integer(2))));
+		
+		if(roadCheck.getLszdpd()==new Integer(2)||roadCheck.getLszczdpd()==new Integer(2)||(roadCheck.getCsbpd()!=null&&roadCheck.getCsbpd()==new Integer(2))){
 			roadCheck.setLsjg(2);
 		}else{
 			roadCheck.setLsjg(1);
+			logger.info("设置路试结论："+roadCheck.getLsjg());
 		}
 		this.hibernateTemplate.saveOrUpdate(roadCheck);
 		vehCheckLogin.setVehlszt(VehCheckLogin.ZT_JYJS);
@@ -152,7 +162,7 @@ public class RoadCheackManager {
 	}
 	
 	public static void main(String[] age){
-		System.out.println();
+		System.out.println(null==new Integer(2));
 	}
 
 }

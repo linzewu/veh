@@ -46,9 +46,6 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 
 	private byte[] temp;
 
-	private int tempIndex = 0;
-
-	private boolean tempFlag = true;
 
 	private String currentComm;
 

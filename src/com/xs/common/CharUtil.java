@@ -117,9 +117,11 @@ public class CharUtil {
 		 * System.out.println(CharUtil.byte2HexOfString(CharUtil.sumCheck(new
 		 * byte[]{0xA,0x04,0xA},4)) );
 		 */
-		byte[] s = new byte[] { 0x30 };
+/*		byte[] s = new byte[] { 0x30 };
 		
-		System.out.println((char)s[0]);
+		System.out.println((char)s[0]);*/
+		
+		System.out.println(CharUtil.getCheckSum("410462"));
 		
 	}
 
@@ -248,4 +250,7 @@ public class CharUtil {
 		return CharUtil.byte2HexOfString(new byte[]{b});
 
 	}
+	
+	
+	
 }

@@ -134,6 +134,24 @@ public class CheckEventManger {
 		this.hibernateTemplate.clear();
 
 	}
+	
+	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
+			String clsbdh) {
+
+		CheckEvents e = new CheckEvents();
+		e.setJylsh(jylsh);
+		e.setJycs(jycs);
+		e.setEvent(event);
+		e.setJyxm(jyxm);
+		e.setHphm(hphm);
+		e.setHpzl(hpzl);
+		e.setClsbdh(clsbdh);
+		e.setCreateDate(new Date());
+		this.hibernateTemplate.save(e);
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
+
+	}
 
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
 			String clsbdh, String zpzl,Integer csbj) {

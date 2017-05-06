@@ -803,6 +803,10 @@ public class BrakRollerData extends BaseDeviceData {
 		String jylb = vehCheckLogin.getJylb();
 		// 轴荷
 		Integer zh = zlh +ylh;
+		
+		if(this.getZdtlh()!=null&&this.getYdtlh()!=null){
+			zh=this.getZdtlh()+this.getYdtlh();
+		}
 
 		Integer zdl = this.zzdl + this.yzdl;
 
