@@ -146,14 +146,14 @@ public class WorkPointThread extends Thread {
 						cc.add(vehFlow);
 						if (cc.size() == vehFlows.size()) {
 							logger.info("开始检测平板");
-							if(cc.size()==1&&cc.get(0).getJyxm().equals("B0")){
+							/*if(cc.size()==1&&cc.get(0).getJyxm().equals("B0")){
 								workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,null);
-							}else{
-								Map<String,Object> param=new HashMap<String,Object>();
-								Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
-								param.put("zclh", zclh);
-								workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,param);
-							}
+							}else{*/
+							Map<String,Object> param=new HashMap<String,Object>();
+							Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
+							param.put("zclh", zclh);
+							workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,param);
+							/*}*/ 
 							
 						}
 					} else {
