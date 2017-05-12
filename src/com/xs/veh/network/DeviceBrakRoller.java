@@ -26,6 +26,7 @@ import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.ParDataOfAnjian;
+import com.xs.veh.network.driver.DeviceBrakRollerDriverOfJXGT2CZ;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -78,9 +79,16 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 	private Integer s1;
 
-	public boolean getSignal() {
-
+	public boolean getSignal() throws IOException, InterruptedException {
+		
+		if (dbrd instanceof DeviceBrakRollerDriverOfJXGT2CZ) {
+			DeviceBrakRollerDriverOfJXGT2CZ dbrdcz=(DeviceBrakRollerDriverOfJXGT2CZ)dbrd;
+			
+			return dbrdcz.getSignal(1);
+		};
+		
 		return this.signal.getSignal(s1);
+		
 	}
 
 	public ThreadPoolTaskExecutor getExecutor() {
