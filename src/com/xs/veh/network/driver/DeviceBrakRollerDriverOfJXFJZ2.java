@@ -176,10 +176,14 @@ public class DeviceBrakRollerDriverOfJXFJZ2 extends AbstractDeviceBrakRoller {
 			}
 
 			tempByte.clear();
-			// 仪表清0
-			logger.info("仪表清0命令：" + ybql);
-			deviceBrakRoller.sendMessage(ybql);
-			Thread.sleep(1000);
+			
+			/*if(vehFlow.getJyxm().indexOf("L")!=0){
+				// 仪表清0
+				logger.info("仪表清0命令：" + ybql);
+				deviceBrakRoller.sendMessage(ybql);
+				Thread.sleep(1000);
+			}*/
+		
 			// 清理数据
 			deviceBrakRoller.clearDate();
 			dw(vehFlow, zw);
@@ -189,8 +193,6 @@ public class DeviceBrakRollerDriverOfJXFJZ2 extends AbstractDeviceBrakRoller {
 				cz();
 			}
 			
-			
-
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
 
@@ -221,7 +223,7 @@ public class DeviceBrakRollerDriverOfJXFJZ2 extends AbstractDeviceBrakRoller {
 			}
 			if (vehFlow.getJyxm().indexOf("L")==0) {
 				this.deviceBrakRoller.sendMessage(ttxj);
-				Thread.sleep(5000);
+				Thread.sleep(10000);
 			}
 
 		}
@@ -300,7 +302,7 @@ public class DeviceBrakRollerDriverOfJXFJZ2 extends AbstractDeviceBrakRoller {
 		// if (!vehFlow.getJyxm().equals("B0")) {
 		// 举升下降
 		deviceBrakRoller.sendMessage(jsqxj);
-		Thread.sleep(5000);
+		Thread.sleep(10000);
 		// }
 	}
 

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+
+import com.xs.common.CharUtil;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
@@ -102,7 +105,6 @@ public abstract class AbstractDeviceBrakRoller {
 	}
 	
 	public byte[] getDevData(byte[] contex) throws InterruptedException {
-
 		for (int i = 0; i < contex.length; i++) {
 			while (temp.isEmpty()) {
 				Thread.sleep(50);

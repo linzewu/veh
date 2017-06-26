@@ -28,21 +28,6 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 
 	private String up;
 
-	public ProtocolType getProtocolType(byte[] bs) {
-
-		int end = CharUtil.byteToInt(bs[bs.length - 1]);
-		int end3 = CharUtil.byteToInt(bs[bs.length - 3]);
-
-		if (bs.length == 3 && CharUtil.byteToInt(bs[0]) == 0xFF) {
-			return ProtocolType.NOTICE;
-		} else if (bs.length > 3 && end == 0xEE && end3 == 0xFF) {
-			return ProtocolType.NOTICE;
-		} else if (bs.length == 6 && CharUtil.byteToInt(bs[0]) == 0xFF) {
-			return ProtocolType.DATA_AND_NOTICE;
-		} else {
-			return ProtocolType.DATA;
-		}
-	}
 
 	public void setData(byte[] bs, SpeedData speedData) {
 
@@ -60,7 +45,6 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 		// 开始新的一次检测
 		deviceSpeed.sendMessage(ql);
 		this.getDevData(new byte[4]);
-
 		createNew();
 		// 显示屏显示信息
 		this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);

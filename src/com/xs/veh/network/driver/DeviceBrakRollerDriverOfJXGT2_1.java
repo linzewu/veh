@@ -22,9 +22,9 @@ import com.xs.veh.network.data.BrakRollerData;
  * @author linze
  *
  */
-public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
+public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 
-	private static Logger logger = Logger.getLogger(DeviceBrakRollerDriverOfJXGT2CZ.class);
+	private static Logger logger = Logger.getLogger(DeviceBrakRollerDriverOfJXGT2_1.class);
 
 	// 举升器上升
 	private String jsqss = "41046358";
@@ -45,9 +45,7 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 	private String ttjs="4104704B";
 	
 	private String ttxj="4104714A";
-	
-	private String dwzt="4104615A";
-	
+
 
 	private String scMessage;
 
@@ -59,28 +57,22 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 			scMessage = vehFlow.getJyxm().equals("B0") ? "请拉手刹" : "请踩刹车";
 			String zw = getZW(intZw);
 			this.getTemp().clear();
+			
 			Thread.sleep(1000);
 			// 清理数据
 			deviceBrakRoller.clearDate();
 			
-			/*logger.info("下降：" + jsqxj);
-			deviceBrakRoller.sendMessage(jsqxj);
-			logger.info("下降：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));*/
+			dw(vehFlow, zw);
 			
 			if(vehFlow.getJyxm().indexOf("L")==0){
-				dw(vehFlow, zw,1);
 				logger.info("台体举升：" + ttjs);
 				deviceBrakRoller.sendMessage(ttjs);
 				logger.info("台体举升返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
-				cz(1);
-			}else if(vehFlow.getJyxm().indexOf("B")==0&&!vehFlow.getJyxm().equals("B0")){
-				logger.info("等待称重到位");
-				dw(vehFlow, zw,0);
-				cz(0);
 			}
 			
-			dw(vehFlow, zw,1);
-			
+			if(vehFlow.getJyxm().indexOf("L")==0){
+				cz();
+			}
 			
 			deviceBrakRoller.getDisplay().sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
 			deviceBrakRoller.getDisplay().sendMessage("开始检测制动", DeviceDisplay.XP);
@@ -155,22 +147,6 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 			}
 		}
 	}
-	
-	public boolean getSignal(int type) throws IOException, InterruptedException{
-		
-			/*logger.info("开始获取光电状态："+dwzt);*/
-			deviceBrakRoller.sendMessage(dwzt);
-		/*	logger.info("光电类型："+type);*/
-			int index=type==0?3:4;
-			byte[] dwzt = this.getDevData(new byte[12]);
-			/*logger.info("光电返回"+CharUtil.byte2HexOfString(dwzt));*/
-			if(dwzt[index]==0x4F){
-				/*logger.info("光电到位");*/
-				return true;
-			}else{
-				return false;
-			}
-	}
 
 	/**
 	 * 称重
@@ -180,7 +156,7 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 	 * @throws IOException
 	 * @throws SystemException
 	 */
-	private void cz(int type) throws InterruptedException, IOException, SystemException {
+	private void cz() throws InterruptedException, IOException, SystemException {
 
 		// 开始称重命令
 		int i = 0;
@@ -188,19 +164,16 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 		int ylh = 0;
 		deviceBrakRoller.getDisplay().sendMessage("开始称重", DeviceDisplay.SP);
 		while (true) {
-			int index=type==0?3:11;
-			logger.info("轮重下标"+index);
 			deviceBrakRoller.sendMessage(kscz);
 			byte[] czdata = getDevData(new byte[20]);
 			logger.info("称重返回：" + CharUtil.byte2HexOfString(czdata));
-			zlh = Integer.parseInt(new String(new byte[] { czdata[index++], czdata[index++], czdata[index++], czdata[index++] }));
-			ylh = Integer.parseInt(new String(new byte[] { czdata[index++], czdata[index++], czdata[index++], czdata[index++] }));
+			zlh = Integer.parseInt(new String(new byte[] { czdata[11], czdata[12], czdata[13], czdata[14] }));
+			ylh = Integer.parseInt(new String(new byte[] { czdata[15], czdata[16], czdata[17], czdata[18] }));
 			deviceBrakRoller.getDisplay().sendMessage(zlh + ylh + "KG", DeviceDisplay.XP);
 			if (i >= 20) {
 				break;
 			}
 			i++;
-			Thread.sleep(300);
 		}
 
 		if (zlh + ylh == 0) {
@@ -213,43 +186,41 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 		}
 	}
 
-	private void dw(VehFlow vehFlow, String zw,int type) throws InterruptedException, IOException {
+	private void dw(VehFlow vehFlow, String zw) throws InterruptedException, IOException {
 		// 发送到位延时时间
 		Thread.sleep(200);
-		String strType=type==0?"称重":"制动";
 
 		deviceBrakRoller.getDisplay().sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
-		deviceBrakRoller.getDisplay().sendMessage(zw +strType+ "请到位", DeviceDisplay.XP);
-		
-		logger.info(zw +strType+ "请到位");
-		
+		deviceBrakRoller.getDisplay().sendMessage(zw + "制动请到位", DeviceDisplay.XP);
+
 		// 等待到位
 		int i = 0;
 		while (true) {
-			if(getSignal(type)){
+			if (deviceBrakRoller.getSignal()) {
 				deviceBrakRoller.getDisplay().sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
-				deviceBrakRoller.getDisplay().sendMessage(zw + strType+"已到位", DeviceDisplay.XP);
+				deviceBrakRoller.getDisplay().sendMessage(zw + "已到位", DeviceDisplay.XP);
 				i++;
-			}else{
+			} else {
 				deviceBrakRoller.getDisplay().sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
-				deviceBrakRoller.getDisplay().sendMessage(zw +strType+ "请到位", DeviceDisplay.XP);
+				deviceBrakRoller.getDisplay().sendMessage(zw + "制动请到位", DeviceDisplay.XP);
 				i = 0;
 			}
-			
 			if (i >= 6) {
 				break;
 			}
 			Thread.sleep(500);
 		}
-		logger.info(zw +strType+ "已到位");
-		if(type==1){
-			logger.info("举升器下降命令：" +jsqxj);
-			deviceBrakRoller.sendMessage(jsqxj);
-			logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
-			Thread.sleep(12000);
-		}
+		logger.info("举升器下降命令：" +jsqxj);
+		deviceBrakRoller.sendMessage(jsqxj);
 		
+		logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
+		
+		Thread.sleep(5000);
 	}
+
+	
+
+	
 
 	// 倒数计时线程
 	public void ds(final String title, final Integer ms, final String afterTitle) {
@@ -279,10 +250,17 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 
 	public static void main(String[] ages) {
 
-		String[] a=new String[]{"1","2","3"};
-		int i=0;
-		System.out.println(a[i++]);
-		System.out.println(i);
+		List<Integer> a = new LinkedList<Integer>();
+
+		a.add(1);
+		a.add(2);
+		a.add(3);
+
+		for (int i = 0; i < 20; i++) {
+			if (!a.isEmpty()) {
+				System.out.println(a.remove(0));
+			}
+		}
 
 	}
 

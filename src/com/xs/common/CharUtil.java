@@ -121,7 +121,7 @@ public class CharUtil {
 		
 		System.out.println((char)s[0]);*/
 		
-		System.out.println(CharUtil.getCheckSum("410462"));
+		System.out.println(CharUtil.getCheckSum("410470"));
 		
 	}
 

@@ -20,6 +20,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,9 +50,18 @@ public class CheckedInfoTaskJob {
 	private static Logger logger = Logger.getLogger(CheckedInfoTaskJob.class);
 
 	private TmriJaxRpcOutAccessServiceStub tro = null;
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	@Value("${jkxlh}")
 	private String jkxlh;
+	
+	@Value("${lic.startData}")
+	private String startDataStr;
+	
+	@Value("${lic.endData}")
+	private String endDataStr;
 
 	/*
 	 * @Resource(name = "imageDBManger") private ImageDBManger imageDBManger;
@@ -90,6 +100,8 @@ public class CheckedInfoTaskJob {
 			logger.error("加载rca配置文件出错", e);
 		}
 	}
+	
+	
 
 	@PostConstruct
 	public void intJob() {
@@ -403,5 +415,30 @@ public class CheckedInfoTaskJob {
 		}
 
 	}
+	
+	@Scheduled(fixedDelay = 1000*10)
+	public void timeoutPocess() throws Exception{
+		try {
+			validate();
+		} catch (Exception e) {
+			if(!sessionFactory.isClosed()){
+				sessionFactory.close();
+			}
+			throw e;
+		}
+	}
+	
+//	@Scheduled(fixedDelay = 1000*10)
+	private void validate() throws Exception{
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		Date startData  = sdf.parse(startDataStr);
+		Date endData  = sdf.parse(endDataStr);
+		Date now = new Date();
+		if(now.getTime()<startData.getTime()||now.getTime()>endData.getTime()){
+			throw new Exception("系统有效日期为："+startDataStr+"至"+endDataStr);
+		}
+	}
+
+
 
 }

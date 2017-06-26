@@ -99,60 +99,6 @@ public class DataExchangeJobOfFolder  {
 		return flag;
 	}
 	
-//	@Scheduled(fixedDelay = 1000*10)
-	public void timeoutPocess() throws Exception{
-		try {
-			validate();
-		} catch (Exception e) {
-			if(!sessionFactory.isClosed()){
-				sessionFactory.close();
-			}
-			throw e;
-		}
-	}
 	
-//	@Scheduled(fixedDelay = 1000*10)
-	private void validate() throws Exception{
-		
-		List<Map<String, Object>>  ipAndMac =  WindowsInfoUtil.getLocalInetMac();
-		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-		Date startData  = sdf.parse(startDataStr);
-		Date endData  = sdf.parse(endDataStr);
-		Date now = new Date();
-		if(now.getTime()<startData.getTime()||now.getTime()>endData.getTime()){
-			throw new Exception("系统有效日期为："+startDataStr+"至"+endDataStr);
-		}
-		
-		String[] macs = macaddress.split(",");
-		String[] ips = ipstr.split(",");
-		
-		boolean ipflag =false;
-		boolean macflag =false;
-		
-		for(Map<String,Object> data:ipAndMac){
-			String localip = (String)data.get("ip");
-			String localmac = (String)data.get("mac");
-			for(String ip:ips){
-				if(localip.equals(ip)){
-					ipflag=true;
-					break;
-				}
-			}
-			for(String mac:macs){
-				if(localmac.equals(mac)){
-					macflag=true;
-					break;
-				}
-			}
-		}
-		if(!ipflag){
-			throw new Exception("ip地址不匹配,邦定IP地址为："+ipstr);
-		}
-		if(!macflag){
-			throw new Exception("mac地址不匹配,邦定地址为："+macaddress);
-		}
-	}
-
-
 
 }

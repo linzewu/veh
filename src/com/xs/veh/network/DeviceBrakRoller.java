@@ -152,7 +152,6 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 				}
 				byte[] endodedData = new byte[length];
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
-
 				dbrd.device2pc(endodedData);
 
 			} catch (Exception e) {
