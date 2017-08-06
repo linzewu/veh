@@ -45,8 +45,8 @@ public class ReportController {
 	private CheckDataManager checkDataManager;
 
 	@RequestMapping(value = "getReport1", method = RequestMethod.POST)
-	public @ResponseBody Map getReport1(@RequestParam String jylsh) {
-		Map data = checkDataManager.getReport1(jylsh);
+	public @ResponseBody Map getReport1(@RequestParam String jylsh,int jycs) {
+		Map data = checkDataManager.getReport1(jylsh,jycs);
 		return data;
 	}
 

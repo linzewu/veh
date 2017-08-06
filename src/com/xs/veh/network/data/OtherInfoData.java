@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.xs.veh.entity.BaseEntity;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.manager.CheckDataManager;
 
 @Scope("prototype")
 @Component("otherInfoData")
@@ -229,6 +230,13 @@ public class OtherInfoData extends BaseEntity {
 
 	public void setZczdl(Float zczdl) {
 		this.zczdl = zczdl;
+	}
+	
+	public void setZczdl() {
+		if(jczczbzl==null||jczczbzl==0){
+			return;
+		}
+		this.zczdl = CheckDataManager.MathRound((float) (zdlh/(jczczbzl*0.98))*100);
 	}
 
 	public void setZczdpd(String zczdpd) {

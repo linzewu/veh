@@ -440,14 +440,14 @@ var veh = {
 				if (i == zs) {
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
 							false);
-					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
-							true);
+					/*$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+							true);*/
 				}else if(i ==1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0)){
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
 							false);
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
 							true);
-				}else if(i >1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0||cllx.indexOf("H")>=0)){
+				}else if(i >1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0||cllx.indexOf("H")>=0||cllx.indexOf("Z")>=0)){
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
 							false);
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
@@ -456,8 +456,8 @@ var veh = {
 					console.log(i);
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
 							false);
-					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
-							true);
+					/*$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
+							true);*/
 				}
 			}
 		}
@@ -1013,15 +1013,39 @@ var report={
 			$("#tab-report").tabs("getSelected").panel("refresh");
 		}
 	},
-	getReport1:function(){
-		var baseInfo = $(this).panel("options").baseInfo;
+	getReport1:function(panelObj,intjycs){
+		
+		var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+		var jycsarray=[];
+		if(!intjycs){
+			intjycs = baseInfo.jycs;
+		}
+		$("[name=xmpd]").text('');
+		$("[name=zczdpd]").text('');
+		$("[name=zjycs]").text(intjycs);
+		
+		for(var i=1;i<=baseInfo.jycs;i++){
+			jycsarray.push({label:i,value:i})
+		}
+			
+		$("#query_jycs").combobox({
+			editable:false,
+			prompt:'检验次数',
+			valueField: 'label',
+			textField: 'value',
+			data:jycsarray,
+			value:intjycs,
+			onChange:function(newValue,oldValue){
+				report.getReport1(panelObj,newValue);
+			}
+		});
 		
 		 $.messager.progress({
 				title:"提示",
 				msg:"正在努力加载报表中"
 		 });
 		
-		$.post("/veh/report/getReport1",{jylsh:baseInfo.jylsh},function(data){
+		$.post("/veh/report/getReport1",{jylsh:baseInfo.jylsh,jycs:intjycs},function(data){
 			$("#report1_jyjgmc").text(data.title);
 			
 			$("#report1 [name^='report-baseInfo-']").each(function(i,n){
@@ -1135,7 +1159,7 @@ var report={
 					
 					$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl);
 					$("#report1 tr[name=ZC] td[name=zczdpd]").text(veh.jgpd(n.zczdpd));
-					$("#report1 tr[name=ZC] td[name=dxcs]").text(baseInfo.jycs);
+					$("#report1 tr[name=ZC] td[name=dxcs]").text(intjycs);
 					
 					if(baseInfo.jylb=="00"){
 						$("#report1 [name=other_zczbzl]").text(n.jczczbzl);
@@ -1272,10 +1296,6 @@ var report={
 				 if(data.zdtlhStr!=null&&data.zdtlhStr!=""){
 					 report.processReport4(baseInfo, data, "dtlh", data.zdtlhStr, data.ydtlhStr, i, "动态轮荷曲线","KG");
 				 }
-				 
-				 if(data.jzLeftDataStr!=null&&data.jzLeftDataStr!=""){
-					 report.processReport4(baseInfo, data, "jzzdlqx", data.jzLeftDataStr, data.jzRigthDataStr, i, "轴加载制动力曲线","N");
-				 }
 				 index=i;
 			 });
 			index++;
@@ -1358,13 +1378,13 @@ var report={
 			});
 		}
 		
-		var ckey=data.zw+key;
+		var ckey=data.zw+key+"_"+data.jycs+"_"+data.jyxm;
 		
 		 var template="<div style='text-align:center;margin-top: 10px;'><a id='report4Print"+ckey+"'></a>&nbsp;&nbsp;<a id='showReport4Detail"+ckey+"'></a><div/>"+
 		 "<div style='margin:0 auto;width:740px;' id='report4Contex"+ckey+"'><div id='container"+ckey+"'></div></div>";
 		 
 		 $("#zdltabs").tabs("add",{
-			 title:data.zw+title,
+			 title: (data.jyxm.indexOf("L")==0?"加载":"") + data.zw+title+"("+data.jycs +")",
 			 index:index,
 			 content:template,
 			 selected:index==0?true:false,

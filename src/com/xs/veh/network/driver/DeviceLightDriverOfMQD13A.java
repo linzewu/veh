@@ -445,15 +445,20 @@ public class DeviceLightDriverOfMQD13A extends AbstractDeviceLight {
 		Thread.sleep(300);
 
 		// 不需要调整灯光
-		deviceLight.sendMessage(sBxytzyg);
-		Thread.sleep(300);
-		deviceLight.sendMessage(sBxytzjg);
-		Thread.sleep(300);
+		//deviceLight.sendMessage(sBxytzyg);
+		//Thread.sleep(300);
+		//deviceLight.sendMessage(sBxytzjg);
+		//Thread.sleep(300);
 	}
 
 	@Override
 	public void device2pc(byte[] data) throws IOException, InterruptedException {
-		if (data.length == 1) {
+		
+		if (isGetData) {
+			for (byte b : data) {
+				dataList.add(b);
+			}
+		} else if (data.length == 1) {
 			String rtx = CharUtil.byte2HexOfString(data);
 			logger.info("灯光仪返回："+rtx);
 			if (rtx.equals(rClcc)) {
@@ -476,10 +481,6 @@ public class DeviceLightDriverOfMQD13A extends AbstractDeviceLight {
 			if (rtx.equals(rJgclwc)) {
 				deviceLight.getDisplay().sendMessage("近光灯测量结束", DeviceDisplay.XP);
 				this.isChecking = false;
-			}
-		} else if (isGetData) {
-			for (byte b : data) {
-				dataList.add(b);
 			}
 		}
 

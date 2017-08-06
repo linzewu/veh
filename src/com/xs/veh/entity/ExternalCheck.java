@@ -210,7 +210,52 @@ public class ExternalCheck extends BaseEntity {
 	@Column(length=30)
 	private String dpdtjyysfzh;
 	
+	@Column
+	private Integer cwkc;
 	
+	@Column
+	private Integer cwkk;
+	
+	@Column
+	private Integer cwkg;
+	
+	@Column
+	private Integer zbzl;
+	
+	
+	
+
+	public Integer getCwkc() {
+		return cwkc;
+	}
+
+	public Integer getCwkk() {
+		return cwkk;
+	}
+
+	public Integer getCwkg() {
+		return cwkg;
+	}
+
+	public Integer getZbzl() {
+		return zbzl;
+	}
+
+	public void setCwkc(Integer cwkc) {
+		this.cwkc = cwkc;
+	}
+
+	public void setCwkk(Integer cwkk) {
+		this.cwkk = cwkk;
+	}
+
+	public void setCwkg(Integer cwkg) {
+		this.cwkg = cwkg;
+	}
+
+	public void setZbzl(Integer zbzl) {
+		this.zbzl = zbzl;
+	}
 
 	public String getWgjcjyy() {
 		return wgjcjyy;

@@ -1,70 +1,272 @@
 <?xml version="1.0" encoding="GBK"?>
 <root>
 	<vehispara>
-		<xh></xh>
-		<qlj>1414</qlj>
-		<ccdlsj>2015-07-06 11:20:35.927</ccdlsj>
-		<rlzl>A</rlzl>
-		<cllx></cllx>
-		<dlysfzh />
-		<zzs>2</zzs>
-		<jyyxqz></jyyxqz>
-		<zzl>1460</zzl>
-		<username>姜华</username>
-		<clyt></clyt>
-		<ygddtz></ygddtz>
-		<jylsh>3209112015000392</jylsh>
-		<Axis_Drive>二轴-前驱-后手制</Axis_Drive>
-		<bxzzrq></bxzzrq>
-		<jylb>01</jylb>
-		<jcxlb></jcxlb>
-		<clsslb>01</clsslb>
-		<lcbds>140000</lcbds>
-		<ccdjrq>1998-05-25</ccdjrq>
-		<__hibernate_row_nr__>1</__hibernate_row_nr__>
-		<dly>姜华</dly>
-		<zzly>1</zzly>
-		<gl>65</gl>
-		<qzdz>03</qzdz>
-		<syxz>A</syxz>
-		<dtjyy></dtjyy>
-		<dpjyysfzh></dpjyysfzh>
-		<dtjyysfzh></dtjyysfzh>
-		<dlsj>2015-07-06 11:20:36.0</dlsj>
-		<ycy></ycy>
-		<qdxs>1</qdxs>
-		<cwkg>1420</cwkg>
-		<clxh>330K8LLOLTF2</clxh>
-		<wjy></wjy>
-		<zbzl>1030</zbzl>
-		<cwkk>1700</cwkk>
-		<syr>李东升</syr>
-		<hphm>苏JJL935</hphm>
-		<wjysfzh></wjysfzh>
-		<fdjh>0026566</fdjh>
-		<csys></csys>
-		<jyxm>S1,B1,B2,B0,F1,C1,DC,H1,H4,A1</jyxm>
-		<zs>2</zs>
-		<sjr></sjr>
-		<hpzl>02</hpzl>
-		<ytsx></ytsx>
-		<cwkc>4680</cwkc>
-		<zj>2548</zj>
-		<dpjyy></dpjyy>
-		<jyjgbh>3209000008</jyjgbh>
-		<sjrsfzh></sjrsfzh>
-		<jyrq></jyrq>
-		<zczs>1</zczs>
-		<ForeLampType>二灯远近光</ForeLampType>
-		<zczw>2</zczw>
-		<hlj>1422</hlj>
-		<clpp1>桑塔纳330K8LLOLTF2</clpp1>
-		<zxzxjxs>0</zxzxjxs>
-		<jcxdh>1</jcxdh>
-		<ccrq>1998-08-01</ccrq>
-		<ycysfzh></ycysfzh>
+		<jyjl>%E5%90%88%E6%A0%BC</jyjl>
+		<rgjyjgs>
+			<rgjyjg>
+				<xh>1</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E8%BD%A6%E8%BE%86%E5%94%AF%E4%B8%80%E6%80%A7%E6%A3%80%E6%B5%8B
+				</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>2</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E8%BD%A6%E8%BE%86%E7%89%B9%E5%BE%81%E5%8F%82%E6%95%B0%E6%A3%80%E6%9F%A5
+				</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>3</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E8%BD%A6%E8%BE%86%E5%A4%96%E8%A7%82%E6%A3%80%E6%9F%A5
+				</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>4</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E5%AE%89%E6%A3%80%E8%A3%85%E7%BD%AE%E6%A3%80%E6%9F%A5
+				</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>5</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E8%81%94%E7%BD%91%E6%9F%A5%E8%AF%A2</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>6</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E5%BA%95%E7%9B%98%E5%8A%A8%E6%80%81%E6%A3%80%E9%AA%8C
+				</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>7</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>%E8%BD%A6%E8%BE%86%E5%BA%95%E7%9B%98%E9%83%A8%E4%BB%B6%E6%A3%80%E6%9F%A5
+				</rgjyxm>
+			</rgjyjg>
+		</rgjyjgs>
+		<jcxdh>2</jcxdh>
+		<hpzl>01</hpzl>
+		<clsbdh>LVBV7PEC4BW075090</clsbdh>
 		<jycs>1</jycs>
-		<RegistNo>0000686706</RegistNo>
-		<clsbdh>017247</clsbdh>
+		<jyjgbh>3209000043</jyjgbh>
+		<yqsbjyjgs>
+			<yqsbjyjg>
+				<xh>1</xh>
+				<yqjyxm>%E4%B8%80%E8%BD%B4%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>96.6</yqjyjg>
+				<yqbzxz>%E2%89%A560</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>2</xh>
+				<yqjyxm>%E4%B8%80%E8%BD%B4%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>19.2</yqjyjg>
+				<yqbzxz>%E2%89%A424.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>3</xh>
+				<yqjyxm>%E4%BA%8C%E8%BD%B4%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>92.0</yqjyjg>
+				<yqbzxz>%E2%89%A550</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>4</xh>
+				<yqjyxm>%E4%BA%8C%E8%BD%B4%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>8.1</yqjyjg>
+				<yqbzxz>%E2%89%A430.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>5</xh>
+				<yqjyxm>%E4%B8%89%E8%BD%B4%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>82.1</yqjyjg>
+				<yqbzxz>%E2%89%A550</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>6</xh>
+				<yqjyxm>%E4%B8%89%E8%BD%B4%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>18.7</yqjyjg>
+				<yqbzxz>%E2%89%A430.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>7</xh>
+				<yqjyxm>%E5%9B%9B%E8%BD%B4%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>63.1</yqjyjg>
+				<yqbzxz>%E2%89%A550</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>8</xh>
+				<yqjyxm>%E5%9B%9B%E8%BD%B4%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>12.4</yqjyjg>
+				<yqbzxz>%E2%89%A430.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>9</xh>
+				<yqjyxm>%E4%BA%8C%E8%BD%B4%E5%8A%A0%E8%BD%BD%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>61.6</yqjyjg>
+				<yqbzxz>%E2%89%A550</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>10</xh>
+				<yqjyxm>%E4%BA%8C%E8%BD%B4%E5%8A%A0%E8%BD%BD%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>10.1</yqjyjg>
+				<yqbzxz>%E2%89%A430.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>11</xh>
+				<yqjyxm>%E4%B8%89%E8%BD%B4%E5%8A%A0%E8%BD%BD%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>59.7</yqjyjg>
+				<yqbzxz>%E2%89%A550</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>12</xh>
+				<yqjyxm>%E4%B8%89%E8%BD%B4%E5%8A%A0%E8%BD%BD%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>5.2</yqjyjg>
+				<yqbzxz>%E2%89%A410.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>13</xh>
+				<yqjyxm>%E6%95%B4%E8%BD%A6%E6%89%8B%E5%88%B9%E5%88%B6%E5%8A%A8%E7%8E%87
+				</yqjyxm>
+				<yqjyjg>22.0</yqjyjg>
+				<yqbzxz>%E2%89%A520.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>14</xh>
+				<yqjyxm>%E6%95%B4%E8%BD%A6%E5%88%B6%E5%8A%A8%E7%8E%87%28%25%29
+				</yqjyxm>
+				<yqjyjg>82.6</yqjyjg>
+				<yqbzxz>%E2%89%A560.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>15</xh>
+				<yqjyxm>%E5%8F%B3%E4%B8%BB%E7%81%AF%E8%BF%91%E5%85%89%E7%81%AF%E5%9E%82%E7%9B%B4%E5%81%8F%E7%A7%BB%28H%29
+				</yqjyxm>
+				<yqjyjg>1.81</yqjyjg>
+				<yqbzxz>0.6%7E0.8</yqbzxz>
+				<yqjybz />
+				<yqjgpd>0</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>16</xh>
+				<yqjyxm>%E5%8F%B3%E4%B8%BB%E7%81%AF%E5%85%89%E5%BC%BA%28cd%29
+				</yqjyxm>
+				<yqjyjg>69100</yqjyjg>
+				<yqbzxz>%E2%89%A515000</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>17</xh>
+				<yqjyxm>%E5%8F%B3%E4%B8%BB%E7%81%AF%E8%BF%9C%E5%85%89%E7%81%AF%E5%9E%82%E7%9B%B4%E5%81%8F%E7%A7%BB%28H%29
+				</yqjyxm>
+				<yqjyjg>1.09</yqjyjg>
+				<yqbzxz>0.8%7E0.95</yqbzxz>
+				<yqjybz />
+				<yqjgpd>0</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>18</xh>
+				<yqjyxm>%E5%B7%A6%E4%B8%BB%E7%81%AF%E5%85%89%E5%BC%BA%28cd%29
+				</yqjyxm>
+				<yqjyjg>62900</yqjyjg>
+				<yqbzxz>%E2%89%A515000</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>19</xh>
+				<yqjyxm>%E5%B7%A6%E4%B8%BB%E7%81%AF%E8%BF%9C%E5%85%89%E7%81%AF%E5%9E%82%E7%9B%B4%E5%81%8F%E7%A7%BB%28H%29
+				</yqjyxm>
+				<yqjyjg />
+				<yqbzxz>0.8%7E0.95</yqbzxz>
+				<yqjybz />
+				<yqjgpd>0</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>20</xh>
+				<yqjyxm>%E5%B7%A6%E4%B8%BB%E7%81%AF%E8%BF%91%E5%85%89%E7%81%AF%E5%9E%82%E7%9B%B4%E5%81%8F%E7%A7%BB%28H%29
+				</yqjyxm>
+				<yqjyjg>1.64</yqjyjg>
+				<yqbzxz>0.6%7E0.8</yqbzxz>
+				<yqjybz />
+				<yqjgpd>0</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>21</xh>
+				<yqjyxm>%E4%BE%A7%E6%BB%91%E6%A3%80%E6%B5%8B%E5%80%BC%28m%2Fkm%29
+				</yqjyxm>
+				<yqjyjg>3.0</yqjyjg>
+				<yqbzxz>-5%7E5</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>22</xh>
+				<yqjyxm>%E5%A4%96%E5%BB%93%E5%B0%BA%E5%AF%B8%28mmxmmxmm%29</yqjyxm>
+				<yqjyjg>9309x2525x3301</yqjyjg>
+				<yqbzxz>%C2%B12%25%E6%88%96100mm</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+		</yqsbjyjgs>
+		<jybgbz></jybgbz>
+		<jybgjy></jybgjy>
+		<jylsh>32090017092102916</jylsh>
+		<hphm>%E7%9A%96L56986</hphm>
+		<pzrxm>%E5%BC%A0%E6%B5%B7%E6%B6%9B</pzrxm>
 	</vehispara>
 </root>

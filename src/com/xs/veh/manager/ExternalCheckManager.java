@@ -227,6 +227,12 @@ public class ExternalCheckManager {
 		ec.setItem40(externalCheck.getItem40());
 		ec.setItem41(externalCheck.getItem41());
 		ec.setItem80(externalCheck.getItem80());
+		
+		
+		ec.setCwkc(externalCheck.getCwkc());
+		ec.setCwkg(externalCheck.getCwkg());
+		ec.setCwkk(externalCheck.getCwkk());
+		ec.setZbzl(externalCheck.getZbzl());
 
 		User user = (User) session.getAttribute("user");
 		ec.setWgjcjyy(user.getRealName());

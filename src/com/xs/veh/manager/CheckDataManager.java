@@ -1,5 +1,6 @@
 package com.xs.veh.manager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,12 @@ public class CheckDataManager {
 
 	@Value("${jyjgmc}")
 	private String jyjgmc;
+	
+	@Value("${sf}")
+	private String sf;
+	
+	@Value("${cs}")
+	private String cs;
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
@@ -83,61 +90,126 @@ public class CheckDataManager {
 
 	}
 
-	public Map<String, Object> getReport1(String jylsh) {
+	public Map<String, Object> getReport1(String jylsh,int jycs) {
+		
+		if(jycs==0){
+			jycs=1;
+		}
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate
 				.find("from LightData where jylsh=? and jyxm like 'H%' order by id asc", jylsh);
+		
+		Map<String, Object> lightMapData = getLightDatasOfJycs(lightDatas,jycs);
+		if(!lightMapData.isEmpty()){
+			data.putAll(lightMapData);
+		}
 
-		for (LightData lightData : lightDatas) {
+		/*for (LightData lightData : lightDatas) {
 			lightData.setCzpy();
 			data.put(lightData.getJyxm() + "_" + lightData.getGx(), lightData);
-		}
+		}*/
 		data.put("title", jyjgmc);
 
 		List<SpeedData> sds = (List<SpeedData>) this.hibernateTemplate
 				.find("from SpeedData where jylsh=? order by id desc", jylsh);
+		
 		if (sds != null && !sds.isEmpty()) {
-			data.put("S1", sds.get(0));
+			SpeedData speedData = sds.get(0);
+			int speedJycs=speedData.getJycs();
+			if(speedJycs>jycs){
+				speedJycs=jycs;
+			}
+			for(SpeedData sd:sds){
+				
+				if(sd.getJycs()==speedJycs){
+					data.put("S1", sd);
+				}
+			}
 		}
 
 		List<SideslipData> sids = (List<SideslipData>) this.hibernateTemplate
-				.find("from SideslipData where jylsh=? and sjzt=? ", jylsh, SideslipData.SJZT_ZC);
+				.find("from SideslipData where jylsh=? and sjzt=? order by id desc", jylsh, SideslipData.SJZT_ZC);
 		if (sids != null && !sids.isEmpty()) {
-			data.put("A1", sids.get(0));
+			SideslipData sideslipData = sids.get(0);
+			int sideslipJycs=sideslipData.getJycs();
+			if(sideslipJycs>jycs){
+				sideslipJycs=jycs;
+			}
+			for(SideslipData sid:sids){
+				if(sid.getJycs()==sideslipJycs){
+					data.put("A1", sid);
+				}
+			}
 		}
 
 		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate
 				.find("from BrakRollerData where jylsh=?  order by id desc ", jylsh);
+		
+		OtherInfoData otherData=new OtherInfoData();
+		
 		for (BrakRollerData brd : brds) {
+			int zdjycs=brd.getJycs();
+			if(zdjycs>jycs){
+				zdjycs=jycs;
+			}
+			
 			if (!brd.getJyxm().equals("B0")) {
 				String key = "ZD_" + brd.getJyxm();
-				if (data.get(key) == null) {
+				if (data.get(key) == null&&zdjycs==brd.getJycs()) {
 					data.put(key, brd);
+					if(brd.getJyxm().contains("B")){
+						int zdlh=otherData.getZdlh()==null?0:otherData.getZdlh();
+						int zczbzl=otherData.getJczczbzl()==null?0:otherData.getJczczbzl();
+						
+						otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
+						otherData.setZdlh(zdlh+brd.getZzdl()+brd.getYzdl());
+					}
+					
 				}
 			} else {
 				String key = "ZD_" + brd.getJyxm() + "_" + brd.getZw();
-				if (data.get(key) == null) {
+				if (data.get(key) == null&&zdjycs==brd.getJycs()) {
 					data.put(key, brd);
 				}
-
 			}
-
-		} 
-		List otherInfoArray = this.hibernateTemplate.find("from OtherInfoData where jylsh=? order by id desc ", jylsh);
+		}
+		
+		if(otherData.getZdlh()!=null){
+			otherData.setZczdlxz();
+			otherData.setZczdl();
+			otherData.setZczdlpd();
+			data.put("other", otherData);
+		}
+		
+		
+		/*List otherInfoArray = this.hibernateTemplate.find("from OtherInfoData where jylsh=? order by id desc ", jylsh);
 
 		if (otherInfoArray != null && !otherInfoArray.isEmpty()) {
 			OtherInfoData otherInfo = (OtherInfoData) otherInfoArray.get(0);
 			data.put("other", otherInfo);
-		}
-		List plist = this.hibernateTemplate.find("from ParDataOfAnjian where jylsh=? order by id desc ", jylsh);
+		}*/
+		
+		
+		List<ParDataOfAnjian> plist = (List<ParDataOfAnjian>) this.hibernateTemplate.find("from ParDataOfAnjian where jylsh=? order by id desc ", jylsh);
 		if (plist != null && !plist.isEmpty()) {
-			ParDataOfAnjian parDataOfAnjian = (ParDataOfAnjian) plist.get(0);
-			data.put("par", parDataOfAnjian);
+			ParDataOfAnjian parDataOfAnjian = plist.get(0);
+			int pjycs=parDataOfAnjian.getJycs();
+			if(pjycs>jycs){
+				pjycs=jycs;
+			}
+			
+			for(ParDataOfAnjian pdata:plist){
+				if(pdata.getJycs()==pjycs){
+					data.put("par", pdata);
+				}
+			}
 		}
 
 		List<DeviceCheckJudeg> roadChecks = (List<DeviceCheckJudeg>) this.hibernateTemplate
 				.find("from DeviceCheckJudeg where jylsh=? and bz1='R' ", jylsh);
+		
 		if (roadChecks != null && !roadChecks.isEmpty()) {
 			data.put("roadChecks", roadChecks);
 		}
@@ -150,10 +222,71 @@ public class CheckDataManager {
 		List<Outline> outlines=(List<Outline>) this.hibernateTemplate.find("from Outline where jylsh=? order by id desc", jylsh);
 		
 		if(outlines!=null&&!outlines.isEmpty()){
-			data.put("wkcc", outlines.get(0));
+			
+			Outline outline = outlines.get(0);
+			int ojycs=outline.getJycs();
+			
+			if(ojycs>jycs){
+				ojycs=jycs;
+			}
+			
+			for(Outline odata:outlines){
+				if(odata.getJycs()==ojycs){
+					data.put("wkcc", odata);
+				}
+			}
+			
+			
+			
 		}
 
 		return data;
+	}
+
+	/**
+	 * 根据建议次数获取灯光数据
+	 * @param lightDatas
+	 * @param jycs
+	 * @return
+	 */
+	private Map<String,Object> getLightDatasOfJycs(List<LightData> lightDatas, int jycs) {
+		
+		//List<LightData> datas =new ArrayList<LightData>();
+		Map<String, Object> datas = new HashMap<String, Object>();
+		if(lightDatas.isEmpty()){
+			return datas;
+		}
+		
+		LightData lightData = lightDatas.get(lightDatas.size()-1);
+		
+		
+		if(lightData.getJycs()<=jycs){
+			jycs=lightData.getJycs();
+		}
+		
+		for(LightData data:lightDatas){
+			
+			if(jycs==data.getJycs()){
+				String key=data.getJyxm() + "_" + data.getGx();
+				datas.put(key, data);
+			}
+		}
+		
+		
+		
+		/*for(int i=jycs;i>=1;i--){
+			for(LightData data:lightDatas){
+				String key=data.getJyxm() + "_" + data.getGx();
+				
+				if(data.getJycs()==i&&datas.get(key)==null){
+					datas.put(key, data);
+				}
+			}
+			
+		}*/
+		
+		
+		return datas;
 	}
 
 	public Integer getDxjccs(VehFlow vehFlow, BaseDeviceData baseDeviceData) {
@@ -417,6 +550,9 @@ public class CheckDataManager {
 						.setString(1, jyjgbh).executeUpdate();
 			}
 		});
+		
+	//	List<ExternalCheck> externalChecks = (List<ExternalCheck>) this.hibernateTemplate.find("from ExternalCheck where jylsh=? ", jylsh);
+		
 
 		int i = 1;
 		if (vehCheckLogin.getJyxm().indexOf("F1") >= 0) {
@@ -432,6 +568,16 @@ public class CheckDataManager {
 					ecj.setRgjyxm("车辆唯一性检测");
 				} else if (i == 2) {
 					ecj.setRgjyxm("车辆特征参数检查");
+					/*if(externalChecks!=null&&!externalChecks.isEmpty()){
+						ExternalCheck externalCheck =externalChecks.get(0);
+						String item6 = externalCheck.getItem6();
+						if(cs.equals("J")&&sf.equals("苏")){
+							if(item6.equals("1")||item6.equals("2")){
+								ecj.setRgjybz(externalCheck.getCwkc()+"*"+externalCheck.getCwkk()+"*"+externalCheck.getCwkg());
+							}
+						}
+					}*/
+					
 				} else if (i == 3) {
 					ecj.setRgjyxm("车辆外观检查");
 				} else if (i == 4) {
@@ -776,12 +922,9 @@ public class CheckDataManager {
 			for(BrakRollerData brakRollerData:report4){
 				Integer jycs = brakRollerData.getJycs();
 				String jyxm= brakRollerData.getJyxm();
-				
 				String key=jycs+"_"+jyxm;
 				
-				if(tempMap.get(key)!=null){
-					report4.remove(brakRollerData);
-				}else{
+				if(tempMap.get(key)==null){
 					tempMap.put(key, brakRollerData);
 				}
 			}

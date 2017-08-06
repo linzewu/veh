@@ -117,7 +117,6 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		}
 
 		if (brakRollerData.getSfjzz() == BrakRollerData.SFJZZ_YES) {
-
 			// brakRollerData.setZzzl(zzzl);
 			// brakRollerData.setYzzl(yzzl);
 			brakRollerData.setJzzzdli(zzdl);

@@ -6,7 +6,8 @@
 function queryReportList(){
 	var status =$("input[name=statusArry]:checked").val();
 	var hphm=$("input[name=query_report_hphm]").val();
-	$("#checkingVeh").datagrid("reload",{statusArry:status,hphm:hphm});
+	var hpzl=$("input[name=query_report_hpzl]").val();
+	$("#checkingVeh").datagrid("reload",{statusArry:status,hphm:hphm,hpzl:hpzl});
 }
 
 
@@ -61,10 +62,12 @@ cursor: pointer;
 </div>
 <div id="checkingVehTool">
 <div>
-<label>号牌号码：</label><input class="easyui-textbox" value="苏J" name="query_report_hphm"><a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:queryReportList" >查询</a>
+<label>号牌号码：</label><input class="easyui-textbox" value="苏J" name="query_report_hphm"><br>
+<label>号牌种类：</label><input class="easyui-combobox" data-options="data:comm.getBaseParames('hpzl'),valueField: 'id',textField: 'value'"  name="query_report_hpzl">
+<a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:queryReportList" >查询</a>
 </div>
-<div><label>检测状态：</label>&nbsp;&nbsp;<input name="statusArry"  type="radio" value="0,1" checked="checked"><label>未完成</label><input type="radio" name="statusArry" value="2"><label>已完成</label>
-	<input type="radio" name="statusArry" value="3"><label>退办</label>
+<div><label>检测状态：</label>&nbsp;&nbsp;<input name="statusArry" onclick="queryReportList()"  type="radio" value="0,1" checked="checked"><label>未完成</label><input type="radio" onclick="queryReportList()" name="statusArry" value="2"><label>已完成</label>
+	<input type="radio" name="statusArry" value="3" onclick="queryReportList()"><label>退办</label>
 </div>
 </div>
 
