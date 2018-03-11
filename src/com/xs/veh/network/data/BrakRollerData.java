@@ -737,6 +737,13 @@ public class BrakRollerData extends BaseDeviceData {
 			this.kzzdlxz = 50;
 			return;
 		}
+		
+		//挂车
+		if((cllx.indexOf("G") == 0)||(cllx.indexOf("B") == 0)){
+			this.kzzdlxz = 55;
+			return;
+		}
+		
 
 		// 其他汽车
 		if (zw == 1 ) {
@@ -782,6 +789,12 @@ public class BrakRollerData extends BaseDeviceData {
 		// 客车及3.5T以下车辆 后轴
 		if (zw > 1 && (cllx.indexOf("K") == 0 && zbzl < 3500)) {
 			this.jzzdlxz = 20;
+			return;
+		}
+		
+		//挂车
+		if((cllx.indexOf("G") == 0)||(cllx.indexOf("B") == 0)){
+			this.kzzdlxz = 55;
 			return;
 		}
 

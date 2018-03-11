@@ -23,7 +23,6 @@ import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
-import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.manager.CheckDataManager;
@@ -31,6 +30,7 @@ import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.network.TakePicture;
+import com.xs.veh.network.data.CurbWeightData;
 
 @Controller
 @RequestMapping(value = "/pda")
@@ -200,6 +200,9 @@ public class PDAServiceController {
 		this.checkDataManager.updateProcess(vehCheckProcess);
 		return ResultHandler.toSuccessJSON("过程开始成功");
 	}
+	
+	
+	
 
 	@RequestMapping(value = "getChekcItem")
 	public @ResponseBody String getChekcItem(@RequestParam("jylsh") String jylsh, @RequestParam("type") String type)
@@ -213,5 +216,31 @@ public class PDAServiceController {
 		List<VehCheckLogin> data = externalCheckManager.getVheInfoOfHphm(hphm);
 		return data;
 	}
+	
+	@RequestMapping(value = "zbzlUpload", method = RequestMethod.POST)
+	public @ResponseBody Map zbzlUpload(@Valid CurbWeightData curbWeight, BindingResult result)
+			throws InterruptedException {
+		if (!result.hasErrors()) {
+			vehManager.saveCurbWeight(curbWeight);
+			
+			
+			Message message = new Message();
+			message.setMessage("上传成功");
+			message.setState(Message.STATE_SUCCESS);
+			return ResultHandler.toMessage(message);
+		} else {
+			return ResultHandler.resultHandle(result, null, "校验出错");
+		}
+	}
+	
+	
+	@RequestMapping(value = "getCurbWeight", method = RequestMethod.POST)
+	public @ResponseBody CurbWeightData getCurbWeight(String jylsh){
+		
+		return this.vehManager.getLastCurbWeightDataOfJylsh(jylsh);
+		
+	}
+	
+	
 
 }

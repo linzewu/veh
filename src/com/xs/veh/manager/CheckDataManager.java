@@ -1,6 +1,6 @@
 package com.xs.veh.manager;
 
-import java.util.ArrayList;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.network.data.CurbWeightData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.OtherInfoData;
 import com.xs.veh.network.data.Outline;
@@ -235,9 +236,12 @@ public class CheckDataManager {
 					data.put("wkcc", odata);
 				}
 			}
-			
-			
-			
+		}
+		
+		List<CurbWeightData> datas = (List<CurbWeightData>) this.hibernateTemplate.find("from CurbWeightData where jylsh=? order by id desc", jylsh);
+		
+		if(!datas.isEmpty()) {
+			data.put("Z1", datas.get(0));
 		}
 
 		return data;
@@ -307,12 +311,21 @@ public class CheckDataManager {
 
 		List<OtherInfoData> otherInfoDatas = (List<OtherInfoData>) this.hibernateTemplate
 				.find("from OtherInfoData where jylsh=?", jylsh);
+		
+		OtherInfoData otherInfoData = new OtherInfoData();
 
 		if (otherInfoDatas != null && !otherInfoDatas.isEmpty()) {
-			this.hibernateTemplate.delete(otherInfoDatas.get(0));
+			
+			OtherInfoData other = otherInfoDatas.get(0);
+			otherInfoData.setJczczbzl(other.getJczczbzl());
+			otherInfoData.setZbzlpd(other.getZbzlpd());
+			otherInfoData.setBzzczbzl(other.getBzzczbzl());
+			otherInfoData.setZczbzlbfb(other.getZczbzlbfb());
+			
+			this.hibernateTemplate.delete(other);
 		}
 
-		OtherInfoData otherInfoData = new OtherInfoData();
+		
 
 		VehCheckLogin vehCheckLogin = (VehCheckLogin) this.hibernateTemplate
 				.find("from VehCheckLogin where jylsh=?", jylsh).get(0);
@@ -373,7 +386,6 @@ public class CheckDataManager {
 			zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
 			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
 		}
-		otherInfoData.setJczczbzl(zclh);
 		otherInfoData.setZdlh(zdlh);
 		if (zclh != 0) {
 			Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
@@ -505,16 +517,30 @@ public class CheckDataManager {
 			xh++;
 			this.hibernateTemplate.save(dcj1);
 		}
+		
+		CurbWeightData curbWeightData = this.vehManager.getLastCurbWeightDataOfJylsh(vehCheckLogin.getJylsh());
 
-		if (vehCheckLogin.getJylb().equals("00") && otherInfoData != null) {
+		if (vehCheckLogin.getJylb().equals("00") && curbWeightData != null&&vehCheckLogin.getJyxm().indexOf("Z1")>=0) {
+			String cllx=vehCheckLogin.getCllx();
+			int xzgj=100;
+			String temp1="±3%或";
+			if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
+				xzgj=500;
+			}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0){
+				xzgj=100;
+			}else if(cllx.indexOf("N")==0){
+				xzgj=100;
+				temp1="±5%或";
+			}else if(cllx.indexOf("M")==0){
+				xzgj=10;
+			}
+			
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("整备质量(KG)");
-			dcj1.setYqjyjg(otherInfoData.getJczczbzl() == null ? "" : otherInfoData.getJczczbzl().toString());
-			dcj1.setYqbzxz("±3%");
-			Integer cz = (otherInfoData.getJczczbzl() - vehCheckLogin.getZbzl());
-			Float f = (float) (cz * 1.0 / vehCheckLogin.getZbzl() * 1.0);
-			dcj1.setYqjgpd((f >= -3 && f <= 3 ? BaseDeviceData.PDJG_HG : BaseDeviceData.PDJG_BHG).toString());
+			dcj1.setYqjyjg(curbWeightData.getZbzl()==null ? "" : curbWeightData.getZbzl().toString());
+			dcj1.setYqbzxz(""+xzgj+"KG");
+			dcj1.setYqjgpd(curbWeightData.getZbzlpd().toString());
 			dcj1.setXh(xh);
 			xh++;
 			this.hibernateTemplate.save(dcj1);
@@ -771,8 +797,8 @@ public class CheckDataManager {
 						&& syxz.equals("A"))) {
 					DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj2.setYqjyxm(
-							getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(H)");
-					dcj2.setYqjyjg(lightData.getCzpy() == null ? "" : lightData.getCzpy().toString());
+							getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)");
+					dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : lightData.getCzpy().toString());
 					dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
 					dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
 					dcj2.setXh(xh);

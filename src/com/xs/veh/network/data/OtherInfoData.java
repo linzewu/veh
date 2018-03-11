@@ -111,8 +111,21 @@ public class OtherInfoData extends BaseEntity {
 	@Column
 	private Float zczdlxz;
 	
+	@Column
+	private Integer zbzlpd;
 	
+	private VehCheckLogin vehCheckLoginInfo;
 
+
+
+	public Integer getZbzlpd() {
+		return zbzlpd;
+	}
+
+
+	public void setZbzlpd(Integer zbzlpd) {
+		this.zbzlpd = zbzlpd;
+	}
 
 
 	public Float getZczdlxz() {
@@ -276,10 +289,18 @@ public class OtherInfoData extends BaseEntity {
 		this.jyjgbh = vehCheckLoginInfo.getJyjgbh();
 		this.ycysfzh = vehCheckLoginInfo.getYcysfzh();
 		this.ycyxm = vehCheckLoginInfo.getYcy();
+		this.vehCheckLoginInfo=vehCheckLoginInfo;
 	}
 
 	public void setZczdlxz() {
 		this.zczdlxz=60f;
+		String cllx =vehCheckLoginInfo.getCllx();
+		Integer zzl=vehCheckLoginInfo.getZzl();
+		Integer zbzl=vehCheckLoginInfo.getZbzl();
+		//专项作业车
+		if((cllx.indexOf("Z") == 0)&&zzl<=zbzl*1.2){
+			this.zczdlxz = 50f;
+		}
 	}
 
 	public void setZczdlpd() {

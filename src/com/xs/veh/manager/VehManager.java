@@ -7,6 +7,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -54,6 +55,7 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.network.data.CurbWeightData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.OtherInfoData;
 import com.xs.veh.network.data.Outline;
@@ -656,7 +658,10 @@ public class VehManager {
 					&& (vehCheckLogin.getVehzbzlzt() == VehCheckLogin.ZT_JYJS
 							|| vehCheckLogin.getVehzbzlzt() == VehCheckLogin.ZT_BJC)
 					&& (vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_JYJS
-							|| vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_BJC)) {
+							|| vehCheckLogin.getVehwkzt() == VehCheckLogin.ZT_BJC)
+					&&(vehCheckLogin.getVehzbzlzt() == VehCheckLogin.ZT_JYJS
+							|| vehCheckLogin.getVehzbzlzt() == VehCheckLogin.ZT_BJC)
+					) {
 
 				List<DeviceCheckJudeg> deviceCheckJudegs = (List<DeviceCheckJudeg>) this.hibernateTemplate
 						.find("from DeviceCheckJudeg where jylsh=?", vehCheckLogin.getJylsh());
@@ -885,5 +890,69 @@ public class VehManager {
 		for (DeviceCheckJudeg dc : dcs) {
 			this.hibernateTemplate.delete(dc);
 		}
+	}
+	
+	/**
+	 * 保存整备质量
+	 * @param curbWeight
+	 * @throws InterruptedException 
+	 */
+	public void saveCurbWeight(CurbWeightData curbWeight) throws InterruptedException {
+		
+		VehCheckLogin vehCheckLogin = getVehCheckLoginByJylsh(jyjgbh,curbWeight.getJylsh());
+		vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_JYJS);
+		
+		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+				vehCheckLogin.getJycs(), "Z1");
+		
+		
+		vehCheckProcess.setJssj(new Date());
+		
+		this.hibernateTemplate.update(vehCheckLogin);
+		this.hibernateTemplate.update(vehCheckProcess);
+		this.hibernateTemplate.save(curbWeight);
+		
+		checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C81", "Z1",
+				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(1000);
+		checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "Z1",
+				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+		
+		
+		List<OtherInfoData>  otherInfoDatas =(List<OtherInfoData>) this.hibernateTemplate.find("from OtherInfoData where jylsh=? order by id desc", vehCheckLogin.getJylsh());
+		
+		if(!otherInfoDatas.isEmpty()) {
+			OtherInfoData other = otherInfoDatas.get(0);
+			other.setJczczbzl(curbWeight.getZbzl());
+			other.setZbzlpd(curbWeight.getZbzlpd());
+			other.setBzzczbzl(vehCheckLogin.getZbzl());
+			DecimalFormat df=new DecimalFormat(".#");
+			double bfb = (Math.abs(curbWeight.getZbzl()-other.getBzzczbzl())/(other.getBzzczbzl()*1.0))*100;
+			other.setZczbzlbfb(Float.valueOf(df.format(bfb)));
+			this.hibernateTemplate.update(other);
+		}
+		
+		// 判断项目的状态
+		updateVehCheckLoginState(vehCheckLogin.getJylsh());
+	}
+	
+	public static void main(String[] age) {
+		 double a = (Math.abs(560-1200)/(1200*1.0))*100;
+		 System.out.println(a);
+		 DecimalFormat df=new DecimalFormat(".#");
+		 System.out.println(Float.valueOf(df.format(a)));
+	}
+	
+	
+	public CurbWeightData getLastCurbWeightDataOfJylsh(String jylsh) {
+		
+		List<CurbWeightData> datas = (List<CurbWeightData>) this.hibernateTemplate.find("from CurbWeightData where jylsh=? order by id desc", jylsh);
+		
+		if(!datas.isEmpty()) {
+			return datas.get(0);
+		}else {
+			return null;
+		}
+		
 	}
 }

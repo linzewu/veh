@@ -343,7 +343,7 @@ public class LightData extends BaseDeviceData {
 		if ((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz.equals("A")) {
 			return;
 		}
-		if (this.gx == GX_JGD) {
+		/*if (this.gx == GX_JGD) {
 			if (cllx.indexOf("K") == 0) {
 				this.czpyxz = "0.7,0.9";
 			} else {
@@ -352,12 +352,19 @@ public class LightData extends BaseDeviceData {
 		}
 		if (this.gx == GX_YGD) {
 			this.czpyxz = "0.8,0.95";
+		}*/
+		
+		if(dg>1000) {
+			this.czpyxz ="-350,-50";
+		}else {
+			this.czpyxz ="-350,-100";
 		}
+		
 	}
 
 	public void setCzpypd() {
 
-		if (this.czpy == null || this.czpyxz == null) {
+		/*if (this.czpy == null || this.czpyxz == null) {
 			return;
 		}
 
@@ -367,7 +374,25 @@ public class LightData extends BaseDeviceData {
 			this.czpypd = CheckDataManager.PDJG_HG;
 		} else {
 			this.czpypd = CheckDataManager.PDJG_BHG;
+		}*/
+		
+		if (this.czpc == null || this.czpyxz == null) {
+			return;
 		}
+
+		String[] xz = this.getCzpyxz().split(",");
+		
+		Integer xz1=Integer.parseInt(xz[0].trim());
+		Integer xz2 = Integer.parseInt(xz[1].trim());
+		Integer numCzpc = Integer.parseInt(czpc);
+
+		if (xz1 <= numCzpc && xz2 >= numCzpc) {
+			this.czpypd = CheckDataManager.PDJG_HG;
+		} else {
+			this.czpypd = CheckDataManager.PDJG_BHG;
+		}
+		
+		
 
 	}
 

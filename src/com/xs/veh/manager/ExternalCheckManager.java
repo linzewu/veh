@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class ExternalCheckManager {
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
+	
+	@Value("${jyjgbh}")
+	private String jyjgbh;
 
 	private void createExternalCheckJudge(ExternalCheck externalCheck) {
 
@@ -519,7 +523,9 @@ public class ExternalCheckManager {
 	}
 
 	public List<VehCheckProcess> getRoadProcess(String jylsh) {
-
+		
+		VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(jyjgbh, jylsh);
+		
 		List<VehCheckProcess> datas = (List<VehCheckProcess>) this.hibernateTemplate
 				.find("from VehCheckProcess where jylsh=? and jyxm in('R1','R2','R3')", jylsh);
 

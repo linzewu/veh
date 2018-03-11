@@ -1010,6 +1010,7 @@ var report={
 			$("#online").panel({"href":"/veh/html/report/online.html",baseInfo:row});
 			$("#commit").panel({"href":"/veh/html/report/commit.html",baseInfo:row});
 			$("#roadCheck").panel({"href":"/veh/html/report/roadCheck.html",baseInfo:row});
+			$("#zbzlTab").panel({"href":"/veh/html/report/curbWeight.html",baseInfo:row});
 			$("#tab-report").tabs("getSelected").panel("refresh");
 		}
 	},
@@ -1161,17 +1162,6 @@ var report={
 					$("#report1 tr[name=ZC] td[name=zczdpd]").text(veh.jgpd(n.zczdpd));
 					$("#report1 tr[name=ZC] td[name=dxcs]").text(intjycs);
 					
-					if(baseInfo.jylb=="00"){
-						$("#report1 [name=other_zczbzl]").text(n.jczczbzl);
-						$("#report1 [name=other_zczbzl_jycs]").text("1");
-						
-						var cz = n.jczczbzl-baseInfo.zbzl;
-						
-						var f = cz/baseInfo.zbzl
-						
-						$("#report1 [name=other_zczbzl_jgpd]").text(f>=-3&&f<=3 ?"O":"X");
-					}
-					
 				}else if(i.indexOf("par")==0){
 					$("#report1 tr[name=par] td[name=par_tczclh]").text(n.tczclh);
 					$("#report1 tr[name=par] td[name=par_tczdl]").text(n.tczdl);
@@ -1192,7 +1182,7 @@ var report={
 						}else if(k.yqjgpd==0){
 							jg="—";
 						}
-						temStr+=k.yqjyxm+":"+k.yqjgpd+"("+k.yqbzxz+")"+jg+"  |  "
+						temStr+=k.yqjyxm+":"+k.yqjyjg+"("+k.yqbzxz+")"+jg+"  |  "
 					});
 					$("#report1 td[name=roadCheck_info]").text(temStr);
 					$("#report1 td[name=roadCheck_pd]").text(veh.jgpd(lsjg));
@@ -1204,6 +1194,10 @@ var report={
 					$("#report1 [name=wkcc]").text(n.cwkc+"x"+n.cwkk+"x"+n.cwkg);
 					$("#report1 [name=wkcc_pd]").text(veh.jgpd(n.clwkccpd));
 					$("#report1 [name=wkcc_jycs]").text(n.jycs);
+				}else if(i.indexOf("Z1")==0){
+					$("#report1 [name=other_zczbzl]").text(n.zbzl);
+					$("#report1 [name=other_zczbzl_jycs]").text(n.jycs);
+					$("#report1 [name=other_zczbzl_jgpd]").text(veh.jgpd(n.zbzlpd));
 				}
 			});
 		}).error(function(e){
