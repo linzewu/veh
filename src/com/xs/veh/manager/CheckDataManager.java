@@ -97,6 +97,8 @@ public class CheckDataManager {
 			jycs=1;
 		}
 		
+		VehCheckLogin  vehCheckLogin=this.getVehCheckLogin(jylsh);
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate
@@ -178,6 +180,7 @@ public class CheckDataManager {
 		}
 		
 		if(otherData.getZdlh()!=null){
+			otherData.setBaseInfo(vehCheckLogin);
 			otherData.setZczdlxz();
 			otherData.setZczdl();
 			otherData.setZczdlpd();
@@ -523,14 +526,14 @@ public class CheckDataManager {
 		if (vehCheckLogin.getJylb().equals("00") && curbWeightData != null&&vehCheckLogin.getJyxm().indexOf("Z1")>=0) {
 			String cllx=vehCheckLogin.getCllx();
 			int xzgj=100;
-			String temp1="±3%或";
-			if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
+			String temp1="±3%或±";
+			if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z1")==0||cllx.indexOf("Z2")==0||cllx.indexOf("Z5")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
 				xzgj=500;
-			}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0){
+			}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0||cllx.indexOf("Z3")==0||cllx.indexOf("Z4")==0){
 				xzgj=100;
 			}else if(cllx.indexOf("N")==0){
 				xzgj=100;
-				temp1="±5%或";
+				temp1="±5%或±";
 			}else if(cllx.indexOf("M")==0){
 				xzgj=10;
 			}
@@ -539,7 +542,7 @@ public class CheckDataManager {
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("整备质量(KG)");
 			dcj1.setYqjyjg(curbWeightData.getZbzl()==null ? "" : curbWeightData.getZbzl().toString());
-			dcj1.setYqbzxz(""+xzgj+"KG");
+			dcj1.setYqbzxz(temp1+xzgj+"KG");
 			dcj1.setYqjgpd(curbWeightData.getZbzlpd().toString());
 			dcj1.setXh(xh);
 			xh++;
@@ -793,18 +796,20 @@ public class CheckDataManager {
 					this.hibernateTemplate.save(dcj1);
 				}
 
-				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
-						&& syxz.equals("A"))) {
-					DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-					dcj2.setYqjyxm(
-							getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)");
-					dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : lightData.getCzpy().toString());
-					dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
-					dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
-					dcj2.setXh(xh);
-					xh++;
-					this.hibernateTemplate.save(dcj2);
-				}
+				/*if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
+						&& syxz.equals("A"))) {*/
+					if(lightData.getGx() == LightData.GX_JGD) {
+						DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+						dcj2.setYqjyxm(
+								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)");
+						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : lightData.getCzpc().toString());
+						dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
+						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
+						dcj2.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj2);
+					}
+				//}
 
 			}
 

@@ -3,6 +3,7 @@ package com.xs.veh.network.data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -114,6 +115,7 @@ public class OtherInfoData extends BaseEntity {
 	@Column
 	private Integer zbzlpd;
 	
+	@Transient
 	private VehCheckLogin vehCheckLoginInfo;
 
 

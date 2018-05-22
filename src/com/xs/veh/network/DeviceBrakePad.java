@@ -136,6 +136,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 		// 驻车结果
 		ParDataOfAnjian parDataOfAnjian = null;
 		OtherInfoData otherInfoData = new OtherInfoData();
+		otherInfoData.setBaseInfo(vehCheckLogin);
 		Integer zclh = 0;
 		Integer zdlh = 0;
 		boolean sfhg = true;

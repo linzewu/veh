@@ -746,7 +746,7 @@ public class VehManager {
 				fjjyxm += "B5,";
 			}
 			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate
-					.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0'", jylsh, BaseDeviceData.SJZT_ZC);
+					.find("from BrakRollerData where jylsh=? and sjzt=? and jyxm in('B1','B2','B3','B4','B5')", jylsh, BaseDeviceData.SJZT_ZC);
 			for (BrakRollerData brakRollerData : brakRollerDatas) {
 				brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
 				this.hibernateTemplate.save(brakRollerData);

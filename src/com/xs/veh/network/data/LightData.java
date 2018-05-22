@@ -124,6 +124,11 @@ public class LightData extends BaseDeviceData {
 	}
 
 	public String getCzpyxz() {
+		if(dg>1000) {
+			this.czpyxz ="-350,-50";
+		}else {
+			this.czpyxz ="-350,-100";
+		}
 		return czpyxz;
 	}
 
@@ -384,16 +389,18 @@ public class LightData extends BaseDeviceData {
 		
 		Integer xz1=Integer.parseInt(xz[0].trim());
 		Integer xz2 = Integer.parseInt(xz[1].trim());
-		Integer numCzpc = Integer.parseInt(czpc);
+		
+		String czpcNew=czpc.trim();
+		if(czpcNew.indexOf("+")==0) {
+			czpcNew=czpcNew.substring(1);
+		}
+		Integer numCzpc = Integer.parseInt(czpcNew);
 
 		if (xz1 <= numCzpc && xz2 >= numCzpc) {
 			this.czpypd = CheckDataManager.PDJG_HG;
 		} else {
 			this.czpypd = CheckDataManager.PDJG_BHG;
 		}
-		
-		
-
 	}
 
 	/**

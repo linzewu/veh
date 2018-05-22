@@ -44,9 +44,9 @@ function zbzlchange(value){
 	var cllx = reportData.cllx;
 	var xzgj=100;
 	var percent=3;
-	if(cllx.indexOf('H1')==0||cllx.indexOf('H2')==0||cllx.indexOf('Z')==0||cllx.indexOf('G')==0||cllx.indexOf('B')==0){
+	if(cllx.indexOf('H1')==0||cllx.indexOf('H2')==0||cllx.indexOf('Z1')==0||cllx.indexOf('Z2')==0||cllx.indexOf('Z5')==0||cllx.indexOf('G')==0||cllx.indexOf('B')==0){
 		xzgj=500;
-	}else if(cllx.indexOf('H3')==0||cllx.indexOf('H4')==0){
+	}else if(cllx.indexOf('H3')==0||cllx.indexOf('H4')==0||cllx.indexOf('Z3')==0||cllx.indexOf('Z4')==0){
 		xzgj=100;
 	}else if(cllx.indexOf('N')==0){
 		xzgj=100;
@@ -55,7 +55,7 @@ function zbzlchange(value){
 		xzgj=10;
 	}
 	
-	if(cz>=xzgj||cz<=-xzgj||czbfj>=percent||czbfj<=-percent){
+	if((cz>=xzgj||cz<=-xzgj)&&(czbfj>=percent||czbfj<=-percent)){
 		$("#curbWeightForm #zbzlpd_bhg").prop("checked",true);
 	}else{
 		$("#curbWeightForm #zbzlpd_hg").prop("checked",true);
