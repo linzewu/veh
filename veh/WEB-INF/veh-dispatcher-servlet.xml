@@ -25,6 +25,8 @@
 	<!-- 自动加载构建bean -->
 	<context:component-scan base-package="com.xs.veh.controller" />
 	
+	<aop:aspectj-autoproxy expose-proxy="true"/>
+	
 	<bean class="com.lzw.comm.spring.GollfPropertyPlaceholderConfigurer">
 		<constructor-arg>
 			<value>veh.license</value>

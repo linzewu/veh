@@ -30,6 +30,30 @@
 		}
 	}
 	
+	function openUserInfo(){
+		var url ="/veh/html/userInfo.html?"+new Date().getTime();
+		$("#userInfo_win").window('open');
+		//$("#userInfo_win").window('setTitle',comm.getParamNameByValue('deviceType',row.type));
+		$("#userInfo_win").window('refresh', url);
+		var options = $("#userInfo_win").window('options');
+		options.editModel="add";
+	}
+	
+	function editUserInfo(){
+		var row = $("#userManager").datagrid("getSelected");
+		var url ="/veh/html/userInfo.html?"+new Date().getTime();
+		
+		if(row){
+			$("#userInfo_win").window('open');
+			//$("#deviceInfo_win").window('setTitle',comm.getParamNameByValue('deviceType',row.type));
+			$("#userInfo_win").window('refresh', url);
+			var options = $("#userInfo_win").window('options');
+			options.editModel="edit";
+		}else{
+			$.messager.alert("提示","请选择用户","info");
+		}
+	}
+	
 </script>
 <table id="userManager" class="easyui-datagrid"
 	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:'#userManagerToolbar',onBeginEdit:userBeginEidt">
@@ -37,16 +61,19 @@
 		<tr>
 			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:'',remote:['/veh/user/validateUserName','userName']}}}">用户名</th>
 			<th data-options="field:'realName',width:100,editor:{type:'textbox',options:{required:true}}">姓名</th>
-			<th data-options="field:'idCard',width:100,editor:{type:'textbox',options:{required:true,validType:{idCardVad:''}}}">身份证</th>
-			<th data-options="field:'roleId',width:100,formatter:roleFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('role'),valueField: 'id',textField: 'value'}}">角色</th>
+			<th data-options="field:'idCard',width:100">身份证</th>
+			<th data-options="field:'roleName',width:100">角色</th>
 		</tr>
 	</thead>
 </table>
 <div id="userManagerToolbar">
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="gu.append()">添加用户</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="openUserInfo()">添加用户</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="gu.accept()">保存</a>
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="gu.reject()">取消编辑</a>
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="gu.editData()">修改用户</a>
+	<!-- <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="gu.reject()">取消编辑</a>-->
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editUserInfo()">修改用户</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="gu.remove()">删除用户</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true" onclick="resetPassword('#userManager')">重置密码</a>
+</div>
+<div id="userInfo_win" class="easyui-window" title="用户详细信息" style="width:800px;height:450px"
+        data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:false,collapsible:false,minimizable:false">
 </div>

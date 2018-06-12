@@ -27,7 +27,7 @@ public class UserManager {
 	public User login(String userName, String password) {
 
 		List<User> list = (List<User>) hibernateTemplate.findByNamedQueryAndNamedParam("User.login",
-				new String[] { "userName", "password" }, new String[] { userName, password });
+				new String[] { "userName", "password", "userState" }, new Object[] { userName, password, 0 });
 
 		if (list != null && list.size() > 0) {
 			return list.get(0);
@@ -65,7 +65,7 @@ public class UserManager {
 	}
 	
 	public List<User> getUsers(){
-		return  (List<User>) this.hibernateTemplate.find("from User  where userName!='admin'");
+		return  (List<User>) this.hibernateTemplate.find(" select u.*,r.roleName roleName from User u left join Role r on u.roleId=r.id  where userName!='admin'");
 	}
 	
 	public Integer getUserCount(final User user,final PageInfo pageInfo) {
@@ -102,7 +102,10 @@ public class UserManager {
 		}else{
 			User oldUser=this.hibernateTemplate.load(User.class, user.getId());
 			user.setPassword(oldUser.getPassword());
+			user.setUserName(oldUser.getUserName());
+			user.setLastLoginDate(oldUser.getLastLoginDate());
 		}
+		System.out.println(user.getId()+"**********************************");
 		return this.hibernateTemplate.merge(user);
 		
 	}

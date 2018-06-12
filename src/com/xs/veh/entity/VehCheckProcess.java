@@ -48,6 +48,17 @@ public class VehCheckProcess extends BaseEntity {
 	@Column
 	private Integer jycs;
 	
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	@Column(length=32)
+	private Date jygcxrsj;
+	
+	@Column(length=64)
+	private String jysbbh;
+	
+	@Column(length=10)
+	private String jyzt;
+	
 	
 
 	public Date getKssj() {
@@ -114,5 +125,33 @@ public class VehCheckProcess extends BaseEntity {
 	public void setJyxm(String jyxm) {
 		this.jyxm = jyxm;
 	}
+
+
+	public String getJysbbh() {
+		return jysbbh;
+	}
+
+	public String getJyzt() {
+		return jyzt;
+	}
+
+
+	public void setJysbbh(String jysbbh) {
+		this.jysbbh = jysbbh;
+	}
+
+	public void setJyzt(String jyzt) {
+		this.jyzt = jyzt;
+	}
+
+	public Date getJygcxrsj() {
+		return jygcxrsj;
+	}
+
+	public void setJygcxrsj(Date jygcxrsj) {
+		this.jygcxrsj = jygcxrsj;
+	}
+	
+	
 
 }

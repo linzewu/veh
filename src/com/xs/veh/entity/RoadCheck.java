@@ -273,6 +273,7 @@ public class RoadCheck implements SafeSerializable {
 		return lszczdpd;
 	}
 	public Integer getCsbpd() {
+		this.setCsbpd();
 		return csbpd;
 	}
 	public Integer getLsjg() {

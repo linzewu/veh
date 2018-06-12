@@ -19,6 +19,8 @@ public class Constant {
 		public static final String VALIDATE_ERROR = "validateError";
 		
 		public static final String SAVE_SUCCESS="save_success";
+		
+		public static final String LOGINOVERDUE= "login.overdue";
 	}
 	
 	public static class ConstantKey{

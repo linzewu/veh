@@ -64,9 +64,11 @@ function login() {
 	$.post("/veh/user/login",{userName:userName,password:password}, function(data){
 		console.log(data);
 		if(data.state==1){
+			var userData  = data.data;
+			console.log(userData)
 			window.location.href="/veh/html/index.html";
 		}else{
-			$.messager.alert("登陆失败","用户名或密码错误！","info");
+			$.messager.alert("登陆失败",data.errorMsg,"info");
 		}
 	},"json");
 }

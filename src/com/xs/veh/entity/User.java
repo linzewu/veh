@@ -1,15 +1,20 @@
 package com.xs.veh.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Scope("prototype")
@@ -18,13 +23,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "TB_User")
 @JsonIgnoreProperties(value ={"hibernateLazyInitializer","handler","fieldHandler","password"})
 @NamedQueries({
-	@NamedQuery(name = "User.login", query = "from User u where u.userName=:userName and u.password=:password") 
+	@NamedQuery(name = "User.login", query = "from User u where u.userName=:userName and u.password=:password and u.userState=:userState") 
 })
 public class User extends BaseEntity {
 	
 	public final static Integer USER_STATE_PASSWORD_INVALID=0;
 	
 	public final static Integer USER_STATE_NORMAL=1; 
+	
+	public final static String User_type_dly="1";
+	
+	public final static String User_type_ycy="2";
 	
 	@Column(unique=true,length=32)
 	@Pattern(regexp="^[a-zA-Z\\d]\\w{3,11}[a-zA-Z\\d]$",message="{user.userFomatterError}")
@@ -48,8 +57,121 @@ public class User extends BaseEntity {
 	@Column
 	private Integer userState;
 	
+	//登录IP
+	@Column(length=160)
+	private String loginIP;
+	
+	//账号有效截止日期
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd")  
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date userNameValidDate;
+	
+	//密码有效截止日期
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd")  
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date pwValidDate;
+	
+	//允许登录时间(开始)
+	@Column(length=10)
+	private String permitBeginTime;
+	
+	//允许登录时间(截止)
+	@Column(length=10)
+	private String permitEndTime;
+	
+	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date lastLoginDate;
+	
+	@Column
+	private Character isPolice;
+	
+	@Column(length=40)
+	private String employeeNumber;
+	
+	@Column
+	private Integer loginFailCou;
+	
+	@Column(length=10)
+	private String userType;
+	
+	@Transient
+	private String pwOverdue;
+	
+	@Transient
+	private String roleName;
+	
+	
 	
 
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	public String getLoginIP() {
+		return loginIP;
+	}
+
+	public Date getUserNameValidDate() {
+		return userNameValidDate;
+	}
+
+	public Date getPwValidDate() {
+		return pwValidDate;
+	}
+
+	public String getPermitBeginTime() {
+		return permitBeginTime;
+	}
+
+	public String getPermitEndTime() {
+		return permitEndTime;
+	}
+
+	public Date getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+
+	public String getEmployeeNumber() {
+		return employeeNumber;
+	}
+
+	public void setLoginIP(String loginIP) {
+		this.loginIP = loginIP;
+	}
+
+	public void setUserNameValidDate(Date userNameValidDate) {
+		this.userNameValidDate = userNameValidDate;
+	}
+
+	public void setPwValidDate(Date pwValidDate) {
+		this.pwValidDate = pwValidDate;
+	}
+
+	public void setPermitBeginTime(String permitBeginTime) {
+		this.permitBeginTime = permitBeginTime;
+	}
+
+	public void setPermitEndTime(String permitEndTime) {
+		this.permitEndTime = permitEndTime;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
+	}
+
+
+	public void setEmployeeNumber(String employeeNumber) {
+		this.employeeNumber = employeeNumber;
+	}
 
 	public Integer getUserState() {
 		return userState;
@@ -98,6 +220,38 @@ public class User extends BaseEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Character getIsPolice() {
+		return isPolice;
+	}
+
+	public void setIsPolice(Character isPolice) {
+		this.isPolice = isPolice;
+	}
+
+	public String getPwOverdue() {
+		return pwOverdue;
+	}
+
+	public void setPwOverdue(String pwOverdue) {
+		this.pwOverdue = pwOverdue;
+	}
+
+	public Integer getLoginFailCou() {
+		return loginFailCou;
+	}
+
+	public void setLoginFailCou(Integer loginFailCou) {
+		this.loginFailCou = loginFailCou;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 
 	

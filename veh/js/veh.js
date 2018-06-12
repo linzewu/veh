@@ -13,7 +13,9 @@ if(userInfo.state==600){
 }
 
 $(function(){
-	if(userInfo.userState==0||userInfo.userState==null){
+	console.log(userInfo.pwOverdue)
+	//if(userInfo.userState==0||userInfo.userState==null||userInfo.pwOverdue=="Y"){
+	if(userInfo.pwOverdue=="Y"){
 		$('#win_password').window('open');
 	}
 });
@@ -908,8 +910,19 @@ var system = {
 		"title" : "检测流程",
 		href : "/veh/html/flowConfig.html",
 		target : "#systemContex"
+	},{
+		"icon" : "/veh/images/Workflow.png",
+		"title" : "操作日志",
+		href : "/veh/html/operationLog.html",
+		target : "#systemContex"
+	},{
+		"icon" : "/veh/images/Workflow.png",
+		"title" : "角色管理",
+		href : "/veh/html/roleManager.html",
+		target : "#systemContex"
 	}],
 	initEvents : function() {
+		
 		comm.createMume("sysMune", system.menus);
 	}
 }
@@ -965,6 +978,22 @@ $.extend(
 				}
 			},
 			message : '身份证号码错误'
+		},
+		ipsVad:{
+			validator:function(value, param){
+				
+				var ips=value.split(",");
+				var reg =  /^([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/;
+				for(var i in ips){
+					var ip = ips[i];
+					if(!reg.test(ip)){
+						return false;
+					}
+				}
+				return true;
+				
+			},
+			message:"您输入的IP地址不正确！"
 		}
 	});
 

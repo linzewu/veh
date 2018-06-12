@@ -15,8 +15,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.xs.common.InitServerCommonUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.Device;
+import com.xs.veh.entity.PowerPoint;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.WorkPointManager;
@@ -56,6 +58,8 @@ public class InitListener implements ServletContextListener {
 	private WorkPointManager workPointManager;
 
 	private BaseParamsManager baseParamsManager;
+	
+	private InitServerCommonUtil initServerCommonUtil;
 
 	/**
 	 * Default constructor.
@@ -71,6 +75,7 @@ public class InitListener implements ServletContextListener {
 		deviceManager = (DeviceManager) wac.getBean("deviceManager");
 		executor = (ThreadPoolTaskExecutor) wac.getBean("taskExecutor");
 		workPointManager = (WorkPointManager) wac.getBean("workPointManager");
+		initServerCommonUtil = (InitServerCommonUtil) wac.getBean("initServerCommonUtil");
 	}
 
 	/**
@@ -79,8 +84,14 @@ public class InitListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent contextEvent) {
 
 		try {
+			
 			init(contextEvent.getServletContext());
-
+			
+			List<PowerPoint> powerPoints = initServerCommonUtil.initPower(new String[] {"com.xs.veh.controller"});
+			
+			servletContext.setAttribute("powerPoints", powerPoints);
+		
+			
 			// 加载参数表
 			List<BaseParams> bps = baseParamsManager.getBaseParams();
 			servletContext.setAttribute("bps", bps);

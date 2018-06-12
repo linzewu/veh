@@ -30,8 +30,32 @@
 </tr>
 <tr>
 	<td>车速表实测值：</td><td><input class="easyui-numberbox" name="csdscz" precision=1  id="road_csdscz" ></td>
-	<td>路试员：</td>
-	<td><input  name="lsy" id="road_lsy"></td>
+	<td>车速表判定：</td><td><input  name="csbpd" precision=1  id="road_csbpd" ></td>
+</tr>
+
+<tr>
+	<td>应急制动初速度：</td><td><input class="easyui-numberbox" name="yjzdcsd" precision=1 id="road_yjzdcsd"   ></td>
+	<td>应急空载制动距离：</td><td><input  name="yjkzzdjl" class="easyui-numberbox" id="road_yjkzzdjl" ></td>
+</tr>
+<tr>
+	<td>应急空载MFDD：</td><td><input class="easyui-numberbox"   precision=1  name="yjkzmfdd" id="road_yjkzmfdd" ></td>
+	<td>应急操纵力值：</td><td><input class="easyui-numberbox" name="yjzdczlz" precision=2  id="road_yjzdczlz"  ></td>
+</tr>
+<tr>
+	<td>应急满载制动距离：</td><td><input class="easyui-numberbox" precision=1   name="yjmzzdjl" id="road_yjmzzdjl" ></td>
+	<td>应急满载MFDD：</td><td><input class="easyui-numberbox" precision=1  name="yjmzmfdd" id="road_yjmzmfdd"></td>
+</tr>
+<tr>
+	<td>应急操纵力方式：</td><td><input name="yjzdczlfs" id="road_yjzdczlfs"></td>
+	<td>应急路试制动判定：</td><td><input  name="yjzdpd" id="road_yjzdpd"></td>
+</tr>
+
+<tr>
+<td>行车路试制动判定：</td><td><input  name="lszdpd" id="road_lszdpd"></td>
+<td>路试结果：</td><td><input  name="lsjg" id="road_lsjg"></td>
+</tr>
+<tr>
+<td>路试员：</td><td colspan="3"><input  name="lsy" id="road_lsy"></td>
 </tr>
 <tr>
 	<td colspan="4" style="text-align: center;height: 80px;">
@@ -58,6 +82,14 @@ var reportData = $("#checkingVeh").datagrid("getSelected");
 		$("#commit_jylsh").text(reportData.jylsh);
 		$("#commit_hphm").text(reportData.hphm);
 
+		
+		$("#road_yjzdczlfs").combobox({
+			valueField:'id',
+			textField:'text',
+			data:[{id:'0',text:'手操纵'},{id:'1',text:'脚操纵'}]
+		});
+		
+		
 
 		$("#road_zcpd").combobox({
 			required:"true",
@@ -79,6 +111,36 @@ var reportData = $("#checkingVeh").datagrid("getSelected");
 			textField:'text',
 			data:pd
 		});
+		
+		$("#road_csbpd").combobox({
+			valueField:'id',
+			textField:'text',
+			data:pd,
+			disabled:true
+		});
+		
+		$("#road_lszdpd").combobox({
+			valueField:'id',
+			textField:'text',
+			data:pd,
+			disabled:true
+		});
+		
+		$("#road_lsjg").combobox({
+			valueField:'id',
+			textField:'text',
+			data:pd,
+			disabled:true
+		});
+		
+		
+		$("#road_yjzdpd").combobox({
+			valueField:'id',
+			textField:'text',
+			data:pd,
+		});
+		
+		
 
 		$("#road_lsy").combobox({
 			url:'/veh/user/getAllUsers',
@@ -125,7 +187,11 @@ var reportData = $("#checkingVeh").datagrid("getSelected");
         $("#roleCheckForm [name=hpzl]").val(reportData.hpzl);
         $("#roleCheckForm [name=jycs]").val(reportData.jycs);
         $("#roleCheckForm [name=hphm]").val(reportData.hphm);
-		$("#roleCheckForm").form("submit");
+		$("#roleCheckForm").form("submit",{
+			success:function(data){
+		        alert(data)
+		    }
+		});
 	}
 	
 </script>
