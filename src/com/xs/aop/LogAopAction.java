@@ -103,8 +103,6 @@ public class LogAopAction {
 	 */
 	@Around("controllerAspect()")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable {
-		
-		System.out.println("around++++++"+log.getStatus());
 		// 日志实体对象
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getRequest();

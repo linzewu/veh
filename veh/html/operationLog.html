@@ -1,4 +1,4 @@
-<table id="userManager" class="easyui-datagrid"
+<table id="operationLogManager" class="easyui-datagrid"
 	data-options="url:'',fitColumns:true,singleSelect:true,fit:true,pagination:true,pageSize:20,toolbar:'#operlogToolbar'">
 	<thead> 
 		<tr>
@@ -43,8 +43,8 @@ function query(){
 	if(module&&$.trim(module)!=""){
 		param.module=module;
 	}
-	 var opts = $("#userManager").datagrid("options");
+	 var opts = $("#operationLogManager").datagrid("options");
 	 opts.url = "/veh/opeationLog/getOperationLog";
-	$("#userManager").datagrid("reload",param);
+	$("#operationLogManager").datagrid("reload",param);
 }
 </script>

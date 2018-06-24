@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.Message;
 import com.xs.common.ResultHandler;
+import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.Flow;
 import com.xs.veh.entity.WorkPoint;
@@ -26,6 +29,7 @@ import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping(value = "/flow")
+@Modular(modelCode="Flow",modelName="检测流程")
 public class FlowController {
 
 	@Resource(name = "flowManager")
@@ -37,24 +41,28 @@ public class FlowController {
 	@Resource(name = "deviceManager")
 	private DeviceManager deviceManager;
 
+	@UserOperation(code="getFlows",name="查询检测流程")
 	@RequestMapping(value = "getFlows", method = RequestMethod.POST)
 	public @ResponseBody Map getDevices(PageInfo pageInfo) {
 		Map json = ResultHandler.toMyJSON(flowManager.getFlows(), 0);
 		return json;
 	}
 
+	@UserOperation(code="addFlow",name="新增修改检测流程")
 	@RequestMapping(value = "addFlow", method = RequestMethod.POST)
 	public @ResponseBody Map addFlow(Flow flow) {
 		this.flowManager.save(flow);
 		return ResultHandler.toSuccessJSON("新增流程成功。");
 	}
 
+	@UserOperation(code="delete",name="删除流程")
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	public @ResponseBody Map delete(Flow flow) {
 		this.flowManager.delete(flow);
 		return ResultHandler.toSuccessJSON("删除成功。");
 	}
 
+	@UserOperation(code="addFlow",name="新增修改检测流程")
 	@RequestMapping(value = "updateFlow", method = RequestMethod.POST)
 	public @ResponseBody Map updateFlow(Flow flow) {
 		
@@ -63,6 +71,7 @@ public class FlowController {
 		return ResultHandler.toMessage(message);
 	}
 
+	@UserOperation(code="getFlows",name="查询检测流程")
 	@RequestMapping(value = "getWorkPointAndDeviceByJcxxh", method = RequestMethod.POST)
 	public @ResponseBody Map getWorkPointAndDeviceByJcxxh(@RequestParam Integer jcxdh) {
 		List<WorkPoint> wps = this.workPointManager.getWorkPointsByJcxdh(jcxdh);

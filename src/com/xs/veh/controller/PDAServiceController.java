@@ -19,8 +19,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.Message;
 import com.xs.common.ResultHandler;
+import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.VehCheckLogin;
@@ -34,6 +37,7 @@ import com.xs.veh.network.data.CurbWeightData;
 
 @Controller
 @RequestMapping(value = "/pda")
+@Modular(modelCode="PDAService",modelName="PDA")
 public class PDAServiceController {
 
 	@Resource(name = "vehManager")
@@ -49,6 +53,7 @@ public class PDAServiceController {
 	private CheckEventManger checkEventManger;
 
 	@RequestMapping(value = "getCheckList")
+	@UserOperation(code="getCheckList",name="查询待检列表")
 	public @ResponseBody String getCheckList(HttpServletRequest request, @RequestParam Integer status)
 			throws JsonProcessingException {
 		List<VehCheckLogin> data = vehManager.getVehCheckLoginOfSXZT(status);
@@ -57,12 +62,14 @@ public class PDAServiceController {
 		return jsonp;
 	}
 
+	@UserOperation(code="pushVehOnLine",name="引车上线")
 	@RequestMapping(value = "pushVehOnLine")
 	public @ResponseBody Map pushVehOnLine(@RequestParam Integer id) {
 		Message message = this.vehManager.upLine(id);
 		return ResultHandler.toMessage(message);
 	}
 
+	@UserOperation(code="external",name="车辆外检")
 	@RequestMapping(value = "external", method = RequestMethod.POST)
 	public @ResponseBody Map externalUpload(@Valid ExternalCheck externalCheck, BindingResult result)
 			throws InterruptedException {
@@ -74,6 +81,7 @@ public class PDAServiceController {
 		}
 	}
 
+	@UserOperation(code="externalDC",name="动态底盘检测")
 	@RequestMapping(value = "externalDC", method = RequestMethod.POST)
 	public @ResponseBody Map externalDCUpload(@Valid ExternalCheck externalCheck, BindingResult result)
 			throws InterruptedException {
@@ -85,6 +93,7 @@ public class PDAServiceController {
 		}
 	}
 
+	@UserOperation(code="externalC1",name="底盘检测")
 	@RequestMapping(value = "externalC1", method = RequestMethod.POST)
 	public @ResponseBody Map externalC1Upload(@Valid ExternalCheck externalCheck, BindingResult result)
 			throws InterruptedException {
@@ -96,36 +105,42 @@ public class PDAServiceController {
 		}
 	}
 
+	@UserOperation(code="getExternal",name="车辆外观待检列表")
 	@RequestMapping(value = "getExternal")
 	public @ResponseBody List getExternal(String hphm) {
 		List<VehCheckLogin> data = externalCheckManager.getExternalCheckVhe(hphm);
 		return data;
 	}
 
+	@UserOperation(code="getExternalDC",name="车辆动态底盘待检列表")
 	@RequestMapping(value = "getExternalDC")
 	public @ResponseBody List getExternalDC(String hphm) {
 		List<VehCheckLogin> data = externalCheckManager.getExternalDC(hphm);
 		return data;
 	}
 
+	@UserOperation(code="getExternalC1",name="车辆底盘待检列表")
 	@RequestMapping(value = "getExternalC1")
 	public @ResponseBody List getExternalC1(String hphm) {
 		List<VehCheckLogin> data = externalCheckManager.getExternalC1(hphm);
 		return data;
 	}
 	
+	@UserOperation(code="getExternalR",name="路试待检列表")
 	@RequestMapping(value = "getExternalR")
 	public @ResponseBody List getExternalR(String hphm) {
 		List<VehCheckLogin> data = externalCheckManager.getExternalR(hphm);
 		return data;
 	}
 	
+	@UserOperation(code="getRoadProcess",name="查询路试过程",isMain=false)
 	@RequestMapping(value = "getRoadProcess")
 	public @ResponseBody List getRoadProcess(String jylsh) {
 		List<VehCheckProcess> data = externalCheckManager.getRoadProcess(jylsh);
 		return data;
 	}
 	
+	@UserOperation(code="roadProcess",name="车辆路试")
 	@RequestMapping(value = "roadProcess")
 	public @ResponseBody Map roadProcess(@RequestParam String jylsh,@RequestParam String jyxm,@RequestParam Integer type) {
 		List<VehCheckProcess> datas = externalCheckManager.getRoadProcess(jylsh);
@@ -166,6 +181,7 @@ public class PDAServiceController {
 		return ResultHandler.toSuccessJSON("时间更新成功");
 	}
 
+	@UserOperation(code="uploadPhoto",name="图片上传")
 	@RequestMapping(value = "uploadPhoto")
 	public @ResponseBody Map uploadPhoto(@RequestParam("photo") CommonsMultipartFile[] photo,
 			@Valid CheckPhoto checkPhoto, BindingResult result) {
@@ -180,6 +196,7 @@ public class PDAServiceController {
 		}
 	}
 
+	@UserOperation(code="processStart",name="检测过程开始",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "processStart")
 	public @ResponseBody Map processStart(@RequestParam("jyxm") String jyxm, @RequestParam("jylsh") String jylsh,
 			@RequestParam("jycs") Integer jycs) {
@@ -203,7 +220,7 @@ public class PDAServiceController {
 	
 	
 	
-
+	@UserOperation(code="processStart",name="获取检测项目",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "getChekcItem")
 	public @ResponseBody String getChekcItem(@RequestParam("jylsh") String jylsh, @RequestParam("type") String type)
 			throws DocumentException {
@@ -211,12 +228,14 @@ public class PDAServiceController {
 		return item;
 	}
 	
+	@UserOperation(code="getVehInOfHphm",name="查询机动车详细信息")
 	@RequestMapping(value = "getVehInOfHphm")
 	public @ResponseBody List getVehInOfHphm(@RequestParam("hphm") String hphm) {
 		List<VehCheckLogin> data = externalCheckManager.getVheInfoOfHphm(hphm);
 		return data;
 	}
 	
+	@UserOperation(code="zbzlUpload",name="整备质量上传")
 	@RequestMapping(value = "zbzlUpload", method = RequestMethod.POST)
 	public @ResponseBody Map zbzlUpload(@Valid CurbWeightData curbWeight, BindingResult result)
 			throws InterruptedException {
@@ -234,6 +253,7 @@ public class PDAServiceController {
 	}
 	
 	
+	@UserOperation(code="zbzlUpload",name="整备质量查询",isMain=false)
 	@RequestMapping(value = "getCurbWeight", method = RequestMethod.POST)
 	public @ResponseBody CurbWeightData getCurbWeight(String jylsh){
 		

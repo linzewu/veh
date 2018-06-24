@@ -13,12 +13,14 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.xs.annotation.CheckBit;
 
 @Scope("prototype")
 @Component("vehCheckLogin")
 @Entity
 @Table(name = "TM_VehCheckLogin")
 @JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "fieldHandler" })
+@CheckBit
 public class VehCheckLogin extends BaseEntity implements Serializable {
 
 	/**

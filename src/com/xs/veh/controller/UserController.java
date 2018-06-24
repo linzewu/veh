@@ -110,12 +110,21 @@ public class UserController {
 	@UserOperation(code="login",name="登录",userOperationEnum=CommonUserOperationEnum.NoLogin)
 	public @ResponseBody Map login(HttpServletRequest request, String userName, String password) {
 		
-		User user = userManager.login(userName, password);
+		User user = userManager.login(userName);
 		HttpSession session = request.getSession();
 		RequestContext requestContext = new RequestContext(request);
 		
 		
 		if (user != null) {
+			
+			//校验用户是否被锁定
+			if(user.getUserState() == 1) {
+				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
+				data.put("session", session.getId());
+				data.put("errorMsg", "登录失败，当前用户登录失败次数超过10次已被锁定，请联系管理员解锁！");
+				return data;
+			}
+			
 			if(!checkIp(user)) {
 				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
 				data.put("session", session.getId());
@@ -137,6 +146,16 @@ public class UserController {
 				data.put("errorMsg", "不在允许的时间段内登录！");
 				return data;
 			}
+			String encodePwd =user.encodePwd(password);
+			if(!user.getPassword().equals(encodePwd)) {
+				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
+				data.put("errorMsg", "用户名密码错误！");
+				data.put("session", session.getId());
+				session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
+				failLoginCount(user);
+				return data;
+			}
+			
 			
 				//判断密码是否过期
 			if (user.getPwValidDate().before(nowDate)) {
@@ -144,6 +163,7 @@ public class UserController {
 			}
 			//修改最后登录时间
 			user.setLastLoginDate(new Date());
+			user.setLoginFailCou(0);
 			this.userManager.updateUser(user);
 			session.setAttribute(Constant.ConstantKey.USER_SESSIO_NKEY, user);
 			Map data=ResultHandler.toMyJSON(1, requestContext.getMessage(Constant.ConstantMessage.LOGIN_SUCCESS), user);
@@ -156,6 +176,18 @@ public class UserController {
 			session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
 			return data;
 		}
+	}
+	
+	private User failLoginCount(User u) {
+		int cou = u.getLoginFailCou() == null? 0:u.getLoginFailCou();
+		cou++;		
+		if(cou == 10) {
+			//锁定
+			u.setUserState(1);
+		}
+		u.setLoginFailCou(cou);
+		this.userManager.updateUser(u);
+		return u;
 	}
 	
 	
@@ -242,7 +274,7 @@ public class UserController {
 	public @ResponseBody boolean validatePassworrd(HttpSession session,String oldPassword) {
 		User user = (User)session.getAttribute("user");
 		User querUser = userManager.loadUser(user.getId());
-		if(querUser.getPassword().equals(oldPassword)){
+		if(querUser.getPassword().equals(user.encodePwd(oldPassword))){
 			return true;
 		}else{
 			return false;
@@ -274,7 +306,7 @@ public class UserController {
 		User sessionUser = (User)session.getAttribute("user");
 		User user = this.userManager.loadUser(sessionUser.getId());
 		
-		user.setPassword(newPassword);
+		user.setPassword(user.encodePwd(newPassword));
 		user.setUserState(User.USER_STATE_NORMAL);
 		//修改密码，密码有效期延长3个月
 		Calendar calendar = Calendar.getInstance();

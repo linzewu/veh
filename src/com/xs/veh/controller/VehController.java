@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
+import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
@@ -35,6 +38,7 @@ import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping(value = "/veh")
+@Modular(modelCode="veh",modelName="机动车检测")
 public class VehController {
 
 	@Value("${jyjgbh}")
@@ -60,6 +64,7 @@ public class VehController {
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 	}
 
+	@UserOperation(code="getVehInfo",name="联网查询机动车信息")
 	@RequestMapping(value = "getVehInfo", method = RequestMethod.POST)
 	public @ResponseBody String getVehInfo(@RequestParam Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
@@ -67,6 +72,7 @@ public class VehController {
 		return json.toString();
 	}
 
+	@UserOperation(code="getVehInfo",name="查询机动车查验项",isMain=false)
 	@RequestMapping(value = "getVehCheckItem", method = RequestMethod.POST)
 	public @ResponseBody String getVehCheckItem(@RequestParam Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
@@ -74,12 +80,14 @@ public class VehController {
 		return json.toString();
 	}
 
+	@UserOperation(code="getVehCheckeProcess",name="查询机动车检测过程")
 	@RequestMapping(value = "getVehCheckeProcess", method = RequestMethod.POST)
 	public @ResponseBody List<VehCheckProcess> getVehCheckeProcess(String jylsh) {
 		List<VehCheckProcess> vcps = vehManager.getVehCheckPrcoessByJylsh(jylsh);
 		return vcps;
 	}
 
+	@UserOperation(code="getVehChecking",name="查询已登录机动车")
 	@RequestMapping(value = "getVehChecking", method = RequestMethod.POST)
 	public @ResponseBody Map<String,Object> getVehChecking(Integer page, Integer rows, VehCheckLogin vehCheckLogin,
 			@RequestParam(required = false) String statusArry) {
@@ -107,6 +115,7 @@ public class VehController {
 		return data;
 	}
 
+	@UserOperation(code="vehLogin",name="机动车登录")
 	@RequestMapping(value = "vehLogin", method = RequestMethod.POST)
 	public @ResponseBody String vehLogin(VehCheckLogin vehCheckLogin, VehInfo vehInfo)
 			throws RemoteException, UnsupportedEncodingException, DocumentException, InterruptedException {
@@ -202,12 +211,14 @@ public class VehController {
 	 * @throws UnsupportedEncodingException
 	 * @throws RemoteException
 	 */
+	@UserOperation(code="vheUnLogin",name="机动车退办")
 	@RequestMapping(value = "vheUnLogin", method = RequestMethod.POST)
 	public @ResponseBody String vehDelete(Integer id)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 		return this.vehManager.unLoginVeh(id).toString();
 	}
 
+	@UserOperation(code="getVehInfo",name="联网查询机动车信息")
 	@RequestMapping(value = "getDefaultConfig", method = RequestMethod.POST)
 	public @ResponseBody String getDefaultConfig(VehCheckLogin vehCheckLogin, VehInfo vehInfo) {
 		JSONObject json = new JSONObject();

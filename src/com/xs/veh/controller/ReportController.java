@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.IamgeBase64Cash;
 import com.xs.common.ImageChange;
 import com.xs.common.Message;
@@ -36,6 +38,7 @@ import sun.misc.BASE64Encoder;
 
 @Controller
 @RequestMapping(value = "/report")
+@Modular(modelCode="Report",modelName="检验报告查询")
 public class ReportController {
 
 	@Resource(name = "roadCheackManager")
@@ -44,12 +47,14 @@ public class ReportController {
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
 
+	@UserOperation(code="getReport1",name="仪器设备检验报告")
 	@RequestMapping(value = "getReport1", method = RequestMethod.POST)
 	public @ResponseBody Map getReport1(@RequestParam String jylsh,int jycs) {
 		Map data = checkDataManager.getReport1(jylsh,jycs);
 		return data;
 	}
 
+	@UserOperation(code="getReport4",name="检验报告")
 	@RequestMapping(value = "getReport4", method = RequestMethod.POST)
 	public @ResponseBody String getReport4(@RequestParam String jylsh) {
 		String datas = checkDataManager.getReport4(jylsh);
@@ -57,6 +62,7 @@ public class ReportController {
 		return datas;
 	}
 
+	@UserOperation(code="getReport2",name="外检报告")
 	@RequestMapping(value = "getReport2", method = RequestMethod.POST)
 	public @ResponseBody Map getReport2(@RequestParam String jylsh) {
 		Map<String, List> data = checkDataManager.getReport2(jylsh);
@@ -78,6 +84,7 @@ public class ReportController {
 		System.out.println("更新完成");
 	}
 
+	@UserOperation(code="getCheckPhotos",name="查询检测照片")
 	@RequestMapping(value = "getCheckPhotos")
 	public @ResponseBody List getCheckPhotos(@RequestParam String jylsh) {
 		return this.checkDataManager.getCheckPhotos(jylsh);
@@ -85,7 +92,7 @@ public class ReportController {
 	
 	
 
-
+	@UserOperation(code="uploadPhoto",name="上传检测照片")
 	@RequestMapping(value = "uploadPhoto")
 	public @ResponseBody Map uploadPhoto(CheckPhoto checkPhoto, @RequestParam String imageData) throws IOException {
 		BASE64Decoder decoder = new BASE64Decoder();
@@ -115,6 +122,7 @@ public class ReportController {
 		return resulMap;
 	}
 	
+	@UserOperation(code="uploadPhoto",name="上传检测照片")
 	@RequestMapping(value = "uploadFileImag")
 	public @ResponseBody String uploadFileImag(CheckPhoto checkPhoto, MultipartFile imgFile) throws IOException {
 		byte[] zp = imgFile.getBytes();
@@ -144,6 +152,7 @@ public class ReportController {
 		return om.writeValueAsString(resulMap);
 	}
 
+	@UserOperation(code="getCheckPhotos",name="查询检测照片")
 	@RequestMapping(value = "getCheckPhoto")
 	public @ResponseBody String getCheckPhoto(String id) throws Exception {
 
@@ -160,6 +169,7 @@ public class ReportController {
 
 	}
 
+	@UserOperation(code="deleteImage",name="删除检测照片")
 	@RequestMapping(value = "deleteImage")
 	public @ResponseBody Map deleteImage(Integer id) throws Exception {
 		this.checkDataManager.deleteImage(id);
@@ -167,33 +177,39 @@ public class ReportController {
 
 	}
 
+	@UserOperation(code="getProcess",name="查询检测过程")
 	@RequestMapping(value = "getProcess")
 	public @ResponseBody List getProcess(@RequestParam String jylsh) {
 		return this.checkDataManager.getVehCheckProcess(jylsh);
 	}
 
+	@UserOperation(code="getCheckLogs",name="查询检测日志")
 	@RequestMapping(value = "getCheckLogs")
 	public @ResponseBody List getCheckLogs(@RequestParam String jylsh) {
 		return this.checkDataManager.getCheckLogs(jylsh);
 	}
 
+	@UserOperation(code="getCheckEvents",name="查询检测事件")
 	@RequestMapping(value = "getCheckEvents")
 	public @ResponseBody List getCheckEvents(@RequestParam String jylsh) {
 		return this.checkDataManager.getCheckEvents(jylsh);
 	}
 
+	@UserOperation(code="getInsurance",name="查询保险信息")
 	@RequestMapping(value = "getInsurance")
 	public @ResponseBody Insurance getInsurance(@RequestParam String jylsh) {
 
 		return checkDataManager.getInsurance(jylsh);
 	}
 
+	@UserOperation(code="getRoadCheck",name="查询路试信息")
 	@RequestMapping(value = "getRoadCheck")
 	public @ResponseBody RoadCheck getRoadCheck(@RequestParam String jylsh) {
 
 		return roadCheackManager.getRoadCheck(jylsh);
 	}
 
+	@UserOperation(code="saveInsurance",name="上传保险信息")
 	@RequestMapping(value = "saveInsurance")
 	public @ResponseBody Map saveInsurance(Insurance insurance) {
 		checkDataManager.saveInsurance(insurance);
@@ -202,6 +218,7 @@ public class ReportController {
 		return resulMap;
 	}
 
+	@UserOperation(code="saveRoadCheck",name="上传路试信息")
 	@RequestMapping(value = "saveRoadCheck")
 	public @ResponseBody String saveRoadCheck(RoadCheck roadCheck) throws JsonProcessingException, InterruptedException {
 		Message message = roadCheackManager.saveRoadCheck(roadCheck);
@@ -214,6 +231,7 @@ public class ReportController {
 		return jsonString;
 	}
 	
+	@UserOperation(code="updateEventState",name="重置检测事件")
 	@RequestMapping(value = "updateEventState")
 	public @ResponseBody Map updateEventState(@RequestParam String jylsh) throws JsonProcessingException, InterruptedException {
 		

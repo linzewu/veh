@@ -30,7 +30,7 @@ public class OperationLogManager {
 
 		Integer firstResult = (page - 1) * rows;
 		if(operationLog.getOperationUser()!=null&&!"".equals(operationLog.getOperationUser().trim())){
-			query.add(Restrictions.like("operationUser", "%"+operationLog.getOperationUser()+"%"));
+			query.add(Restrictions.eq("operationUser", operationLog.getOperationUser()));
 		}
 		if(operationLog.getModule()!=null&&!"".equals(operationLog.getModule().trim())){
 			query.add(Restrictions.like("module", "%"+operationLog.getModule()+"%"));
@@ -53,7 +53,7 @@ public class OperationLogManager {
 
 		query.setProjection(Projections.rowCount());
 		if(operationLog.getOperationUser()!=null&&!"".equals(operationLog.getOperationUser().trim())){
-			query.add(Restrictions.like("operationUser", "%"+operationLog.getOperationUser()+"%"));
+			query.add(Restrictions.eq("operationUser", operationLog.getOperationUser()));
 		}
 		if(operationLog.getModule()!=null&&!"".equals(operationLog.getModule().trim())){
 			query.add(Restrictions.like("module", "%"+operationLog.getModule()+"%"));

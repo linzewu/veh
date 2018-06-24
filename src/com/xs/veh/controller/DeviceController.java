@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.ResultHandler;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
@@ -47,6 +49,7 @@ import gnu.io.UnsupportedCommOperationException;
 @Controller
 @RequestMapping(value = "/device")
 @SuppressWarnings("rawtypes")
+@Modular(modelCode="Device",modelName="设备管理")
 public class DeviceController {
 
 	@Resource(name = "deviceManager")
@@ -58,30 +61,35 @@ public class DeviceController {
 	@Autowired
 	private ServletContext servletContext;
 
+	@UserOperation(code="getDevices",name="查询设备")
 	@RequestMapping(value = "getDevices", method = RequestMethod.POST)
 	public @ResponseBody Map getDevices(PageInfo pageInfo) {
 		Map json = ResultHandler.toMyJSON(deviceManager.getDevices(), 0);
 		return json;
 	}
 
+	@UserOperation(code="getDevices",name="查询设备")
 	@RequestMapping(value = "getDeviceByJcxxh", method = RequestMethod.POST)
 	public @ResponseBody Map getDeviceByJcxxh(@RequestParam Integer jcxdh) {
 		Map json = ResultHandler.toMyJSON(deviceManager.getDevices(jcxdh), 0);
 		return json;
 	}
 
+	@UserOperation(code="getDevices",name="查询设备")
 	@RequestMapping(value = "getDeviceDisplay", method = RequestMethod.POST)
 	public @ResponseBody Map getDeviceDisplay(@RequestParam Integer jcxxh) {
 		Map json = ResultHandler.toMyJSON(deviceManager.getDevicesDisplay(jcxxh), 0);
 		return json;
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "createLinkDevice", method = RequestMethod.POST)
 	public @ResponseBody Map createLinkDevice() throws SystemException {
 		this.deviceManager.createLinkDevice();
 		return ResultHandler.toSuccessJSON("保存成功！");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveDevice(Device device, BindingResult result) {
 		Device d = this.deviceManager.saveDevice(device);
@@ -89,6 +97,7 @@ public class DeviceController {
 
 	}
 
+	@UserOperation(code="deleteDevice",name="删除设备")
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	public @ResponseBody void delete(Device device) {
 		this.deviceManager.deleteDevice(device);
@@ -99,6 +108,7 @@ public class DeviceController {
 	 * 
 	 * @return
 	 */
+	@UserOperation(code="getDevices",name="查询设备")
 	@RequestMapping(value = "getComList", method = RequestMethod.POST)
 	public @ResponseBody List getComList() {
 		System.out.println("开始获取COM口");
@@ -131,6 +141,7 @@ public class DeviceController {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceSignalStart", method = RequestMethod.POST)
 	public @ResponseBody Map deviceSignalStart(Integer id) throws NoSuchPortException, TooManyListenersException,
 			PortInUseException, UnsupportedCommOperationException, IOException, InstantiationException,
@@ -163,6 +174,7 @@ public class DeviceController {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceStop", method = RequestMethod.POST)
 	public @ResponseBody Map deviceStop(Integer id) throws IOException, InterruptedException {
 
@@ -182,6 +194,7 @@ public class DeviceController {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "stopAllDevice", method = RequestMethod.POST)
 	public @ResponseBody Map stopAllDevice() throws IOException, InterruptedException {
 		List<Device> devices = this.deviceManager.getDevices();
@@ -203,6 +216,7 @@ public class DeviceController {
 	 * @param id
 	 * @return
 	 */
+	@UserOperation(code="getDevices",name="查询设备")
 	@RequestMapping(value = "getState", method = RequestMethod.POST)
 	public @ResponseBody Map getDeeviceState(Integer id) {
 		SimpleRead sr = this.getSimpleRead(id);
@@ -224,6 +238,7 @@ public class DeviceController {
 	 * @param id
 	 * @return
 	 */
+	@UserOperation(code="getDevices",name="查询设备")
 	@RequestMapping(value = "getRtx", method = RequestMethod.POST)
 	public @ResponseBody String getRtx(Integer id) {
 		DeviceSignal sr = (DeviceSignal) this.getSimpleRead(id);
@@ -244,6 +259,7 @@ public class DeviceController {
 	 * @return
 	 * @throws IOException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "sendMessageDisplay", method = RequestMethod.POST)
 	public @ResponseBody Map sendMessageDisplay(Integer id, Integer ph, String message) throws IOException {
 		Device device = this.deviceManager.getDevice(id);
@@ -276,6 +292,7 @@ public class DeviceController {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceDisplayStart", method = RequestMethod.POST)
 	public @ResponseBody Map deviceDisplayStart(Integer id)
 			throws IOException, NoSuchPortException, TooManyListenersException, PortInUseException,
@@ -303,6 +320,7 @@ public class DeviceController {
 		return ResultHandler.toSuccessJSON("启动成功");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceLightStart", method = RequestMethod.POST)
 	public @ResponseBody Map deviceLightStart(Integer id)
 			throws IOException, NoSuchPortException, TooManyListenersException, PortInUseException,
@@ -329,6 +347,7 @@ public class DeviceController {
 		return ResultHandler.toSuccessJSON("启动成功");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceLightSetting", method = RequestMethod.POST)
 	public @ResponseBody Map deviceLightSetting(Integer id) throws Exception {
 
@@ -347,6 +366,7 @@ public class DeviceController {
 		}
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceLightTest", method = RequestMethod.POST)
 	public @ResponseBody Map deviceLightTest(Integer id)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
@@ -393,6 +413,7 @@ public class DeviceController {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "brakRollerStart", method = RequestMethod.POST)
 	public @ResponseBody Map brakRollerStart(Integer id)
 			throws IOException, NoSuchPortException, TooManyListenersException, PortInUseException,
@@ -424,6 +445,7 @@ public class DeviceController {
 	 * @param id
 	 * @return
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "brakRollerTest", method = RequestMethod.POST)
 	public @ResponseBody Map brakRollerTest(Integer id) {
 		Device device = this.deviceManager.getDevice(id);
@@ -463,6 +485,7 @@ public class DeviceController {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "speedStart", method = RequestMethod.POST)
 	public @ResponseBody Map speedStart(Integer id)
 			throws IOException, NoSuchPortException, TooManyListenersException, PortInUseException,
@@ -488,6 +511,7 @@ public class DeviceController {
 		return ResultHandler.toSuccessJSON("启动成功");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "deviceSpeedTest", method = RequestMethod.POST)
 	public @ResponseBody Map deviceSpeedTest(Integer id) {
 		Device device = this.deviceManager.getDevice(id);
@@ -526,6 +550,7 @@ public class DeviceController {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 */
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "sideslipStart", method = RequestMethod.POST)
 	public @ResponseBody Map sideslipStart(Integer id)
 			throws IOException, NoSuchPortException, TooManyListenersException, PortInUseException,
@@ -551,6 +576,7 @@ public class DeviceController {
 		return ResultHandler.toSuccessJSON("启动成功");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "sideslipTest", method = RequestMethod.POST)
 	public @ResponseBody Map sideslipTest(Integer id) {
 		Device device = this.deviceManager.getDevice(id);
@@ -577,6 +603,7 @@ public class DeviceController {
 		return ResultHandler.toSuccessJSON("侧滑命令已经发送");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "weighStart", method = RequestMethod.POST)
 	public @ResponseBody Map weighStart(Integer id)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchPortException,
@@ -602,6 +629,7 @@ public class DeviceController {
 		return ResultHandler.toSuccessJSON("启动成功");
 	}
 
+	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "weighTest", method = RequestMethod.POST)
 	public @ResponseBody Map weighTest(Integer id) {
 		Device device = this.deviceManager.getDevice(id);

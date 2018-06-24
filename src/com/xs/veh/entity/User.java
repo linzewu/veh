@@ -1,5 +1,6 @@
 package com.xs.veh.entity;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "TB_User")
 @JsonIgnoreProperties(value ={"hibernateLazyInitializer","handler","fieldHandler","password"})
 @NamedQueries({
-	@NamedQuery(name = "User.login", query = "from User u where u.userName=:userName and u.password=:password and u.userState=:userState") 
+	@NamedQuery(name = "User.login", query = "from User u where u.userName=:userName  and u.userState<>:userState") 
 })
 public class User extends BaseEntity {
 	
@@ -254,6 +256,26 @@ public class User extends BaseEntity {
 		this.roleName = roleName;
 	}
 
+	public String encodePwd(String password) {
+		if(StringUtils.isEmpty(password)) {
+			return null;
+		}else {
+			try {
+				return md5(this.getId().toString()+password+this.realName);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+	}
+	
+	public static void main(String[] age) {
+		User user =new User();
+		user.setId(1);
+		user.setRealName("管理员");
+		user.setPassword("888888");
+		System.out.println(user.encodePwd("888888"));
+	}
 	
 
 }

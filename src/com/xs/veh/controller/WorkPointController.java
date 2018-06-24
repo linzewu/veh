@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.Constant;
 import com.xs.common.Message;
 import com.xs.common.ResultHandler;
@@ -20,17 +22,20 @@ import com.xs.veh.manager.WorkPointManager;
 
 @Controller
 @RequestMapping(value = "/workpoint")
+@Modular(modelCode="workpoint",modelName="检测工位管理")
 public class WorkPointController {
 
 	@Resource(name = "workPointManager")
 	private WorkPointManager workPointManager;
 	
+	@UserOperation(code="getWorkPoints",name="查询工位")
 	@RequestMapping(value = "getWorkPoints", method = RequestMethod.POST)
 	public @ResponseBody Map getWorkPoints() {
 		List<WorkPoint> wps = this.workPointManager.getWorkPoints();
 		return ResultHandler.toMyJSON(wps, wps.size());
 	}
 
+	@UserOperation(code="save",name="新增工位")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveWorkPoint(WorkPoint workPoint, BindingResult result) {
 		
@@ -42,25 +47,26 @@ public class WorkPointController {
 		return ResultHandler.resultHandle(result, wp, Constant.ConstantMessage.SAVE_SUCCESS);
 	}
 	
+	@UserOperation(code="manage",name="启动工位",isMain=false)
 	@RequestMapping(value = "start", method = RequestMethod.POST)
 	public @ResponseBody Map start(@RequestParam Integer id) {
 		Message message = workPointManager.startWorkpoint(id);
 		return ResultHandler.toMessage(message);
 	}
 	
+	@UserOperation(code="manage",name="停止工位",isMain=false)
 	@RequestMapping(value = "stop", method = RequestMethod.POST)
 	public @ResponseBody Map stop(@RequestParam Integer id) throws InterruptedException {
 		Message message = workPointManager.stopWorkpoint(id);
 		return ResultHandler.toMessage(message);
 	}
 	
+	@UserOperation(code="manage",name="重启工位")
 	@RequestMapping(value = "reStart", method = RequestMethod.POST)
 	public @ResponseBody Map reStart(@RequestParam Integer id) throws InterruptedException {
 		Message message = workPointManager.reStartWorkpoint(id);
 		return ResultHandler.toMessage(message);
 	}
-	
-	
 	
 
 }

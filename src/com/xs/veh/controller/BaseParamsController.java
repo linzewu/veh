@@ -16,12 +16,16 @@ import org.springframework.web.servlet.support.RequestContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
+import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.BaseParams;
 
 @Controller
 @RequestMapping(value = "/bps")
+@Modular(modelCode="BaseParams",modelName="系统参数")
 public class BaseParamsController {
 	
 	private static Logger logger = Logger.getLogger(BaseParamsController.class); 
@@ -33,6 +37,7 @@ public class BaseParamsController {
 	private String sqrqz;
 	
 	@RequestMapping(value = "all.js")
+	@UserOperation(code="all.js",name="数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	//@RequestMapping(value = "all.js", produces = {"text/javascript;charset=UTF-8"})
 	public @ResponseBody String getBaseParamsOfJS(HttpServletRequest request)
 			throws JsonProcessingException {
@@ -61,6 +66,7 @@ public class BaseParamsController {
 	}
 
 	@RequestMapping(value = "all.json")
+	@UserOperation(code="all.js",name="数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	public @ResponseBody Map getBaseParams(HttpServletRequest request) {
 
 		RequestContext requestContext = new RequestContext(request);

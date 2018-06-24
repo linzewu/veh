@@ -14,14 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
+
 import sun.misc.BASE64Decoder;
 
 @Controller
 @RequestMapping(value = "/common")
+@Modular(modelCode="Common",modelName="公共服务")
 public class CommonController {
 
 	private static Logger logger = Logger.getLogger(CommonController.class);
 
+	@UserOperation(code="uploadImage",name="图片上传")
 	@RequestMapping(value = "uploadImage")
 	public @ResponseBody String uploadImage(HttpServletRequest req,@RequestParam String imageData) throws IOException {
 

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lzw.security.util.WindowsInfoUtil;
+import com.xs.annotation.Modular;
+import com.xs.annotation.UserOperation;
 import com.xs.common.BaseParamsUtil;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.BaseParams;
@@ -26,6 +28,7 @@ import com.xs.veh.manager.BaseParamsManager;
 
 @Controller
 @RequestMapping(value = "/sys")
+@Modular(modelCode="System",modelName="系统管理")
 public class SystemController {
 
 	@Resource(name = "systemInfo")
@@ -41,6 +44,7 @@ public class SystemController {
 
 	public static final String SYSTEM = "系统信息";
 
+	@UserOperation(code="getSystemInfo",name="查询系统信息")
 	@RequestMapping(value = "getInfo", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> getSystemInfo(@RequestParam Map param) {
 
@@ -171,6 +175,7 @@ public class SystemController {
 
 	}
 	
+	@UserOperation(code="sysParamReload",name="系统参数刷新")
 	@RequestMapping(value = "sysParamReload", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> sysParamReload() {
 		List<BaseParams> bps = baseParamsManager.getBaseParams();
@@ -178,6 +183,7 @@ public class SystemController {
 		return ResultHandler.toSuccessJSON("系统参数刷新成功");
 	}
 	
+	@UserOperation(code="uploadSwitch",name="联网开关")
 	@RequestMapping(value = "uploadSwitch", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> uploadSwitch(String state) {
 		

@@ -24,10 +24,10 @@ public class UserManager {
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
 
-	public User login(String userName, String password) {
+	public User login(String userName) {
 
 		List<User> list = (List<User>) hibernateTemplate.findByNamedQueryAndNamedParam("User.login",
-				new String[] { "userName", "password", "userState" }, new Object[] { userName, password, 0 });
+				new String[] { "userName", "userState" }, new Object[] { userName, 2 });
 
 		if (list != null && list.size() > 0) {
 			return list.get(0);
@@ -65,7 +65,7 @@ public class UserManager {
 	}
 	
 	public List<User> getUsers(){
-		return  (List<User>) this.hibernateTemplate.find(" select u.*,r.roleName roleName from User u left join Role r on u.roleId=r.id  where userName!='admin'");
+		return  (List<User>) this.hibernateTemplate.find(" from User  where userName!='admin'");
 	}
 	
 	public Integer getUserCount(final User user,final PageInfo pageInfo) {
@@ -95,9 +95,8 @@ public class UserManager {
 	}
 	
 	public User saveUser(User user){
-		
 		if(user.getId()==null){
-			user.setPassword(Constant.initPassword);
+			user.setPassword(user.encodePwd(Constant.initPassword));
 			user.setUserState(User.USER_STATE_PASSWORD_INVALID);
 		}else{
 			User oldUser=this.hibernateTemplate.load(User.class, user.getId());
@@ -105,7 +104,6 @@ public class UserManager {
 			user.setUserName(oldUser.getUserName());
 			user.setLastLoginDate(oldUser.getLastLoginDate());
 		}
-		System.out.println(user.getId()+"**********************************");
 		return this.hibernateTemplate.merge(user);
 		
 	}
