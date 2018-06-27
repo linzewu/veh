@@ -15,6 +15,15 @@ var allRole = $.ajax({
 }).responseText;
 allRole=$.parseJSON(allRole);
 
+
+var userRoleInfo = $.ajax({
+	url : "/veh/user/getRolesByUser",
+	async : false,
+	type:'POST'
+}).responseText;
+
+userRoleInfo=$.parseJSON(userRoleInfo);
+
 if(userInfo.state==600){
 	 window.location.href="/veh/html/login.html";
 }

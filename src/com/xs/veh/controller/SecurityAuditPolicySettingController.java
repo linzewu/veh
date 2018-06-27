@@ -7,15 +7,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
-import com.xs.veh.entity.RecordInfoOfCheckStaff;
+import com.xs.common.Constant;
+import com.xs.common.ResultHandler;
 import com.xs.veh.entity.SecurityAuditPolicySetting;
-import com.xs.veh.manager.RecordInfoOfCheckStaffManager;
 import com.xs.veh.manager.SecurityAuditPolicySettingManager;
 
 @Controller
@@ -39,6 +41,18 @@ public class SecurityAuditPolicySettingController {
 		data.put("total", total);		
 		
 		return data;
+	}
+	
+	@UserOperation(code="save",name="编辑安全策略")
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	public @ResponseBody Map save(@RequestBody SecurityAuditPolicySetting svo, BindingResult result) {
+		
+		if (!result.hasErrors()) {
+			this.securityAuditPolicySettingManager.updateSecurityAuditPolicySetting(svo.getUpdateList());
+			return  ResultHandler.resultHandle(result,null ,Constant.ConstantMessage.SAVE_SUCCESS);
+		}else{
+			return ResultHandler.resultHandle(result,null ,null);
+		}
 	}
 
 }

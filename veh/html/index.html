@@ -85,7 +85,7 @@
 		</div>
 	</div>
 	<div data-options="region:'center'">
-		<div class="easyui-tabs"
+		<div id="sysTabs" class="easyui-tabs"
 			data-options="fit:true,justified:true,plain:false,tabHeight:34,tabPosition:'top',pill:true">
 			<div title="机动车检测登陆" data-options="href:'vehlogin.html'"></div>
 			<div title="机动车检测报告" data-options="href:'report/index.html'"></div>
@@ -189,6 +189,16 @@
 			}
 		});
 	})(jQuery);
+	
+	$(function(){		
+		if (userRoleInfo.roleName == "超级管理员"){
+			$("#sysTabs").tabs('disableTab', 0);
+			$("#sysTabs").tabs('disableTab', 1);
+			$("#sysTabs").tabs("select", 2);
+		}else{
+			$("#sysTabs").tabs('disableTab', 2);
+		}
+	});
 		
 	
 </script>

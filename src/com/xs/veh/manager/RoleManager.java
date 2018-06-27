@@ -84,4 +84,13 @@ public class RoleManager {
 		
 		return roles==null||roles.size()==0?null:roles.get(0);
 	}
+	
+	public Role queryRoleById(Integer id){
+		
+		StringBuffer sb=new StringBuffer("from Role where id=?");
+		
+		List<Role> roles=(List<Role> )this.hibernateTemplate.find(sb.toString(), id);
+		
+		return roles==null||roles.size()==0?null:roles.get(0);
+	}
 }

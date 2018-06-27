@@ -181,11 +181,13 @@ public class UserController {
 	private User failLoginCount(User u) {
 		int cou = u.getLoginFailCou() == null? 0:u.getLoginFailCou();
 		cou++;		
+		u.setLoginFailCou(cou);
 		if(cou == 10) {
 			//锁定
 			u.setUserState(1);
+			u.setLoginFailCou(0);
 		}
-		u.setLoginFailCou(cou);
+		
 		this.userManager.updateUser(u);
 		return u;
 	}
@@ -321,6 +323,12 @@ public class UserController {
 	@RequestMapping(value = "getAllRole", method = RequestMethod.POST)
 	public @ResponseBody List<Role> getAllRole() {
 		return roleManager.getAllRole();
+	}
+	
+	@RequestMapping(value = "getRolesByUser", method = RequestMethod.POST)
+	public @ResponseBody Role getRolesByUser(HttpSession session) {
+		User user = (User)session.getAttribute("user");
+		return roleManager.queryRoleById(user.getRoleId());
 	}
 
 

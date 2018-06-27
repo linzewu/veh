@@ -1,10 +1,14 @@
 package com.xs.veh.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.context.annotation.Scope;
@@ -28,14 +32,16 @@ public class SecurityAuditPolicySetting {
 	@Column(length = 120)
 	private String aqsjclzlxmc;
 	
-	@Column
-	private Integer clz;
+	@Column(length = 120)
+	private String clz;
 	
 	@Column(length = 300)
 	private String clzsm;
 	
 	@Column(length = 1)
 	private String sfkq;
+	@Transient
+	List<SecurityAuditPolicySetting> updateList = new ArrayList<SecurityAuditPolicySetting>();
 
 	public Integer getId() {
 		return id;
@@ -47,10 +53,6 @@ public class SecurityAuditPolicySetting {
 
 	public String getAqsjclzlxmc() {
 		return aqsjclzlxmc;
-	}
-
-	public Integer getClz() {
-		return clz;
 	}
 
 	public String getClzsm() {
@@ -73,16 +75,28 @@ public class SecurityAuditPolicySetting {
 		this.aqsjclzlxmc = aqsjclzlxmc;
 	}
 
-	public void setClz(Integer clz) {
-		this.clz = clz;
-	}
-
 	public void setClzsm(String clzsm) {
 		this.clzsm = clzsm;
 	}
 
 	public void setSfkq(String sfkq) {
 		this.sfkq = sfkq;
+	}
+
+	public List<SecurityAuditPolicySetting> getUpdateList() {
+		return updateList;
+	}
+
+	public void setUpdateList(List<SecurityAuditPolicySetting> updateList) {
+		this.updateList = updateList;
+	}
+
+	public String getClz() {
+		return clz;
+	}
+
+	public void setClz(String clz) {
+		this.clz = clz;
 	}
 	
 

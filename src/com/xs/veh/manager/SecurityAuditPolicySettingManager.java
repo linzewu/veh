@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.RecordInfoOfCheckStaff;
 import com.xs.veh.entity.SecurityAuditPolicySetting;
+import com.xs.veh.entity.User;
 
 @Service("securityAuditPolicySettingManager")
 public class SecurityAuditPolicySettingManager {
@@ -45,6 +46,12 @@ public class SecurityAuditPolicySettingManager {
 		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
 
 		return count.get(0).intValue();
+	}
+	
+	public void updateSecurityAuditPolicySetting(List<SecurityAuditPolicySetting> list){
+		for(SecurityAuditPolicySetting vo:list) {
+			this.hibernateTemplate.update(vo);
+		}
 	}
 
 }
