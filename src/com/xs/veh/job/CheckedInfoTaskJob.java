@@ -29,10 +29,10 @@ import org.springframework.stereotype.Component;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
-import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
@@ -84,7 +84,7 @@ public class CheckedInfoTaskJob {
 
 	@Value("${jyjgbh}")
 	private String jyjgbh;
-
+	
 	@Autowired
 	private ServletContext servletContext;
 

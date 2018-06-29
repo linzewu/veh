@@ -96,8 +96,10 @@ public class UserManager {
 	
 	public User saveUser(User user){
 		if(user.getId()==null){
-			user.setPassword(user.encodePwd(Constant.initPassword));
+			//user.setPassword(user.encodePwd(Constant.initPassword));
 			user.setUserState(User.USER_STATE_PASSWORD_INVALID);
+			 this.hibernateTemplate.save(user);
+			 user.setPassword(user.encodePwd(Constant.initPassword));
 		}else{
 			User oldUser=this.hibernateTemplate.load(User.class, user.getId());
 			user.setPassword(oldUser.getPassword());
@@ -105,6 +107,7 @@ public class UserManager {
 			user.setLastLoginDate(oldUser.getLastLoginDate());
 		}
 		return this.hibernateTemplate.merge(user);
+		
 		
 	}
 	
