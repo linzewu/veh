@@ -150,7 +150,7 @@ public class VehManager {
 		return document;
 	}
 
-	private Document queryws(String jkid, Map param)
+	public Document queryws(String jkid, Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
 		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();

@@ -1,6 +1,7 @@
 package com.xs.veh.controller;
 
-import java.lang.reflect.Method;
+import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,9 +21,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
-import com.xs.enums.CommonUserOperationEnum;
+import com.xs.common.ResultHandler;
 import com.xs.veh.entity.RecordInfoOfCheck;
 import com.xs.veh.manager.RecordInfoOfCheckManager;
+import com.xs.veh.manager.VehManager;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
 @Controller
 @RequestMapping(value = "/recordInfoOfCheck")
 @Modular(modelCode="RecordInfoOfCheck",modelName="检验机构信息")
@@ -28,30 +38,37 @@ public class RecordInfoOfCheckController {
 	@Resource(name = "recordInfoOfCheckManager")
 	private RecordInfoOfCheckManager recordInfoOfCheckManager;
 	
+	@Autowired
+	private VehManager vehManager;
+	
 	@UserOperation(code="getInfo",name="检验机构信息查询")
 	@RequestMapping(value = "getInfo", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> getSystemInfo(@RequestParam Map param) {
 
 		RecordInfoOfCheck check = recordInfoOfCheckManager.getRecordInfoOfCheckInfo();
 		
-		Method[] methods = check.getClass().getMethods();
-		
-		for(Method method:methods) {
-			if(method.getName().indexOf("get")==0) {
-				Map<String, String> sm1 = new HashMap<String, String>();
-				sm1.put("name", "检验机构编号");
-				sm1.put("value", check.getJczbh());
-				
-				
-			}
-		}
-
-		
-
 		Map<String, Object> rm = new HashMap<String, Object>();
 		rm.put("rows", getRows(check));
 
 		return rm;
+	}
+	
+	@UserOperation(code="downloadInfo",name="检验机构信息下载")
+	@RequestMapping(value = "downloadInfo", method = RequestMethod.POST)
+	public Map<String,Object> downloadInfo() throws RemoteException, UnsupportedEncodingException, DocumentException {
+		
+		Map param=new HashMap();
+		Document document = vehManager.queryws("18C01", param);
+		JSON json = new XMLSerializer().read(document.asXML());
+		
+		recordInfoOfCheckManager.deleteRecordInfo();
+		RecordInfoOfCheck recordInfoOfCheck = (RecordInfoOfCheck) JSONObject.toBean(JSONObject.fromObject(json.toString()), RecordInfoOfCheck.class);
+		
+		//List<RecordInfoOfCheckStaff> dataList = (List<RecordInfoOfCheckStaff>) JSONArray.toArray(JSONArray.fromObject(json), RecordInfoOfCheckStaff.class);
+		
+		recordInfoOfCheckManager.saveRecordInfoOfCheckInfo(recordInfoOfCheck);
+		
+		return ResultHandler.toSuccessJSON("下载成功");
 	}
 	
 	private List<Map<String, String>> getRows(RecordInfoOfCheck check) {

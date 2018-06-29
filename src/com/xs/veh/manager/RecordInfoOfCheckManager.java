@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,19 @@ public class RecordInfoOfCheckManager {
 			return list.get(0);
 		}
 		return new RecordInfoOfCheck();
+	}
+	
+	public void deleteRecordInfo() {
+		hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				return session.createSQLQuery("delete TM_RecordInfoOfCheck").executeUpdate();
+			}
+		});
+	}
+	
+	public void saveRecordInfoOfCheckInfo(RecordInfoOfCheck recordInfoOfCheck) {
+		hibernateTemplate.save(recordInfoOfCheck);
 	}
 
 }
