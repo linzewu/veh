@@ -36,9 +36,9 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.Message;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
@@ -78,8 +78,8 @@ public class VehManager {
 
 	private static Logger logger = Logger.getLogger(VehManager.class);
 
-	@Resource(name = "tmriJaxRpcOutAccessServiceStub")
-	private TmriJaxRpcOutAccessServiceStub tro;
+	@Resource(name = "TmriJaxRpcOutNewAccessServiceStub")
+	private TmriJaxRpcOutNewAccessServiceStub tro;
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
@@ -113,10 +113,18 @@ public class VehManager {
 
 	private Document write(String jkid, Map data)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
-		TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutAccessServiceStub.WriteObjectOut();
+		TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut();
 		woo.setJkid(jkid);
 		woo.setXtlb(RCAConstant.XTLB);
 		woo.setJkxlh(jkxlh);
+		
+		String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+		String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+		String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+		woo.setDwjgdm(bmdm);
+		woo.setDwmc(ywzdbm);
+		woo.setZdbs(jcip);
+		
 		Document xml = BeanXMLUtil.map2xml(data, "vehispara");
 		String bo = xml.asXML();
 		woo.setUTF8XmlDoc(bo);
@@ -153,12 +161,20 @@ public class VehManager {
 	private Document queryws(String jkid, Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
-		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+		TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut();
 		param.put("jyjgbh", jyjgbh);
 
 		qoo.setJkid(jkid);
 		qoo.setXtlb(RCAConstant.XTLB);
 		qoo.setJkxlh(jkxlh);
+		
+		String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+		String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+		String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+		qoo.setDwjgdm(bmdm);
+		qoo.setDwmc(ywzdbm);
+		qoo.setZdbs(jcip);
+		
 		Document xml = BeanXMLUtil.map2xml(param, "QueryCondition");
 		qoo.setUTF8XmlDoc(xml.asXML());
 		QueryObjectOutResponse qoor = tro.queryObjectOut(qoo);

@@ -32,6 +32,9 @@ public class BaseParamsManager {
 
 	public BaseParams getBaseParam(String type, String value) {
 		List<BaseParams> bps = (List<BaseParams>) servletContext.getAttribute("bps");
+		if(bps == null){
+			bps=getBaseParams();
+		}
 		for (BaseParams param : bps) {
 			if (param.getType().equals(type) && param.getParamValue().equals(value)) {
 				return param;

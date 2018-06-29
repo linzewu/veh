@@ -26,9 +26,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
@@ -49,7 +49,7 @@ public class CheckedInfoTaskJob {
 
 	private static Logger logger = Logger.getLogger(CheckedInfoTaskJob.class);
 
-	private TmriJaxRpcOutAccessServiceStub tro = null;
+	private TmriJaxRpcOutNewAccessServiceStub tro = null;
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -93,7 +93,7 @@ public class CheckedInfoTaskJob {
 
 	public CheckedInfoTaskJob() {
 		try {
-			tro = new TmriJaxRpcOutAccessServiceStub();
+			tro = new TmriJaxRpcOutNewAccessServiceStub();
 		} catch (AxisFault e) {
 			logger.error("链接专网查验平台失败", e);
 		} catch (IOException e) {
@@ -110,11 +110,19 @@ public class CheckedInfoTaskJob {
 	private Document queryws(String jkid, Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
-		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+		TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut();
 		param.put("jyjgbh", jyjgbh);
 		qoo.setJkid(jkid);
 		qoo.setXtlb(RCAConstant.XTLB);
 		qoo.setJkxlh(jkxlh);
+		
+		String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+		String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+		String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+		qoo.setDwjgdm(bmdm);
+		qoo.setDwmc(ywzdbm);
+		qoo.setZdbs(jcip);
+		
 		Document xml = BeanXMLUtil.map2xml(param, "QueryCondition");
 		qoo.setUTF8XmlDoc(xml.asXML());
 		QueryObjectOutResponse qoor = tro.queryObjectOut(qoo);
@@ -125,7 +133,7 @@ public class CheckedInfoTaskJob {
 		return document;
 	}
 
-	private Document write(TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo, Object o) throws Exception {
+	private Document write(TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut woo, Object o) throws Exception {
 		try {
 			Document xml = BeanXMLUtil.bean2xml(o, "vehispara");
 			logger.debug("bo:" + xml.asXML());
@@ -168,7 +176,7 @@ public class CheckedInfoTaskJob {
 
 	private Document write(CheckEvents event, Map data) throws Exception {
 		try {
-			TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutAccessServiceStub.WriteObjectOut();
+			TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut();
 			String jkid = event.getEvent();
 			if (jkid.equals("18C55_R")) {
 				jkid = "18C55";
@@ -179,6 +187,15 @@ public class CheckedInfoTaskJob {
 			woo.setJkid(jkid);
 			woo.setXtlb(RCAConstant.XTLB);
 			woo.setJkxlh(jkxlh);
+			
+			String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+			String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+			String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+			woo.setDwjgdm(bmdm);
+			woo.setDwmc(ywzdbm);
+			woo.setZdbs(jcip);
+			System.out.println("jcip"+jcip);
+			
 			Document xml = BeanXMLUtil.map2xml(data, "vehispara");
 			woo.setUTF8XmlDoc(xml.asXML());
 			WriteObjectOutResponse wor = tro.writeObjectOut(woo);
