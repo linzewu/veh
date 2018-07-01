@@ -320,11 +320,13 @@ public class UserController {
 		return ResultHandler.toSuccessJSON("密碼修改成功！");
 	}
 	
+	@UserOperation(code="getAllRole",name="获取所有角色",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "getAllRole", method = RequestMethod.POST)
 	public @ResponseBody List<Role> getAllRole() {
 		return roleManager.getAllRole();
 	}
 	
+	@UserOperation(code="getRolesByUser",name="获取当前用户角色",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "getRolesByUser", method = RequestMethod.POST)
 	public @ResponseBody Role getRolesByUser(HttpSession session) {
 		User user = (User)session.getAttribute("user");

@@ -747,10 +747,10 @@ var comm = {
 		}
 		$(target).panel("refresh", url);
 	},
-	createMume : function(id, data) {
+	createMume : function(id, data, showPage) {
 		var ul = $("#" + id);
 		ul.empty();
-		
+		console.log(showPage)
 		$.each(data,function(i,n){
 			
 			var li = $("<li><a id='_menu"+i+"' href=\"javascript:void(0)\"><img></a></li>");
@@ -769,10 +769,11 @@ var comm = {
 			}
 			ul.append(li);
 			
-			if (i == 0) {
+			if (showPage == "Y" && i == 0) {
 				li.find("a").click();
 			}
 		});
+		
 		
 	}
 }
@@ -963,10 +964,14 @@ var system = {
 		}
 	],
 	initEvents : function() {
-		comm.createMume("sysMune", system.menus1);
-		comm.createMume("deviceMune", system.menus2);
-		comm.createMume("userMune", system.menus3);
-		comm.createMume("backMune", system.menus4);
+//		if(userRoleInfo.roleName == "审计管理员"){
+//			comm.createMume("backMune", system.menus4, "Y");
+//		}else{
+			comm.createMume("sysMune", system.menus1, "Y");
+			comm.createMume("deviceMune", system.menus2, "N");
+			comm.createMume("userMune", system.menus3, "N");
+			comm.createMume("backMune", system.menus4, "N");
+//		}
 	}
 }
 

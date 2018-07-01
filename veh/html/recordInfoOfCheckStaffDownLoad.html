@@ -23,6 +23,20 @@
 
 <div id="checkStaffToolbar">
 	<div>
-		<a id="btn" href="#" class="easyui-linkbutton">下载</a>
+		<a id="btn" href="#" class="easyui-linkbutton" onclick="downloadRecord()">下载</a>
 	</div>
 </div>
+
+<script type="text/javascript">
+function downloadRecord(){
+	$.messager.progress({
+        title:'Please waiting',
+        msg:'Loading data...'
+    });
+	$.post("/veh/recordInfoOfCheckStaff/downloadRecords",function(data){
+		$("#recordInfoOfCheckStaffManager").datagrid('reload');
+	}).complete(function(){
+		 $.messager.progress('close');
+	});
+}
+</script>
