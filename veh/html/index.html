@@ -64,7 +64,7 @@
 		<div class="header-title" style="float: left;">上海翔尚机动车安全技术检验系统</div>
 		<div style="float: right; height: 50px;">
 			<div style="padding: 24px 10px 0 0;">
-				用户名：<span id="realName"></span>您好! 
+				用户名：<span id="realName"></span><span id="tipMsg"><img alt="" src="/veh/images/userinfo.png"></span>您好! 
 				<a class="easyui-linkbutton c6" data-options="onClick:updataPassword">密码修改</a>
 				<a class="easyui-linkbutton c5" data-options="onClick:logout">注销</a>
 			</div>
@@ -89,6 +89,8 @@
 			data-options="fit:true,justified:true,plain:false,tabHeight:34,tabPosition:'top',pill:true">
 			<div title="机动车检测登陆" data-options="href:'vehlogin.html'"></div>
 			<div title="机动车检测报告" data-options="href:'report/index.html'"></div>
+			<div title="业务统计报告"
+				data-options="href:'statisticalReport.html',onLoad:statisticalReport.initEvents"></div>
 			<div title="系统管理"
 				data-options="href:'system.html',onLoad:system.initEvents"></div>
 		</div>
@@ -178,7 +180,7 @@
 			 window.location.href="/veh/html/login.html";
 		});
 	}
-	$("#realName").text(userInfo.realName);
+	$("#realName").text(userInfo.realName);	
 
 	(function ($) {
 		$(document).ready(function () {
@@ -190,13 +192,39 @@
 		});
 	})(jQuery);
 	
-	$(function(){		
+	$(function(){
+		var d = new Date();
+		var userNameValidDate = new Date(userInfo.userNameValidDate);
+		var pwValidDate = new Date(userInfo.pwValidDate);
+		var days = userNameValidDate.getTime() - d.getTime();
+		var time = parseInt(days / (1000 * 60 * 60 * 24));
+		//$("#userVal").text(time);	
+		days = pwValidDate.getTime() - d.getTime();
+		var timePw = parseInt(days / (1000 * 60 * 60 * 24));
+		//$("#pwVal").text(time);	
+		
+		var cont = "本次登录的时间："+userInfo.lastLoginDate+",本次登录IP："+userInfo.ip+
+		",<br/>上次登录的时间："+userInfo.lastTimeLoginDate+",上次登录IP："+userInfo.lastTimeIP+",<br/>距离用户到期还剩"+time+"天,距离密码到期还剩"+timePw+"天";
+		
+		
+		 $('#tipMsg').tooltip({
+             position: 'left',
+             content: cont,
+             onShow: function(){
+                 $(this).tooltip('tip').css({
+                    // backgroundColor: '#666',
+                     borderColor: '#666'
+                 });
+             }
+         });
+		
 		if (userRoleInfo.roleName == "超级管理员"){
 			$("#sysTabs").tabs('disableTab', 0);
 			$("#sysTabs").tabs('disableTab', 1);
-			$("#sysTabs").tabs("select", 2);
+			$("#sysTabs").tabs("disableTab", 2);
+			$("#sysTabs").tabs("select", 3);
 		}else{
-			$("#sysTabs").tabs('disableTab', 2);
+			$("#sysTabs").tabs('disableTab', 3);
 		}
 	});
 		

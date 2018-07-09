@@ -14,5 +14,7 @@
         <property name="connection.useUnicode">true</property>  
         <property name="connection.characterEncoding">UTF-8</property>
         <property name="hibernate.connection.isolation">1</property>
+        
+        <mapping resource="com/xs/mapping/statistic.hbm.xml"/>
     </session-factory>  
 </hibernate-configuration>  

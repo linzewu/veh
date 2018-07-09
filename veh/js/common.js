@@ -30,14 +30,14 @@ $.extend($.fn.validatebox.defaults.rules, {
 $.extend($.fn.validatebox.defaults.rules, {
     passwordValide: {
         validator: function(value){
-        	var patrn=/^(\w){6,16}$/;
+        	var patrn=/^(?![a-zA-Z0-9]+$)(?![^a-zA-Z\/D]+$)(?![^0-9\/D]+$).{8,16}$/;// /^(\w){8,16}$/;
         	if (!patrn.exec(value)||value=='888888'){
         		 return false
         	} else{
         		return true 
         	}
         },
-        message: '不能使用默认密码，只能输入6-16个字母、数字、下划线'
+        message: '不能使用默认密码，只能输入8-16个字母、数字、特殊符号'
     }
 });
 

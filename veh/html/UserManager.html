@@ -70,6 +70,29 @@
 		}
 	}
 	
+	function delUserInfo(){
+		var row = $("#userManager").datagrid("getSelected");
+		
+		if(row){
+			$.messager.confirm("请确认","您确认删除该数据？",function(r){
+				if (r) {
+					
+					$.messager.progress({"title":"处理删除中。。。"});
+					
+					$.post("/veh/user/delete",{id:row.id},function(rd){
+						$.messager.progress("close");
+						$.messager.alert("提示","删除成功");
+						$("#userManager").datagrid('reload');
+					}).complete(function(){
+						
+					});
+				}
+			});
+		}else{
+			$.messager.alert("提示","请选择要删除的数据！","info");
+		}
+	}
+	
 </script>
 <table id="userManager" class="easyui-datagrid"
 	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:'#userManagerToolbar',onBeginEdit:userBeginEidt">
@@ -88,7 +111,7 @@
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="gu.accept()">保存</a>
 	<!-- <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="gu.reject()">取消编辑</a>-->
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editUserInfo()">修改用户</a>
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="gu.remove()">删除用户</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="delUserInfo()">删除用户</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true" onclick="resetPassword('#userManager')">重置密码</a>
 </div>
 <div id="userInfo_win" class="easyui-window" title="用户详细信息" style="width:800px;height:450px"

@@ -747,10 +747,10 @@ var comm = {
 		}
 		$(target).panel("refresh", url);
 	},
-	createMume : function(id, data) {
+	createMume : function(id, data, showPage) {
 		var ul = $("#" + id);
 		ul.empty();
-		
+		console.log(showPage)
 		$.each(data,function(i,n){
 			
 			var li = $("<li><a id='_menu"+i+"' href=\"javascript:void(0)\"><img></a></li>");
@@ -769,10 +769,11 @@ var comm = {
 			}
 			ul.append(li);
 			
-			if (i == 0) {
+			if (showPage == "Y" && i == 0) {
 				li.find("a").click();
 			}
 		});
+		
 		
 	}
 }
@@ -947,6 +948,11 @@ var system = {
 			"title" : "角色管理",
 			href : "/veh/html/roleManager.html",
 			target : "#systemContex"
+		},{
+			"icon" : "/veh/images/blackList.png",
+			"title" : "黑名单管理",
+			href : "/veh/html/BlackListManager.html",
+			target : "#systemContex"
 		}
 	],
 	menus4:[
@@ -963,12 +969,53 @@ var system = {
 		}
 	],
 	initEvents : function() {
-		comm.createMume("sysMune", system.menus1);
-		comm.createMume("deviceMune", system.menus2);
-		comm.createMume("userMune", system.menus3);
-		comm.createMume("backMune", system.menus4);
+//		if(userRoleInfo.roleName == "审计管理员"){
+//			comm.createMume("backMune", system.menus4, "Y");
+//		}else{
+			comm.createMume("sysMune", system.menus1, "Y");
+			comm.createMume("deviceMune", system.menus2, "N");
+			comm.createMume("userMune", system.menus3, "N");
+			comm.createMume("backMune", system.menus4, "N");
+//		}
 	}
 }
+
+var statisticalReport = {
+		menus1 : [{
+			"icon" : "/veh/images/statistics.png",
+			"title" : "车辆类型合格率汇总",
+			href : "/veh/html/statistics/vehicleTypeStatistics.html",
+			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/report2.png",
+			"title" : "检验类别合格率汇总",
+			href : "/veh/html/statistics/inspectionCategoryStatistics.html",
+			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/report3.png",
+			"title" : "区县分类合格率汇总",
+			href : "/veh/html/statistics/countryStatistics.html",
+			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/report4.png",
+			"title" : "检验项目合格率汇总",
+			href : "/veh/html/statistics/inspectionProjectStatistics.html",
+			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/statsyear.png",
+			"title" : "客车和危货车辆检验月报表",
+			href : "/veh/html/statistics/yearReport.html",
+			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/stats.png",
+			"title" : "检测线车辆数分布统计",
+			href : "/veh/html/statistics/vehicleDistributionStatistics.html",
+			target : "#reportContex"
+		}],
+		initEvents : function() {
+				comm.createMume("businessStatistics", statisticalReport.menus1, "Y");
+		}
+};
 
 $.extend(
 	$.fn.validatebox.defaults.rules,

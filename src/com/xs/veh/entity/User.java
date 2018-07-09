@@ -37,6 +37,8 @@ public class User extends BaseEntity {
 	
 	public final static String User_type_ycy="2";
 	
+	public static final String SYSTEM_USER="system";
+	
 	@Column(unique=true,length=32)
 	@Pattern(regexp="^[a-zA-Z\\d]\\w{3,11}[a-zA-Z\\d]$",message="{user.userFomatterError}")
 	private String userName;
@@ -84,7 +86,7 @@ public class User extends BaseEntity {
 	private String permitEndTime;
 	
 	@Column
-	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date lastLoginDate;
 	
 	@Column
@@ -98,6 +100,19 @@ public class User extends BaseEntity {
 	
 	@Column(length=10)
 	private String userType;
+	
+	//本次登陆ip
+	@Column(length=30)
+	private String ip;
+	
+	//上次登录的时间
+	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date lastTimeLoginDate;
+	
+	//上次登录的IP终端
+	@Column(length=30)
+	private String lastTimeIP;
 	
 	@Transient
 	private String pwOverdue;
@@ -254,6 +269,30 @@ public class User extends BaseEntity {
 
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
+	}	
+
+	public Date getLastTimeLoginDate() {
+		return lastTimeLoginDate;
+	}
+
+	public void setLastTimeLoginDate(Date lastTimeLoginDate) {
+		this.lastTimeLoginDate = lastTimeLoginDate;
+	}	
+
+	public String getIp() {
+		return ip;
+	}
+
+	public String getLastTimeIP() {
+		return lastTimeIP;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public void setLastTimeIP(String lastTimeIP) {
+		this.lastTimeIP = lastTimeIP;
 	}
 
 	public String encodePwd(String password) {
@@ -275,6 +314,7 @@ public class User extends BaseEntity {
 		user.setRealName("管理员");
 		user.setPassword("888888");
 		System.out.println(user.encodePwd("888888"));
+		
 	}
 	
 

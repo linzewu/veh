@@ -39,7 +39,7 @@ function updateData(){
 		<td class="simpletable-l"><label>姓名：</label></td>
 		<td class="simpletable-r"><input id="realName" name="realName" data-options="required:true" class="easyui-textbox"></td>
 		<td class="simpletable-l"><label>身份证：</label></td>
-		<td class="simpletable-r"><input id="idCard" name="idCard" data-options="required:true,validType:{idCardVad:''}" class="easyui-textbox"></td>
+		<td class="simpletable-r"><input id="idCard" name="idCard" data-options="required:true,validType:{idCardVad:'',remote:['/veh/user/validateIdCard','idCard']}" class="easyui-textbox"></td>
 	</tr>
 	<tr>
 		<td class="simpletable-l"><label for="device90-sbcs">是否民警：</label></td>
@@ -115,6 +115,7 @@ $(function(){
 		if(row){
 			$("#form-user").form("load",row);
 			$("#userName").textbox({disabled:true});
+			$("#idCard").textbox({disabled:true});
 		}
 	}
 });

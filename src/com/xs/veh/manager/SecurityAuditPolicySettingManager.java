@@ -53,5 +53,13 @@ public class SecurityAuditPolicySettingManager {
 			this.hibernateTemplate.update(vo);
 		}
 	}
+	
+	public SecurityAuditPolicySetting getPolicyByCode(String aqsjclbm) {
+		StringBuffer sb=new StringBuffer("from SecurityAuditPolicySetting where aqsjclbm=?");
+		
+		List<SecurityAuditPolicySetting> sets=(List<SecurityAuditPolicySetting> )this.hibernateTemplate.find(sb.toString(), aqsjclbm);
+		
+		return sets==null||sets.size()==0?null:sets.get(0);
+	}
 
 }

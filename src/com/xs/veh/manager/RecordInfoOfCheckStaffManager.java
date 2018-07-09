@@ -4,13 +4,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.OperationLog;
+import com.xs.veh.entity.RecordInfoOfCheck;
 import com.xs.veh.entity.RecordInfoOfCheckStaff;
 
 @Service("recordInfoOfCheckStaffManager")
@@ -39,6 +43,21 @@ public class RecordInfoOfCheckStaffManager {
 		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
 
 		return count.get(0).intValue();
+	}
+	
+	public void deleteRecordInfo() {
+		hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				return session.createSQLQuery("delete TM_RecordInfoOfCheckStaff").executeUpdate();
+			}
+		});
+	}
+	
+	public void saveRecordInfoOfCheckStaff(List<RecordInfoOfCheckStaff> list) {
+		for(RecordInfoOfCheckStaff vo:list) {
+			hibernateTemplate.save(vo);
+		}
 	}
 
 }

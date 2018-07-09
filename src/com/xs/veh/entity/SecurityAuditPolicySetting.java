@@ -20,11 +20,34 @@ import org.springframework.stereotype.Component;
 @Table(name = "TM_SecurityAuditPolicySetting")
 public class SecurityAuditPolicySetting {
 	
+	//策略编码
+	//一天内访问次数超限
+	public static final String 	VISIT_NUMBER_ONEDAY="visit_number_oneday";
+	//一小时内访问次数超限
+	public static final String 	VISIT_NUMBER_ONEHOUR="visit_number_onehour";
+	//一分钟访问次数超限
+	public static final String 	VISIT_NUMBER_ONEMINUTE="visit_number_oneminute";
+	//特殊时间段访问
+	public static final String 	SPECIAL_TIMESLOT_VISIT="special_timeslot_visit";
+	//特殊日期访问
+	public static final String 	SPECIAL_DATE_VISIT="special_date_visit";
+	//特殊日期的特殊时间段访问
+	public static final String 	SPECIAL_TIMESLOT_OF_DATE_VISIT="special_timeslot_of_date_visit";
+	//账户一周未使用
+	public static final String 	ACCOUNT_NOT_USED_AWEEK = "account_not_used_aweek";
+	//账户一月未使用
+	public static final String 	ACCOUNT_NOT_USED_AMONTH = "account_not_used_amonth";
+	//账户一年未使用
+	public static final String 	ACCOUNT_NOT_USED_AYEAR = "account_not_used_ayear";
+	
 	@Id
 	@GenericGenerator(name = "idGenerator", strategy = "identity")
 	@GeneratedValue(generator = "idGenerator")
 	@Column(name="id")
 	private Integer id;
+	
+	@Column(length = 50)
+	private String aqsjclbm;
 	
 	@Column(length = 120)
 	private String aqsjcllxmc;
@@ -97,6 +120,14 @@ public class SecurityAuditPolicySetting {
 
 	public void setClz(String clz) {
 		this.clz = clz;
+	}
+
+	public String getAqsjclbm() {
+		return aqsjclbm;
+	}
+
+	public void setAqsjclbm(String aqsjclbm) {
+		this.aqsjclbm = aqsjclbm;
 	}
 	
 

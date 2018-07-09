@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -20,7 +19,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -30,17 +29,11 @@ import com.xs.veh.entity.OperationLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.manager.OperationLogManager;
 
-@Service
 @Aspect
+@Component
 public class LogAopAction {
-	// 获取开始时间
-	private Date BEGIN_TIME;
 
-	// 获取结束时间
-	private Date END_TIME;
 
-	// 定义本次log实体
-	private OperationLog log = new OperationLog();
 
 	@Autowired
 	private HttpSession session;
@@ -60,7 +53,6 @@ public class LogAopAction {
 	 */
 	@Before("controllerAspect()")
 	public void doBefore(JoinPoint joinPoint) {
-		BEGIN_TIME = new Date();
 	}
 
 	/**
@@ -68,7 +60,6 @@ public class LogAopAction {
 	 */
 	@After("controllerAspect()")
 	public void after(JoinPoint joinPoint) {
-		END_TIME = new Date();
 	}
 
 	/**
@@ -76,22 +67,20 @@ public class LogAopAction {
 	 */
 	@AfterReturning("controllerAspect()")
 	public void doAfter(JoinPoint joinPoint) {
-		if(log.getStatus()==1){
-            log.setActionTime(END_TIME.getTime()-BEGIN_TIME.getTime());
-            log.setOperationDate(BEGIN_TIME);
-            operationLogManager.saveOperationLog(log);
-		}
 	}
 
 	/**
 	 * 方法有异常时的操作
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
 	 */
 	@AfterThrowing(pointcut="controllerAspect()",throwing="e")
-	public void doAfterThrow(JoinPoint joinPoint,Throwable e) {
-		System.out.println("doAfterThrow++++++"+log.getStatus());
+	public void doAfterThrow(JoinPoint joinPoint,Throwable e) throws NoSuchMethodException, SecurityException {
+		OperationLog log = getLog(joinPoint);
 		log.setOperationResult(OperationLog.OPERATION_RESULT_ERROR);
 		log.setStatus(1);
 		log.setFailMsg(e.getMessage());
+		operationLogManager.saveOperationLog(log);
 	}
 
 	/**
@@ -103,6 +92,25 @@ public class LogAopAction {
 	 */
 	@Around("controllerAspect()")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable {
+		
+		Date beginDate=new Date();
+        OperationLog log =getLog(pjp);
+        Object object = pjp.proceed();
+        if(log!=null) {
+			log.setOperationResult(OperationLog.OPERATION_RESULT_SUCCESS);
+			log.setStatus(1);
+			Date endtime = new Date();
+			log.setActionTime(endtime.getTime()-beginDate.getTime());
+	        log.setOperationDate(beginDate);
+	        operationLogManager.saveOperationLog(log);
+        }
+		return object;
+	}
+	
+	
+	private OperationLog getLog(JoinPoint pjp) throws NoSuchMethodException, SecurityException {
+		
+		OperationLog log =new OperationLog();
 		// 日志实体对象
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getRequest();
@@ -113,7 +121,6 @@ public class LogAopAction {
 		} else {
 			log.setOperationUser(loginUser.getUserName());
 		}
-
 		// 拦截的实体类，就是当前正在执行的controller
 		Object target = pjp.getTarget();
 		// 拦截的方法名称。当前正在执行的方法
@@ -134,32 +141,15 @@ public class LogAopAction {
 			log.setModule(modular.modelName());
 		}
 
-		// 判断是否包含自定义的注解，说明一下这里的SystemLog就是我自己自定义的注解
 		if (method.isAnnotationPresent(UserOperation.class)) {
 			UserOperation userOperation = method.getAnnotation(UserOperation.class);
 			log.setOperationType(userOperation.name());
 			log.setIpAddr(getIpAdrress());
 			log.setActionUrl(request.getRequestURI());
-			object = pjp.proceed();
-			log.setOperationResult(OperationLog.OPERATION_RESULT_SUCCESS);
-			log.setStatus(1);
-			
-			if(userOperation.code().equals("login")) {
-				Map map = (Map)object;
-				if(map != null) {
-					if("0".equals(map.get("state").toString())){
-						log.setOperationResult(OperationLog.OPERATION_RESULT_ERROR);
-						log.setFailMsg(map.get("errorMsg").toString());
-					}
-				}
-			}
-			
-		}else {
-			object = pjp.proceed();
+			return log;
 		}
-		return object;
+		return null;
 	}
-	
 	
 
 	private String getIpAdrress() {

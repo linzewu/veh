@@ -2,10 +2,12 @@ package com.xs.veh.controller;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -24,11 +26,14 @@ import com.xs.annotation.UserOperation;
 import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
 import com.xs.enums.CommonUserOperationEnum;
-import com.xs.veh.entity.OperationLog;
+import com.xs.veh.entity.BlackList;
 import com.xs.veh.entity.Role;
+import com.xs.veh.entity.SecurityAuditPolicySetting;
 import com.xs.veh.entity.User;
+import com.xs.veh.manager.BlackListManager;
 import com.xs.veh.manager.OperationLogManager;
 import com.xs.veh.manager.RoleManager;
+import com.xs.veh.manager.SecurityAuditPolicySettingManager;
 import com.xs.veh.manager.UserManager;
 import com.xs.veh.util.PageInfo;
 
@@ -48,6 +53,13 @@ public class UserController {
 	
 	@Resource(name = "roleManager")
 	private RoleManager roleManager;
+	
+	@Autowired
+	private BlackListManager blackListManager;
+	
+	@Resource(name = "securityAuditPolicySettingManager")
+	private SecurityAuditPolicySettingManager securityAuditPolicySettingManager;
+	
 	
 	private  String getIpAdrress() {
         String Xip = request.getHeader("X-Real-IP");
@@ -110,13 +122,21 @@ public class UserController {
 	@UserOperation(code="login",name="登录",userOperationEnum=CommonUserOperationEnum.NoLogin)
 	public @ResponseBody Map login(HttpServletRequest request, String userName, String password) {
 		
-		User user = userManager.login(userName);
-		HttpSession session = request.getSession();
 		RequestContext requestContext = new RequestContext(request);
+		HttpSession session = request.getSession();
 		
+		
+		if(blackListManager.checkIpIsBan(getIpAdrress())) {
+			Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
+			data.put("session", session.getId());
+			data.put("errorMsg", "当前IP已被列入黑名单，请联系管理员！");
+			return data;
+		}
+		
+		
+		User user = userManager.login(userName);
 		
 		if (user != null) {
-			
 			//校验用户是否被锁定
 			if(user.getUserState() == 1) {
 				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
@@ -149,10 +169,13 @@ public class UserController {
 			String encodePwd =user.encodePwd(password);
 			if(!user.getPassword().equals(encodePwd)) {
 				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
-				data.put("errorMsg", "用户名密码错误！");
+				
 				data.put("session", session.getId());
 				session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
 				failLoginCount(user);
+				//失败加入黑名单
+				int sycou= addBlackList();
+				data.put("errorMsg", "用户名密码错误！当前Ip还有"+sycou+"次机会就会被锁定.");
 				return data;
 			}
 			
@@ -161,8 +184,12 @@ public class UserController {
 			if (user.getPwValidDate().before(nowDate)) {
 				user.setPwOverdue("Y");
 			}
+			//上次登录的时间跟ip记录
+			user.setLastTimeLoginDate(user.getLastLoginDate());
+			user.setLastTimeIP(user.getIp());
 			//修改最后登录时间
 			user.setLastLoginDate(new Date());
+			user.setIp(getIpAdrress());
 			user.setLoginFailCou(0);
 			this.userManager.updateUser(user);
 			session.setAttribute(Constant.ConstantKey.USER_SESSIO_NKEY, user);
@@ -171,9 +198,12 @@ public class UserController {
 			return data;
 		} else {
 			Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
-			data.put("errorMsg", "用户名密码错误！");
+			
 			data.put("session", session.getId());
 			session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
+			//失败加入黑名单
+			int sycou= addBlackList();
+			data.put("errorMsg", "用户名密码错误！当前Ip还有"+sycou+"次机会就会被锁定.");
 			return data;
 		}
 	}
@@ -190,6 +220,33 @@ public class UserController {
 		
 		this.userManager.updateUser(u);
 		return u;
+	}
+	
+	private int addBlackList() {
+		int sycou = 0;
+		String ip = getIpAdrress();
+		SecurityAuditPolicySetting set = securityAuditPolicySettingManager.getPolicyByCode(SecurityAuditPolicySetting.VISIT_NUMBER_ONEDAY);
+		int clz = set.getClz() == null?0:Integer.parseInt(set.getClz());
+		BlackList black = blackListManager.getBlackListByIp(ip);
+		if (black == null) {
+			BlackList newBlack = new BlackList();
+			newBlack.setCreateBy(User.SYSTEM_USER);
+			newBlack.setEnableFlag("N");
+			newBlack.setFailCount(1);
+			newBlack.setIp(ip);
+			newBlack.setLastUpdateTime(new Date());
+			blackListManager.saveBlackList(newBlack);
+			sycou = clz-newBlack.getFailCount();
+		}else {
+			black.setFailCount(black.getFailCount()+1);
+			black.setLastUpdateTime(new Date());
+			if(black.getFailCount()>=clz) {
+				black.setEnableFlag("Y");
+			}
+			blackListManager.saveBlackList(black);
+			sycou = clz-black.getFailCount();
+		}
+		return sycou;
 	}
 	
 	
@@ -227,7 +284,7 @@ public class UserController {
 	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	@UserOperation(code="logout",name="登出",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	public @ResponseBody Map logout(HttpSession session) {
-		session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
+		//session.removeAttribute(Constant.ConstantKey.USER_SESSIO_NKEY);
 		session.invalidate();
 		return ResultHandler.toSuccessJSON("注销成功");
 	}
@@ -309,7 +366,7 @@ public class UserController {
 		User user = this.userManager.loadUser(sessionUser.getId());
 		
 		user.setPassword(user.encodePwd(newPassword));
-		user.setUserState(User.USER_STATE_NORMAL);
+		user.setUserState(0);
 		//修改密码，密码有效期延长3个月
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(user.getPwValidDate());
@@ -320,15 +377,29 @@ public class UserController {
 		return ResultHandler.toSuccessJSON("密碼修改成功！");
 	}
 	
+	@UserOperation(code="getAllRole",name="获取所有角色",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "getAllRole", method = RequestMethod.POST)
 	public @ResponseBody List<Role> getAllRole() {
 		return roleManager.getAllRole();
 	}
 	
+	@UserOperation(code="getRolesByUser",name="获取当前用户角色",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "getRolesByUser", method = RequestMethod.POST)
 	public @ResponseBody Role getRolesByUser(HttpSession session) {
 		User user = (User)session.getAttribute("user");
 		return roleManager.queryRoleById(user.getRoleId());
+	}
+	
+	@UserOperation(code="save",name="校验身份证",isMain=false)
+	@RequestMapping(value = "validateIdCard")
+	public @ResponseBody boolean validateIdCard(User user) {
+		User querUser = this.userManager.queryUser(user);
+		if(querUser==null){
+			return true;
+		}else{
+			return false;
+		}
+
 	}
 
 

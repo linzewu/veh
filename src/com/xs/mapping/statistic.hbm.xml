@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping> 
+	<sql-query name="findcllxheghz">
+		<![CDATA[
+		SELECT *, ychgs + fjhgs AS hgs
+		, CASE 
+			WHEN ychgs + fjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (ychgs + fjhgs) / (1.0 * zsl), 5, 5) * 100)
+		END AS hgl
+		, CONVERT(DECIMAL(18, 2), round(1.0 * ychgs / (1.0 * zsl), 5, 5) * 100) AS ychgl
+		, CASE 
+			WHEN fjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * fjhgs / (1.0 * (zsl - ychgs)), 5, 5) * 100)
+		END AS fjhgl, zsl - (ychgs + fjhgs) AS bhgs
+		, CASE 
+			WHEN zsl - (ychgs + fjhgs) = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (zsl - (ychgs + fjhgs)) / (1.0 * zsl), 5, 5) * 100)
+		END AS bhgl
+	FROM (
+		SELECT t1.cllx, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS ychgs
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS fjhgs
+		FROM (
+			SELECT t1.cllx, COUNT(1) AS zsl
+			FROM TM_VehCheckLogin t1
+			WHERE  t1.jyjl IS NOT NULL
+					AND  t1.dlsj <=:end
+					AND  t1.dlsj >=:begin
+			GROUP BY t1.cllx
+		) t1
+			LEFT JOIN (
+				SELECT t2.cllx, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t2
+				WHERE ( t2.jycs = 1
+					AND t2.jyjl = '合格'
+					AND  t2.dlsj <=:end
+					AND  t2.dlsj >=:begin)
+				GROUP BY t2.cllx
+			) t2
+			ON t1.cllx = t2.cllx
+			LEFT JOIN (
+				SELECT t2.cllx, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t2
+				WHERE ( t2.jycs > 1
+					AND t2.jyjl = '合格'
+					AND  t2.dlsj <=:end
+					AND  t2.dlsj >=:begin
+					)
+				GROUP BY t2.cllx
+			) t3
+			ON t3.cllx = t1.cllx
+	) t
+	
+	]]>  
+	</sql-query>
+	<sql-query name="findjylbflhglhz">
+	<![CDATA[
+		SELECT *, ychgs + fjhgs AS hgs
+		, CASE 
+			WHEN ychgs + fjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (ychgs + fjhgs) / (1.0 * zsl), 5, 5) * 100)
+		END AS hgl
+		, CONVERT(DECIMAL(18, 2), round(1.0 * ychgs / (1.0 * zsl), 5, 5) * 100) AS ychgl
+		, CASE 
+			WHEN fjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * fjhgs / (1.0 * (zsl - ychgs)), 5, 5) * 100)
+		END AS fjhgl, zsl - (ychgs + fjhgs) AS bhgs
+		, CASE 
+			WHEN zsl - (ychgs + fjhgs) = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (zsl - (ychgs + fjhgs)) / (1.0 * zsl), 5, 5) * 100)
+		END AS bhgl
+	FROM (
+		SELECT t1.jylb, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS ychgs
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS fjhgs
+		FROM (
+			SELECT t1.jylb, COUNT(1) AS zsl
+			FROM TM_VehCheckLogin t1
+			WHERE t1.jyjl IS NOT NULL
+			AND  t1.dlsj <=:end
+			AND  t1.dlsj >=:begin
+			GROUP BY t1.jylb
+		) t1
+			LEFT JOIN (
+				SELECT t2.jylb, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t2
+				WHERE t2.jycs = 1
+					AND t2.jyjl = '合格'
+					AND  t2.dlsj <=:end
+					AND  t2.dlsj >=:begin
+				GROUP BY t2.jylb
+			) t2
+			ON t1.jylb = t2.jylb
+			LEFT JOIN (
+				SELECT t2.jylb, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t2
+				WHERE t2.jycs > 1
+					AND t2.jyjl = '合格'
+					AND  t2.dlsj <=:end
+					AND  t2.dlsj >=:begin
+				GROUP BY t2.jylb
+			) t3
+			ON t3.jylb = t1.jylb
+	) t]]>  
+	</sql-query>
+	<sql-query name="findjcxclsfbtj">
+		<![CDATA[
+		SELECT *, ychgs + ycfjhgs AS hgs
+		, CONVERT(DECIMAL(18, 2), round(1.0 * ychgs / (1.0 * zsl), 5, 5) * 100) AS ychgl
+		, CASE 
+			WHEN ycfjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * ycfjhgs / (1.0 * (zsl - ychgs)), 5, 5) * 100)
+		END AS ycfjhgl
+		, CASE 
+			WHEN ecfjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * ecfjhgs / (1.0 * (zsl - (ychgs + ycfjhgs))), 5, 5) * 100)
+		END AS ecfjhgl
+		, CASE 
+			WHEN scfjhgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * scfjhgs / (1.0 * (zsl - (ychgs + ycfjhgs + ecfjhgs))), 5, 5) * 100)
+		END AS scfjhgl
+	FROM (
+		SELECT t1.jcxdh, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS ychgs
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS ycfjhgs
+			, CASE 
+				WHEN t4.zsl IS NULL THEN 0
+				ELSE t4.zsl
+			END AS ecfjhgs
+			, CASE 
+				WHEN t5.zsl IS NULL THEN 0
+				ELSE t5.zsl
+			END AS scfjhgs
+		FROM (
+			SELECT t1.jcxdh, COUNT(1) AS zsl
+			FROM TM_VehCheckLogin t1
+			WHERE (t1.jyjl IS NOT NULL
+				AND t1.dlsj <= :end
+				AND t1.dlsj >= :begin)
+			GROUP BY t1.jcxdh
+		) t1
+			LEFT JOIN (
+				SELECT t2.jcxdh, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t2
+				WHERE (t2.jycs = 1
+					AND t2.jyjl = '合格'
+					AND t2.dlsj <= :end
+					AND t2.dlsj >= :begin)
+				GROUP BY t2.jcxdh
+			) t2
+			ON t1.jcxdh = t2.jcxdh
+			LEFT JOIN (
+				SELECT t3.jcxdh, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t3
+				WHERE (t3.jycs = 2
+					AND t3.jyjl = '合格'
+					AND t3.dlsj <= :end
+					AND t3.dlsj >= :begin)
+				GROUP BY t3.jcxdh
+			) t3
+			ON t3.jcxdh = t1.jcxdh
+			LEFT JOIN (
+				SELECT t4.jcxdh, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t4
+				WHERE (t4.jycs = 3
+					AND t4.jyjl = '合格'
+					AND t4.dlsj <= :end
+					AND t4.dlsj >= :begin)
+				GROUP BY t4.jcxdh
+			) t4
+			ON t4.jcxdh = t1.jcxdh
+			LEFT JOIN (
+				SELECT t5.jcxdh, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t5
+				WHERE (t5.jycs > 3
+					AND t5.jyjl = '合格'
+					AND t5.dlsj <= :end
+					AND t5.dlsj >= :begin)
+				GROUP BY t5.jcxdh
+			) t5
+			ON t5.jcxdh = t1.jcxdh
+	) t]]>  
+	</sql-query>
+	<sql-query name="findjyxmflhgl">
+	<![CDATA[
+		SELECT t.jyxm, t.zsl AS zsl, t.fjhgsl + t.cjhgsl AS hgs
+		, CASE 
+			WHEN t.fjhgsl + t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.fjhgsl + t.cjhgsl) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS hgl, t.zsl - (t.fjhgsl + t.cjhgsl) AS bhgs
+		, CASE 
+			WHEN t.zsl - (t.fjhgsl + t.cjhgsl) = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.zsl - (t.fjhgsl + t.cjhgsl)) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS bhgl, t.cjhgsl AS ychgs
+		, CASE 
+			WHEN t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * t.cjhgsl / (1.0 * t.zsl), 5, 5) * 100)
+		END AS ychgl, t.fjhgsl AS fjhgs
+		, CASE 
+			WHEN t.fjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(t.fjhgsl / (1.0 * t.zsl - t.cjhgsl), 5, 5) * 100)
+		END AS fjhgl
+	FROM (
+		SELECT t1.jyxm, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS cjhgsl
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS fjhgsl
+		FROM (
+			SELECT jyxm, COUNT(1) AS zsl
+			FROM TM_BrakRollerData
+			WHERE zpd IN ('1', '2')
+			GROUP BY jyxm
+		) t1
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_BrakRollerData
+				WHERE zpd = 1
+					AND jycs = 1
+				GROUP BY jyxm
+			) t2
+			ON t1.jyxm = t2.jyxm
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_BrakRollerData
+				WHERE zpd = 1
+					AND jycs > 1
+				GROUP BY jyxm
+			) t3
+			ON t1.jyxm = t3.jyxm
+	) t
+	UNION
+	SELECT t.jyxm, t.zsl AS zsl, t.fjhgsl + t.cjhgsl AS hgs
+		, CASE 
+			WHEN t.fjhgsl + t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.fjhgsl + t.cjhgsl) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS hgl, t.zsl - (t.fjhgsl + t.cjhgsl) AS bhgs
+		, CASE 
+			WHEN t.zsl - (t.fjhgsl + t.cjhgsl) = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.zsl - (t.fjhgsl + t.cjhgsl)) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS bhgl, t.cjhgsl AS ychgs
+		, CASE 
+			WHEN t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * t.cjhgsl / (1.0 * t.zsl), 5, 5) * 100)
+		END AS ychgl, t.fjhgsl AS fjhgs
+		, CASE 
+			WHEN t.fjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(t.fjhgsl / (1.0 * t.zsl - t.cjhgsl), 5, 5) * 100)
+		END AS fjhgl
+	FROM (
+		SELECT t1.jyxm, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS cjhgsl
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS fjhgsl
+		FROM (
+			SELECT jyxm, COUNT(1) AS zsl
+			FROM TM_LightData
+			WHERE zpd IN ('1', '2')
+			GROUP BY jyxm
+		) t1
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_LightData
+				WHERE zpd = 1
+					AND jycs = 1
+				GROUP BY jyxm
+			) t2
+			ON t1.jyxm = t2.jyxm
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_LightData
+				WHERE zpd = 1
+					AND jycs > 1
+				GROUP BY jyxm
+			) t3
+			ON t1.jyxm = t3.jyxm
+	) t
+	UNION
+	SELECT t.jyxm, t.zsl AS zsl, t.fjhgsl + t.cjhgsl AS hgs
+		, CASE 
+			WHEN t.fjhgsl + t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.fjhgsl + t.cjhgsl) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS hgl, t.zsl - (t.fjhgsl + t.cjhgsl) AS bhgs
+		, CASE 
+			WHEN t.zsl - (t.fjhgsl + t.cjhgsl) = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.zsl - (t.fjhgsl + t.cjhgsl)) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS bhgl, t.cjhgsl AS ychgs
+		, CASE 
+			WHEN t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * t.cjhgsl / (1.0 * t.zsl), 5, 5) * 100)
+		END AS ychgl, t.fjhgsl AS fjhgs
+		, CASE 
+			WHEN t.fjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(t.fjhgsl / (1.0 * t.zsl - t.cjhgsl), 5, 5) * 100)
+		END AS fjhgl
+	FROM (
+		SELECT t1.jyxm, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS cjhgsl
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS fjhgsl
+		FROM (
+			SELECT jyxm, COUNT(1) AS zsl
+			FROM TM_SideslipData
+			WHERE zpd IN ('1', '2')
+			GROUP BY jyxm
+		) t1
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_SideslipData
+				WHERE zpd = 1
+					AND jycs = 1
+				GROUP BY jyxm
+			) t2
+			ON t1.jyxm = t2.jyxm
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_SideslipData
+				WHERE zpd = 1
+					AND jycs > 1
+				GROUP BY jyxm
+			) t3
+			ON t1.jyxm = t3.jyxm
+	) t
+	UNION
+	SELECT t.jyxm, t.zsl AS zsl, t.fjhgsl + t.cjhgsl AS hgs
+		, CASE 
+			WHEN t.fjhgsl + t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.fjhgsl + t.cjhgsl) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS hgl, t.zsl - (t.fjhgsl + t.cjhgsl) AS bhgs
+		, CASE 
+			WHEN t.zsl - (t.fjhgsl + t.cjhgsl) = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (t.zsl - (t.fjhgsl + t.cjhgsl)) / (1.0 * t.zsl), 5, 5) * 100)
+		END AS bhgl, t.cjhgsl AS ychgs
+		, CASE 
+			WHEN t.cjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * t.cjhgsl / (1.0 * t.zsl), 5, 5) * 100)
+		END AS ychgl, t.fjhgsl AS fjhgs
+		, CASE 
+			WHEN t.fjhgsl = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(t.fjhgsl / (1.0 * t.zsl - t.cjhgsl), 5, 5) * 100)
+		END AS fjhgl
+	FROM (
+		SELECT t1.jyxm, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS cjhgsl
+			, CASE 
+				WHEN t3.zsl IS NULL THEN 0
+				ELSE t3.zsl
+			END AS fjhgsl
+		FROM (
+			SELECT jyxm, COUNT(1) AS zsl
+			FROM TM_SpeedData
+			WHERE zpd IN ('1', '2')
+			GROUP BY jyxm
+		) t1
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_SpeedData
+				WHERE zpd = 1
+					AND jycs = 1
+				GROUP BY jyxm
+			) t2
+			ON t1.jyxm = t2.jyxm
+			LEFT JOIN (
+				SELECT jyxm, COUNT(1) AS zsl
+				FROM TM_SpeedData
+				WHERE zpd = 1
+					AND jycs > 1
+				GROUP BY jyxm
+			) t3
+			ON t1.jyxm = t3.jyxm
+	) t
+		]]>
+	</sql-query>
+</hibernate-mapping>

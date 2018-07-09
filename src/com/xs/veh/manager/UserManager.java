@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.springframework.orm.hibernate4.HibernateCallback;
@@ -15,6 +17,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.Constant;
+import com.xs.veh.entity.OperationLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.util.PageInfo;
 
@@ -104,6 +107,7 @@ public class UserManager {
 			User oldUser=this.hibernateTemplate.load(User.class, user.getId());
 			user.setPassword(oldUser.getPassword());
 			user.setUserName(oldUser.getUserName());
+			user.setIdCard(oldUser.getIdCard());
 			user.setLastLoginDate(oldUser.getLastLoginDate());
 		}
 		return this.hibernateTemplate.merge(user);
@@ -149,6 +153,20 @@ public class UserManager {
 	
 	public User loadUser(Integer id){
 		return this.hibernateTemplate.load(User.class, id);
+	}
+	
+	public User queryUser(User user){
+		
+		DetachedCriteria query = DetachedCriteria.forClass(User.class);
+
+		
+		if(user.getIdCard()!=null&&!"".equals(user.getIdCard().trim())){
+			query.add(Restrictions.eq("idCard", user.getIdCard()));
+		}
+		
+		List<User> users = (List<User>) this.hibernateTemplate.findByCriteria(query);
+		
+		return users==null||users.size()==0?null:users.get(0);
 	}
 
 }
