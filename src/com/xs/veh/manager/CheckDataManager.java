@@ -556,8 +556,13 @@ public class CheckDataManager {
 			dcj1.setYqjyxm("外廓尺寸(mmxmmxmm)");
 			dcj1.setYqjyjg(outline.getCwkc()+"x"+outline.getCwkk()+"x"+outline.getCwkg());
 			
+			String cllx=vehCheckLogin.getCllx();
+			
 			if(vehCheckLogin.getJylb().equals("00")){
 				dcj1.setYqbzxz("±1%或50mm");
+			}else if(cllx.indexOf("N")==0||cllx.indexOf("M")==0){
+				//三轮汽车
+				dcj1.setYqbzxz("±3%或±50mm");
 			}else{
 				dcj1.setYqbzxz("±2%或100mm");
 			}
@@ -739,9 +744,9 @@ public class CheckDataManager {
 				DeviceCheckJudeg deviceCheckJudegZcpd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegZcpd, vehCheckLogin);
 				deviceCheckJudegZcpd.setYqjyxm("路试驻车" + (roadCheck.getZcpd() == 0 ? "20%" : "15%") + "坡道路试");
-				deviceCheckJudegZcpd.setYqjyjg(roadCheck.getLszczdpd().equals("1") ? "5min未溜" : "5min内溜车");
+				deviceCheckJudegZcpd.setYqjyjg(roadCheck.getLszczdpd().equals("1") ? "3min未溜" : "3min内溜车");
 				deviceCheckJudegZcpd.setYqjgpd(roadCheck.getLszczdpd().toString());
-				deviceCheckJudegZcpd.setYqbzxz("正反5min");
+				deviceCheckJudegZcpd.setYqbzxz("正反3min");
 				deviceCheckJudegZcpd.setXh(xh.intValue());
 				deviceCheckJudegZcpd.setBz1("R");
 				xh++;
