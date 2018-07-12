@@ -560,12 +560,14 @@ public class CheckDataManager {
 			
 			if(vehCheckLogin.getJylb().equals("00")){
 				dcj1.setYqbzxz("±1%或50mm");
-			}else if(cllx.indexOf("N")==0||cllx.indexOf("M")==0){
-				//三轮汽车
-				dcj1.setYqbzxz("±3%或±50mm");
 			}else{
 				dcj1.setYqbzxz("±2%或100mm");
 			}
+			if(cllx.indexOf("N")==0||cllx.indexOf("M")==0){
+				//三轮汽车
+				dcj1.setYqbzxz("±3%或±50mm");
+			}
+			
 			dcj1.setYqjgpd(outline.getClwkccpd().toString());
 			dcj1.setXh(xh);
 			xh++;
