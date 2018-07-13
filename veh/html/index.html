@@ -218,7 +218,8 @@
              }
          });
 		
-		if (userRoleInfo.roleName == "超级管理员"){
+		if (userRoleInfo.roleName == "超级管理员" || userRoleInfo.roleName == "安全管理员" ||
+				userRoleInfo.roleName == "审计管理员" || userRoleInfo.roleName == "系统管理员"){
 			$("#sysTabs").tabs('disableTab', 0);
 			$("#sysTabs").tabs('disableTab', 1);
 			$("#sysTabs").tabs("disableTab", 2);

@@ -29,11 +29,13 @@ import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.BlackList;
 import com.xs.veh.entity.Role;
 import com.xs.veh.entity.SecurityAuditPolicySetting;
+import com.xs.veh.entity.SecurityLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.manager.BlackListManager;
 import com.xs.veh.manager.OperationLogManager;
 import com.xs.veh.manager.RoleManager;
 import com.xs.veh.manager.SecurityAuditPolicySettingManager;
+import com.xs.veh.manager.SecurityLogManager;
 import com.xs.veh.manager.UserManager;
 import com.xs.veh.util.PageInfo;
 
@@ -56,6 +58,8 @@ public class UserController {
 	
 	@Autowired
 	private BlackListManager blackListManager;
+	@Autowired
+	private SecurityLogManager securityLogManager;
 	
 	@Resource(name = "securityAuditPolicySettingManager")
 	private SecurityAuditPolicySettingManager securityAuditPolicySettingManager;
@@ -139,9 +143,10 @@ public class UserController {
 		if (user != null) {
 			//校验用户是否被锁定
 			if(user.getUserState() == 1) {
+				SecurityAuditPolicySetting set = securityAuditPolicySettingManager.getPolicyByCode(SecurityAuditPolicySetting.ACCOUNT_LOCK);
 				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
 				data.put("session", session.getId());
-				data.put("errorMsg", "登录失败，当前用户登录失败次数超过10次已被锁定，请联系管理员解锁！");
+				data.put("errorMsg", "登录失败，当前用户登录失败次数超过"+set.getClz()+"次已被锁定，请联系管理员解锁！");
 				return data;
 			}
 			
@@ -219,13 +224,24 @@ public class UserController {
 		}
 		
 		this.userManager.updateUser(u);
+		if (u.getUserState() == 1) {
+			//写入安全日志
+			SecurityLog securityLog = new SecurityLog();
+			securityLog.setCreateUser(User.SYSTEM_USER);
+			securityLog.setUpdateUser(User.SYSTEM_USER);
+			securityLog.setUserName(u.getUserName());
+			securityLog.setClbm(SecurityAuditPolicySetting.ACCOUNT_LOCK);
+			securityLog.setIpAddr(getIpAdrress());
+			securityLog.setContent("用户:"+u.getUserName()+"违反账户锁定安全审计策略设置，用户锁定");
+			securityLogManager.saveSecurityLog(securityLog);
+		}
 		return u;
 	}
 	
 	private int addBlackList() {
 		int sycou = 0;
 		String ip = getIpAdrress();
-		SecurityAuditPolicySetting set = securityAuditPolicySettingManager.getPolicyByCode(SecurityAuditPolicySetting.VISIT_NUMBER_ONEDAY);
+		SecurityAuditPolicySetting set = securityAuditPolicySettingManager.getPolicyByCode(SecurityAuditPolicySetting.IP_LOCK);
 		int clz = set.getClz() == null?0:Integer.parseInt(set.getClz());
 		BlackList black = blackListManager.getBlackListByIp(ip);
 		if (black == null) {
@@ -245,6 +261,16 @@ public class UserController {
 			}
 			blackListManager.saveBlackList(black);
 			sycou = clz-black.getFailCount();
+			if("Y".equals(black.getEnableFlag())) {
+				//写入安全日志
+				SecurityLog securityLog = new SecurityLog();
+				securityLog.setCreateUser(User.SYSTEM_USER);
+				securityLog.setUpdateUser(User.SYSTEM_USER);
+				securityLog.setClbm(SecurityAuditPolicySetting.IP_LOCK);
+				securityLog.setIpAddr(ip);
+				securityLog.setContent("IP终端:"+ip+"违反IP终端锁定(黑名单)安全审计策略设置，加入黑名单");
+				securityLogManager.saveSecurityLog(securityLog);
+			}
 		}
 		return sycou;
 	}

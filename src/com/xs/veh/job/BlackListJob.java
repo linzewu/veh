@@ -34,7 +34,7 @@ public class BlackListJob {
 	
 	@Scheduled(cron="0 0/5 * * * ? ")
 	private void unlockedBlackList() throws Exception{
-		SecurityAuditPolicySetting set = securityAuditPolicySettingManager.getPolicyByCode(SecurityAuditPolicySetting.VISIT_NUMBER_ONEDAY);
+		SecurityAuditPolicySetting set = securityAuditPolicySettingManager.getPolicyByCode(SecurityAuditPolicySetting.IP_LOCK);
 		List<BlackList> list = blackListManager.getEnableList();
 		int clz = set.getClz() == null?0:Integer.parseInt(set.getClz());
 		for(BlackList black:list) {

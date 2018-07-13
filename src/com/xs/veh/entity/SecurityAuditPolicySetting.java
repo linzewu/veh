@@ -39,6 +39,10 @@ public class SecurityAuditPolicySetting {
 	public static final String 	ACCOUNT_NOT_USED_AMONTH = "account_not_used_amonth";
 	//账户一年未使用
 	public static final String 	ACCOUNT_NOT_USED_AYEAR = "account_not_used_ayear";
+	//账户锁定
+	public static final String ACCOUNT_LOCK = "account_lock";
+	//IP终端锁定(黑名单)
+	public static final String IP_LOCK = "ip_lock";
 	
 	@Id
 	@GenericGenerator(name = "idGenerator", strategy = "identity")

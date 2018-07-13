@@ -55,7 +55,7 @@ public class SecurityAuditPolicySettingManager {
 	}
 	
 	public SecurityAuditPolicySetting getPolicyByCode(String aqsjclbm) {
-		StringBuffer sb=new StringBuffer("from SecurityAuditPolicySetting where aqsjclbm=?");
+		StringBuffer sb=new StringBuffer("from SecurityAuditPolicySetting where aqsjclbm=? AND sfkq = '0'");
 		
 		List<SecurityAuditPolicySetting> sets=(List<SecurityAuditPolicySetting> )this.hibernateTemplate.find(sb.toString(), aqsjclbm);
 		

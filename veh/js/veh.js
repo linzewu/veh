@@ -15,6 +15,8 @@ var allRole = $.ajax({
 }).responseText;
 allRole=$.parseJSON(allRole);
 
+var sysMId = 0;
+var removeCou = 0;
 
 var userRoleInfo = $.ajax({
 	url : "/veh/user/getRolesByUser",
@@ -775,6 +777,44 @@ var comm = {
 		});
 		
 		
+	},
+	createMumeAuth : function(id, data, pIndex) {
+		var ul = $("#" + id);
+		ul.empty();
+		var cou = 0;
+		$.each(data,function(i,n){
+			var authRole = n.authorize.split(",");			
+			for(var r in authRole){
+				if(userRoleInfo.roleName == authRole[r]){
+					var li = $("<li><a id='_menu"+i+"' href=\"javascript:void(0)\"><img></a></li>");
+					
+					li.find("img").attr("src", n.icon);
+					li.find("a").append(n.title);
+					if (n.callbak) {
+						li.find("a").bind("click", n.callbak)
+					} else {
+						li.find("a").bind(
+								"click",
+								function() {
+									comm.toPage(n.target, n.title,
+											n.href, n.param);
+								});
+					}
+					ul.append(li);
+					
+					if (sysMId == 0) {
+						li.find("a").click();
+					}
+					sysMId++;
+					cou++;
+				}
+			}
+		});
+		if(cou == 0){
+			$("#accordMemu").accordion("remove",pIndex-removeCou);
+			removeCou++;
+		}
+		
 	}
 }
 
@@ -912,29 +952,40 @@ var system = {
 		"icon" : "/veh/images/system.png",
 		"title" : "系统参数",
 		href : "/veh/html/systemInfo.html",
-		target : "#systemContex"
+		target : "#systemContex",
+		authorize : "超级管理员"
 	},{
 		"icon" : "/veh/images/LOG.png",
 		"title" : "操作日志",
 		href : "/veh/html/operationLog.html",
-		target : "#systemContex"
+		target : "#systemContex",
+		authorize : "审计管理员"
 	},{
 		"icon" : "/veh/images/security.png",
 		"title" : "安全审计策略设置",
 		href : "/veh/html/securityAuditPolicySetting.html",
-		target : "#systemContex"
+		target : "#systemContex",
+		authorize : "安全管理员"
+	},{		
+		"icon" : "/veh/images/logsec.png",
+		"title" : "安全日志",
+		href : "/veh/html/securityLog.html",
+		target : "#systemContex",
+		authorize : "安全管理员"
 	}],
 	menus2:[
 		{
 			"icon" : "/veh/images/device.png",
 			"title" : "设备管理",
 			href : "/veh/html/DeviceManager.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "系统管理员"
 		},{
 			"icon" : "/veh/images/Workflow.png",
 			"title" : "检测流程",
 			href : "/veh/html/flowConfig.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "系统管理员"
 		}
 	],
 	menus3:[
@@ -942,17 +993,20 @@ var system = {
 			"icon" : "/veh/images/user.png",
 			"title" : "用户管理",
 			href : "/veh/html/UserManager.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "超级管理员,系统管理员"
 		},{
 			"icon" : "/veh/images/group.png",
 			"title" : "角色管理",
 			href : "/veh/html/roleManager.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "超级管理员"
 		},{
 			"icon" : "/veh/images/blackList.png",
 			"title" : "黑名单管理",
 			href : "/veh/html/BlackListManager.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "超级管理员"
 		}
 	],
 	menus4:[
@@ -960,22 +1014,27 @@ var system = {
 			"icon" : "/veh/images/backup.png",
 			"title" : "检验机构备案信息",
 			href : "/veh/html/recordInfoDownLoad.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "系统管理员"
 		},{
 			"icon" : "/veh/images/backup_user.png",
 			"title" : "检验机构人员备案信息",
 			href : "/veh/html/recordInfoOfCheckStaffDownLoad.html",
-			target : "#systemContex"
+			target : "#systemContex",
+			authorize : "系统管理员"
 		}
 	],
 	initEvents : function() {
 //		if(userRoleInfo.roleName == "审计管理员"){
 //			comm.createMume("backMune", system.menus4, "Y");
 //		}else{
-			comm.createMume("sysMune", system.menus1, "Y");
-			comm.createMume("deviceMune", system.menus2, "N");
-			comm.createMume("userMune", system.menus3, "N");
-			comm.createMume("backMune", system.menus4, "N");
+		sysMId = 0;
+		removeCou = 0
+		console.log("OOOOOOOOOO"+sysMId);
+			comm.createMumeAuth("sysMune", system.menus1, 0);
+			comm.createMumeAuth("deviceMune", system.menus2, 1);
+			comm.createMumeAuth("userMune", system.menus3, 2);
+			comm.createMumeAuth("backMune", system.menus4, 3);
 //		}
 	}
 }
