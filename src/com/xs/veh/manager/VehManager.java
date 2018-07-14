@@ -154,7 +154,11 @@ public class VehManager {
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
 		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
-		param.put("jyjgbh", jyjgbh);
+		if(jkid.equals("18C01") || jkid.equals("18C02")){
+			param.put("jczbh",jyjgbh);
+		}else{
+			param.put("jyjgbh", jyjgbh);
+		}
 
 		qoo.setJkid(jkid);
 		qoo.setXtlb(RCAConstant.XTLB);

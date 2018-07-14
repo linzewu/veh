@@ -1016,13 +1016,20 @@ var system = {
 			href : "/veh/html/recordInfoDownLoad.html",
 			target : "#systemContex",
 			authorize : "系统管理员"
-		},{
+		},
+		{
 			"icon" : "/veh/images/backup_user.png",
-			"title" : "检验机构人员备案信息",
-			href : "/veh/html/recordInfoOfCheckStaffDownLoad.html",
-			target : "#systemContex",
-			authorize : "系统管理员"
+			"title" : "检测线备案信息",
+			href : "/veh/html/recordInfoOfJcxDownLoad.html",
+			target : "#systemContex"
 		}
+//		{
+//			"icon" : "/veh/images/backup_user.png",
+//			"title" : "检验机构人员备案信息",
+//			href : "/veh/html/recordInfoOfCheckStaffDownLoad.html",
+//			target : "#systemContex",
+//			authorize : "系统管理员"
+//		}
 	],
 	initEvents : function() {
 //		if(userRoleInfo.roleName == "审计管理员"){
