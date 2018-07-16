@@ -27,32 +27,40 @@ public class StatisticController {
 	
 	@UserOperation(code="getCllxheghz",name="车辆类型合格率汇总")
 	@RequestMapping(value = "getCllxheghz", method = RequestMethod.POST)
-	public @ResponseBody Map<String,Object> getCllxheghz(@RequestParam String begin,@RequestParam String end){
+	public @ResponseBody Map<String,Object> getCllxheghz(@RequestParam String begin,@RequestParam String end,@RequestParam String type){
 		Map<String,Object> data =new HashMap<String,Object>();
-		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findcllxheghz");
+		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findcllxheghz","cllx",type);
 		data.put("rows", dataList);
-		data.put("total", dataList.size());
-		footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
+		
+		if(dataList.size()>0) {
+			data.put("total", dataList.size());
+			footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});	
+		}
+		
 		return data;
 	}
 	
 	@UserOperation(code="getJylbhglhz",name="检验类别分类合格率汇总")
 	@RequestMapping(value = "getJylbhglhz", method = RequestMethod.POST)
-	public @ResponseBody Map<String,Object> getJylbhglhz(@RequestParam String begin,@RequestParam String end){
+	public @ResponseBody Map<String,Object> getJylbhglhz(@RequestParam String begin,@RequestParam String end,@RequestParam String type){
 		Map<String,Object> data =new HashMap<String,Object>();
-		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findjylbflhglhz");
+		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findjylbflhglhz","jylb",type);
 		data.put("rows", dataList);
-		data.put("total", dataList.size());
-		footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
+		System.out.println(dataList.size()+" IIIIIIIIII");
+		if(dataList.size()>0) {
+			data.put("total", dataList.size());
+			footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
+		}
+		System.out.println(data);
 		return data;
 	}
 	
 	
 	@UserOperation(code="findjcxclsfbtj",name="检测线车辆数分布统计表")
 	@RequestMapping(value = "findjcxclsfbtj", method = RequestMethod.POST)
-	public @ResponseBody Map<String,Object> findjcxclsfbtj(@RequestParam String begin,@RequestParam String end){
+	public @ResponseBody Map<String,Object> findjcxclsfbtj(@RequestParam String begin,@RequestParam String end,@RequestParam String type){
 		Map<String,Object> data =new HashMap<String,Object>();
-		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findjcxclsfbtj");
+		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findjcxclsfbtj","jcxdh",type);
 		data.put("rows", dataList);
 		data.put("total", dataList.size());
 		return data;
@@ -61,12 +69,14 @@ public class StatisticController {
 	
 	@UserOperation(code="findjyxmflhgl",name="检验项目分类合格率汇总表")
 	@RequestMapping(value = "findjyxmflhgl", method = RequestMethod.POST)
-	public @ResponseBody Map<String,Object> findjyxmflhgl(@RequestParam String begin,@RequestParam String end){
+	public @ResponseBody Map<String,Object> findjyxmflhgl(@RequestParam String begin,@RequestParam String end,@RequestParam String type){
 		Map<String,Object> data =new HashMap<String,Object>();
-		List<Map<String,Object>> dataList = statisticManager.findcllxheghz11(begin, end,"findjyxmflhgl");
+		List<Map<String,Object>> dataList = statisticManager.findcllxheghz11(begin, end,"findjyxmflhgl","jyxm",type);
 		data.put("rows", dataList);
-		data.put("total", dataList.size());
-		footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
+		if(dataList.size()>0) {
+			data.put("total", dataList.size());
+			footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
+		}
 		return data;
 	}
 	

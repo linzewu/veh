@@ -10,7 +10,10 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.context.annotation.Scope;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Scope("prototype")
 @Component("baseParams")
@@ -32,6 +35,9 @@ public class BaseParams {
 	private String paramValue;
 	@Column(length = 64)
 	private String memo;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	@DateTimeFormat( pattern = "yyyy-MM-dd hh:mm:ss" )
 	@Column
 	private Date createTime;
 	

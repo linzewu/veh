@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContext;
 
@@ -22,6 +25,7 @@ import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
 import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.BaseParams;
+import com.xs.veh.manager.BaseParamsManager;
 
 @Controller
 @RequestMapping(value = "/bps")
@@ -35,6 +39,9 @@ public class BaseParamsController {
 	
 	@Value("${sqrqz}")
 	private String sqrqz;
+	
+	@Resource(name = "baseParamsManager")
+	private BaseParamsManager baseParamsManager;
 	
 	@RequestMapping(value = "all.js")
 	@UserOperation(code="all.js",name="数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
@@ -79,6 +86,27 @@ public class BaseParamsController {
 
 		return ResultHandler.toMyJSON(1,
 				requestContext.getMessage(Constant.ConstantKey.SUCCESS), bps);
+	}
+	
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@UserOperation(code="save",name="数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
+	public @ResponseBody Map save(BaseParams baseParams) {
+		baseParams = this.baseParamsManager.save(baseParams);
+		return ResultHandler.toMyJSON(Constant.ConstantState.STATE_SUCCESS, "保存成功",baseParams);
+	}
+
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	@UserOperation(code="delete",name="数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
+	public @ResponseBody Map delete(@RequestParam Integer id) {
+		this.baseParamsManager.delete(id);
+		return ResultHandler.toSuccessJSON("删除成功！");
+	}
+
+	@RequestMapping(value = "getBaseParamsOfPage")
+	@UserOperation(code="getBaseParamsOfPage",name="数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
+	public @ResponseBody Map getBaseParamsOfPage(Integer page, Integer rows,BaseParams param) {
+		Map data = this.baseParamsManager.getBaseParams(page,rows,param);
+		return data;
 	}
 
 }

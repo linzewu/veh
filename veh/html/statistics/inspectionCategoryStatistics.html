@@ -36,6 +36,8 @@
 	<div>
 		机动车安全技术检验机构名称：
 	    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>统计范围：</label> <input id="quer_beginDate" class="easyui-datebox" data-options="required:true" style="width: 100px;">~<input id="quer_endDate" data-options="required:true" class="easyui-datebox" style="width: 100px;">
+	    <label>检验类别：</label><input id="quer_jylb" name="jylb"   prompt='请选择检验类别' data-options="editable:false,data:comm.getBaseParames('jylb'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput">
 		<a class="easyui-linkbutton" href="#" data-options="iconCls:'icon-search'" onclick="query()"></a>
 	</div>
 </div>
@@ -46,6 +48,7 @@ function query(){
 	var operationDate = $("#quer_beginDate").datebox("getValue");
 	var operationDateEnd = $("#quer_endDate").datebox("getValue");
 	
+	var jylb = $("#quer_jylb").combobox("getValue");
 	
 	var param={};
 	if(operationDate&&$.trim(operationDate)!=""){
@@ -59,8 +62,15 @@ function query(){
 		param["end"]="";
 	}
 	
+	if(jylb&&$.trim(jylb)!=""){
+		param["type"]=jylb;
+	}else{
+		param["type"]="";
+	}
+	
 	 var opts = $("#categoryManager").datagrid("options");
 	 opts.url = "/veh/statistic/getJylbhglhz";
+	 $('#categoryManager').datagrid('reloadFooter',[]);
 	$("#categoryManager").datagrid("reload",param);
 }
 
