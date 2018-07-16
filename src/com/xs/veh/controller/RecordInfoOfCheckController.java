@@ -4,7 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,8 @@ import com.xs.veh.manager.VehManager;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.xml.XMLSerializer;
 @Controller
 @RequestMapping(value = "/recordInfoOfCheck")
@@ -60,12 +64,41 @@ public class RecordInfoOfCheckController {
 		Map param=new HashMap();
 		Document document = vehManager.queryws("18C01", param);
 		JSON json = new XMLSerializer().read(document.asXML());
+		JSONObject jo = (JSONObject) ((JSONObject)json).getJSONArray("body").get(0);
+//		jo.put("id", jo.getString("@id"));
+//		jo.discard("@id").discard("bz").discard("ztyy");
+//		jo.put("bz", "");
+//		jo.put("ztyy", "");
+		Iterator<String> it = jo.keys();
+		while (it.hasNext()) {
+			String key = it.next();
+			String value = jo.getString(key);
+			if("[]".equals(value)){
+				jo.put(key, "");
+			}
+		}
+		jo.put("id", jo.getString("@id"));
+		jo.discard("@id");
+		
+		JsonConfig jsonConfig = new JsonConfig(); 
+		jsonConfig.setRootClass(RecordInfoOfCheck.class);
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		jsonConfig.registerJsonValueProcessor(Date.class, new JsonValueProcessor() {
+			@Override
+			public Object processObjectValue(String key, Object value, JsonConfig jsonConfig) {
+				if(value instanceof Date){
+					return sdf.format((Date)value);
+				}
+				return value;
+			}
+			@Override
+			public Object processArrayValue(Object value, JsonConfig jsonConfig) {
+				return value;
+			}
+		});
 		
 		recordInfoOfCheckManager.deleteRecordInfo();
-		RecordInfoOfCheck recordInfoOfCheck = (RecordInfoOfCheck) JSONObject.toBean(JSONObject.fromObject(json.toString()), RecordInfoOfCheck.class);
-		
-		//List<RecordInfoOfCheckStaff> dataList = (List<RecordInfoOfCheckStaff>) JSONArray.toArray(JSONArray.fromObject(json), RecordInfoOfCheckStaff.class);
-		
+		RecordInfoOfCheck recordInfoOfCheck = (RecordInfoOfCheck) JSONObject.toBean(jo, jsonConfig);
 		recordInfoOfCheckManager.saveRecordInfoOfCheckInfo(recordInfoOfCheck);
 		
 		return ResultHandler.toSuccessJSON("下载成功");

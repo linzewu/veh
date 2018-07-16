@@ -955,29 +955,23 @@ var system = {
 		target : "#systemContex",
 		authorize : "超级管理员"
 	},{
-		"icon" : "/veh/images/dictionary.png",
-		"title" : "数据字典",
-		href : "/veh/html/dataDictionary.html",
-		target : "#systemContex",
-		authorize : "超级管理员"
-	},{
 		"icon" : "/veh/images/LOG.png",
 		"title" : "操作日志",
 		href : "/veh/html/operationLog.html",
 		target : "#systemContex",
-		authorize : "审计管理员,超级管理员"
+		authorize : "审计管理员"
 	},{
 		"icon" : "/veh/images/security.png",
 		"title" : "安全审计策略设置",
 		href : "/veh/html/securityAuditPolicySetting.html",
 		target : "#systemContex",
-		authorize : "安全管理员,超级管理员"
+		authorize : "安全管理员"
 	},{		
 		"icon" : "/veh/images/logsec.png",
 		"title" : "安全日志",
 		href : "/veh/html/securityLog.html",
 		target : "#systemContex",
-		authorize : "安全管理员,超级管理员"
+		authorize : "安全管理员"
 	}],
 	menus2:[
 		{
@@ -985,13 +979,13 @@ var system = {
 			"title" : "设备管理",
 			href : "/veh/html/DeviceManager.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			authorize : "系统管理员"
 		},{
 			"icon" : "/veh/images/Workflow.png",
 			"title" : "检测流程",
 			href : "/veh/html/flowConfig.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			authorize : "系统管理员"
 		}
 	],
 	menus3:[
@@ -1021,14 +1015,21 @@ var system = {
 			"title" : "检验机构备案信息",
 			href : "/veh/html/recordInfoDownLoad.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
-		},{
+			authorize : "系统管理员"
+		},
+		{
 			"icon" : "/veh/images/backup_user.png",
-			"title" : "检验机构人员备案信息",
-			href : "/veh/html/recordInfoOfCheckStaffDownLoad.html",
-			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			"title" : "检测线备案信息",
+			href : "/veh/html/recordInfoOfJcxDownLoad.html",
+			target : "#systemContex"
 		}
+//		{
+//			"icon" : "/veh/images/backup_user.png",
+//			"title" : "检验机构人员备案信息",
+//			href : "/veh/html/recordInfoOfCheckStaffDownLoad.html",
+//			target : "#systemContex",
+//			authorize : "系统管理员"
+//		}
 	],
 	initEvents : function() {
 //		if(userRoleInfo.roleName == "审计管理员"){
