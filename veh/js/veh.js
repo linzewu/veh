@@ -960,6 +960,12 @@ var system = {
 		href : "/veh/html/dataDictionary.html",
 		target : "#systemContex",
 		authorize : "超级管理员"
+	},{		
+		"icon" : "/veh/images/dictionary.png",
+		"title" : "检测项目和标准限值",
+		href : "/veh/html/limitStandard.html",
+		target : "#systemContex",
+		authorize : "超级管理员"
 	},{
 		"icon" : "/veh/images/LOG.png",
 		"title" : "操作日志",

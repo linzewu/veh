@@ -13,62 +13,48 @@ import org.springframework.stereotype.Component;
 @Table(name = "TM_LimitStandard")
 public class LimitStandard extends BaseEntity {
 	
+	/**
+	 * 检验项目
+	 */
 	@Column(length=64)
-	private String xzlx;
+	private String jyxm;
 	
+	/**
+	 * 检测类型
+	 */
 	@Column(length=64)
-	private String xzqj;
+	private String jykey;
 	
+	/**
+	 * 合格值
+	 */
 	@Column(length=64)
 	private String hgz;
-	
-	@Column(length=8000)
-	private String xztj;
-	
-	@Column(length=2000)
-	private String bz;
-	
-	
 
-	public String getXzlx() {
-		return xzlx;
-	}
-
-	public String getXzqj() {
-		return xzqj;
+	public String getJyxm() {
+		return jyxm;
 	}
 
 	public String getHgz() {
 		return hgz;
 	}
 
-	public String getXztj() {
-		return xztj;
+	public void setJyxm(String jyxm) {
+		this.jyxm = jyxm;
 	}
 
-	public String getBz() {
-		return bz;
+	public String getJykey() {
+		return jykey;
 	}
 
-	public void setXzlx(String xzlx) {
-		this.xzlx = xzlx;
-	}
-
-	public void setXzqj(String xzqj) {
-		this.xzqj = xzqj;
+	public void setJykey(String jykey) {
+		this.jykey = jykey;
 	}
 
 	public void setHgz(String hgz) {
 		this.hgz = hgz;
 	}
-
-	public void setXztj(String xztj) {
-		this.xztj = xztj;
-	}
-
-	public void setBz(String bz) {
-		this.bz = bz;
-	}
+	
 	
 
 }
