@@ -50,8 +50,8 @@
 		var url ="/veh/html/roleInfo.html?"+new Date().getTime();
 		
 		if(row){
-			if(row.roleType == "内置"){
-				$.messager.alert("提示","内置角色不能修改","info");
+			if(row.roleType == "0"){
+				$.messager.alert("提示","系统角色不能修改","info");
 				return;				
 			}
 			$("#roleInfo_win").window('open');

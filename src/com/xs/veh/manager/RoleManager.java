@@ -9,9 +9,7 @@ import org.hibernate.criterion.Projections;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
-import com.xs.veh.entity.OperationLog;
 import com.xs.veh.entity.Role;
-import com.xs.veh.entity.User;
 @Service("roleManager")
 public class RoleManager {
 	@Resource(name = "hibernateTemplate")
@@ -19,6 +17,10 @@ public class RoleManager {
 	
 	public List<Role> getAllRole(){
 		return (List<Role>)this.hibernateTemplate.find(" from Role", null);
+	}
+	
+	public List<Role> getAllRoleNoAdmin(){
+		return (List<Role>)this.hibernateTemplate.find(" from Role where roleName != '超级管理员'", null);
 	}
 
 	

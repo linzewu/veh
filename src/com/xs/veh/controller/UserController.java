@@ -162,6 +162,8 @@ public class UserController {
 				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
 				data.put("session", session.getId());
 				data.put("errorMsg", "用户账号已过期！");
+				user.setPwValidDate(user.getUserNameValidDate());
+				this.userManager.updateUser(user);
 				return data;
 			}
 			//校验时间是否在允许的时间段内
@@ -407,6 +409,13 @@ public class UserController {
 	@RequestMapping(value = "getAllRole", method = RequestMethod.POST)
 	public @ResponseBody List<Role> getAllRole() {
 		return roleManager.getAllRole();
+	}
+	
+	
+	@UserOperation(code="getAllRoleNoAdmin",name="获取所有角色不包含超级管理员",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
+	@RequestMapping(value = "getAllRoleNoAdmin", method = RequestMethod.POST)
+	public @ResponseBody List<Role> getAllRoleNoAdmin() {
+		return roleManager.getAllRoleNoAdmin();
 	}
 	
 	@UserOperation(code="getRolesByUser",name="获取当前用户角色",userOperationEnum=CommonUserOperationEnum.AllLoginUser)

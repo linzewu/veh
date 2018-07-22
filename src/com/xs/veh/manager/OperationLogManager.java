@@ -41,6 +41,13 @@ public class OperationLogManager {
 		if(operationLog.getOperationDateEnd() != null) {
 			query.add(Restrictions.le("operationDate", operationLog.getOperationDateEnd()));
 		}
+		if(operationLog.getCoreFunction() != null) {
+			if("Y".equals(operationLog.getCoreFunction())) {
+				query.add(Restrictions.eq("coreFunction", operationLog.getCoreFunction()));
+			}else {
+				query.add(Restrictions.isNull("coreFunction"));
+			}
+		}
 		List<OperationLog> vcps = (List<OperationLog>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
 
@@ -63,6 +70,13 @@ public class OperationLogManager {
 		}
 		if(operationLog.getOperationDateEnd() != null) {
 			query.add(Restrictions.le("operationDate", operationLog.getOperationDateEnd()));
+		}
+		if(operationLog.getCoreFunction() != null) {
+			if("Y".equals(operationLog.getCoreFunction())) {
+				query.add(Restrictions.eq("coreFunction", operationLog.getCoreFunction()));
+			}else {
+				query.add(Restrictions.isNull("coreFunction"));
+			}
 		}
 		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
 

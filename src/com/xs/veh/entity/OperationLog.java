@@ -103,6 +103,12 @@ public class OperationLog extends BaseEntity {
 	@Column(length=2000)
 	private String operationCondition;
 	
+	/**
+	 * 是否核心功能
+	 */
+	@Column(length=1)
+	private String coreFunction;
+	
 
 
 	public String getActionUrl() {
@@ -191,6 +197,14 @@ public class OperationLog extends BaseEntity {
 
 	public void setActionTime(Long actionTime) {
 		this.actionTime = actionTime;
+	}
+
+	public String getCoreFunction() {
+		return coreFunction;
+	}
+
+	public void setCoreFunction(String coreFunction) {
+		this.coreFunction = coreFunction;
 	}
 	
 	

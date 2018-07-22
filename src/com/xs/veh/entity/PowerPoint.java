@@ -9,6 +9,16 @@ public class PowerPoint {
 	private String name;
 	
 	private String modeCode;
+	
+	private boolean isEmpowered;
+
+	public boolean isEmpowered() {
+		return isEmpowered;
+	}
+
+	public void setEmpowered(boolean isEmpowered) {
+		this.isEmpowered = isEmpowered;
+	}
 
 	public String getCode() {
 		return code;

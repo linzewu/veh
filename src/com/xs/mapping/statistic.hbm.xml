@@ -409,4 +409,40 @@
 	) t
 		]]>
 	</sql-query>
+	<sql-query name="findrygzltj">
+		<![CDATA[SELECT t.*
+		, CASE 
+			WHEN hgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * hgs / (1.0 * zsl), 5, 5) * 100)
+		END AS hgl
+		, CASE 
+			WHEN zsl - hgs = 0 THEN 0
+			ELSE CONVERT(DECIMAL(18, 2), round(1.0 * (zsl - hgs) / (1.0 * zsl), 5, 5) * 100)
+		END AS bhgl, t.zsl - t.hgs AS bhgs
+	FROM (
+		SELECT t1.cllx, t1.zsl
+			, CASE 
+				WHEN t2.zsl IS NULL THEN 0
+				ELSE t2.zsl
+			END AS hgs, t1.ycy
+		FROM (
+			SELECT t1.ycy, t1.cllx, COUNT(1) AS zsl
+			FROM TM_VehCheckLogin t1
+			WHERE t1.jyjl IS NOT NULL
+			AND  t1.dlsj <=:end
+			AND  t1.dlsj >=:begin
+			GROUP BY t1.ycy, t1.cllx
+		) t1
+			LEFT JOIN (
+				SELECT t2.ycy, t2.cllx, COUNT(1) AS zsl
+				FROM TM_VehCheckLogin t2
+				WHERE t2.jyjl = '合格'
+				AND  t2.dlsj <=:end
+				AND  t2.dlsj >=:begin
+				GROUP BY t2.ycy, t2.cllx
+			) t2
+			ON t1.cllx = t2.cllx
+				AND t1.ycy = t2.ycy
+	) t]]>  
+	</sql-query>
 </hibernate-mapping>

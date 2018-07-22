@@ -20,5 +20,11 @@ public @interface UserOperation {
 	public CommonUserOperationEnum userOperationEnum() default CommonUserOperationEnum.Default;
 	
 	public boolean isMain() default true;
+	
+	/**
+	 * 是否允许被授权
+	 * @return
+	 */
+	public boolean isEmpowered() default true;
 
 }

@@ -47,6 +47,7 @@ public class RoleController {
 		return powerPoints;
 	}
 	
+	@UserOperation(code="getRoles",name="查询角色")
 	@RequestMapping(value = "getRoles", method = RequestMethod.POST)
 	public @ResponseBody Map<String,Object> getRoles(Integer page, Integer rows, Role role) {	
 		List<Role> vcps = roleManager.getRole(page, rows, role);
@@ -59,13 +60,14 @@ public class RoleController {
 		data.put("total", total);		
 		return data;
 	}
-	
+	@UserOperation(code="delete",name="删除角色")
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> delete(@RequestParam Integer id) throws Exception {
 		roleManager.delete(id);
 		return ResultHandler.toSuccessJSON("角色删除成功");
 	}
 	
+	@UserOperation(code="save",name="保存角色")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveRole(@Valid Role role, BindingResult result) {
 		if (!result.hasErrors()) {
@@ -76,6 +78,7 @@ public class RoleController {
 		}
 	}
 	
+	@UserOperation(code="validateRoleName",name="校验角色名",isMain=false)
 	@RequestMapping(value = "validateRoleName")
 	public @ResponseBody boolean validateRoleName(Role role) {
 		Role querRole = this.roleManager.queryRoleByRoleName(role);

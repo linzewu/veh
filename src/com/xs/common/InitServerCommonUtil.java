@@ -54,6 +54,7 @@ public class InitServerCommonUtil {
 							powerPonit.setModeCode(modular.modelCode());
 							powerPonit.setCode(key);
 							powerPonit.setName(userOperation.name());
+							powerPonit.setEmpowered(userOperation.isEmpowered());
 							powerPointMap.put(key, powerPonit);
 						}
 						

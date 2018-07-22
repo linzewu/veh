@@ -1,9 +1,12 @@
 package com.xs.aop;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -25,9 +28,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.veh.entity.BaseEntity;
+import com.xs.veh.entity.BlackList;
+import com.xs.veh.entity.CoreFunction;
 import com.xs.veh.entity.OperationLog;
+import com.xs.veh.entity.RecordInfoOfCheck;
+import com.xs.veh.entity.RecordInfoOfCheckStaff;
+import com.xs.veh.entity.SecurityAuditPolicySetting;
 import com.xs.veh.entity.User;
+import com.xs.veh.manager.CoreFunctionManager;
 import com.xs.veh.manager.OperationLogManager;
+
+import net.sf.json.JSONObject;
 
 @Aspect
 @Component
@@ -43,6 +55,11 @@ public class LogAopAction {
 	
 	@Autowired
 	private OperationLogManager operationLogManager;
+	@Autowired
+	private CoreFunctionManager coreFunctionManager;
+	
+	@Autowired
+	private ServletContext servletContext;
 
 	@Pointcut("execution(* com.xs.veh.controller.*.*(..))")
 	private void controllerAspect() {
@@ -109,6 +126,15 @@ public class LogAopAction {
 	
 	
 	private OperationLog getLog(JoinPoint pjp) throws NoSuchMethodException, SecurityException {
+		List<CoreFunction> coreList = (List<CoreFunction>)servletContext.getAttribute("coreFunctionList");
+		if(coreList == null) {
+			coreList = this.coreFunctionManager.getAllCoreFunction();
+			if(coreList == null || coreList.size() == 0) {
+				coreList = new ArrayList<CoreFunction>();
+			}
+			System.out.println(coreList);
+			servletContext.setAttribute("coreFunctionList", coreList);
+		}
 		
 		OperationLog log =new OperationLog();
 		// 日志实体对象
@@ -127,6 +153,22 @@ public class LogAopAction {
 		String methodName = pjp.getSignature().getName();
 		// 拦截的方法参数
 		Object[] args = pjp.getArgs();
+		StringBuffer sbStr = new StringBuffer("");
+		if (args != null && args.length > 0) {
+			for(int c=0;c<args.length;c++) {
+				System.out.println(args[c].getClass());
+				if(args[c].getClass().getSuperclass() == BaseEntity.class || args[c].getClass() == LinkedHashMap.class
+						||args[c].getClass() == BlackList.class || args[c].getClass() == RecordInfoOfCheck.class
+						||args[c].getClass() == RecordInfoOfCheckStaff.class ||args[c].getClass() == SecurityAuditPolicySetting.class) {
+					sbStr.append("参数"+(c+1)+"="+JSONObject.fromObject(args[c]).toString()+",");
+				}else if(args[c].getClass() == String.class || args[c].getClass() == Integer.class) {
+					sbStr.append("参数"+(c+1)+"="+args[c]+",");
+				}
+            //args[0] = "改变后的参数1";
+			}
+        }
+		log.setOperationCondition(sbStr.toString());
+		
 		// 拦截的放参数类型
 
 		MethodSignature msig = (MethodSignature) pjp.getSignature();
@@ -135,10 +177,11 @@ public class LogAopAction {
 		Object object = null;
 		Class targetClass =target.getClass();
 		Method method = targetClass.getMethod(methodName, parameterTypes);
-		
+		String functionP = "";
 		if(targetClass.isAnnotationPresent(Modular.class)) {
 			Modular modular=(Modular) targetClass.getAnnotation(Modular.class);
 			log.setModule(modular.modelName());
+			functionP = modular.modelCode();
 		}
 
 		if (method.isAnnotationPresent(UserOperation.class)) {
@@ -146,6 +189,13 @@ public class LogAopAction {
 			log.setOperationType(userOperation.name());
 			log.setIpAddr(getIpAdrress());
 			log.setActionUrl(request.getRequestURI());
+			functionP = functionP+"."+userOperation.code();
+			for(CoreFunction cf:coreList) {
+				if(functionP.equals(cf.getFunctionPoint())) {
+					log.setCoreFunction("Y");
+					break;
+				}
+			}
 			return log;
 		}
 		return null;

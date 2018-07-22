@@ -65,21 +65,30 @@ $(function(){
 		$.each(pwGroup,function(i,n){
 			var treeObj={};
 			treeObj.text=n[0].model;
+			treeObj.attributes = {"empowered":n[0].empowered};
 			treeObj.children=[];
 			$.each(n,function(j,k){
 				var child={};
 				child.id=k.code;
 				child.text=k.name;
 				child.checked= isCheck(k.code);
+				child.attributes = {"empowered":k.empowered};
 				treeObj.children.push(child);
 				
 			});
 			
 			treeArray.push(treeObj);
 		});
-		console.log(treeArray)
 		$("#powerListTree").tree({
-			checkbox:true,
+			checkbox:
+				function(node){
+				if (node.attributes.empowered){
+					return true;
+				}else{
+					return false;
+				}
+			},
+			//true,
 			data:treeArray,
 			onCheck:function(){
 				var checkedArray = $("#powerListTree").tree("getChecked");

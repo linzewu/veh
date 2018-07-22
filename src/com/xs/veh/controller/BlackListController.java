@@ -20,7 +20,6 @@ import com.xs.annotation.UserOperation;
 import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.BlackList;
-import com.xs.veh.entity.SecurityAuditPolicySetting;
 import com.xs.veh.entity.User;
 import com.xs.veh.manager.BlackListManager;
 
@@ -32,7 +31,7 @@ public class BlackListController {
 	@Resource(name = "blackListManager")
 	private BlackListManager blackListManager;
 	
-	@UserOperation(code="getBlackList",name="查询黑名单")
+	@UserOperation(code="getBlackList",name="查询黑名单",isEmpowered=false)
 	@RequestMapping(value = "getBlackList", method = RequestMethod.POST)
 	public @ResponseBody Map<String,Object> getBlackList(Integer page, Integer rows, BlackList black) {		
 		List<BlackList> vcps = blackListManager.getList(page, rows, black);

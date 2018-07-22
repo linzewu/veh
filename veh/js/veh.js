@@ -961,7 +961,7 @@ var system = {
 		target : "#systemContex",
 		authorize : "超级管理员"
 	},{		
-		"icon" : "/veh/images/dictionary.png",
+		"icon" : "/veh/images/limit.png",
 		"title" : "检测项目和标准限值",
 		href : "/veh/html/limitStandard.html",
 		target : "#systemContex",
@@ -1019,6 +1019,12 @@ var system = {
 			href : "/veh/html/BlackListManager.html",
 			target : "#systemContex",
 			authorize : "超级管理员"
+		},{
+			"icon" : "/veh/images/function.png",
+			"title" : "核心功能管理",
+			href : "/veh/html/coreFunction.html",
+			target : "#systemContex",
+			authorize : "超级管理员"			
 		}
 	],
 	menus4:[
@@ -1089,6 +1095,11 @@ var statisticalReport = {
 			"icon" : "/veh/images/stats.png",
 			"title" : "检测线车辆数分布统计",
 			href : "/veh/html/statistics/vehicleDistributionStatistics.html",
+			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/workuser.png",
+			"title" : "人员工作量统计表",
+			href : "/veh/html/statistics/workEstimate.html",
 			target : "#reportContex"
 		}],
 		initEvents : function() {

@@ -46,7 +46,6 @@ public class StatisticController {
 		Map<String,Object> data =new HashMap<String,Object>();
 		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findjylbflhglhz","jylb",type);
 		data.put("rows", dataList);
-		System.out.println(dataList.size()+" IIIIIIIIII");
 		if(dataList.size()>0) {
 			data.put("total", dataList.size());
 			footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
@@ -77,6 +76,18 @@ public class StatisticController {
 			data.put("total", dataList.size());
 			footCount(data, new String[] {"zsl","hgs","ychgs","fjhgs","bhgs","hgl","bhgl","ychgl","fjhgl"},new String[] {"hgl","bhgl","ychgl","fjhgl"});
 		}
+		return data;
+	}
+	
+	
+	@UserOperation(code="getRygzltj",name="人员工作量统计")
+	@RequestMapping(value = "getRygzltj", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> getRygzltj(@RequestParam String begin,@RequestParam String end,@RequestParam String type){
+		Map<String,Object> data =new HashMap<String,Object>();
+		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findrygzltj","cllx",type);
+		data.put("rows", dataList);
+		data.put("total", dataList.size());
+				
 		return data;
 	}
 	
