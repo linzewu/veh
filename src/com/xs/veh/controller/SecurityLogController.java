@@ -20,7 +20,7 @@ import com.xs.veh.manager.SecurityLogManager;
 
 @Controller
 @RequestMapping(value = "/securityLog")
-@Modular(modelCode="SecurityLog",modelName="安全日志管理")
+@Modular(modelCode="SecurityLog",modelName="安全日志管理",isEmpowered=false)
 public class SecurityLogController {
 	
 	@Resource(name = "securityLogManager")

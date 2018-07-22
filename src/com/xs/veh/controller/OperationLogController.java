@@ -18,7 +18,7 @@ import com.xs.veh.manager.OperationLogManager;
 
 @Controller
 @RequestMapping(value = "/opeationLog")
-@Modular(modelCode="OperationLog",modelName="日志管理")
+@Modular(modelCode="OperationLog",modelName="日志管理",isEmpowered=false)
 public class OperationLogController {
 	
 	

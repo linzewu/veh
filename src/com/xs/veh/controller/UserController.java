@@ -41,7 +41,7 @@ import com.xs.veh.util.PageInfo;
 
 @Controller
 @RequestMapping(value = "/user",produces="application/json")
-@Modular(modelCode="user",modelName="用户管理")
+@Modular(modelCode="user",modelName="用户管理",isEmpowered=false)
 public class UserController {
 	
 	@Autowired

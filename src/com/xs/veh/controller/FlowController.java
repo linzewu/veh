@@ -29,7 +29,7 @@ import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping(value = "/flow")
-@Modular(modelCode="Flow",modelName="检测流程")
+@Modular(modelCode="Flow",modelName="检测流程",isEmpowered=false)
 public class FlowController {
 
 	@Resource(name = "flowManager")

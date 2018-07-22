@@ -25,13 +25,13 @@ import com.xs.veh.manager.BlackListManager;
 
 @Controller
 @RequestMapping(value = "/blackList",produces="application/json")
-@Modular(modelCode="blackList",modelName="黑名单管理")
+@Modular(modelCode="blackList",modelName="黑名单管理",isEmpowered=false)
 public class BlackListController {
 	
 	@Resource(name = "blackListManager")
 	private BlackListManager blackListManager;
 	
-	@UserOperation(code="getBlackList",name="查询黑名单",isEmpowered=false)
+	@UserOperation(code="getBlackList",name="查询黑名单")
 	@RequestMapping(value = "getBlackList", method = RequestMethod.POST)
 	public @ResponseBody Map<String,Object> getBlackList(Integer page, Integer rows, BlackList black) {		
 		List<BlackList> vcps = blackListManager.getList(page, rows, black);

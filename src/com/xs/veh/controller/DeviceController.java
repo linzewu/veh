@@ -49,7 +49,7 @@ import gnu.io.UnsupportedCommOperationException;
 @Controller
 @RequestMapping(value = "/device")
 @SuppressWarnings("rawtypes")
-@Modular(modelCode="Device",modelName="设备管理")
+@Modular(modelCode="Device",modelName="设备管理",isEmpowered=false)
 public class DeviceController {
 
 	@Resource(name = "deviceManager")

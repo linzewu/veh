@@ -28,7 +28,7 @@ import com.xs.veh.manager.BaseParamsManager;
 
 @Controller
 @RequestMapping(value = "/sys")
-@Modular(modelCode="System",modelName="系统管理")
+@Modular(modelCode="System",modelName="系统管理",isEmpowered=false)
 public class SystemController {
 
 	@Resource(name = "systemInfo")

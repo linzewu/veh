@@ -36,7 +36,7 @@ import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.xml.XMLSerializer;
 @Controller
 @RequestMapping(value = "/recordInfoOfJcx")
-@Modular(modelCode="RecordInfoOfJcx",modelName="检测线信息")
+@Modular(modelCode="RecordInfoOfJcx",modelName="检测线信息",isEmpowered=false)
 public class RecordInfoOfJcxController {
 	
 	@Resource(name = "RecordInfoOfJcxManager")

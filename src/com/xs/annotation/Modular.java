@@ -1,7 +1,5 @@
 package com.xs.annotation;
 
-import static java.lang.annotation.ElementType.METHOD;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,5 +12,7 @@ public @interface Modular {
 	public String modelName();
 	
 	public String modelCode();
+	
+	public boolean isEmpowered() default true;
 
 }

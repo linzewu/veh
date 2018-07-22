@@ -22,7 +22,7 @@ import com.xs.veh.manager.CoreFunctionManager;
 
 @Controller
 @RequestMapping(value = "/coreFunction",produces="application/json")
-@Modular(modelCode="coreFunction",modelName="核心功能管理")
+@Modular(modelCode="coreFunction",modelName="核心功能管理",isEmpowered=false)
 public class CoreFunctionController {
 	
 	@Resource(name = "coreFunctionManager")

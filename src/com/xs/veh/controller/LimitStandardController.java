@@ -16,7 +16,7 @@ import com.xs.veh.entity.LimitStandard;
 import com.xs.veh.manager.LimitStandardManager;
 @Controller
 @RequestMapping(value = "/limitStandard",produces="application/json")
-@Modular(modelCode="limitStandard",modelName="检测项目和标准限值")
+@Modular(modelCode="limitStandard",modelName="检测项目和标准限值",isEmpowered=false)
 public class LimitStandardController {
 	
 	@Resource(name = "limitStandardManager")

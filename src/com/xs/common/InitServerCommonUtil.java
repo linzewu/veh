@@ -42,6 +42,7 @@ public class InitServerCommonUtil {
 		for (Class<?> c : classs) {
 			if (c.isAnnotationPresent(Modular.class)) {
 				Modular modular = c.getAnnotation(Modular.class);
+				boolean empowered=  modular.isEmpowered();
 				Method[] methods = c.getMethods();
 				for (Method method : methods) {
 					if (method.isAnnotationPresent(UserOperation.class)) {
@@ -54,7 +55,7 @@ public class InitServerCommonUtil {
 							powerPonit.setModeCode(modular.modelCode());
 							powerPonit.setCode(key);
 							powerPonit.setName(userOperation.name());
-							powerPonit.setEmpowered(userOperation.isEmpowered());
+							powerPonit.setEmpowered(empowered);
 							powerPointMap.put(key, powerPonit);
 						}
 						

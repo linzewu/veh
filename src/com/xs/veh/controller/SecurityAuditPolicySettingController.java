@@ -22,7 +22,7 @@ import com.xs.veh.manager.SecurityAuditPolicySettingManager;
 
 @Controller
 @RequestMapping(value = "/securityAuditPolicySetting")
-@Modular(modelCode="securityAuditPolicySetting",modelName="安全策略")
+@Modular(modelCode="securityAuditPolicySetting",modelName="安全策略",isEmpowered=false)
 public class SecurityAuditPolicySettingController {
 	
 	@Resource(name = "securityAuditPolicySettingManager")

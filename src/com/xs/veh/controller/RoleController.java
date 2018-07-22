@@ -31,7 +31,7 @@ import com.xs.veh.manager.RoleManager;
 
 @Controller
 @RequestMapping(value = "/role",produces="application/json")
-@Modular(modelCode="role",modelName="角色管理")
+@Modular(modelCode="role",modelName="角色管理",isEmpowered=false)
 public class RoleController {
 	
 	@Autowired

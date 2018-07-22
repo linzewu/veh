@@ -29,7 +29,7 @@ import com.xs.veh.manager.BaseParamsManager;
 
 @Controller
 @RequestMapping(value = "/bps")
-@Modular(modelCode="BaseParams",modelName="系统参数")
+@Modular(modelCode="BaseParams",modelName="系统参数",isEmpowered=false)
 public class BaseParamsController {
 	
 	private static Logger logger = Logger.getLogger(BaseParamsController.class); 

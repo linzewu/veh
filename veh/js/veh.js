@@ -965,7 +965,7 @@ var system = {
 		"title" : "检测项目和标准限值",
 		href : "/veh/html/limitStandard.html",
 		target : "#systemContex",
-		authorize : "超级管理员"
+		authorize : "系统管理员"
 	},{
 		"icon" : "/veh/images/LOG.png",
 		"title" : "操作日志",
@@ -977,13 +977,13 @@ var system = {
 		"title" : "安全审计策略设置",
 		href : "/veh/html/securityAuditPolicySetting.html",
 		target : "#systemContex",
-		authorize : "安全管理员,超级管理员"
+		authorize : "安全管理员"
 	},{		
 		"icon" : "/veh/images/logsec.png",
 		"title" : "安全日志",
 		href : "/veh/html/securityLog.html",
 		target : "#systemContex",
-		authorize : "安全管理员,超级管理员"
+		authorize : "安全管理员"
 	}],
 	menus2:[
 		{
@@ -991,13 +991,13 @@ var system = {
 			"title" : "设备管理",
 			href : "/veh/html/DeviceManager.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			authorize : "系统管理员"
 		},{
 			"icon" : "/veh/images/Workflow.png",
 			"title" : "检测流程",
 			href : "/veh/html/flowConfig.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			authorize : "系统管理员"
 		}
 	],
 	menus3:[
@@ -1033,14 +1033,14 @@ var system = {
 			"title" : "检验机构备案信息",
 			href : "/veh/html/recordInfoDownLoad.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			authorize : "系统管理员"
 		},
 		{
 			"icon" : "/veh/images/backup_user.png",
 			"title" : "检测线备案信息",
 			href : "/veh/html/recordInfoOfJcxDownLoad.html",
 			target : "#systemContex",
-			authorize : "系统管理员,超级管理员"
+			authorize : "系统管理员"
 		}
 //		{
 //			"icon" : "/veh/images/backup_user.png",
@@ -1056,7 +1056,6 @@ var system = {
 //		}else{
 		sysMId = 0;
 		removeCou = 0
-		console.log("OOOOOOOOOO"+sysMId);
 			comm.createMumeAuth("sysMune", system.menus1, 0);
 			comm.createMumeAuth("deviceMune", system.menus2, 1);
 			comm.createMumeAuth("userMune", system.menus3, 2);

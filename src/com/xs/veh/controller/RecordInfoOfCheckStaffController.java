@@ -31,7 +31,7 @@ import net.sf.json.xml.XMLSerializer;
 
 @Controller
 @RequestMapping(value = "/recordInfoOfCheckStaff")
-@Modular(modelCode="RecordInfoOfCheck",modelName="检验机构信息")
+@Modular(modelCode="RecordInfoOfCheck",modelName="检验机构信息",isEmpowered=false)
 public class RecordInfoOfCheckStaffController {
 	
 	@Resource(name = "recordInfoOfCheckStaffManager")
