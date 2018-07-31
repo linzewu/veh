@@ -1779,10 +1779,10 @@ $(function($){
                     window.location.href="/veh/html/login.html";
                     return;
                 }
-                var errors =checkbit(data);
+             /*   var errors =checkbit(data);
                 if(errors){
                 	$.messager.alet("数据非法篡改！",JSON.stringify(errors));
-                }
+                }*/
                 
                 fn.success(data, textStatus);
             }  
