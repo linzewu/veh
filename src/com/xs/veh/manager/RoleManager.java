@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ public class RoleManager {
 		DetachedCriteria query = DetachedCriteria.forClass(Role.class);
 
 		Integer firstResult = (page - 1) * rows;
+		query.add(Restrictions.ne("roleName", "超级管理员"));
 
 		List<Role> vcps = (List<Role>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
@@ -41,6 +43,7 @@ public class RoleManager {
 		DetachedCriteria query = DetachedCriteria.forClass(Role.class);
 
 		query.setProjection(Projections.rowCount());
+		query.add(Restrictions.ne("roleName", "超级管理员"));
 
 		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
 

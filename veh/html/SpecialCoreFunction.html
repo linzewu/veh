@@ -1,14 +1,14 @@
  <div id="footer" style="padding:5px;">
         <a href="#" class="easyui-linkbutton" onclick="onSave()">保存</a>
     </div>
-<div class="easyui-panel"  title="核心功能管理" data-options="footer:'#footer',fit:true">
+<div class="easyui-panel"  title="非常规功能管理" data-options="footer:'#footer',fit:true">
         <ul id="corepowerListTree" ></ul>
         <input name="coreFunctionPoint" value="" id="input_coreFunctionPoint" type="hidden">
     </div>
 <script>
 $(function(){
 	var allCoreFunction = $.ajax({
-		url : "/veh/coreFunction/getAllCoreFunction",
+		url : "/veh/coreFunction/getAllSpecialCoreFunction",
 		async : false,
 		type:'POST'
 	}).responseText;
@@ -27,7 +27,6 @@ $(function(){
 		
 		var isCheck=function(code){
 			for(var a in allCoreFunction){
-				console.log(a+" "+allCoreFunction[a].functionPoint+" "+code)
 				if(allCoreFunction[a].functionPoint == code){
 					return true;
 				}
@@ -73,14 +72,14 @@ $(function(){
 function onSave(){
 	var coreFun = $("#input_coreFunctionPoint").val();
 	if(coreFun == null || coreFun == ""){
-		$.messager.alert("提示","请勾选核心功能菜单");
+		$.messager.alert("提示","请勾选非常规功能菜单");
 	}else{
 		var obj = {
 			"functionPoint":coreFun
 		};
 		$.ajax(
 	             {
-	               url:"/veh/coreFunction/save", 
+	               url:"/veh/coreFunction/saveSpecialCoreFunction", 
 	               type: "POST", 
 	               data: obj,
 	               success: function(data){

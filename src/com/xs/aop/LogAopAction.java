@@ -1,6 +1,7 @@
 package com.xs.aop;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -126,13 +127,14 @@ public class LogAopAction {
 	
 	
 	private OperationLog getLog(JoinPoint pjp) throws NoSuchMethodException, SecurityException {
+		SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 		List<CoreFunction> coreList = (List<CoreFunction>)servletContext.getAttribute("coreFunctionList");
 		if(coreList == null) {
-			coreList = this.coreFunctionManager.getAllCoreFunction();
+			//获取核心功能
+			coreList = this.coreFunctionManager.getAllCoreFunction(0);
 			if(coreList == null || coreList.size() == 0) {
 				coreList = new ArrayList<CoreFunction>();
 			}
-			System.out.println(coreList);
 			servletContext.setAttribute("coreFunctionList", coreList);
 		}
 		
@@ -156,7 +158,6 @@ public class LogAopAction {
 		StringBuffer sbStr = new StringBuffer("");
 		if (args != null && args.length > 0) {
 			for(int c=0;c<args.length;c++) {
-				System.out.println(args[c].getClass());
 				if(args[c].getClass().getSuperclass() == BaseEntity.class || args[c].getClass() == LinkedHashMap.class
 						||args[c].getClass() == BlackList.class || args[c].getClass() == RecordInfoOfCheck.class
 						||args[c].getClass() == RecordInfoOfCheckStaff.class ||args[c].getClass() == SecurityAuditPolicySetting.class) {
@@ -189,6 +190,7 @@ public class LogAopAction {
 			log.setOperationType(userOperation.name());
 			log.setIpAddr(getIpAdrress());
 			log.setActionUrl(request.getRequestURI());
+			log.setContent("用户"+log.getOperationUser()+"在"+sdf.format(new Date())+"时间,IP为"+log.getIpAddr()+"操作了"+userOperation.name());
 			functionP = functionP+"."+userOperation.code();
 			for(CoreFunction cf:coreList) {
 				if(functionP.equals(cf.getFunctionPoint())) {

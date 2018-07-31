@@ -34,16 +34,18 @@ public class CoreFunctionController {
 	@UserOperation(code="save",name="保存核心功能")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveCoreFunction(@RequestParam("functionPoint") String functionPoint) {
-			this.coreFunctionManager.deleteAllCoreFunction();
+			this.coreFunctionManager.deleteAllCoreFunction(0);
 			String[] functionPo = functionPoint.split(",");
 			List<CoreFunction> funs =new ArrayList<CoreFunction>();
 			for(String str:functionPo) {
 				CoreFunction core = new CoreFunction();
 				core.setFunctionPoint(str);
+				//0:核心功能  1：非常规功能  2：警员功能
+				core.setStatus(0);
 				funs.add(core);
 			}
 			this.coreFunctionManager.save(funs);
-			List<CoreFunction> coreList = this.coreFunctionManager.getAllCoreFunction();
+			List<CoreFunction> coreList = this.coreFunctionManager.getAllCoreFunction(0);
 			servletContext.setAttribute("coreFunctionList", coreList);
 			return  ResultHandler.toSuccessJSON("保存核心功能成功！");		
 	}
@@ -53,6 +55,54 @@ public class CoreFunctionController {
 	public @ResponseBody List<CoreFunction> getAllCoreFunction() {
 		List<CoreFunction> list = (List<CoreFunction>)servletContext.getAttribute("coreFunctionList");
 		return list;
+	}
+	
+	@UserOperation(code="getAllSpecialCoreFunction",name="获取非常规功能")
+	@RequestMapping(value = "getAllSpecialCoreFunction", method = RequestMethod.POST)
+	public @ResponseBody List<CoreFunction> getAllSpecialCoreFunction() {
+		List<CoreFunction> coreList = this.coreFunctionManager.getAllCoreFunction(1);
+		return coreList;
+	}
+	
+	@UserOperation(code="getAllPoliceCoreFunction",name="获取警员功能")
+	@RequestMapping(value = "getAllPoliceCoreFunction", method = RequestMethod.POST)
+	public @ResponseBody List<CoreFunction> getAllPoliceCoreFunction() {
+		List<CoreFunction> coreList = this.coreFunctionManager.getAllCoreFunction(2);
+		return coreList;
+	}
+	
+	@UserOperation(code="saveSpecialCoreFunction",name="保存非常规功能")
+	@RequestMapping(value = "saveSpecialCoreFunction", method = RequestMethod.POST)
+	public @ResponseBody Map saveSpecialCoreFunction(@RequestParam("functionPoint") String functionPoint) {
+			this.coreFunctionManager.deleteAllCoreFunction(1);
+			String[] functionPo = functionPoint.split(",");
+			List<CoreFunction> funs =new ArrayList<CoreFunction>();
+			for(String str:functionPo) {
+				CoreFunction core = new CoreFunction();
+				core.setFunctionPoint(str);
+				//0:核心功能  1：非常规功能  2：警员功能
+				core.setStatus(1);
+				funs.add(core);
+			}
+			this.coreFunctionManager.save(funs);
+			return  ResultHandler.toSuccessJSON("保存非常规功能成功！");		
+	}
+	
+	@UserOperation(code="savePoliceCoreFunction",name="保存警员功能")
+	@RequestMapping(value = "savePoliceCoreFunction", method = RequestMethod.POST)
+	public @ResponseBody Map savePoliceCoreFunction(@RequestParam("functionPoint") String functionPoint) {
+			this.coreFunctionManager.deleteAllCoreFunction(2);
+			String[] functionPo = functionPoint.split(",");
+			List<CoreFunction> funs =new ArrayList<CoreFunction>();
+			for(String str:functionPo) {
+				CoreFunction core = new CoreFunction();
+				core.setFunctionPoint(str);
+				//0:核心功能  1：非常规功能  2：警员功能
+				core.setStatus(2);
+				funs.add(core);
+			}
+			this.coreFunctionManager.save(funs);
+			return  ResultHandler.toSuccessJSON("保存警员功能成功！");		
 	}
 
 }

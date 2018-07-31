@@ -100,7 +100,7 @@ public class OperationLog extends BaseEntity {
 	private String module;
 	
 	//操作条件
-	@Column(length=2000)
+	@Column(length=8000)
 	private String operationCondition;
 	
 	/**

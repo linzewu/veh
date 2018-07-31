@@ -69,8 +69,6 @@ public class ImageChange {
 		ImageOutputStream iamgeOut = ImageIO.createImageOutputStream(byteOut);
 
 		ImageIO.write(image, "png", iamgeOut);
-		System.out.println("旋转角度： " + degree);
-		System.out.println("旋转图片大小 " + byteOut.size());
 		return byteOut.toByteArray();
 
 	}

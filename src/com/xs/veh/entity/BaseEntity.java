@@ -131,8 +131,18 @@ public abstract class BaseEntity {
 		return checkBitOk;
 	}
 
-	public void setCheckBitOk(boolean checkBitOk) {
-		this.checkBitOk = checkBitOk;
+
+	public void checkBit() {
+		try {
+			String bit1 = md5(this.toString());
+			if(vehjyw != null && !vehjyw.equals(bit1)) {
+				checkBitOk=false;
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
+	
+	
 	
 }

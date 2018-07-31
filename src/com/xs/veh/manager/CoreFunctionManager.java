@@ -18,15 +18,15 @@ public class CoreFunctionManager {
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
 	
-	public List<CoreFunction> getAllCoreFunction(){
-		return (List<CoreFunction>)this.hibernateTemplate.find(" from CoreFunction", null);
+	public List<CoreFunction> getAllCoreFunction(int status){
+		return (List<CoreFunction>)this.hibernateTemplate.find(" from CoreFunction where status = ?", status);
 	}
 	
-	public void deleteAllCoreFunction() {
+	public void deleteAllCoreFunction(final int status) {
 		this.hibernateTemplate.execute(new HibernateCallback<CoreFunction>() {
 			@Override
 			public CoreFunction doInHibernate(Session session) throws HibernateException {
-				Query query = session.createQuery("delete from CoreFunction");
+				Query query = session.createQuery("delete from CoreFunction where status = "+status);
                 query.executeUpdate();
                 return null;
 			}

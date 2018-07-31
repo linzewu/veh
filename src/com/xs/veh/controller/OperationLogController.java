@@ -28,11 +28,27 @@ public class OperationLogController {
 	@UserOperation(code="getOperationLog",name="日志查询")
 	@RequestMapping(value = "getOperationLog", method = RequestMethod.POST)
 	public @ResponseBody Map<String,Object> getOperationLog(Integer page, Integer rows, OperationLog operationLog) {
-
 		
 		List<OperationLog> vcps = operationLogManager.getOperationLog(page, rows, operationLog);
 		
 		Integer total = operationLogManager.getOperationLogCount(page, rows, operationLog);
+		
+		Map<String,Object> data =new HashMap<String,Object>();
+		
+		data.put("rows", vcps);
+		data.put("total", total);
+		
+		
+		return data;
+	}
+	
+	@UserOperation(code="getLoginOperationLog",name="登录日志查询")
+	@RequestMapping(value = "getLoginOperationLog", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> getLoginOperationLog(Integer page, Integer rows, OperationLog operationLog) {
+		
+		List<OperationLog> vcps = operationLogManager.getLoginOperationLog(page, rows, operationLog);
+		
+		Integer total = operationLogManager.getLoginOperationLogCount(page, rows, operationLog);
 		
 		Map<String,Object> data =new HashMap<String,Object>();
 		

@@ -1,8 +1,11 @@
 package com.xs.aop;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Service;
@@ -33,17 +36,5 @@ public class CheckBitAop {
 		}
 		
 	}
-	
-	
-	/**
-	 * 方法结束执行
-	 */
-	public void after(JoinPoint joinPoint) {
-		
-		
-	}
-	
-	
-
 
 }

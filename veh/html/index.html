@@ -204,7 +204,9 @@
 		//$("#pwVal").text(time);	
 		
 		var cont = "本次登录的时间："+userInfo.lastLoginDate+",本次登录IP："+userInfo.ip+
-		",<br/>上次登录的时间："+userInfo.lastTimeLoginDate+",上次登录IP："+userInfo.lastTimeIP+",<br/>距离用户到期还剩"+time+"天,距离密码到期还剩"+timePw+"天";
+		",<br/>上次登录的时间："+userInfo.lastTimeLoginDate+",上次登录IP："+userInfo.lastTimeIP+
+		",<br/>距离用户到期还剩"+time+"天,距离密码到期还剩"+timePw+"天"+
+		",<br/>上次登录失败的时间："+userInfo.lastTimeLoginFailDate+",上次登录失败IP："+userInfo.lastTimeLoginFailIP;
 		
 		
 		 $('#tipMsg').tooltip({

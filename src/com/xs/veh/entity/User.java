@@ -114,6 +114,15 @@ public class User extends BaseEntity {
 	@Column(length=30)
 	private String lastTimeIP;
 	
+	//上次登录失败的时间
+	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date lastTimeLoginFailDate;
+	
+	//上次登录失败的IP终端
+	@Column(length=30)
+	private String lastTimeLoginFailIP;
+	
 	@Transient
 	private String pwOverdue;
 	
@@ -293,6 +302,22 @@ public class User extends BaseEntity {
 
 	public void setLastTimeIP(String lastTimeIP) {
 		this.lastTimeIP = lastTimeIP;
+	}
+
+	public Date getLastTimeLoginFailDate() {
+		return lastTimeLoginFailDate;
+	}
+
+	public String getLastTimeLoginFailIP() {
+		return lastTimeLoginFailIP;
+	}
+
+	public void setLastTimeLoginFailDate(Date lastTimeLoginFailDate) {
+		this.lastTimeLoginFailDate = lastTimeLoginFailDate;
+	}
+
+	public void setLastTimeLoginFailIP(String lastTimeLoginFailIP) {
+		this.lastTimeLoginFailIP = lastTimeLoginFailIP;
 	}
 
 	public String encodePwd(String password) {

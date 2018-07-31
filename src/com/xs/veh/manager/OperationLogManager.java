@@ -29,6 +29,14 @@ public class OperationLogManager {
 		DetachedCriteria query = DetachedCriteria.forClass(OperationLog.class);
 
 		Integer firstResult = (page - 1) * rows;
+		setCondition(operationLog, query);
+		List<OperationLog> vcps = (List<OperationLog>) this.hibernateTemplate.findByCriteria(query, firstResult,
+				rows);
+
+		return vcps;
+	}
+
+	private void setCondition(OperationLog operationLog, DetachedCriteria query) {
 		if(operationLog.getOperationUser()!=null&&!"".equals(operationLog.getOperationUser().trim())){
 			query.add(Restrictions.eq("operationUser", operationLog.getOperationUser()));
 		}
@@ -48,10 +56,6 @@ public class OperationLogManager {
 				query.add(Restrictions.isNull("coreFunction"));
 			}
 		}
-		List<OperationLog> vcps = (List<OperationLog>) this.hibernateTemplate.findByCriteria(query, firstResult,
-				rows);
-
-		return vcps;
 	}
 	
 	public Integer getOperationLogCount(Integer page, Integer rows, OperationLog operationLog) {
@@ -59,25 +63,7 @@ public class OperationLogManager {
 		DetachedCriteria query = DetachedCriteria.forClass(OperationLog.class);
 
 		query.setProjection(Projections.rowCount());
-		if(operationLog.getOperationUser()!=null&&!"".equals(operationLog.getOperationUser().trim())){
-			query.add(Restrictions.eq("operationUser", operationLog.getOperationUser()));
-		}
-		if(operationLog.getModule()!=null&&!"".equals(operationLog.getModule().trim())){
-			query.add(Restrictions.like("module", "%"+operationLog.getModule()+"%"));
-		}
-		if(operationLog.getOperationDate() != null) {
-			query.add(Restrictions.ge("operationDate", operationLog.getOperationDate()));
-		}
-		if(operationLog.getOperationDateEnd() != null) {
-			query.add(Restrictions.le("operationDate", operationLog.getOperationDateEnd()));
-		}
-		if(operationLog.getCoreFunction() != null) {
-			if("Y".equals(operationLog.getCoreFunction())) {
-				query.add(Restrictions.eq("coreFunction", operationLog.getCoreFunction()));
-			}else {
-				query.add(Restrictions.isNull("coreFunction"));
-			}
-		}
+		setCondition(operationLog, query);
 		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
 
 		return count.get(0).intValue();
@@ -91,5 +77,30 @@ public class OperationLogManager {
 
 		this.hibernateTemplate.save(operationLog);
 
+	}
+	
+	public List<OperationLog> getLoginOperationLog(Integer page, Integer rows, OperationLog operationLog) {
+
+		DetachedCriteria query = DetachedCriteria.forClass(OperationLog.class);
+
+		Integer firstResult = (page - 1) * rows;
+		setCondition(operationLog, query);
+		query.add(Restrictions.eq("operationType", "登录"));
+		List<OperationLog> vcps = (List<OperationLog>) this.hibernateTemplate.findByCriteria(query, firstResult,
+				rows);
+
+		return vcps;
+	}
+	
+	public Integer getLoginOperationLogCount(Integer page, Integer rows, OperationLog operationLog) {
+
+		DetachedCriteria query = DetachedCriteria.forClass(OperationLog.class);
+
+		query.setProjection(Projections.rowCount());
+		setCondition(operationLog, query);
+		query.add(Restrictions.eq("operationType", "登录"));
+		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
+
+		return count.get(0).intValue();
 	}
 }

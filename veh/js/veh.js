@@ -967,21 +967,9 @@ var system = {
 		target : "#systemContex",
 		authorize : "系统管理员"
 	},{
-		"icon" : "/veh/images/LOG.png",
-		"title" : "操作日志",
-		href : "/veh/html/operationLog.html",
-		target : "#systemContex",
-		authorize : "审计管理员,超级管理员"
-	},{
 		"icon" : "/veh/images/security.png",
 		"title" : "安全审计策略设置",
 		href : "/veh/html/securityAuditPolicySetting.html",
-		target : "#systemContex",
-		authorize : "安全管理员"
-	},{		
-		"icon" : "/veh/images/logsec.png",
-		"title" : "安全日志",
-		href : "/veh/html/securityLog.html",
 		target : "#systemContex",
 		authorize : "安全管理员"
 	}],
@@ -1025,6 +1013,18 @@ var system = {
 			href : "/veh/html/coreFunction.html",
 			target : "#systemContex",
 			authorize : "超级管理员"			
+		},{
+			"icon" : "/veh/images/warning.png",
+			"title" : "非常规功能管理",
+			href : "/veh/html/SpecialCoreFunction.html",
+			target : "#systemContex",
+			authorize : "超级管理员"			
+		},{
+			"icon" : "/veh/images/police.png",
+			"title" : "警员功能管理",
+			href : "/veh/html/policeCoreFunction.html",
+			target : "#systemContex",
+			authorize : "超级管理员"			
 		}
 	],
 	menus4:[
@@ -1050,6 +1050,27 @@ var system = {
 //			authorize : "系统管理员"
 //		}
 	],
+	menus5:[
+		{
+			"icon" : "/veh/images/LOG.png",
+			"title" : "操作日志",
+			href : "/veh/html/operationLog.html",
+			target : "#systemContex",
+			authorize : "审计管理员,超级管理员"
+		},{
+			"icon" : "/veh/images/loginlog.png",
+			"title" : "登录日志",
+			href : "/veh/html/loginOperationLog.html",
+			target : "#systemContex",
+			authorize : "审计管理员,超级管理员"
+		},{		
+			"icon" : "/veh/images/logsec.png",
+			"title" : "安全日志",
+			href : "/veh/html/securityLog.html",
+			target : "#systemContex",
+			authorize : "安全管理员"
+		}
+	],
 	initEvents : function() {
 //		if(userRoleInfo.roleName == "审计管理员"){
 //			comm.createMume("backMune", system.menus4, "Y");
@@ -1060,6 +1081,7 @@ var system = {
 			comm.createMumeAuth("deviceMune", system.menus2, 1);
 			comm.createMumeAuth("userMune", system.menus3, 2);
 			comm.createMumeAuth("backMune", system.menus4, 3);
+			comm.createMumeAuth("logMune", system.menus5, 4);
 //		}
 	}
 }
@@ -1682,6 +1704,39 @@ var report={
 	}
 }
 
+function checkbit(data){
+	var temp;
+	if(typeof(data) == "string"){
+		try{
+			temp=$.parseJSON(data);
+		}catch (e) {
+			console.log("返回非JSON对象");
+		}
+	}else{
+		temp=data;
+	}
+	if(temp){
+		if(!$.isArray(temp)){
+			if(temp["checkBitOk"]== undefined){
+				$.each(temp,function(i,n){
+					if(typeof(n)=="object"){
+						return checkbit(n);
+					}
+					
+				});
+			}else{
+				if(temp["checkBitOk"]==false){
+					return temp;
+				}
+			}
+		}else{
+			$.each(temp,function(i,n){
+				return checkbit(n);
+			});
+		}
+	}
+	
+}
 
 $(function($){  
     //备份jquery的ajax方法  
@@ -1724,6 +1779,11 @@ $(function($){
                     window.location.href="/veh/html/login.html";
                     return;
                 }
+                var errors =checkbit(data);
+                if(errors){
+                	$.messager.alet("数据非法篡改！",JSON.stringify(errors));
+                }
+                
                 fn.success(data, textStatus);
             }  
         });  

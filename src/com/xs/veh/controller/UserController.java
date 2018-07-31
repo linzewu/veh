@@ -224,6 +224,9 @@ public class UserController {
 			u.setUserState(1);
 			u.setLoginFailCou(0);
 		}
+		//登录失败时间/ip
+		u.setLastTimeLoginFailDate(new Date());
+		u.setLastTimeLoginFailIP(getIpAdrress());
 		
 		this.userManager.updateUser(u);
 		if (u.getUserState() == 1) {

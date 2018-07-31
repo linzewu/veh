@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,19 +19,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.common.Common;
 import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.BlackList;
+import com.xs.veh.entity.SecurityAuditPolicySetting;
+import com.xs.veh.entity.SecurityLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.manager.BlackListManager;
+import com.xs.veh.manager.SecurityLogManager;
 
 @Controller
 @RequestMapping(value = "/blackList",produces="application/json")
 @Modular(modelCode="blackList",modelName="黑名单管理",isEmpowered=false)
 public class BlackListController {
 	
+	@Autowired
+	private HttpServletRequest request;
+	
 	@Resource(name = "blackListManager")
 	private BlackListManager blackListManager;
+	
+	@Autowired
+	private SecurityLogManager securityLogManager;
 	
 	@UserOperation(code="getBlackList",name="查询黑名单")
 	@RequestMapping(value = "getBlackList", method = RequestMethod.POST)
@@ -64,8 +76,17 @@ public class BlackListController {
 	
 	@UserOperation(code="delete",name="删除黑名单")
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	public @ResponseBody void delete(BlackList blackList){
+	public @ResponseBody void delete(BlackList blackList,HttpSession session){
+		User user = (User)session.getAttribute("user");
 		this.blackListManager.deleteBlackList(blackList);
+		//写入安全日志
+		SecurityLog securityLog = new SecurityLog();
+		securityLog.setCreateUser(User.SYSTEM_USER);
+		securityLog.setUpdateUser(User.SYSTEM_USER);
+		securityLog.setClbm(SecurityAuditPolicySetting.IP_LOCK);
+		securityLog.setIpAddr(Common.getIpAdrress(request));
+		securityLog.setContent("用户："+user.getUserName()+" 删除黑名单管理IP："+blackList.getIp());
+		securityLogManager.saveSecurityLog(securityLog);
 	}
 
 }

@@ -73,11 +73,14 @@ $(function(){
 				child.text=k.name;
 				child.checked= isCheck(k.code);
 				child.attributes = {"empowered":k.empowered};
-				treeObj.children.push(child);
-				
+				if(k.empowered){
+					treeObj.children.push(child);
+				}
 			});
+			if(treeObj.children.length>0){
+				treeArray.push(treeObj);
+			}
 			
-			treeArray.push(treeObj);
 		});
 		$("#powerListTree").tree({
 			checkbox:

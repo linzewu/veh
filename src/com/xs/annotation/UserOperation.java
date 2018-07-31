@@ -26,5 +26,5 @@ public @interface UserOperation {
 	 * @return
 	 */
 	public boolean isEmpowered() default true;
-
+	
 }
