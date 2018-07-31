@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -27,9 +28,9 @@ public class OperationLogManager {
 	public List<OperationLog> getOperationLog(Integer page, Integer rows, OperationLog operationLog) {
 
 		DetachedCriteria query = DetachedCriteria.forClass(OperationLog.class);
-
 		Integer firstResult = (page - 1) * rows;
 		setCondition(operationLog, query);
+		query.addOrder(Order.desc("id"));
 		List<OperationLog> vcps = (List<OperationLog>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
 
@@ -86,6 +87,7 @@ public class OperationLogManager {
 		Integer firstResult = (page - 1) * rows;
 		setCondition(operationLog, query);
 		query.add(Restrictions.eq("operationType", "登录"));
+		query.addOrder(Order.desc("id"));
 		List<OperationLog> vcps = (List<OperationLog>) this.hibernateTemplate.findByCriteria(query, firstResult,
 				rows);
 

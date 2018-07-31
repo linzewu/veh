@@ -17,8 +17,10 @@ function updateData(){
 			data=$.parseJSON(data);
 			$.messager.progress('close');	// hide progress bar while submit successfully
 			$.messager.alert("提示",data.message,"info",function(){
-				$("#userManager").datagrid("reload");
-				closeWin();
+				if(data.state == 1){
+					$("#userManager").datagrid("reload");
+					closeWin();
+				}
 			})
 			
 		}

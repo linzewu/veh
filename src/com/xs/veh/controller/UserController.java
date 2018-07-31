@@ -27,11 +27,13 @@ import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
 import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.BlackList;
+import com.xs.veh.entity.CoreFunction;
 import com.xs.veh.entity.Role;
 import com.xs.veh.entity.SecurityAuditPolicySetting;
 import com.xs.veh.entity.SecurityLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.manager.BlackListManager;
+import com.xs.veh.manager.CoreFunctionManager;
 import com.xs.veh.manager.OperationLogManager;
 import com.xs.veh.manager.RoleManager;
 import com.xs.veh.manager.SecurityAuditPolicySettingManager;
@@ -60,6 +62,9 @@ public class UserController {
 	private BlackListManager blackListManager;
 	@Autowired
 	private SecurityLogManager securityLogManager;
+	
+	@Resource(name = "coreFunctionManager")
+	private CoreFunctionManager coreFunctionManager;
 	
 	@Resource(name = "securityAuditPolicySettingManager")
 	private SecurityAuditPolicySettingManager securityAuditPolicySettingManager;
@@ -340,11 +345,28 @@ public class UserController {
 	public @ResponseBody Map saveUser(@Valid User user, BindingResult result) {
 		System.out.println(user.getId()+" "+user.getIdCard()+" ");
 		if (!result.hasErrors()) {
+			if(!"Y".equals(String.valueOf(user.getIsPolice())) && checkIsPolice(user)) {
+				return ResultHandler.toMyJSON(Constant.ConstantState.STATE_VALIDATE_ERROR, "该角色包含警员功能，不允许授予非警员账号！");
+			}
 			User u = this.userManager.saveUser(user);
 			return  ResultHandler.resultHandle(result,u ,Constant.ConstantMessage.SAVE_SUCCESS);
 		}else{
 			return ResultHandler.resultHandle(result,null ,null);
 		}
+	}
+	
+	private boolean checkIsPolice(User user) {
+		boolean flag = false;
+		List<CoreFunction> coreList = this.coreFunctionManager.getAllCoreFunction(2);
+		Role role = roleManager.queryRoleById(user.getRoleId()); 
+		for(CoreFunction fun:coreList) {
+			if(role.getFunctionPoint().indexOf(fun.getFunctionPoint()) != -1) {
+				flag = true;
+				return flag;
+			}
+		}
+		
+		return flag;
 	}
 
 	@UserOperation(code="save",name="校验用户名",isMain=false)
