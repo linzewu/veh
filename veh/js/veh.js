@@ -1716,23 +1716,24 @@ function checkbit(data){
 		temp=data;
 	}
 	if(temp){
-		if(!$.isArray(temp)){
+		if(!$.isArray(temp)&&typeof(temp)=="object"){
 			if(temp["checkBitOk"]== undefined){
 				$.each(temp,function(i,n){
 					if(typeof(n)=="object"){
 						return checkbit(n);
 					}
-					
 				});
 			}else{
 				if(temp["checkBitOk"]==false){
 					return temp;
 				}
 			}
-		}else{
+		}else if($.isArray(temp)){
 			$.each(temp,function(i,n){
 				return checkbit(n);
 			});
+		}else{
+			return;
 		}
 	}
 	
@@ -1779,10 +1780,10 @@ $(function($){
                     window.location.href="/veh/html/login.html";
                     return;
                 }
-             /*   var errors =checkbit(data);
+                var errors =checkbit(data);
                 if(errors){
-                	$.messager.alet("数据非法篡改！",JSON.stringify(errors));
-                }*/
+                	$.messager.alert("数据非法篡改！",JSON.stringify(errors));
+                }
                 
                 fn.success(data, textStatus);
             }  

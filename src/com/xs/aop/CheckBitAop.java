@@ -30,6 +30,7 @@ public class CheckBitAop {
 					BaseEntity be =(BaseEntity)obj;
 					String str = be.toString();
 					String md5 = BaseEntity.md5(str);
+					System.out.println(be.toString());
 					be.setVehjyw(md5);
 				}
 			}

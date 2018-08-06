@@ -23,7 +23,7 @@
 	</tr>
 </table>
 <br/>
-<div align="center" ><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',onClick:saveData">确定</a>&nbsp;&nbsp;
+<div align="center" ><a href="#" id="btnOk" class="easyui-linkbutton" data-options="iconCls:'icon-save',onClick:saveData">确定</a>&nbsp;&nbsp;
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cancel',onClick:closeWin">取消</a></div>
 	<input type="hidden" name="id" >
 </div>
@@ -32,7 +32,7 @@
 <script type="text/javascript">
 
 
-$(function(){
+$(function(){	
 	var options = $("#roleInfo_win").window('options');
 	var model=options.editModel;
 	var row;
@@ -42,7 +42,13 @@ $(function(){
 			$("#form-role").form("load",row);
 			$("#roleName").textbox({disabled:true});
 		}
+		//管理员角色不能修改
+		if(row.roleType=="0"){
+			$("#btnOk").linkbutton({disabled:true});
+		}
 	}
+	
+	var sfzsxtgnd = comm.getBaseParames('sfzsxtgnd');
 	
 	$.post("/veh/role/getPowerPoints",function(data){
 		var pwGroup={};
@@ -61,7 +67,32 @@ $(function(){
 			}
 			return false;
 		};
-		
+		//管理员角色不能修改
+		if(row.roleType=="0"){
+			$.each(pwGroup,function(i,n){
+				var treeObj={};
+				treeObj.text=n[0].model;
+				treeObj.children=[];
+				$.each(n,function(j,k){
+					if(row.functionPoint.indexOf(k.code)!=-1){
+						var child={};
+						child.id=k.code;
+						child.text=k.name;
+						treeObj.children.push(child);
+					}
+				});
+				if(treeObj.children.length>0){
+					treeArray.push(treeObj);
+				}
+				
+			});
+			$("#powerListTree").tree({
+				checkbox:false,
+				data:treeArray
+			});
+			$("#input_functionPoint").val(row.functionPoint);
+			 $("form[id='form-role'] :radio").attr("disabled",true); 
+		}else{
 		$.each(pwGroup,function(i,n){
 			var treeObj={};
 			treeObj.text=n[0].model;
@@ -73,7 +104,7 @@ $(function(){
 				child.text=k.name;
 				child.checked= isCheck(k.code);
 				child.attributes = {"empowered":k.empowered};
-				if(k.empowered){
+				if(k.empowered||(sfzsxtgnd[0].id=="0")){
 					treeObj.children.push(child);
 				}
 			});
@@ -84,14 +115,14 @@ $(function(){
 		});
 		$("#powerListTree").tree({
 			checkbox:
-				function(node){
+			/**	function(node){
 				if (node.attributes.empowered){
 					return true;
 				}else{
 					return false;
 				}
-			},
-			//true,
+			},**/
+			true,
 			data:treeArray,
 			onCheck:function(){
 				var checkedArray = $("#powerListTree").tree("getChecked");
@@ -107,6 +138,8 @@ $(function(){
 				$("#input_functionPoint").val(fp);
 			}
 		});
+	}
+		
 	});
 	
 });

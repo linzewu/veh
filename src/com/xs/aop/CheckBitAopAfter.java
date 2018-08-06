@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+import com.xs.annotation.CheckBit;
 import com.xs.veh.entity.BaseEntity;
 
 @Component
@@ -23,20 +24,32 @@ public class CheckBitAopAfter {
 		if(rvt instanceof List) {
 			List array = (List)rvt;
 			for(Object o : array) {
-				if(o instanceof BaseEntity) {
+				if(o instanceof BaseEntity&&isCheckBitAnnotation(o)) {
 					BaseEntity be = (BaseEntity)o;
 					be.checkBit();
 				}
 			}
 		}else {
-			if(rvt instanceof BaseEntity) {
+			if(rvt instanceof BaseEntity&&isCheckBitAnnotation(rvt)) {
 				BaseEntity be = (BaseEntity)rvt;
 				be.checkBit();
 			}
 		}
 	}
 	
-	
+	private boolean isCheckBitAnnotation(Object o) {
+		
+		boolean flag =false;
+		
+		CheckBit checkBit = o.getClass().getAnnotation(CheckBit.class);
+		
+		if(checkBit!=null) {
+			flag=true;
+		}
+		
+		return flag;
+		
+	}
 
 
 }

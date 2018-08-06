@@ -135,6 +135,8 @@ public abstract class BaseEntity {
 	public void checkBit() {
 		try {
 			String bit1 = md5(this.toString());
+			System.out.println(this.toString());
+			System.out.println(bit1+"\t" +vehjyw);
 			if(vehjyw != null && !vehjyw.equals(bit1)) {
 				checkBitOk=false;
 			}

@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xs.annotation.CheckBit;
+
+import net.sf.json.JSONObject;
 
 @Scope("prototype")
 @Component("vehCheckLogin")
@@ -944,7 +948,18 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "VehCheckLogin [jylsh=" + jylsh + ", jyjgbh=" + jyjgbh + ", jcxdh=" + jcxdh + ", xh=" + xh + ", hpzl="
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		
+		try {
+			return mapper.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return super.toString();
+		/*return "VehCheckLogin [jylsh=" + jylsh + ", jyjgbh=" + jyjgbh + ", jcxdh=" + jcxdh + ", xh=" + xh + ", hpzl="
 				+ hpzl + ", hphm=" + hphm + ", clsbdh=" + clsbdh + ", fdjh=" + fdjh + ", csys=" + csys + ", syxz="
 				+ syxz + ", ccdjrq=" + ccdjrq + ", jyrq=" + jyrq + ", jyyxqz=" + jyyxqz + ", bxzzrq=" + bxzzrq
 				+ ", rlzl=" + rlzl + ", gl=" + gl + ", zs=" + zs + ", zj=" + zj + ", qlj=" + qlj + ", hlj=" + hlj
@@ -958,7 +973,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 				+ ", dpjyysfzh=" + dpjyysfzh + ", clsslb=" + clsslb + ", jcxlb=" + jcxlb + ", sjr=" + sjr + ", sjrsfzh="
 				+ sjrsfzh + ", hdzk=" + hdzk + ", vehjczt=" + vehjczt + ", vehsxzt=" + vehsxzt + ", vehwjzt=" + vehwjzt
 				+ ", vehdpzt=" + vehdpzt + ", vehdtdpzt=" + vehdtdpzt + ", vehlszt=" + vehlszt + ", checkType="
-				+ checkType + ", upLineDate=" + upLineDate + ", externalCheckDate=" + externalCheckDate + "]";
+				+ checkType + ", upLineDate=" + upLineDate + ", externalCheckDate=" + externalCheckDate + "]";*/
 	}
 	
 	
