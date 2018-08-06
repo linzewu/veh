@@ -948,6 +948,26 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 
 	@Override
 	public String toString() {
+		return "VehCheckLogin [jylsh=" + jylsh + ", jyjgbh=" + jyjgbh + ", jcxdh=" + jcxdh + ", xh=" + xh + ", hpzl="
+				+ hpzl + ", hphm=" + hphm + ", clsbdh=" + clsbdh + ", fdjh=" + fdjh + ", csys=" + csys + ", syxz="
+				+ syxz + ", rlzl=" + rlzl + ", gl=" + gl + ", zs=" + zs + ", zj=" + zj + ", qlj=" + qlj + ", hlj=" + hlj
+				+ ", zzl=" + zzl + ", zbzl=" + zbzl + ", qdxs=" + qdxs + ", zczs=" + zczs + ", zczw=" + zczw + ", zzs="
+				+ zzs + ", zzly=" + zzly + ", qzdz=" + qzdz + ", ygddtz=" + ygddtz + ", zxzxjxs=" + zxzxjxs + ", lcbds="
+				+ lcbds + ", jyxm=" + jyxm + ", jylb=" + jylb + ", bhgx=" + bhgx + ", jycs=" + jycs + ", dly=" + dly
+				+ ", ycy=" + ycy + ", wjy=" + wjy + ", dtjyy=" + dtjyy + ", dpjyy=" + dpjyy + ", clpp1=" + clpp1
+				+ ", clxh=" + clxh + ", syr=" + syr + ", cllx=" + cllx + ", cwkc=" + cwkc + ", cwkk=" + cwkk + ", cwkg="
+				+ cwkg + ", clyt=" + clyt + ", ytsx=" + ytsx + ", dlysfzh=" + dlysfzh + ", ycysfzh=" + ycysfzh
+				+ ", wjysfzh=" + wjysfzh + ", dtjyysfzh=" + dtjyysfzh + ", dpjyysfzh=" + dpjyysfzh + ", clsslb="
+				+ clsslb + ", jcxlb=" + jcxlb + ", sjr=" + sjr + ", sjrsfzh=" + sjrsfzh + ", vehcsbj=" + vehcsbj
+				+ ", hdzk=" + hdzk + ", vehjczt=" + vehjczt + ", vehsxzt=" + vehsxzt + ", vehwjzt=" + vehwjzt
+				+ ", vehdpzt=" + vehdpzt + ", vehdtdpzt=" + vehdtdpzt + ", vehlszt=" + vehlszt + ", checkType="
+				+ checkType + ", jyjl=" + jyjl + ", fjjyxm=" + fjjyxm + ", vehwkzt=" + vehwkzt + ", vehzbzlzt="
+				+ vehzbzlzt + "]";
+	}
+
+
+	/**@Override
+	public String toString() {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -958,7 +978,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 			e.printStackTrace();
 		}
 		
-		return super.toString();
+		return super.toString();**/
 		/*return "VehCheckLogin [jylsh=" + jylsh + ", jyjgbh=" + jyjgbh + ", jcxdh=" + jcxdh + ", xh=" + xh + ", hpzl="
 				+ hpzl + ", hphm=" + hphm + ", clsbdh=" + clsbdh + ", fdjh=" + fdjh + ", csys=" + csys + ", syxz="
 				+ syxz + ", ccdjrq=" + ccdjrq + ", jyrq=" + jyrq + ", jyyxqz=" + jyyxqz + ", bxzzrq=" + bxzzrq
@@ -974,7 +994,7 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 				+ sjrsfzh + ", hdzk=" + hdzk + ", vehjczt=" + vehjczt + ", vehsxzt=" + vehsxzt + ", vehwjzt=" + vehwjzt
 				+ ", vehdpzt=" + vehdpzt + ", vehdtdpzt=" + vehdtdpzt + ", vehlszt=" + vehlszt + ", checkType="
 				+ checkType + ", upLineDate=" + upLineDate + ", externalCheckDate=" + externalCheckDate + "]";*/
-	}
+	//}
 	
 	
 

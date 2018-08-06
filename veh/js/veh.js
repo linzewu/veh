@@ -1704,7 +1704,7 @@ var report={
 	}
 }
 
-function checkbit(data){
+function checkbit(data,errors){
 	var temp;
 	if(typeof(data) == "string"){
 		try{
@@ -1720,17 +1720,18 @@ function checkbit(data){
 			if(temp["checkBitOk"]== undefined){
 				$.each(temp,function(i,n){
 					if(typeof(n)=="object"){
-						return checkbit(n);
+						return checkbit(n,errors);
 					}
 				});
 			}else{
 				if(temp["checkBitOk"]==false){
-					return temp;
+					//return temp;
+					errors.push(temp)
 				}
 			}
 		}else if($.isArray(temp)){
 			$.each(temp,function(i,n){
-				return checkbit(n);
+				return checkbit(n,errors);
 			});
 		}else{
 			return;
@@ -1780,9 +1781,24 @@ $(function($){
                     window.location.href="/veh/html/login.html";
                     return;
                 }
-                var errors =checkbit(data);
-                if(errors){
-                	$.messager.alert("数据非法篡改！",JSON.stringify(errors));
+                var errors =[];
+                checkbit(data,errors);
+                if(errors.length > 0){
+                	var msg = JSON.stringify(errors);
+                	
+                	$.messager.show({
+                		title:'数据非法篡改！',
+                		msg:msg,
+                		timeout:0,
+                		 showType:'fade',
+                		 width:'500px',
+                		 height:'500px',
+                         style:{
+                             right:'',
+                             bottom:'',
+                             
+                         }
+                	});
                 }
                 
                 fn.success(data, textStatus);
