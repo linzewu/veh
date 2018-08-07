@@ -69,6 +69,28 @@ public class MyHibernateTemplate extends HibernateTemplate {
 	}
 	
 	
+	@Override
+	public <T> T merge(T entity) throws DataAccessException {
+		HttpSession session=getSession();
+		
+		if (entity instanceof BaseEntity) {
+			BaseEntity baseEntity = (BaseEntity) entity;
+			SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+			Date nowDate = new Date();
+			baseEntity.setUpdateTime(sdf.format(nowDate));
+			if (session != null) {
+				User user = (User) session.getAttribute("user");
+				if (user != null) {
+					String userName = user.getUserName();
+					baseEntity.setUpdateUser(userName);
+				}
+			}else{
+				baseEntity.setUpdateUser("system");
+			}
+		}
+		return super.merge(entity);
+	}
+
 	public HttpSession getSession(){
 		
 		RequestAttributes rab = RequestContextHolder.getRequestAttributes();

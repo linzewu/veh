@@ -64,6 +64,10 @@
 		var url ="/veh/html/userInfo.html?"+new Date().getTime();
 		
 		if(row){
+			if (!row.checkBitOk){
+				$.messager.alert("提示","用户“"+row.userName+"”数据被篡改！","info");
+				return;
+			}
 			$("#userInfo_win").window('open');
 			//$("#deviceInfo_win").window('setTitle',comm.getParamNameByValue('deviceType',row.type));
 			$("#userInfo_win").window('refresh', url);
@@ -99,7 +103,7 @@
 	
 </script>
 <table id="userManager" class="easyui-datagrid"
-	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,toolbar:'#userManagerToolbar',onBeginEdit:userBeginEidt">
+	data-options="url:'/veh/user/getUsers',fitColumns:true,singleSelect:true,fit:true,pagination:true,pageSize:20,toolbar:'#userManagerToolbar',onBeginEdit:userBeginEidt">
 	<thead> 
 		<tr>
 			<th data-options="field:'userName',width:100,editor:{type:'textbox',options:{required:true,validType:{userVad:'',remote:['/veh/user/validateUserName','userName']}}}">用户名</th>
@@ -121,3 +125,17 @@
 <div id="userInfo_win" class="easyui-window" title="用户详细信息" style="width:800px;height:450px"
         data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:false,collapsible:false,minimizable:false">
 </div>
+<script type="text/javascript">
+
+
+	
+	$('#userManager').datagrid({
+		rowStyler: function(index,row){
+				if (!row.checkBitOk){
+					return 'color:red;'; 	
+				}
+			}
+	});
+
+</script>
+

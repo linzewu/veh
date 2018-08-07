@@ -9,6 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.xs.common.Constant;
 import com.xs.veh.entity.OperationLog;
+import com.xs.veh.entity.Role;
 import com.xs.veh.entity.User;
 import com.xs.veh.util.PageInfo;
 
@@ -39,62 +41,80 @@ public class UserManager {
 		}
 	}
 
-	public List<User> getUsers(final User user,final PageInfo pageInfo) {
+	public List<User> getUsers(final User user,Integer page, Integer rows) {
+		
+		DetachedCriteria query = DetachedCriteria.forClass(User.class);
 
-		List<User> list = (List<User>) hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<User>>() {
+		Integer firstResult = (page - 1) * rows;
+		query.add(Restrictions.ne("userName", "admin"));
 
-			@Override
-			public List<User> doInHibernate(Session session) throws HibernateException {
+		List<User> vcps = (List<User>) this.hibernateTemplate.findByCriteria(query, firstResult,
+				rows);
 
-				StringBuilder sql = new StringBuilder("from User where userName!='admin' ");
+		return vcps;
 
-				List params = new ArrayList();
-				List paramType = new ArrayList();
-
-				if (user.getUserName() != null && !"".equals(user.getUserName().trim())) {
-					sql.append(" and userName like ?");
-					params.add("%" + user.getUserName() + "%");
-					paramType.add(StandardBasicTypes.STRING);
-
-				}
-				
-				
-				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray(new Type[paramType.size()]));
-				return pageInfo.toPage(query).list();
-			}
-		});
-
-		return list;
+//		List<User> list = (List<User>) hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<User>>() {
+//
+//			@Override
+//			public List<User> doInHibernate(Session session) throws HibernateException {
+//
+//				StringBuilder sql = new StringBuilder("from User where userName!='admin' ");
+//
+//				List params = new ArrayList();
+//				List paramType = new ArrayList();
+//
+//				if (user.getUserName() != null && !"".equals(user.getUserName().trim())) {
+//					sql.append(" and userName like ?");
+//					params.add("%" + user.getUserName() + "%");
+//					paramType.add(StandardBasicTypes.STRING);
+//
+//				}
+//				
+//				
+//				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray(new Type[paramType.size()]));
+//				return pageInfo.toPage(query).list();
+//			}
+//		});
+//
+//		return list;
 	}
 	
 	public List<User> getUsers(){
 		return  (List<User>) this.hibernateTemplate.find(" from User  where userName!='admin'");
 	}
 	
-	public Integer getUserCount(final User user,final PageInfo pageInfo) {
+	public Integer getUserCount(User user) {
 
-		Integer count = (Integer)hibernateTemplate.executeWithNativeSession(new HibernateCallback<Integer>() {
+		DetachedCriteria query = DetachedCriteria.forClass(User.class);
 
-			@Override
-			public Integer doInHibernate(Session session) throws HibernateException {
+		query.setProjection(Projections.rowCount());
+		query.add(Restrictions.ne("userName", "admin"));
 
-				StringBuilder sql = new StringBuilder("select count(*) from User where userName!='admin' ");
+		List<Long> count = (List<Long>) hibernateTemplate.findByCriteria(query);
 
-				List params = new ArrayList();
-				List paramType = new ArrayList();
-
-				if (user.getUserName() != null && !"".equals(user.getUserName().trim())) {
-					sql.append(" and userName like ?");
-					params.add("%" + user.getUserName() + "%");
-					paramType.add(StandardBasicTypes.STRING);
-
-				}
-				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray(new Type[paramType.size()]));
-				return ((Long)pageInfo.toPage(query).uniqueResult()).intValue();
-			}
-		});
-
-		return count;
+		return count.get(0).intValue();
+//		Integer count = (Integer)hibernateTemplate.executeWithNativeSession(new HibernateCallback<Integer>() {
+//
+//			@Override
+//			public Integer doInHibernate(Session session) throws HibernateException {
+//
+//				StringBuilder sql = new StringBuilder("select count(*) from User where userName!='admin' ");
+//
+//				List params = new ArrayList();
+//				List paramType = new ArrayList();
+//
+//				if (user.getUserName() != null && !"".equals(user.getUserName().trim())) {
+//					sql.append(" and userName like ?");
+//					params.add("%" + user.getUserName() + "%");
+//					paramType.add(StandardBasicTypes.STRING);
+//
+//				}
+//				Query query = session.createQuery(sql.toString()).setParameters(params.toArray(), (Type[]) paramType.toArray(new Type[paramType.size()]));
+//				return ((Long)pageInfo.toPage(query).uniqueResult()).intValue();
+//			}
+//		});
+//
+//		return count;
 	}
 	
 	public User saveUser(User user){

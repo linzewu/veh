@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.xs.annotation.CheckBit;
 
 @Scope("prototype")
 @Component("user")
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NamedQueries({
 	@NamedQuery(name = "User.login", query = "from User u where u.userName=:userName  and u.userState<>:userState") 
 })
+@CheckBit
 public class User extends BaseEntity {
 	
 	public final static Integer USER_STATE_PASSWORD_INVALID=0;
@@ -340,6 +342,15 @@ public class User extends BaseEntity {
 		user.setPassword("888888");
 		System.out.println(user.encodePwd("888888"));
 		
+	}
+
+	@Override
+	public String toString() {
+		return "User [userName=" + userName + ", password=" + password + ", realName=" + realName + ", idCard=" + idCard
+				+ ", roleId=" + roleId + ", userState=" + userState + ", loginIP=" + loginIP + ", isPolice=" + isPolice
+				+ ", employeeNumber=" + employeeNumber + ", loginFailCou=" + loginFailCou + ", userType=" + userType
+				+ ", ip=" + ip + ", lastTimeIP=" + lastTimeIP + ", lastTimeLoginFailIP=" + lastTimeLoginFailIP
+				+ ", pwOverdue=" + pwOverdue + ", roleName=" + roleName + "]";
 	}
 	
 

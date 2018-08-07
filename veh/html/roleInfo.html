@@ -15,7 +15,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="simpletable-l"><label>功能点：</label></td>
+		<td class="simpletable-l"><label id="powerLabel">功能点：</label></td>
 		<td class="simpletable-r"> <div class="easyui-panel" style="padding:5px" >
         <ul id="powerListTree" ></ul>
         <input name="functionPoint" value="" id="input_functionPoint" type="hidden">
@@ -44,7 +44,10 @@ $(function(){
 		}
 		//管理员角色不能修改
 		if(row.roleType=="0"){
+			$("#powerLabel").text(row.roleName);
 			$("#btnOk").linkbutton({disabled:true});
+		}else{
+			$("#powerLabel").text("业务角色");
 		}
 	}
 	
@@ -68,13 +71,13 @@ $(function(){
 			return false;
 		};
 		//管理员角色不能修改
-		if(row.roleType=="0"){
+		if(model=="edit" && row.roleType=="0"){
 			$.each(pwGroup,function(i,n){
 				var treeObj={};
 				treeObj.text=n[0].model;
 				treeObj.children=[];
 				$.each(n,function(j,k){
-					if(row.functionPoint.indexOf(k.code)!=-1){
+					if(row.functionPoint != null && row.functionPoint.indexOf(k.code)!=-1){
 						var child={};
 						child.id=k.code;
 						child.text=k.name;

@@ -1740,7 +1740,8 @@ function checkbit(data,errors){
 	
 }
 
-$(function($){  
+
+$(function($){
     //备份jquery的ajax方法  
     var _ajax=$.ajax;  
       

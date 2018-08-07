@@ -333,10 +333,10 @@ public class UserController {
 
 	@UserOperation(code="getUsers",name="获取用户列表")
 	@RequestMapping(value = "getUsers", method = RequestMethod.POST)
-	public @ResponseBody Map getUsers(User user, PageInfo pageInfo) {
+	public @ResponseBody Map getUsers(User user, Integer page, Integer rows) {
 
-		Map json = ResultHandler.toMyJSON(userManager.getUsers(user, pageInfo),
-				userManager.getUserCount(user, pageInfo));
+		Map json = ResultHandler.toMyJSON(userManager.getUsers(user, page, rows),
+				userManager.getUserCount(user));
 		return json;
 	}
 
