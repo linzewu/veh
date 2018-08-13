@@ -308,7 +308,7 @@ public class UserController {
 		int minute = calendar.get(Calendar.MINUTE);
 		int countMinute=hour*60+minute;
 	
-		if(countMinute<beginTime||beginTime>endTime) {
+		if(countMinute<beginTime||countMinute>endTime) {
 			return false;
 		}else {
 			return true;
