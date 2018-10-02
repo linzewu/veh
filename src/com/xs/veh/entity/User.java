@@ -327,7 +327,7 @@ public class User extends BaseEntity {
 			return null;
 		}else {
 			try {
-				return md5(this.getId().toString()+password+this.realName);
+				return md5(this.getId().toString()+password+this.getUserName());
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				return null;
@@ -338,7 +338,7 @@ public class User extends BaseEntity {
 	public static void main(String[] age) {
 		User user =new User();
 		user.setId(1);
-		user.setRealName("管理员");
+		user.setUserName("admin");
 		user.setPassword("888888");
 		System.out.println(user.encodePwd("888888"));
 		

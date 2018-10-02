@@ -46,10 +46,7 @@ public class MyHibernateTemplate extends HibernateTemplate {
 	@Override
 	public void update(Object entity) throws DataAccessException {
 		
-		
-		
 		HttpSession session=getSession();
-		
 		if (entity instanceof BaseEntity) {
 			BaseEntity baseEntity = (BaseEntity) entity;
 			SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");

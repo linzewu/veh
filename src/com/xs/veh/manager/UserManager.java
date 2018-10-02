@@ -154,8 +154,8 @@ public class UserManager {
 	
 	public void resetPassword(User user){
 		
-		User oldUser=  this.hibernateTemplate.load(User.class, user.getId());
-		oldUser.setPassword(Constant.initPassword);
+		User oldUser=  this.hibernateTemplate.get(User.class, user.getId());
+		oldUser.setPassword(oldUser.encodePwd(Constant.initPassword));
 		oldUser.setUserState(User.USER_STATE_PASSWORD_INVALID);
 		this.hibernateTemplate.update(oldUser);
 	}

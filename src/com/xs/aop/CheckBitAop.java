@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,18 @@ public class CheckBitAop {
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
 	
+	@Pointcut("execution(* com.xs.common.MyHibernateTemplate.save*(..))")
+	public void save(){}
+	@Pointcut("execution(* com.xs.common.MyHibernateTemplate.update*(..))")
+	public void update(){}
+	@Pointcut("execution(* com.xs.common.MyHibernateTemplate.merge*(..))")
+	public void merge(){}
+	
 	/**
 	 * 方法开始执行
 	 * @throws UnsupportedEncodingException 
 	 */
-	@Before("execution(* com.xs.common.MyHibernateTemplate.save*(..)) || execution(* com.xs.common.MyHibernateTemplate.update(..)) || execution(* com.xs.common.MyHibernateTemplate.merge(..))")
+	@Before("save() || update()  || merge()")
 	public void doBefore(JoinPoint joinPoint) throws UnsupportedEncodingException,TamperWithDataException {
 		Object[] params = joinPoint.getArgs();
 		if(params!=null) {
