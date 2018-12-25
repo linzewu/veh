@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.xs.veh.entity.BaseEntity;
+import com.xs.veh.entity.VehCheckLogin;
 
 @Scope("prototype")
 @Component("parDataOfAnjian")
@@ -155,8 +156,15 @@ public class ParDataOfAnjian extends BaseDeviceData {
 		this.tczdxz = tczdxz;
 	}
 	
-	public void setTczdxz(){
-		this.tczdxz=20f;
+	public void setTczdxz(VehCheckLogin vehCheckLogin,boolean isRoller){
+		vehCheckLogin.getZbzl();
+		boolean flag = vehCheckLogin.getZzl()<vehCheckLogin.getZbzl()*1.2;
+		if(isRoller&&flag){
+			this.tczdxz=15f;
+		}else {
+			this.tczdxz=20f;
+		}
+		
 	}
 	
 	public void setTczdpd(){

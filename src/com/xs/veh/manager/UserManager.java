@@ -172,7 +172,8 @@ public class UserManager {
 	}
 	
 	public User loadUser(Integer id){
-		return this.hibernateTemplate.load(User.class, id);
+		User user = this.hibernateTemplate.load(User.class, id);
+		return user;
 	}
 	
 	public User queryUser(User user){

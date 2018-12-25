@@ -385,9 +385,18 @@ public class CheckDataManager {
 		Integer zdlh = 0;
 		// 整车轮荷
 		Integer zclh = 0;
+		
+		//判断是否平板设备
+		boolean isRoller=true;
+		
 		for (BrakRollerData brakRollerData : list) {
 			zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
 			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+			
+			if(brakRollerData.getZdtlh()!=null) {
+				isRoller=false;
+			}
+			
 		}
 		otherInfoData.setZdlh(zdlh);
 		if (zclh != 0) {
@@ -398,7 +407,7 @@ public class CheckDataManager {
 			Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			parDataOfAnjian.setTczclh(zclh);
 			parDataOfAnjian.setTczdl(MathRound1(tczdl));
-			parDataOfAnjian.setTczdxz();
+			parDataOfAnjian.setTczdxz(vehCheckLogin,isRoller);
 			parDataOfAnjian.setTczdpd();
 			this.hibernateTemplate.save(parDataOfAnjian);
 		}
@@ -995,6 +1004,18 @@ public class CheckDataManager {
 		List<BrakRollerData> datas = (List<BrakRollerData>) this.hibernateTemplate.find(
 				"from BrakRollerData where jylsh=? and jycs=? and jyxm=?", vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), jyxm);
+
+		if (datas == null || datas.isEmpty() || jyxm.equals("B0")) {
+			return null;
+		} else {
+			return datas.get(0);
+		}
+	}
+	
+	public BrakRollerData getLastBrakRollerDataOfVehLoginInfo(VehCheckLogin vehCheckLogin, String jyxm) {
+
+		List<BrakRollerData> datas = (List<BrakRollerData>) this.hibernateTemplate.find(
+				"from BrakRollerData where jylsh=? and jyxm=? order by id desc", vehCheckLogin.getJylsh(), jyxm);
 
 		if (datas == null || datas.isEmpty() || jyxm.equals("B0")) {
 			return null;

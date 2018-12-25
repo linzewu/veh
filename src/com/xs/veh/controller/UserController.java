@@ -418,6 +418,7 @@ public class UserController {
 		User sessionUser = (User)session.getAttribute("user");
 		User user = this.userManager.loadUser(sessionUser.getId());
 		
+		
 		user.setPassword(user.encodePwd(newPassword));
 		user.setUserState(0);
 		//修改密码，密码有效期延长3个月

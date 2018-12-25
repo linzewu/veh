@@ -1,5 +1,6 @@
 package com.xs.veh.manager;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +103,20 @@ public class BaseParamsManager {
 		data.put("total", count);
 		
 		return data;
+	}
+	
+	public List<BaseParams> getBaseParamByType(String type) {
+		List<BaseParams> bpList = new ArrayList<BaseParams>();
+		List<BaseParams> bps = (List<BaseParams>) servletContext.getAttribute("bps");
+		if(bps==null) {
+			bps=getBaseParams();
+		}
+		for (BaseParams param : bps) {
+			if (param.getType().equals(type)) {
+				bpList.add(param);
+			}
+		}
+		return bpList;
 	}
 
 }

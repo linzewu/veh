@@ -1,6 +1,7 @@
 package com.xs.veh.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.TooManyListenersException;
 
@@ -15,6 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.aspose.words.License;
 import com.xs.common.InitServerCommonUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.Device;
@@ -67,7 +69,7 @@ public class InitListener implements ServletContextListener {
 	public InitListener() {
 	}
 
-	private void init(ServletContext servletContext) {
+	private void init(ServletContext servletContext) throws Exception {
 
 		this.servletContext = servletContext;
 		wac = WebApplicationContextUtils.getWebApplicationContext(servletContext);
@@ -76,6 +78,10 @@ public class InitListener implements ServletContextListener {
 		executor = (ThreadPoolTaskExecutor) wac.getBean("taskExecutor");
 		workPointManager = (WorkPointManager) wac.getBean("workPointManager");
 		initServerCommonUtil = (InitServerCommonUtil) wac.getBean("initServerCommonUtil");
+		
+		InputStream license = InitListener.class.getClassLoader().getResourceAsStream("license.xml");
+    	License aposeLic = new License();
+        aposeLic.setLicense(license);
 	}
 
 	/**

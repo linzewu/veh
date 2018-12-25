@@ -121,8 +121,11 @@ public class CharUtil {
 		
 		System.out.println((char)s[0]);*/
 		
-		System.out.println(CharUtil.getCheckSum("410470"));
 		
+		byte[] b = CharUtil.hexStringToByte("FF0007EE");
+		
+		
+		System.out.println(CharUtil.byte2HexOfString(b));
 	}
 
 	public static String byte2HexOfString(byte[] b) {

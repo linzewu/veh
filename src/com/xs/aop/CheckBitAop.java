@@ -8,6 +8,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -20,41 +22,58 @@ import com.xs.veh.entity.BaseEntity;
 public class CheckBitAop {
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
-	
+
 	@Pointcut("execution(* com.xs.common.MyHibernateTemplate.save*(..))")
-	public void save(){}
+	public void save() {
+	}
+
 	@Pointcut("execution(* com.xs.common.MyHibernateTemplate.update*(..))")
-	public void update(){}
+	public void update() {
+	}
+
 	@Pointcut("execution(* com.xs.common.MyHibernateTemplate.merge*(..))")
-	public void merge(){}
-	
+	public void merge() {
+	}
+
 	/**
 	 * 方法开始执行
-	 * @throws UnsupportedEncodingException 
+	 * 
+	 * @throws UnsupportedEncodingException
 	 */
 	@Before("save() || update()  || merge()")
-	public void doBefore(JoinPoint joinPoint) throws UnsupportedEncodingException,TamperWithDataException {
+	public void doBefore(JoinPoint joinPoint) throws UnsupportedEncodingException, TamperWithDataException {
+		System.out.println("doBefore*********************************************" + joinPoint.getArgs());
 		Object[] params = joinPoint.getArgs();
-		if(params!=null) {
-			for(Object obj:params) {
-				if(obj.getClass().isAnnotationPresent(CheckBit.class)&&obj instanceof BaseEntity) {
-					BaseEntity be =(BaseEntity)obj;					
+		if (params != null) {
+			for (Object obj : params) {
+
+				if (Hibernate.isInitialized(obj)) {
+					hibernateTemplate.initialize(obj);
+					if (obj instanceof HibernateProxy) {
+						obj = (Object) ((HibernateProxy) obj).getHibernateLazyInitializer().getImplementation();
+					}
+
+				}
+
+				System.out.println("class:" + obj.getClass());
+				if (obj.getClass().isAnnotationPresent(CheckBit.class) && obj instanceof BaseEntity) {
+					BaseEntity be = (BaseEntity) obj;
 					String str = be.toString();
 					String md5 = BaseEntity.md5(str);
-					System.out.println("before:"+be.toString());
+					System.out.println("before:" + be.toString() + " md5:" + md5);
 					be.setVehjyw(md5);
-					if(be.getId()!=null) {
-						BaseEntity base = (BaseEntity)this.hibernateTemplate.load(obj.getClass(), be.getId());
+					if (be.getId() != null) {
+						BaseEntity base = (BaseEntity) this.hibernateTemplate.load(obj.getClass(), be.getId());
 						base.checkBit();
-						if(!base.isCheckBitOk()) {							
+						if (!base.isCheckBitOk()) {
 							throw new TamperWithDataException("数据非法篡改!");
-							
+
 						}
 					}
 				}
 			}
 		}
-		
+
 	}
 
 }

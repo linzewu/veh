@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.RequestContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.Deserializers.Base;
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.common.Constant;
@@ -107,6 +108,13 @@ public class BaseParamsController {
 	public @ResponseBody Map getBaseParamsOfPage(Integer page, Integer rows,BaseParams param) {
 		Map data = this.baseParamsManager.getBaseParams(page,rows,param);
 		return data;
+	}
+	
+	@RequestMapping(value = "getBaseParamsByType")
+	@UserOperation(code="getBaseParamsByType",name="根据类型查询数据字典",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
+	public @ResponseBody Map getBaseParamsByType(String type) {
+		List<BaseParams> bpList = this.baseParamsManager.getBaseParamByType(type);
+		return ResultHandler.toMyJSON(Constant.ConstantState.STATE_SUCCESS, "查询成功", bpList);
 	}
 
 }

@@ -1247,6 +1247,9 @@ var report={
 			$("#roadCheck").panel({"href":"/veh/html/report/roadCheck.html",baseInfo:row});
 			$("#zbzlTab").panel({"href":"/veh/html/report/curbWeight.html",baseInfo:row});
 			$("#tab-report").tabs("getSelected").panel("refresh");
+			$("#performanceCk").panel({"href":"/veh/html/report/performanceCk.html",baseInfo:row});
+			$("#performanceCkRep").panel({"href":"/veh/html/report/performanceCkRep.html",baseInfo:row});
+			
 		}
 	},
 	getReport1:function(panelObj,intjycs){

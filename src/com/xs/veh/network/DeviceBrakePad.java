@@ -195,7 +195,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				logger.info("驻车制动率："+CheckDataManager.MathRound1(tczdl));
 				parDataOfAnjian.setTczclh(zclh);
 				parDataOfAnjian.setTczdl(CheckDataManager.MathRound1(tczdl));
-				parDataOfAnjian.setTczdxz();
+				parDataOfAnjian.setTczdxz(vehCheckLogin,false);
 				parDataOfAnjian.setTczdpd();
 				String strpd = "O";
 				if (parDataOfAnjian.getTczdpd() == BrakRollerData.PDJG_BHG) {

@@ -302,7 +302,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 				if(maxzw==brakRollerData.getZw()){
 					parDataOfAnjian.setTczclh(zclh);
 					parDataOfAnjian.setTczdl(CheckDataManager.MathRound1(tczdl));
-					parDataOfAnjian.setTczdxz();
+					parDataOfAnjian.setTczdxz(vehCheckLogin,true);
 					parDataOfAnjian.setTczdpd();
 					if (parDataOfAnjian.getTczdpd() == BrakRollerData.PDJG_HG) {
 						display.sendMessage("检判定结果：O", DeviceDisplay.XP);

@@ -160,7 +160,18 @@ public class WorkPointThread extends Thread {
 						// 普通单项检测
 						Map<String,Object> param=new HashMap<String,Object>();
 						if(device.getType()==Device.ZDJCSB){
-							BrakRollerData brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
+							BrakRollerData brakRollerData;
+							/*if(vehCheckLogin.getJycs()==1) {*/
+								brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
+							/*}else {
+								BrakRollerData weightBrakRollerData = checkDataManager.getLastBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
+								brakRollerData =new BrakRollerData();
+								brakRollerData.setZlh(weightBrakRollerData.getZlh());
+								brakRollerData.setYlh(weightBrakRollerData.getYlh());
+								brakRollerData.setJzzlh(weightBrakRollerData.getJzzlh());
+								brakRollerData.setJzylh(weightBrakRollerData.getJzylh());
+							}*/
+							
 							param.put("brakRollerData", brakRollerData);
 							
 							if(vehFlow.getJyxm().equals("B0")){

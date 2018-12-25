@@ -437,6 +437,11 @@ public class VehManager {
 				Integer deviceId = sb.getInt("id");
 
 				Device device = hibernateTemplate.get(Device.class, deviceId);
+				
+				//如果复检，则不需要重新称重
+				/*if(device.getType()== Device.CZJCSB && vcl.getJycs()==1) {
+					continue;
+				}*/
 
 				String strJyxm = getDeivceItem(device, process);
 
