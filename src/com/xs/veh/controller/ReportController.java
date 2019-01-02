@@ -5,17 +5,21 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,11 +30,15 @@ import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.Insurance;
+import com.xs.veh.entity.RepairCheck;
 import com.xs.veh.entity.RoadCheck;
+import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.RepairCheckManager;
 import com.xs.veh.manager.RoadCheackManager;
 
+import net.sf.json.JSONObject;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -43,6 +51,12 @@ public class ReportController {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "repairCheckManager")
+	private RepairCheckManager repairCheckManager;
+	
+	@Autowired
+	private HttpSession session;
 
 	@RequestMapping(value = "getReport1", method = RequestMethod.POST)
 	public @ResponseBody Map getReport1(@RequestParam String jylsh,int jycs) {
@@ -221,6 +235,36 @@ public class ReportController {
 		
 		return ResultHandler.toSuccessJSON("更新成功！");
 		
+	}
+	
+	@RequestMapping(value = "getRepairCheck", method = RequestMethod.POST)
+	public @ResponseBody RepairCheck getRepairCheck(@RequestParam String jylsh) {
+		RepairCheck check = this.repairCheckManager.getRepairCheck(jylsh);
+		return check;
+	}
+	
+	@RequestMapping(value = "saveRepairCheck", method = RequestMethod.POST)
+	public @ResponseBody String saveRepairCheck(RepairCheck repairCheck) throws JsonProcessingException {
+		User sessionUser = (User)session.getAttribute("user");
+		repairCheck.setJyr(sessionUser.getUserName());
+		repairCheck = repairCheckManager.saveRepairCheck(repairCheck);
+		Map resulMap = ResultHandler.toSuccessJSON("保存成功！");
+		resulMap.put("id", repairCheck.getId());
+		ObjectMapper objectMapper = new ObjectMapper();
+	    String jsonString=objectMapper.writeValueAsString(resulMap);
+		return jsonString;
+	}
+	
+	
+	@RequestMapping(value = "getRepairReport", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> getRepairReport(@RequestParam String jylsh,Integer jycs) {
+		RepairCheck check = this.repairCheckManager.getRepairCheck(jylsh);
+		Map<String,Object> data = new HashMap<String,Object>();
+		data.put("repairData", check);
+		Map data2 = getReport1(jylsh,jycs);
+		
+		data.put("data2", JSONObject.fromObject(data2));
+		return data;
 	}
 
 }

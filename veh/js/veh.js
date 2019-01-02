@@ -1011,6 +1011,7 @@ var report={
 			$("#commit").panel({"href":"/veh/html/report/commit.html",baseInfo:row});
 			$("#roadCheck").panel({"href":"/veh/html/report/roadCheck.html",baseInfo:row});
 			$("#zbzlTab").panel({"href":"/veh/html/report/curbWeight.html",baseInfo:row});
+			$("#repairCheck").panel({"href":"/veh/html/report/repairCheck.html",baseInfo:row});
 			$("#tab-report").tabs("getSelected").panel("refresh");
 		}
 	},

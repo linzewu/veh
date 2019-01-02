@@ -1,0 +1,604 @@
+<style>
+.tdPad{margin-top: 0px;}
+.tgX  {border-collapse:collapse;border-spacing:0; margin: 0;}
+.tgX td{font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+</style>
+
+<div class="easyui-layout" data-options="fit:true">	 
+	 	<div id="repairTab" class="easyui-tabs" data-options="fit:true,border:0">
+	 		<div title="资料录入">
+	 		<form method="post" id="repairCheckForm" >
+	 			<table style="margin: 0 auto;padding-top: 50px;width: 800px;" >
+				<TBODY><tr>
+							<td colspan="7" style="text-align: center; font-size: 24px;">二级维护竣工检验记录单<br><br></td>
+						</tr>
+					<tr>
+						<td colspan="7">检验流水号：<span id="repair_jylsh"></span>&nbsp;&nbsp;
+						托修方：
+						<input name="txf" id="txf"  class="easyui-textbox">&nbsp;&nbsp;
+						合同编号：
+						<input name="htbh" id="htbh"  class="easyui-textbox"></td>
+					</tr>
+					<TR>
+						<TD rowspan="6">外观状况</TD>
+						<TD >清洁</TD>
+						<TD ><input id="wg1" name="wg1"  data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >发动机装备</TD>
+						<TD ><input id="wg7" name="wg7"  data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >离合器</TD>
+						<TD ><input id="wg13" name="wg13"  data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+					</TR>
+					<TR>
+						<TD >紧固</TD>
+						<TD ><input id="wg2" name="wg2"  data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >转向机构</TD>
+						<TD ><input id="wg8" name="wg8"  data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >变速器,传动轴,主减速器</TD>
+						<TD ><input id="wg14" name="wg14"  data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+					</TR>
+					<TR>
+						<TD >润滑</TD>
+						<TD ><input id="wg3" name="wg3" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >轮胎</TD>
+						<TD ><input id="wg9" name="wg9" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >牵引连接装置和锁止机构</TD>
+						<TD ><input id="wg15" name="wg15" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+					</TR>
+					<TR>
+						<TD >密封</TD>
+						<TD ><input id="wg4" name="wg4" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >悬架</TD>
+						<TD ><input id="wg10" name="wg10" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >前照灯</TD>
+						<TD ><input id="wg16" name="wg16" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+					</TR>
+					<TR>
+						<TD >附属设施</TD>
+						<TD ><input id="wg5" name="wg5" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >减震器</TD>
+						<TD ><input id="wg11" name="wg11" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >信号指示装置</TD>
+						<TD ><input id="wg17" name="wg17" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+					</TR>
+					<TR>
+						<TD >发动机工作状况</TD>
+						<TD ><input id="wg6" name="wg6" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >车桥</TD>
+						<TD ><input id="wg12" name="wg12" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+						<TD >仪表</TD>
+						<TD ><input id="wg18" name="wg18" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></TD>
+					</TR>
+					<tr>
+						<td>故障诊断</td>
+						<td>车载诊断系统(OBD)故障信息</td>
+						<td ><input type="radio"  name="gz1" value="0" >无
+							<input type="radio" name="gz1" value="1" >有
+						</td>
+						<td>故障信息描述</td>
+						<td colspan="2"><input name="gz2" id="gz2"  class="easyui-textbox"></td>
+						<td><input id="gz3" name="gz3" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></td>
+					</tr>
+					<tr>
+						<td rowspan="4">排气污染物</td>
+						<td rowspan="2">汽油车</td>
+						<td>怠速</td>
+						<td colspan="3">CO/%:<input name="wr1" id="wr1"  class="easyui-textbox" style="width: 40px;">      HC/X10:<input name="wr2" id="wr2"  class="easyui-textbox" style="width: 40px;"></td>
+						<td><input id="wr3" name="wr3" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></td>
+					</tr>
+					<tr>
+						<td>高怠速</td>
+						<td colspan="3">CO/%:<input name="wr4" id="wr4"  class="easyui-textbox" style="width: 40px;">      HC/X10:<input name="wr5" id="wr5"  class="easyui-textbox" style="width: 40px;"></td>
+						<td><input id="wr6" name="wr6" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></td>
+					</tr>
+					
+					<tr>
+						<td rowspan="2">柴油车</td>
+						<td rowspan="2">自由加速</td>
+						<td colspan="2">光吸收系数/m:①<input name="wr7" id="wr7"  class="easyui-textbox" style="width: 40px;">②<input name="wr8" id="wr8"  class="easyui-textbox" style="width: 40px;">③<input name="wr9" id="wr9"  class="easyui-textbox" style="width: 40px;"></td>
+						<td>平均/m:<input name="wr10" id="wr10"  class="easyui-textbox" style="width: 40px;"></td>
+						<td><input id="wr11" name="wr11" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></td>
+					</tr>
+					<tr>
+						<td colspan="2">烟度值/BSU:①<input name="wr12" id="wr12"  class="easyui-textbox" style="width: 40px;">②<input name="wr13" id="wr13"  class="easyui-textbox" style="width: 40px;">③<input name="wr14" id="wr14"  class="easyui-textbox" style="width: 40px;"></td>
+						<td>平均/BSU:<input name="wr15" id="wr15"  class="easyui-textbox" style="width: 40px;"></td>
+						<td><input id="wr16" name="wr16" data-options="data:comm.getBaseParames('qxpj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox" style="width: 40px;"></td>
+					</tr>
+					<tr>
+						<td>检验结论:</td>
+						<td colspan="6"><input name="jyjl" id="jyjl"  class="easyui-textbox" style="width: 240px;"></td>
+					</tr>
+					<tr>
+						<td colspan="7" style="text-align: center;height: 80px;">
+							<input name="jylsh" type="hidden">
+							<input name="clxh" type="hidden">
+							<input name="hphm" type="hidden">
+						
+							<input name="id" type="hidden">
+							<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="repairCheckSave()">保存</a>
+						</td>
+					</tr>
+				</TBODY>
+				</TABLE>
+				</form>
+	 		</div>
+	 		<!-- 报告单 -->
+	 		<div title="报告单">
+	 			<div style="text-align: center;margin-top: 10px;"><a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_areaRepair'))">打印</a></div>
+				<DIV id="print_areaRepair">
+				<DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 20px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px"><span id="report3_jyjgmc"></span>二级维护竣工检验记录单 </DIV>
+					<table class="tg" style="table-layout: fixed; width: 720px">
+						<colgroup>
+						<col style="width: 40px">
+						<col style="width: 60px">
+						<col style="width: 80px">
+						<col style="width: 50px">
+						<col style="width: 150px">
+						<col style="width: 90px">
+						<col style="width: 190px">
+						<col style="width: 60px">
+						</colgroup>
+						<tr align="center">
+						    <td colspan="2">托修方：</td>
+    						<td name="repair-base-txf" colspan="2"></td>
+    						<td>车牌号：</td>
+    						<td name="repair-base-hphm"></td>
+    						<td>车型：</td>
+    						<td name="repair-base-clxh"></td>
+						  </tr>
+						 <tr align="center">
+						 	<td rowspan="7">外观状况</td>
+						 	<td colspan="2">项目</td>
+						 	<td>评价</td>
+						 	<td>项目</td>
+						 	<td>评价</td>
+						 	<td>项目</td>
+						 	<td>评价</td>
+						 </tr>
+						 <tr>
+						 	<td colspan="2">清洁</td>
+						 	<td name="repair-pj-wg1"></td>
+						 	<td>发动机装备</td>
+						 	<td name="repair-pj-wg7"></td>
+						 	<td>离合器</td>
+						 	<td name="repair-pj-wg13"></td>
+						 </tr>
+						 <tr>
+						 	<td colspan="2">紧固</td>
+						 	<td name="repair-pj-wg2"></td>
+						 	<td>转向机构</td>
+						 	<td name="repair-pj-wg8"></td>
+						 	<td>变速器、传动轴、主减速器</td>
+						 	<td name="repair-pj-wg14"></td>
+						 </tr>
+						 <tr>
+						 	<td colspan="2">润滑</td>
+						 	<td name="repair-pj-wg3"></td>
+						 	<td>轮胎</td>
+						 	<td name="repair-pj-wg9"></td>
+						 	<td>牵引连接装置和锁止机构</td>
+						 	<td name="repair-pj-wg15"></td>
+						 </tr>
+						 <tr>
+						 	<td colspan="2">密封</td>
+						 	<td name="repair-pj-wg4"></td>
+						 	<td>悬架</td>
+						 	<td name="repair-pj-wg10"></td>
+						 	<td>前照灯</td>
+						 	<td name="repair-pj-wg16"></td>
+						 </tr>
+						 <tr>
+						 	<td colspan="2">附属设施</td>
+						 	<td name="repair-pj-wg5"></td>
+						 	<td>减震器</td>
+						 	<td name="repair-pj-wg11"></td>
+						 	<td>信号指示装置</td>
+						 	<td name="repair-pj-wg17"></td>
+						 </tr>
+						 <tr>
+						 	<td colspan="2">发动机工作状况</td>
+						 	<td name="repair-pj-wg6"></td>
+						 	<td>车桥</td>
+						 	<td name="repair-pj-wg12"></td>
+						 	<td>仪表</td>
+						 	<td name="repair-pj-wg18"></td>
+						 </tr>
+						 <tr>
+						 	<td>故障诊断</td>
+						 	<td colspan="2">车载诊断系统(OBD)故障信息</td>
+						 	<td colspan="4"><input type="checkbox" disabled="disabled" id="isgz1" name="isgz"/>无&nbsp;<input type="checkbox" disabled="disabled" id="isgz2" name="isgz"/>有&nbsp;故障信息描述：<span id="repair-base-gz2" ></span></td>
+						 	<td>评价：<span id="repair-pj-gz3" ></span></td>
+						 </tr>
+						 
+					</table>
+					<table class="tg"  style="table-layout: fixed; width: 720px; margin-top: 0px; ">
+						 		<colgroup>
+								<col style="width: 40px">	
+								
+								</colgroup>				    		
+								<tr>
+									<td rowspan="23" style="border-top: 0px">性能检测</td>
+									<td rowspan="2" colspan="4" style="border-top: 0px">转向盘最大自由转动量/(︒)</td>
+									<td rowspan="2" style="border-top: 0px"></td>
+									<td rowspan="2" style="border-top: 0px">评价：</td>
+									<td rowspan="2" colspan="3" style="border-top: 0px">转向轮横向侧滑量/(m/km)</td>
+									<td colspan="4" style="border-top: 0px">第一转向轴：<label id="a1"></td>
+									<td colspan="1" style="border-top: 0px;width: 49px">评价：<label id="a1_pd"></label></td>
+								</tr>
+								<tr>
+								    <td colspan="4">第二转向轴</td>
+									<td colspan="1">评价：</td>
+								</tr>
+								<tr>									
+									<td rowspan="11">制动性能</td>
+									<td rowspan="8">台架</td>
+									<td colspan="2">车轴</td>
+									<td>一轴</td>
+									<td>二轴</td>
+									<td colspan="2">三轴</td>
+									<td colspan="2">四轴</td>
+									<td colspan="2">五轴</td>
+									<td colspan="2">六轴</td>
+								</tr>
+								<tr>
+									<td rowspan="2">轴制动率/%</td>
+									<td>结果</td>
+									<td><label class="value" name="ZD_B1-kzxczdl"></label></td>
+									<td name="ZD_B2-kzxczdl"></td>
+									<td colspan="2" name="ZD_B3-kzxczdl"></td>
+									<td colspan="2" name="ZD_B4-kzxczdl"></td>
+									<td colspan="2" name="ZD_B5-kzxczdl"></td>
+									<td colspan="2" name="ZD_B6-kzxczdl"></td>
+								</tr>
+								<tr>
+									<td>评价</td>
+									<td name="ZD_B1-kzzdlpd"></td>
+									<td name="ZD_B2-kzzdlpd"></td>
+									<td colspan="2" name="ZD_B3-kzzdlpd"></td>
+									<td colspan="2" name="ZD_B4-kzzdlpd"></td>
+									<td colspan="2" name="ZD_B5-kzzdlpd"></td>
+									<td colspan="2" name="ZD_B6-kzzdlpd"></td>
+								</tr>
+								
+								<tr>
+									<td rowspan="2">制动不平衡率/%</td>
+									<td>结果</td>
+									<td name="ZD_B1-kzbphl"></td>
+									<td name="ZD_B2-kzbphl"></td>
+									<td colspan="2" name="ZD_B3-kzbphl"></td>
+									<td colspan="2" name="ZD_B4-kzbphl"></td>
+									<td colspan="2" name="ZD_B5-kzbphl"></td>
+									<td colspan="2" name="ZD_B6-kzbphl"></td>
+								</tr>
+								<tr>
+									<td>评价</td>
+									<td name="ZD_B1-kzbphlpd"></td>
+									<td name="ZD_B2-kzbphlpd"></td>
+									<td colspan="2" name="ZD_B3-kzbphlpd"></td>
+									<td colspan="2" name="ZD_B4-kzbphlpd"></td>
+									<td colspan="2" name="ZD_B5-kzbphlpd"></td>
+									<td colspan="2" name="ZD_B6-kzbphlpd"></td>
+								</tr>
+								<tr>
+									<td rowspan="3">整车参数</td>
+									<td>项目</td>
+									<td colspan="4">整车制动率/%</td>
+									<td colspan="6">驻车制动率/%</td>
+								</tr>
+								<tr>
+									<td>结果</td>
+									<td colspan="4"><label class="value" name="other_zczdl"></label></label></td>
+									<td colspan="6"><label class="value" name="par_tczdl"></label></td>
+								</tr>
+								<tr>
+									<td>评价</td>
+									<td colspan="4"><label class="value" name="other_zczdpd"></td>
+									<td colspan="6"><label class="value" name="par_tczdpd"></label></td>
+								</tr>
+								<tr>
+									<td rowspan="3">路试</td>
+									<td rowspan="3">初速度/(km/h)</td>
+									<td>参数</td>
+									<td colspan="2">制动距离/m</td>
+									<td colspan="4">MFDD/(m/s)</td>
+									<td colspan="4">制动稳定性</td>
+								</tr>
+								<tr>
+									<td>结果</td>
+									<td colspan="2"><label name="road_kzzdjl"></label></td>
+									<td colspan="4"><label name="road_mfdd"></label></td>
+									<td colspan="4"><label name="road_zdwdx"></label></td>
+								</tr>
+								<tr>
+									<td>评价</td>
+									<td colspan="2"><label name="road_kzzdjlpd"></label></td>
+									<td colspan="4"><label name="road_mfddpd"></label></td>
+									<td colspan="4"><label name="road_zdwdxpd"></label></td>
+								</tr>
+								<tr>
+									
+									<td rowspan="6" colspan="2">前照灯性能</td>
+									<td rowspan="2">参数</td>
+									<td rowspan="2">灯高/mm</td>
+									<td colspan="2">远光光强/cd</td>
+									<td colspan="4">远光偏移/(mm/10m)</td>
+									<td colspan="4">近光偏移/(mm/10m)</td>									
+								</tr>
+								<tr>
+									<td>结果/cd</td>
+									<td>评价</td>
+									<td>垂直</td>
+									<td>评价</td>
+									<td>水平</td>
+									<td>评价</td>
+									<td>垂直</td>
+									<td>评价</td>
+									<td>水平</td>
+									<td>评价</td>
+								</tr>
+								<tr>
+									<td>左外</td>
+									<td name="H1_Y_dg"></td>
+									<td name="H1_Y_gq"></td>
+									<td name="H1_Y_gqpd"></td>
+									<td name="H1_Y_czpy"></td>
+									<td name="H1_Y_czpypd"></td>
+									<td name="H1_Y_sppc"></td>
+									<td></td>
+									<td name="H1_J_czpy"></td>
+									<td name="H1_J_czpypd"></td>
+									<td name="H1_J_sppc"></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>左内</td>
+									<td name="H2_Y_dg"></td>
+									<td name="H2_Y_gq"></td>
+									<td name="H2_Y_gqpd"></td>
+									<td name="H2_Y_czpy"></td>
+									<td name="H2_Y_czpypd"></td>
+									<td name="H2_Y_sppc"></td>
+									<td></td>
+									<td name="H2_J_czpy"></td>
+									<td name="H2_J_czpypd"></td>
+									<td name="H2_J_sppc"></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>右外</td>
+									<td name="H3_Y_dg"></td>
+									<td name="H3_Y_gq"></td>
+									<td name="H3_Y_gqpd"></td>
+									<td name="H3_Y_czpy"></td>
+									<td name="H3_Y_czpypd"></td>
+									<td name="H3_Y_sppc"></td>
+									<td></td>
+									<td name="H3_J_czpy"></td>
+									<td name="H3_J_czpypd"></td>
+									<td name="H3_J_sppc"></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>右内</td>
+									<td name="H4_Y_dg"></td>
+									<td name="H4_Y_gq"></td>
+									<td name="H4_Y_gqpd"></td>
+									<td name="H4_Y_czpy"></td>
+									<td name="H4_Y_czpypd"></td>
+									<td name="H4_Y_sppc"></td>
+									<td></td>
+									<td name="H4_J_czpy"></td>
+									<td name="H4_J_czpypd"></td>
+									<td name="H4_J_sppc"></td>
+									<td></td>
+								</tr>
+								
+								<tr>
+									<td colspan="2" rowspan="4">排气污染物</td>
+									<td rowspan="2">汽油车</td>
+									<td>怠速</td>
+									<td colspan="2">CO/%:<span id="repair-base-wr1" ></span></td>
+									<td colspan="4">HC/X10:<span id="repair-base-wr2" ></span></td>
+									<td colspan="4">评价:<span id="repair-pj-wr3" ></span></td>
+								</tr>
+								<tr>
+									<td>高怠速</td>
+									<td colspan="2">CO/%:<span id="repair-base-wr4" ></span></td>
+									<td colspan="4">HC/X10:<span id="repair-base-wr5" ></span></td>
+									<td colspan="4">评价:<span id="repair-pj-wr6" ></span></td>
+								</tr>
+								<tr>
+									<td rowspan="2">柴油车</td>
+									<td rowspan="2">自由加速</td>
+									<td colspan="4">光吸收系数/m：①<span id="repair-base-wr7" ></span>②<span id="repair-base-wr8" ></span>③<span id="repair-base-wr9" ></span></td>
+									<td colspan="4">平均：<span id="repair-base-wr10" ></span></td>
+									<td colspan="2">评价:<span id="repair-pj-wr11" ></span></td>
+								</tr>
+								<tr>
+									<td colspan="4">烟度值/BSU：①<span id="repair-base-wr12" ></span>②<span id="repair-base-wr13" ></span>③<span id="repair-base-wr14" ></span></td>
+									<td colspan="4">平均/BSU：<span id="repair-base-wr15" ></span></td>
+									<td colspan="2">评价:<span id="repair-pj-wr16" ></span></td>
+								</tr>
+								<tr>
+									<td colspan="15">检验评论：<span id="repair-base-jyjl" ></span><br/>
+										<div align="right">检验员签字：<span id="repair-base-jyr" ></span>          年    月     日</div>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="15">
+										注 1：检验数据在“结果”栏填写。合格在“评价”栏划“O”，不合格在“评价”栏划“X”，无此项目填“-”。<br/>
+										注 2：制动性能检验选择“台架”或“路试”。路试制动性能采用“制动距离”或“充分发出的平均减速度 MFDD”评价。
+									</td>
+								</tr>
+								</table>
+						 	
+				</div>
+	 		</div>	 		
+	 	</div>	
+</div>
+
+<script type="text/javascript">
+var reportData = $("#checkingVeh").datagrid("getSelected");
+	$(function(){
+		
+		$("#repair_jylsh").text(reportData.jylsh);
+		$("#repair_hphm").text(reportData.hphm);
+		
+		$.post("/veh/report/getRepairCheck",{jylsh:reportData.jylsh},function(data){
+			 $("#repairCheckForm").form("load",data);
+		},"json");
+
+		$("#repairCheckForm").form({
+			url:'/veh/report/saveRepairCheck',
+			success:function(data){
+				data=$.parseJSON(data);
+				if(data.state == "1"){
+					$("#repairCheckForm [name=id]").val(data.id);
+					$.messager.alert("提示","保存成功");
+				}
+		    }
+		});
+		
+		$('#repairTab').tabs({
+			onSelect: function(title,index){
+				
+				if(title == "报告单"){
+					$.post("/veh/report/getRepairReport",{jylsh:reportData.jylsh,jycs:reportData.jycs},function(data){
+						
+						if(data.repairData != null){
+							
+							if(data.repairData['gz1'] == "0"){
+								$("#isgz1").prop("checked",true);//.attr("checked",true);
+								$("#isgz2").prop("checked",false);//.attr("checked",false);
+							}else if (data.repairData['gz1'] == "1"){
+								$("#isgz2").prop("checked",true);//.attr("checked",true);
+								$("#isgz1").prop("checked",false);//.attr("checked",false);
+							}
+							$("#print_areaRepair [name^='repair-base-']").each(function(i,n){
+								var name = $(n).attr("name").replace("repair-base-","");
+								
+								$(n).text(data.repairData[name]);
+							});
+							
+							$("#print_areaRepair [id^='repair-base-']").each(function(i,n){
+								var name = $(n).attr("id").replace("repair-base-","");
+								
+								$(n).text(data.repairData[name]);
+							});
+							
+							$("#print_areaRepair [name^='repair-pj-']").each(function(i,n){
+								var name = $(n).attr("name").replace("repair-pj-","");
+								
+								$(n).text(comm.getParamNameByValue("qxpj",data.repairData[name]));
+							});
+							
+							$("#print_areaRepair [id^='repair-pj-']").each(function(i,n){
+								var name = $(n).attr("id").replace("repair-pj-","");
+								
+								$(n).text(comm.getParamNameByValue("qxpj",data.repairData[name]));
+							});
+						}
+						if(data.data2){
+							$.each(data.data2,function(key,value){
+								
+								if(key.indexOf("ZD_")==0){
+									$("[name='"+key+"-"+"kzxczdl']").text(value.kzxczdl);
+									$("[name='"+key+"-"+"kzzdlpd']").text(comm.getParamNameByValue("qxpj",value.kzzdlpd));
+									
+									$("[name='"+key+"-"+"kzbphl']").text(value.kzbphl);
+									$("[name='"+key+"-"+"kzbphlpd']").text(comm.getParamNameByValue("qxpj",value.kzbphlpd));
+									
+								}
+								
+								if(key.indexOf("A1")==0){
+									$("#a1_pd").text(comm.getParamNameByValue("qxpj",value.chpd));
+									$("#a1").text(value.sideslip);
+								}
+								
+								if(key.indexOf("other")==0){
+									$("[name='"+key+"_"+"zczdl']").text(value.zczdl);
+									$("[name='"+key+"_"+"zczdpd']").text(comm.getParamNameByValue("qxpj",value.zczdpd));
+								}
+								
+								if(key.indexOf("par")==0){
+									$("[name='"+key+"_"+"tczdl']").text(value.tczdl);
+									$("[name='"+key+"_"+"tczdpd']").text(comm.getParamNameByValue("qxpj",value.tczdpd));
+								}
+								
+								if(key.indexOf("H")==0){
+									$("[name='"+key+"_"+"dg']").text(value.dg);
+									$("[name='"+key+"_"+"gq']").text(value.gq);
+									$("[name='"+key+"_"+"gqpd']").text(comm.getParamNameByValue("qxpj",value.gqpd));
+									
+									$("[name='"+key+"_"+"czpy']").text(value.czpy);
+									$("[name='"+key+"_"+"czpypd']").text(comm.getParamNameByValue("qxpj",value.czpypd));
+									
+									$("[name='"+key+"_"+"sppc']").text(value.sppc);
+								}
+								
+								if(key.indexOf("roadChecks")==0){
+									$.each(value,function(roadkey,roadvalue){
+										if(roadvalue.yqjyxm.indexOf("空载制动距离") == 0){
+											$("[name='road_kzzdjl']").text(roadvalue.yqjyjg);
+											$("[name='road_kzzdjlpd']").text(comm.getParamNameByValue("qxpj",roadvalue.yqjgpd));
+										}
+										if(roadvalue.yqjyxm.indexOf("空载MFFDD") == 0){
+											$("[name='road_mfdd']").text(roadvalue.yqjyjg);
+											$("[name='road_mfddpd']").text(comm.getParamNameByValue("qxpj",roadvalue.yqjgpd));
+										}
+										if(roadvalue.yqjyxm.indexOf("制动稳定性") == 0){
+											$("[name='road_zdwdx']").text(roadvalue.yqjyjg);
+											$("[name='road_zdwdxpd']").text(comm.getParamNameByValue("qxpj",roadvalue.yqjgpd));
+										}
+									});
+								}
+								
+							});
+						}
+						
+					},"json");
+				}
+			  }
+			});
+		
+		
+
+		
+		
+	});
+
+	function repairCheckSave(){
+
+		 var flag = $("#repairCheckForm").form("validate");
+		 if(!flag){
+			return;
+		}
+		$("#repairCheckForm [name=jylsh]").val(reportData.jylsh);
+        $("#repairCheckForm [name=hphm]").val(reportData.hphm);
+        $("#repairCheckForm [name=clxh]").val(reportData.clxh);
+		$("#repairCheckForm").form("submit");
+	}
+	
+</script>
