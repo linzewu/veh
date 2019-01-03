@@ -13,6 +13,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -137,8 +138,8 @@ public abstract class BaseEntity {
 			String bit1 = md5(this.toString());
 			System.out.println(this.toString());
 			System.out.println(bit1+"\t" +vehjyw);
-			System.out.println(vehjyw != null && !vehjyw.equals(bit1));
-			if(vehjyw != null && !vehjyw.equals(bit1)) {
+			System.out.println((!StringUtils.isEmpty(vehjyw))&& !vehjyw.equals(bit1));
+			if((!StringUtils.isEmpty(vehjyw))&& !vehjyw.equals(bit1)) {
 				checkBitOk=false;
 			}
 		} catch (UnsupportedEncodingException e) {
