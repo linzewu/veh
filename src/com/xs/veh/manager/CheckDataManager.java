@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -466,7 +467,7 @@ public class CheckDataManager {
 		// 驻车制动率判定
 		if (parDataOfAnjian != null) {
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("(驻车制动率)(%)");
+			dcj1.setYqjyxm("驻车制动率(%)");
 			dcj1.setYqjyjg(parDataOfAnjian.getTczdl() == null ? "" : parDataOfAnjian.getTczdl().toString());
 			dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : "≥" + parDataOfAnjian.getTczdxz());
 			dcj1.setYqjgpd(parDataOfAnjian.getTczdpd() == null ? "" : parDataOfAnjian.getTczdpd().toString());
@@ -773,6 +774,16 @@ public class CheckDataManager {
 		deviceCheckJudeg.setJycs(vehCheckLogin.getJycs());
 		deviceCheckJudeg.setJyjgbh(vehCheckLogin.getJyjgbh());
 	}
+	
+	public static boolean isInteger(String str) {  
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  
+        return pattern.matcher(str).matches();  
+	}
+	
+	public static void main(String[] age) {
+		System.out.println(isInteger("+015"));
+		System.out.println(String.valueOf(Integer.parseInt("+015")));
+	}
 
 	private Integer createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, Integer xh) {
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
@@ -810,20 +821,30 @@ public class CheckDataManager {
 					}
 				}
 
-				/*if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
-						&& syxz.equals("A"))) {*/
-					if(lightData.getGx() == LightData.GX_JGD) {
+				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
+						&& syxz.equals("A"))) {
+					//if(lightData.getGx() == LightData.GX_JGD) {
 						DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 						dcj2.setYqjyxm(
 								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)");
-						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : lightData.getCzpc().toString());
+						
+						String czpc = lightData.getCzpc().toString().trim();
+						if(isInteger(czpc)) {
+							Integer intczpc =Integer.parseInt(czpc);
+							if(intczpc>0) {
+								czpc="+"+String.valueOf(intczpc);
+							}else {
+								czpc=String.valueOf(intczpc);
+							}
+						}
+						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : czpc);
 						dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
 						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
 						dcj2.setXh(xh);
 						xh++;
 						this.hibernateTemplate.save(dcj2);
-					}
-				//}
+					//}
+				}
 
 			}
 
