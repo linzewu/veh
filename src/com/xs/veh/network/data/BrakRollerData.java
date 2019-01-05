@@ -980,8 +980,15 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		String cllx =vehCheckLogin.getCllx();
 		
+		Integer zzl = vehCheckLogin.getZzl();
+		
 		//如果动态轮荷有值 而且是乘用车 则取动态轮荷
 		if(this.getZdtlh()!=null&&this.getYdtlh()!=null&&cllx.indexOf("K")==0){
+			zh=this.getZdtlh()+this.getYdtlh();
+		}
+		
+		//貌似新国标
+		if(this.getZdtlh()!=null&&this.getYdtlh()!=null&&zzl<=3500){
 			zh=this.getZdtlh()+this.getYdtlh();
 		}
 		
