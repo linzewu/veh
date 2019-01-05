@@ -670,7 +670,7 @@ public class CheckDataManager {
 			Integer zzl = vehCheckLogin.getZzl();
 			String zzly = vehCheckLogin.getZzly();
 
-			if (vehCheckLogin.getJyxm().indexOf("R1") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R1") >= 0) {
 				// 路试初速度
 				DeviceCheckJudeg deviceCheckJudegLscsd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegLscsd, vehCheckLogin);
@@ -741,7 +741,7 @@ public class CheckDataManager {
 
 			}
 
-			if (vehCheckLogin.getJyxm().indexOf("R2") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R2") >= 0) {
 				// 驻车制动
 				DeviceCheckJudeg deviceCheckJudegZcpd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegZcpd, vehCheckLogin);
@@ -755,7 +755,7 @@ public class CheckDataManager {
 				this.hibernateTemplate.save(deviceCheckJudegZcpd);
 			}
 
-			if (vehCheckLogin.getJyxm().indexOf("R3") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R3") >= 0) {
 				DeviceCheckJudeg deviceCheckJudegcsb = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegcsb, vehCheckLogin);
 				deviceCheckJudegcsb.setYqjyxm("路试车速表");
