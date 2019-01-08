@@ -665,11 +665,11 @@ public class CheckDataManager {
 			Integer zzl = vehCheckLogin.getZzl();
 			String zzly = vehCheckLogin.getZzly();
 
-			if (vehCheckLogin.getJyxm().indexOf("R1") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R1") >= 0) {
 				// 路试初速度
 				DeviceCheckJudeg deviceCheckJudegLscsd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegLscsd, vehCheckLogin);
-				deviceCheckJudegLscsd.setYqjyxm("制动初速度（KM/H）");
+				deviceCheckJudegLscsd.setYqjyxm("制动初速度（km/h）");
 				deviceCheckJudegLscsd.setYqjyjg(roadCheck.getZdcsd().toString());
 				deviceCheckJudegLscsd.setYqjgpd(roadCheck.getLscsdpd().toString());
 				deviceCheckJudegLscsd.setYqbzxz("≥" + roadCheck.getLscsdxz().toString());
@@ -736,7 +736,7 @@ public class CheckDataManager {
 
 			}
 
-			if (vehCheckLogin.getJyxm().indexOf("R2") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R2") >= 0) {
 				// 驻车制动
 				DeviceCheckJudeg deviceCheckJudegZcpd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegZcpd, vehCheckLogin);
@@ -750,7 +750,7 @@ public class CheckDataManager {
 				this.hibernateTemplate.save(deviceCheckJudegZcpd);
 			}
 
-			if (vehCheckLogin.getJyxm().indexOf("R3") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R3") >= 0) {
 				DeviceCheckJudeg deviceCheckJudegcsb = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegcsb, vehCheckLogin);
 				deviceCheckJudegcsb.setYqjyxm("路试车速表");
@@ -826,7 +826,7 @@ public class CheckDataManager {
 					//if(lightData.getGx() == LightData.GX_JGD) {
 						DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 						dcj2.setYqjyxm(
-								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)");
+								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)量");
 						
 						String czpc = lightData.getCzpc().toString().trim();
 						if(isInteger(czpc)) {
