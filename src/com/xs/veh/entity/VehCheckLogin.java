@@ -24,7 +24,7 @@ import net.sf.json.JSONObject;
 @Entity
 @Table(name = "TM_VehCheckLogin")
 @JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "fieldHandler" })
-@CheckBit
+//@CheckBit
 public class VehCheckLogin extends BaseEntity implements Serializable {
 
 	/**

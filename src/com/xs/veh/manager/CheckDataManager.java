@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -14,6 +15,7 @@ import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.MyHibernateTemplate;
 import com.xs.veh.entity.CheckEvents;
@@ -474,7 +476,7 @@ public class CheckDataManager {
 		// 驻车制动率判定
 		if (parDataOfAnjian != null) {
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("整车手刹制动率");
+			dcj1.setYqjyxm("驻车制动率(%)");
 			dcj1.setYqjyjg(parDataOfAnjian.getTczdl() == null ? "" : parDataOfAnjian.getTczdl().toString());
 			dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : "≥" + parDataOfAnjian.getTczdxz());
 			dcj1.setYqjgpd(parDataOfAnjian.getTczdpd() == null ? "" : parDataOfAnjian.getTczdpd().toString());
@@ -504,7 +506,7 @@ public class CheckDataManager {
 		if (sideslipDatas != null && !sideslipDatas.isEmpty()) {
 			SideslipData sideslipData = sideslipDatas.get(0);
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("侧滑检测值(m/km)");
+			dcj1.setYqjyxm("转向轮横向侧滑值(m/km)");
 			dcj1.setYqjyjg(sideslipData.getSideslip() == null ? "" : sideslipData.getSideslip().toString());
 			dcj1.setYqbzxz(sideslipData.getChxz().replace(",", "~"));
 			dcj1.setYqjgpd(sideslipData.getChpd() == null ? "" : sideslipData.getChpd().toString());
@@ -521,7 +523,7 @@ public class CheckDataManager {
 		if (speedDatas != null && !speedDatas.isEmpty()) {
 			SpeedData speedData = speedDatas.get(0);
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("速度检测值(km/h)");
+			dcj1.setYqjyxm("车速表指示误差(km/h)");
 			dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
 			dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
 			dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
@@ -672,11 +674,11 @@ public class CheckDataManager {
 			Integer zzl = vehCheckLogin.getZzl();
 			String zzly = vehCheckLogin.getZzly();
 
-			if (vehCheckLogin.getJyxm().indexOf("R1") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R1") >= 0) {
 				// 路试初速度
 				DeviceCheckJudeg deviceCheckJudegLscsd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegLscsd, vehCheckLogin);
-				deviceCheckJudegLscsd.setYqjyxm("制动初速度（KM/H）");
+				deviceCheckJudegLscsd.setYqjyxm("制动初速度（km/h）");
 				deviceCheckJudegLscsd.setYqjyjg(roadCheck.getZdcsd().toString());
 				deviceCheckJudegLscsd.setYqjgpd(roadCheck.getLscsdpd().toString());
 				deviceCheckJudegLscsd.setYqbzxz("≥" + roadCheck.getLscsdxz().toString());
@@ -743,7 +745,7 @@ public class CheckDataManager {
 
 			}
 
-			if (vehCheckLogin.getJyxm().indexOf("R2") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R2") >= 0) {
 				// 驻车制动
 				DeviceCheckJudeg deviceCheckJudegZcpd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegZcpd, vehCheckLogin);
@@ -757,7 +759,7 @@ public class CheckDataManager {
 				this.hibernateTemplate.save(deviceCheckJudegZcpd);
 			}
 
-			if (vehCheckLogin.getJyxm().indexOf("R3") > 0) {
+			if (vehCheckLogin.getJyxm().indexOf("R3") >= 0) {
 				DeviceCheckJudeg deviceCheckJudegcsb = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegcsb, vehCheckLogin);
 				deviceCheckJudegcsb.setYqjyxm("路试车速表");
@@ -781,6 +783,16 @@ public class CheckDataManager {
 		deviceCheckJudeg.setJycs(vehCheckLogin.getJycs());
 		deviceCheckJudeg.setJyjgbh(vehCheckLogin.getJyjgbh());
 	}
+	
+	public static boolean isInteger(String str) {  
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  
+        return pattern.matcher(str).matches();  
+	}
+	
+	public static void main(String[] age) {
+		System.out.println(isInteger("+015"));
+		System.out.println(String.valueOf(Integer.parseInt("+015")));
+	}
 
 	private Integer createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, Integer xh) {
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
@@ -790,40 +802,75 @@ public class CheckDataManager {
 		String cllx = vehCheckLogin.getCllx();
 
 		String syxz = vehCheckLogin.getSyxz();
+		//光强度总和  项目
+		String zgqxm = "左右外灯远光发光强度总和(cd)";
+		//光强度总和  结果  
+		String zgqjg = "";
+		//光强度总和  标准限值
+		String zgqxz = "430000";
+		//光强度总和  判定
+		String zgqpd = "";
 
 		for (LightData lightData : lightDatas) {
 			String jyxm = lightData.getJyxm();
 			if (flagMap.get(jyxm + lightData.getGx()) == null) {
 				if (lightData.getGx() == LightData.GX_YGD) {
 					DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-					dcj1.setYqjyxm(getLight(jyxm) + "光强(cd)");
+					dcj1.setYqjyxm(getLightGQ(jyxm) + "光强度(cd)");
 					dcj1.setYqjyjg(lightData.getGq() == null ? "" : lightData.getGq().toString());
 					dcj1.setYqbzxz(lightData.getGqxz() == null ? "" : "≥" + lightData.getGqxz().toString());
 					dcj1.setYqjgpd(lightData.getGqpd() == null ? "" : lightData.getGqpd().toString());
 					dcj1.setXh(xh);
 					xh++;
 					this.hibernateTemplate.save(dcj1);
+					if(StringUtils.isEmpty(zgqjg)) {
+						zgqjg = dcj1.getYqjyjg();
+					}else {
+						zgqjg = String.valueOf(Integer.parseInt(zgqjg) + Integer.parseInt(dcj1.getYqjyjg()));
+					}
 				}
 
-				/*if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
-						&& syxz.equals("A"))) {*/
-					if(lightData.getGx() == LightData.GX_JGD) {
+				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
+						&& syxz.equals("A"))) {
+					//if(lightData.getGx() == LightData.GX_JGD) {
 						DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 						dcj2.setYqjyxm(
-								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)");
-						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : lightData.getCzpc().toString());
+								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)量");
+						
+						String czpc = lightData.getCzpc().toString().trim();
+						if(isInteger(czpc)) {
+							Integer intczpc =Integer.parseInt(czpc);
+							if(intczpc>0) {
+								czpc="+"+String.valueOf(intczpc);
+							}else {
+								czpc=String.valueOf(intczpc);
+							}
+						}
+						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : czpc);
 						dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
 						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
 						dcj2.setXh(xh);
 						xh++;
 						this.hibernateTemplate.save(dcj2);
-					}
-				//}
+					//}
+				}
 
 			}
 
 			flagMap.put(jyxm + lightData.getGx(), lightData);
 
+		}
+		
+		// 光强度总和
+		if(!StringUtils.isEmpty(zgqjg)) {
+			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			zgq.setYqjyxm(zgqxm);
+			zgq.setYqjyjg(zgqjg);
+			zgq.setYqbzxz("≤" + zgqxz);
+			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
+			zgq.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(zgq);
 		}
 
 		return xh;
@@ -901,6 +948,24 @@ public class CheckDataManager {
 		}
 		if (jyxm.equals("H4")) {
 			return "右主灯";
+		}
+
+		return null;
+	}
+	
+	public String getLightGQ(String jyxm) {
+
+		if (jyxm.equals("H1")) {
+			return "左外灯远光发";
+		}
+		if (jyxm.equals("H2")) {
+			return "左辅灯";
+		}
+		if (jyxm.equals("H3")) {
+			return "右辅灯";
+		}
+		if (jyxm.equals("H4")) {
+			return "右外灯远光发";
 		}
 
 		return null;
