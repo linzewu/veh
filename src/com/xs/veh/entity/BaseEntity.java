@@ -139,6 +139,7 @@ public abstract class BaseEntity {
 			System.out.println(this.toString());
 			System.out.println("bit1:"+bit1+"\t vehjyw:" +vehjyw);
 			System.out.println((!StringUtils.isEmpty(vehjyw)) && !vehjyw.equals(bit1));
+
 			if((!StringUtils.isEmpty(vehjyw))&& !vehjyw.equals(bit1)) {
 				checkBitOk=false;
 			}
