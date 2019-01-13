@@ -48,6 +48,8 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 
 
 	private String scMessage;
+	
+	public static final byte  A= CharUtil.hexStringToByte("41")[0];
 
 
 	@Override
@@ -67,7 +69,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			if(vehFlow.getJyxm().indexOf("L")==0){
 				logger.info("台体举升：" + ttjs);
 				deviceBrakRoller.sendMessage(ttjs);
-				logger.info("台体举升返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
+				logger.info("台体举升返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
 			}
 			
 			if(vehFlow.getJyxm().indexOf("L")==0){
@@ -82,13 +84,13 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
 			
-			byte[] d1 = getDevData(new byte[4]);
+			byte[] d1 = getDevData(new byte[4],A);
 			
 			logger.info("开始检测命令返回：" + CharUtil.byte2HexOfString(d1));
 			
 			deviceBrakRoller.getDisplay().sendMessage("开始检测阻滞力", DeviceDisplay.XP);
-			byte[] d2 = getDevData(new byte[5]);
-			byte[] d3 = getDevData(new byte[12]);
+			byte[] d2 = getDevData(new byte[5],A);
+			byte[] d3 = getDevData(new byte[12],A);
 			
 			deviceBrakRoller.getDisplay().sendMessage("阻滞力检测结束", DeviceDisplay.SP);
 			deviceBrakRoller.getDisplay().sendMessage(scMessage, DeviceDisplay.XP);
@@ -96,13 +98,13 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			TakePicture.createNew(this.deviceBrakRoller.getVehCheckLogin(), vehFlow.getJyxm(), 1000);
 			
 			while(true){
- 				byte[] d4 =  getDevData(new byte[12]);
+ 				byte[] d4 =  getDevData(new byte[12],A);
  				
  				if(d4[2]==0x45&&d4[6]==0x45&&d4[10]==0x45){
  					break;
  				}else{
- 					Integer zlzd=Integer.parseInt(new String(new byte[]{d4[3],d4[4],d4[5],d4[6]}));
- 					Integer ylzd=Integer.parseInt(new String(new byte[]{d4[7],d4[8],d4[9],d4[10]}));
+ 					Integer zlzd=Integer.parseInt(new String(new byte[]{d4[3],d4[4],d4[5],d4[6]}).trim());
+ 					Integer ylzd=Integer.parseInt(new String(new byte[]{d4[7],d4[8],d4[9],d4[10]}).trim());
  					brakRollerData.getLeftData().add(zlzd);
  					brakRollerData.getRigthData().add(ylzd);
  				}
@@ -113,13 +115,13 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			logger.info("开始取数据：" + qs);
 			//获取检测结果
 			deviceBrakRoller.sendMessage(qs);
-			byte[] d5 = getDevData(new byte[20]);
+			byte[] d5 = getDevData(new byte[20],A);
 			logger.info("取数结束");
-			Integer zzdl=Integer.parseInt(new String(new byte[]{d5[3],d5[4],d5[5],d5[6]}));
-			Integer yzdl=Integer.parseInt(new String(new byte[]{d5[7],d5[8],d5[9],d5[10]}));
+			Integer zzdl=Integer.parseInt(new String(new byte[]{d5[3],d5[4],d5[5],d5[6]}).trim());
+			Integer yzdl=Integer.parseInt(new String(new byte[]{d5[7],d5[8],d5[9],d5[10]}).trim());
 			
-			Integer zgcc=Integer.parseInt(new String(new byte[]{d5[11],d5[12],d5[13],d5[14]}));
-			Integer ygcc=Integer.parseInt(new String(new byte[]{d5[15],d5[16],d5[17],d5[18]}));
+			Integer zgcc=Integer.parseInt(new String(new byte[]{d5[11],d5[12],d5[13],d5[14]}).trim());
+			Integer ygcc=Integer.parseInt(new String(new byte[]{d5[15],d5[16],d5[17],d5[18]}).trim());
 			
 			brakRollerData.setZzdl(zzdl);
 			brakRollerData.setYzdl(yzdl);
@@ -143,7 +145,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			if(vehFlow.getJyxm().indexOf("L")==0){
 				logger.info("台体下降：" + ttxj);
 				deviceBrakRoller.sendMessage(ttxj);
-				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
+				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
 			}
 		}
 	}
@@ -165,10 +167,10 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 		deviceBrakRoller.getDisplay().sendMessage("开始称重", DeviceDisplay.SP);
 		while (true) {
 			deviceBrakRoller.sendMessage(kscz);
-			byte[] czdata = getDevData(new byte[20]);
+			byte[] czdata = getDevData(new byte[20],A);
 			logger.info("称重返回：" + CharUtil.byte2HexOfString(czdata));
-			zlh = Integer.parseInt(new String(new byte[] { czdata[11], czdata[12], czdata[13], czdata[14] }));
-			ylh = Integer.parseInt(new String(new byte[] { czdata[15], czdata[16], czdata[17], czdata[18] }));
+			zlh = Integer.parseInt(new String(new byte[] { czdata[11], czdata[12], czdata[13], czdata[14] }).trim());
+			ylh = Integer.parseInt(new String(new byte[] { czdata[15], czdata[16], czdata[17], czdata[18] }).trim());
 			deviceBrakRoller.getDisplay().sendMessage(zlh + ylh + "KG", DeviceDisplay.XP);
 			if (i >= 20) {
 				break;
@@ -213,7 +215,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 		logger.info("举升器下降命令：" +jsqxj);
 		deviceBrakRoller.sendMessage(jsqxj);
 		
-		logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
+		logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
 		
 		Thread.sleep(5000);
 	}

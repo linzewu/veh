@@ -688,11 +688,15 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		String qdxs=vehCheckLogin.getQdxs();
 		
+		if(this.getJyxm().indexOf("L")== 0) {
+			this.kzzdlxz = 50;
+			return;
+		}
+		
 		Integer zw=this.zw;
 		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
 			zw=1;
 		}
-		
 		
 
 		if (cllx.indexOf("N") == 0 && zw > 1) {

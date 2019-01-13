@@ -21,6 +21,8 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 	private String ql;
 	
 	private String ksjc;
+	
+	private String fw;
 
 	public ProtocolType getProtocolType(byte[] bs) {
 		if((bs[0]==0xF0||bs[0]==0xFC)&&bs.length==4){
@@ -73,27 +75,37 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		display.sendMessage(hphm, DeviceDisplay.SP);
 		display.sendMessage("前转向轮侧滑", DeviceDisplay.XP);
 		
-		// 等待测量结束
-		while (true) {
-			byte[] data = this.getDevData(new byte[10]);
-			String strData=new String(new byte[]{data[3],data[4],data[5],data[6],data[7],data[8]});
-			float  sideslip=Float.parseFloat(strData);
-			if(data[2]==0x7a){
-				TakePicture.createNew(this.deviceSideslip.getVehCheckLogin(),"A1");
-				this.sideslipData.setSideslip(sideslip);
-				
-				this.display.sendMessage(hphm, DeviceDisplay.SP);
-				this.display.sendMessage("侧滑:"+this.sideslipData.getSideslip(), DeviceDisplay.XP);
-				return sideslipData;
-			}else{
-				this.sideslipData.getDatas().add(sideslip);
-				if(this.sideslipData.getDatas().size()>=1000){
-					this.sideslipData.getDatas().remove(0);
+		try {
+			// 等待测量结束
+			while (true) {
+				byte[] data = this.getDevData(new byte[10]);
+				String strData=new String(new byte[]{data[3],data[4],data[5],data[6],data[7],data[8]}).trim();
+				logger.info("侧滑："+strData);
+				float  sideslip=Float.parseFloat(strData);
+				if(data[2]==0x7a){
+					TakePicture.createNew(this.deviceSideslip.getVehCheckLogin(),"A1");
+					this.sideslipData.setSideslip(sideslip);
+					
+					this.display.sendMessage(hphm, DeviceDisplay.SP);
+					this.display.sendMessage("侧滑:"+this.sideslipData.getSideslip(), DeviceDisplay.XP);
+					return sideslipData;
+				}else{
+					this.sideslipData.getDatas().add(sideslip);
+					if(this.sideslipData.getDatas().size()>=1000){
+						this.sideslipData.getDatas().remove(0);
+					}
 				}
 			}
+		}catch (Exception e) {
+			//仪表异常
+			logger.info("仪表异常返回，强制复位："+fw);
+			// 显示屏显示信息
+			deviceSideslip.sendMessage(fw);
+			display.sendMessage("异常返回,复位...!", DeviceDisplay.XP);
+			Thread.sleep(5000);
+			//deviceSideslip.sendMessage(ql);
+			throw e;
 		}
-		
-		
 	}
 	/**
 	 * 创建一次新的检测数据
@@ -109,6 +121,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		super.init(deviceSideslip);
 		ql="41046259";
 		ksjc="41046655";
+		fw="41045269";
 	}
 	
 	

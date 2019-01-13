@@ -109,8 +109,8 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
  				if(d4[2]==0x45&&d4[6]==0x45&&d4[10]==0x45){
  					break;
  				}else{
- 					Integer zlzd=Integer.parseInt(new String(new byte[]{d4[3],d4[4],d4[5],d4[6]}));
- 					Integer ylzd=Integer.parseInt(new String(new byte[]{d4[7],d4[8],d4[9],d4[10]}));
+ 					Integer zlzd=Integer.parseInt(new String(new byte[]{d4[3],d4[4],d4[5],d4[6]}).trim());
+ 					Integer ylzd=Integer.parseInt(new String(new byte[]{d4[7],d4[8],d4[9],d4[10]}).trim());
  					brakRollerData.getLeftData().add(zlzd);
  					brakRollerData.getRigthData().add(ylzd);
  				}
@@ -123,11 +123,11 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 			deviceBrakRoller.sendMessage(qs);
 			byte[] d5 = getDevData(new byte[20]);
 			logger.info("取数结束");
-			Integer zzdl=Integer.parseInt(new String(new byte[]{d5[3],d5[4],d5[5],d5[6]}));
-			Integer yzdl=Integer.parseInt(new String(new byte[]{d5[7],d5[8],d5[9],d5[10]}));
+			Integer zzdl=Integer.parseInt(new String(new byte[]{d5[3],d5[4],d5[5],d5[6]}).trim());
+			Integer yzdl=Integer.parseInt(new String(new byte[]{d5[7],d5[8],d5[9],d5[10]}).trim());
 			
-			Integer zgcc=Integer.parseInt(new String(new byte[]{d5[11],d5[12],d5[13],d5[14]}));
-			Integer ygcc=Integer.parseInt(new String(new byte[]{d5[15],d5[16],d5[17],d5[18]}));
+			Integer zgcc=Integer.parseInt(new String(new byte[]{d5[11],d5[12],d5[13],d5[14]}).trim());
+			Integer ygcc=Integer.parseInt(new String(new byte[]{d5[15],d5[16],d5[17],d5[18]}).trim());
 			
 			brakRollerData.setZzdl(zzdl);
 			brakRollerData.setYzdl(yzdl);
@@ -138,7 +138,7 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 			if (intZw != 0) {
 				brakRollerData.setZw(intZw);
 			} else {
-				brakRollerData.setZw(Integer.parseInt(vehFlow.getMemo()));
+				brakRollerData.setZw(Integer.parseInt(vehFlow.getMemo().trim()));
 			}
 			return brakRollerData;
 		} finally {
@@ -193,8 +193,8 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 			deviceBrakRoller.sendMessage(kscz);
 			byte[] czdata = getDevData(new byte[20]);
 			logger.info("称重返回：" + CharUtil.byte2HexOfString(czdata));
-			zlh = Integer.parseInt(new String(new byte[] { czdata[index++], czdata[index++], czdata[index++], czdata[index++] }));
-			ylh = Integer.parseInt(new String(new byte[] { czdata[index++], czdata[index++], czdata[index++], czdata[index++] }));
+			zlh = Integer.parseInt(new String(new byte[] { czdata[index++], czdata[index++], czdata[index++], czdata[index++] }).trim());
+			ylh = Integer.parseInt(new String(new byte[] { czdata[index++], czdata[index++], czdata[index++], czdata[index++] }).trim());
 			deviceBrakRoller.getDisplay().sendMessage(zlh + ylh + "KG", DeviceDisplay.XP);
 			if (i >= 20) {
 				break;

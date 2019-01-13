@@ -48,6 +48,8 @@ public class DeviceBrakRollerDriverOfJXGT2 extends AbstractDeviceBrakRoller {
 
 
 	private String scMessage;
+	
+	public static final byte  A= CharUtil.hexStringToByte("41")[0];
 
 
 	@Override
