@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.CharUtil;
 import com.xs.common.exception.SystemException;
@@ -331,7 +332,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 	}
 
 	// 倒数计时线程
-	public void ds(final String title, final Integer ms, final String afterTitle) {
+	public void ds(final String title, final Integer ms, final String afterTitle,final String show) {
 
 		deviceBrakRoller.getExecutor().execute(new Runnable() {
 			public void run() {
@@ -342,7 +343,12 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 						if (isbs) {
 							return;
 						}
-						deviceBrakRoller.getDisplay().sendMessage(String.valueOf(i), DeviceDisplay.XP);
+						if(StringUtils.isEmpty(show)) {
+							deviceBrakRoller.getDisplay().sendMessage(String.valueOf(i), DeviceDisplay.XP);
+						}else {
+							deviceBrakRoller.getDisplay().sendMessage(show, DeviceDisplay.XP);
+						}
+						
 						Thread.sleep(1000);
 					}
 					if (afterTitle != null) {
@@ -433,12 +439,12 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		}
 		if (ml.equalsIgnoreCase(jczzl)) {
 			logger.info("开始检测阻滞力");
-			ds("稳定3秒", 3, null);
+			ds("准备踩刹车", 3, null,null);
 			return;
 		}
 
 		if (ml.equalsIgnoreCase(jczdl)) {
-			ds(scMessage, 7, "制动力检测完成");
+			ds(scMessage, 7, "制动力检测完成","检测中...");
 			TakePicture.createNew(this.deviceBrakRoller.getVehCheckLogin(), vehFlow.getJyxm(), 1000);
 			return;
 		}

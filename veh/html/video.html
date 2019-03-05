@@ -1,107 +1,50 @@
 <script type="text/javascript" src="/veh/js/data.js"></script>
-<table id="grid_process">
-   
-</table>
-<div id="win_play" class="easyui-window" data-options="
-												    width:850,
-												    height:630,
-												    modal:true,
-												    title:'视频播放',
-												    closed:false,
-												    closable:true,
-												    minimizable:false,
-												    collapsible:false,
-												    maximizable:false,
-												    draggable:false,
-												    closed:true,
-												    onBeforeClose:function(){winBeforeClose();}
-												    ">
-
-	<div id="cc" class="easyui-layout" fit='true'>
-
-		<div data-options="region:'north'" style="height: 50px;">
-			<div class="vehinfo">
-				<label>号牌号码：</label>
-				<input value="" disabled="disabled" id="info_hphm" />
-				<label>检验流水号：</label>
-				<input id="info_jylsh" disabled="disabled" />
-				<label>检测站名称：</label>
-				<input value="" disabled="disabled" id="jyjgbh" />
-				
-				<label>时间推移：</label><input class="easyui-numberbox" style="width: 60px;" value="0" id="tysj">秒
-			</div>
-		</div>
-		<div data-options="region:'west'" style="width: 200px;">
-			<ul class="check-menu">
-				
-			</ul>
-		</div>
-
-		<div data-options="region:'center'" border=0>
-			<div class="easyui-layout" fit='true'>
-				<div data-options="region:'center'">
-					<div class="smallocxdiv" id="NetPlayOCX1">
-						<object classid="CLSID:CAFCF48D-8E34-4490-8154-026191D73924"
-							codebase="/veh/codebase/NetVideoActiveX23.cab#version=2,3,11,2"
-							standby="Waiting..." id="HIKOBJECT1" width="100%" height="100%"
-							name="HIKOBJECT1"></object>
-					</div>
-				</div>
-				<div data-options="region:'south'" style="height: 120px;">
-					<div class="playTool">
-						<ul>
-							<li><a id="btn" href="#" class="easyui-linkbutton btn-play" onclick="playConsoel(3)">暂停</a></li>
-							<li><a id="btn" href="#" class="easyui-linkbutton btn-play" onclick="playConsoel(4)">播放</a></li>
-							<li><a id="btn" href="#" class="easyui-linkbutton btn-play" onclick="p10()">快进10秒</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>											    
-</div>
-<script type="text/javascript">
-var vcList;
-var jyjgmc;
-var jcxdh;
-//图片展示
-function showImg(value, row, index){
-	console.log(row)
-		return "<img style='' border='0' src='/veh/images/play.ico' onclick='openPlayWin(\""+row.jylsh+"\",\""+row.hphm+"\",\""+row.jycs+"\",\""+row.jyxm+"\",\""+row.kssj+"\",\""+row.jssj+"\")'/>";
+<style type="text/css">
+.smallocxdiv {
+	width: 99%;
+	height: 98%;
+	margin: 0 auto;
+	padding-top: 2px;
 }
 
+.check-item {
+	width: 120px;
+}
 
-$(function(){
-	$.post("/veh/video/getAllVideoConfig",function(data){
-		vcList = data.vcList;
-		jyjgmc = data.jyjgmc;
-	}).complete(function(){
-		
-	});
-	var reportData = $("#checkingVeh").datagrid("getSelected");
-	jcxdh = reportData.jcxdh;
-	$("#grid_process").datagrid({
-		url:'/veh/report/getProcess?jylsh='+reportData.jylsh,
-	    columns:[[
-	        {field:'jylsh',title:'检验流水号',width:120},
-	        {field:'hphm',title:'号牌号码',width:80},
-	        {field:'hpzl',title:'号牌种类',width:80},
-	        {field:'clsbdh',title:'车辆识别代号',width:140},
-	        {field:'jyxm',title:'检验项目',width:60},
-	        {field:'jycs',title:'检验次数',width:60},
-	        {field:'kssj',title:'开始时间',width:100},
-	        {field:'jssj',title:'结束时间',width:100},
-	        {field:'id',title:'视频播放',width:60,formatter:showImg,align:'center'},
-	        {field:'jygcxrsj',title:'检验过程写入时间',width:110},
-	        {field:'jysbbh',title:'检验设备编码',width:120},
-	        {field:'jyzt',title:'检验状态',width:60}
-	    ]]
-	});
-})
+.check-menu {
+	list-style: none;
+}
 
-/////
+.check-menu li {
+	margin: 10px 5px 5px 5px;
+}
 
-	var playInfo;
+.playTool ul li{
+	float: left;
+	margin: 2px 5px 2px 5px;
+	
+}
+
+.playTool{
+	margin: 0 auto;
+	width: 400px;
+	height: 30px;
+}
+
+.playTool ul{
+	list-style: none;
+}
+.btn-play{
+	width: 60px;
+}
+
+.vehinfo{
+	padding-top: 20px;
+}
+</style>
+<script type="text/javascript">
+
+	var playInfo='${playInfo}';
 	
 	var m_bDVRControl =null;
 	var m_iLoginUserId;
@@ -115,53 +58,29 @@ $(function(){
 	var channelList=[];
 	var m_iPlayback=0;
 
-	function openPlayWin(jylsh,hphm,jycs,jyxm,kssj,jssj){
+	$(function(){
+		var name = getjczmc('${param.jyjgbh}');
+		$("#jyjgbh").val(name);
+
+		if($.trim(playInfo)==""){
+			LogMessage("无法获取车辆播放信息");
+			return;
+		}
+
+		playInfo=$.parseJSON(playInfo);
+	
+		$("#info_hphm").val(playInfo[0].hphm);
+
 		
-		playInfo=[];
-		//row = $.parseJSON(row);
-		var carInfo = {};
-		$.each(vcList,function(i,n){
-			if(n.jcxdh == jcxdh && n.jyxm.indexOf(jyxm) != -1){
-				carInfo = n;
-			}
+		$.each(playInfo,function(i,n){
+			var li="<li><a  href='javascript:void(0)' class=\"easyui-linkbutton c6 check-item\" onclick=\"play('"+n.jyxm+"',"+n.jycs+")\" >"+getjyxm(n.jyxm)+"  "+n.jycs+"</a></li>";
+			$(".check-menu").append(li);
+			$.parser.parse('.check-menu'); 
 		});
-		$('#win_play').window('open');
-		//$.post("/veh/video/play",{jylsh:row.jylsh},function(data){
-			$("#jyjgbh").val(jyjgmc);
-			$("#info_jylsh").val(jylsh);
-			if(hphm==null || jylsh ==null){
-				LogMessage("无法获取车辆播放信息");
-				return;
-			}
-
-			//playInfo=$.parseJSON(data.playInfo);
-		
-			$("#info_hphm").val(hphm);
-
-			
-			carInfo.jylsh = jylsh;
-			carInfo.hphm = hphm;
-			carInfo.jycs = jycs;
-			carInfo.jyxm = jyxm;
-			carInfo.kssj = kssj;
-			carInfo.jssj = jssj;
-			playInfo.push(carInfo);
-			$(".check-menu").empty();
-			//$.each(playInfo,function(i,n){
-				var li="<li><a  href='javascript:void(0)' class=\"easyui-linkbutton c6 check-item\" onclick=\"play('"+jyxm+"',"+jycs+")\" >"+getjyxm(jyxm)+"  "+jycs+"</a></li>";
-				$(".check-menu").append(li);
-				$.parser.parse('.check-menu'); 
-			//});
-			init();
-		//}).complete(function(){
-			
-		//});
-		//var name = getjczmc('${param.jyjgbh}');
-		
-
-		
-	}
-function init()
+		init();
+	});
+	
+	function init()
 	{ 
 		var myDate = new Date();
 		var iYear = myDate.getFullYear();        
@@ -369,7 +288,7 @@ function init()
 		
 	}
 	
-	function winBeforeClose(){
+	window.onbeforeunload=function(){
 	
 		if(event.clientY<0){
 			unLogin();
@@ -392,5 +311,47 @@ function init()
 		m_bDVRControl.Logout();
 		m_bDVRControl.ClearOCX();
 	}
-
+window.onunload=unLogin;
 </script>
+<div id="cc" class="easyui-layout" fit='true'>
+
+		<div data-options="region:'north'" style="height: 50px;">
+			<div class="vehinfo">
+				<label>号牌号码：</label>
+				<input value="" disabled="disabled" id="info_hphm" />
+				<label>检验流水号：</label>
+				<input value="${ param.jylsh}" disabled="disabled" />
+				<label>检测站名称：</label>
+				<input value="" disabled="disabled" id="jyjgbh" />
+				
+				<label>时间推移：</label><input class="easyui-numberbox" style="width: 60px;" value="0" id="tysj">秒
+			</div>
+		</div>
+		<div data-options="region:'west'" style="width: 200px;">
+			<ul class="check-menu">
+				
+			</ul>
+		</div>
+
+		<div data-options="region:'center'" border=0>
+			<div class="easyui-layout" fit='true'>
+				<div data-options="region:'center'">
+					<div class="smallocxdiv" id="NetPlayOCX1">
+						<object classid="CLSID:CAFCF48D-8E34-4490-8154-026191D73924"
+							codebase="/veh/codebase/NetVideoActiveX23.cab#version=2,3,11,2"
+							standby="Waiting..." id="HIKOBJECT1" width="100%" height="100%"
+							name="HIKOBJECT1"></object>
+					</div>
+				</div>
+				<div data-options="region:'south'" style="height: 50px;">
+					<div class="playTool">
+						<ul>
+							<li><a id="btn" href="#" class="easyui-linkbutton btn-play" onclick="playConsoel(3)">暂停</a></li>
+							<li><a id="btn" href="#" class="easyui-linkbutton btn-play" onclick="playConsoel(4)">播放</a></li>
+							<li><a id="btn" href="#" class="easyui-linkbutton btn-play" onclick="p10()">快进10秒</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

@@ -1,33 +1,44 @@
 package com.xs.veh.manager;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.annotations.Synchronize;
 import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.xs.common.MyHibernateTemplate;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
+import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceCheckJudeg;
+import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.Insurance;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.network.DeviceDisplay;
+import com.xs.veh.network.SimpleRead;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
@@ -71,6 +82,12 @@ public class CheckDataManager {
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
+	
+	@Autowired
+	private ServletContext servletContext;
+	
+	@Resource(name = "deviceManager")
+	private DeviceManager deviceManager;
 
 	public void saveData(BaseDeviceData data) {
 		this.hibernateTemplate.saveOrUpdate(data);
@@ -580,7 +597,9 @@ public class CheckDataManager {
 	}
 
 	public void createExternalCheckJudge(VehCheckLogin vehCheckLogin) {
-
+		ExternalCheck ec = (ExternalCheck) this.hibernateTemplate
+				.find("from ExternalCheck where jylsh=? ", vehCheckLogin.getJylsh()).get(0);
+		JSONObject jb = JSONObject.fromObject(ec);
 		final String jylsh = vehCheckLogin.getJylsh();
 		final String jyjgbh = vehCheckLogin.getJyjgbh();
 		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
@@ -593,7 +612,7 @@ public class CheckDataManager {
 		
 	//	List<ExternalCheck> externalChecks = (List<ExternalCheck>) this.hibernateTemplate.find("from ExternalCheck where jylsh=? ", jylsh);
 		
-
+		
 		int i = 1;
 		if (vehCheckLogin.getJyxm().indexOf("F1") >= 0) {
 			for (; i <= 5; i++) {
@@ -606,6 +625,8 @@ public class CheckDataManager {
 				ecj.setXh(i);
 				if (i == 1) {
 					ecj.setRgjyxm("车辆唯一性检测");
+					List bhgList = getBhgx(new int[] {1,2,3,4,5},jb);
+					setPd(ecj, bhgList);
 				} else if (i == 2) {
 					ecj.setRgjyxm("车辆特征参数检查");
 					/*if(externalChecks!=null&&!externalChecks.isEmpty()){
@@ -617,15 +638,23 @@ public class CheckDataManager {
 							}
 						}
 					}*/
-					
+					List bhgList = getBhgx(new int[] {6,7,8,9,10,11,12,13,14,15},jb);
+					setPd(ecj, bhgList);
 				} else if (i == 3) {
 					ecj.setRgjyxm("车辆外观检查");
+					List bhgList = getBhgx(new int[] {16,17,18,19,20,21},jb);
+					setPd(ecj, bhgList);
 				} else if (i == 4) {
-					ecj.setRgjyxm("安检装置检查");
+					ecj.setRgjyxm("安全装置检查");
+					List bhgList = getBhgx(new int[] {22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41},jb);
+					setPd(ecj, bhgList);
 				} else if (i == 5) {
 					ecj.setRgjyxm("联网查询");
+					List bhgList = getBhgx(new int[] {81},jb);
+					setPd(ecj, bhgList);
 				}
-				ecj.setRgjgpd("1");
+				//ecj.setRgjgpd("1");
+				
 				this.hibernateTemplate.save(ecj);
 			}
 		}
@@ -639,7 +668,9 @@ public class CheckDataManager {
 			ecj.setHpzl(vehCheckLogin.getHpzl());
 			ecj.setXh(i);
 			ecj.setRgjyxm("底盘动态检验");
-			ecj.setRgjgpd("1");
+			List bhgList = getBhgx(new int[] {42,43,44,45},jb);
+			setPd(ecj, bhgList);
+			//ecj.setRgjgpd("1");
 			this.hibernateTemplate.save(ecj);
 			i++;
 		}
@@ -654,10 +685,42 @@ public class CheckDataManager {
 			ecj.setHpzl(vehCheckLogin.getHpzl());
 			ecj.setXh(i);
 			ecj.setRgjyxm("车辆底盘部件检查");
-			ecj.setRgjgpd("1");
+			List bhgList = getBhgx(new int[] {46,47,48,49,50},jb);
+			setPd(ecj, bhgList);
+			//ecj.setRgjgpd("1");
 			this.hibernateTemplate.save(ecj);
 			i++;
 		}
+	}
+
+	private void setPd(ExternalCheckJudge ecj, List bhgList) {
+		if(bhgList.size() > 0) {
+			ecj.setRgjgpd("2");
+		}else {
+			ecj.setRgjgpd("1");
+		}
+		StringBuffer sm = new  StringBuffer("");
+		for (int a=0;a<bhgList.size();a++) {
+			if(a != bhgList.size()-1) {
+				sm.append(bhgList.get(a)).append(",");
+			}else {
+				sm.append(bhgList.get(a));
+			}
+		}
+		ecj.setRgjysm(sm.toString());
+	}
+	
+	public List getBhgx(int[] bh,JSONObject jo) {
+		List list = new ArrayList();
+		for(int i=0;i<bh.length;i++) {
+			Object o = jo.get("item"+bh[i]);
+			if(o != null) {
+				if("2".equals(o.toString())) {
+					list.add(bh[i]);
+				}
+			}
+		}
+		return list;
 	}
 
 	public Integer createRoadCheckJudeg(final VehCheckLogin vehCheckLogin, Integer xh) {
@@ -1344,5 +1407,77 @@ public class CheckDataManager {
 			}
 		});
 		
+	}
+	
+	/**
+	 * 检测过程开始发送消息
+	 * @param hphm
+	 * @param jyxm
+	 * @throws IOException
+	 */
+	public void displaySendMsg(String hphm,String jyxm) throws IOException {
+		String zh_jyxm = getJyxm_zh(jyxm);
+		// 获取显示屏
+		String deviceId = getDeviceId(jyxm);
+
+		if (!"".equals(deviceId)) {
+			Device device = new Device();
+			device.setId(Integer.parseInt(deviceId));
+			SimpleRead sr = (SimpleRead) servletContext.getAttribute(device.getThredKey());
+			// 根据设备id判断是否是显示屏
+			if (sr instanceof DeviceDisplay) {
+				DeviceDisplay display = (DeviceDisplay) sr;
+				display.sendMessage(zh_jyxm + " 检测中", DeviceDisplay.XP);
+				display.sendMessage(hphm, DeviceDisplay.SP);
+			}
+		}
+		
+	}
+	
+	//@Async
+	public void processEndSendMsg(String hphm,String jyxm) throws IOException, InterruptedException {
+		
+		String zh_jyxm = getJyxm_zh(jyxm);
+		// 获取显示屏
+		String deviceId = getDeviceId(jyxm);
+
+		if (!"".equals(deviceId)) {
+			Device device = new Device();
+			device.setId(Integer.parseInt(deviceId));
+			SimpleRead sr = (SimpleRead) servletContext.getAttribute(device.getThredKey());
+			// 根据设备id判断是否是显示屏
+			if (sr instanceof DeviceDisplay) {
+				DeviceDisplay display = (DeviceDisplay) sr;
+				display.sendMessage(zh_jyxm + " 检测结束", DeviceDisplay.XP);
+				display.sendMessage(hphm, DeviceDisplay.SP);
+				
+				this.deviceManager.asySetDefault(display);
+				
+			}
+		}
+	}
+	
+
+	private String getDeviceId(String jyxm) {
+		List<BaseParams> bps = (List<BaseParams>) servletContext.getAttribute("bps");
+		String deviceId = "";
+		for (BaseParams param : bps) {
+			if (param.getType().equals("wjdisplay") && param.getParamName().equals(jyxm)) {
+				deviceId = param.getParamValue();
+			}
+		}
+		return deviceId;
+	}
+
+	private String getJyxm_zh(String jyxm) {
+		String zh_jyxm = "";
+		if ("DC".equals(jyxm)) {
+			zh_jyxm = "动态底盘";
+		} else if ("F1".equals(jyxm)) {
+			zh_jyxm = "外检";
+		} else if ("C1".equals(jyxm)) {
+			zh_jyxm = "底盘";
+		}
+		return zh_jyxm;
 	}
 }

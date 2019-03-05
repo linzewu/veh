@@ -133,12 +133,10 @@ public class DeviceSignal extends SimpleRead {
 	public boolean getSignal(Integer index){ 
 		
 		String temp =this.getRtx();
-		
 		Integer count =temp.length();
 		
 		if(count>0&&count>index){
 			String strSignal = temp.substring(count-index-1,count-index);
-			
 			Integer signal = Integer.parseInt(strSignal);
 			
 			return signal==0?true:false;

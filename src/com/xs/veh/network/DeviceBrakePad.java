@@ -220,16 +220,18 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 				otherInfoData.setZczdl(CheckDataManager.MathRound1(zczdl));
 			}
+			logger.info("11111111111111111111111111111");
 			otherInfoData.setZczdlxz();
+			logger.info("2222222222222222222222222222");
 			otherInfoData.setZczdlpd();
-			
+			logger.info("3333333333333333333333333333333");
 			String strpd = "O";
 			if (otherInfoData.getZcpd().equals(BrakRollerData.PDJG_BHG.toString())) {
 				logger.info("整车判定不合格！");
 				strpd="X";
 				sfhg = false;
 			}
-			
+			logger.info("4444444444444444444444444444444444444");
 			display.sendMessage("整车：" + decimalFormat.format(otherInfoData.getZczdl()) + "/" + strpd,
 					DeviceDisplay.XP);
 			Thread.sleep(2000);
@@ -240,8 +242,8 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			display.sendMessage("检判定结果：O", DeviceDisplay.XP);
 		} else {
 			display.sendMessage("检判定结果：X", DeviceDisplay.SP);
-			display.sendMessage("是否复位，等待30S", DeviceDisplay.XP);
-			Thread.sleep(30 * 1000);
+//			display.sendMessage("是否复位，等待30S", DeviceDisplay.XP);
+//			Thread.sleep(30 * 1000);
 		}
 
 		Thread.sleep(2000);

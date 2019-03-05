@@ -110,8 +110,8 @@ $(function(){
 		var str2 =  (date.getFullYear())+"-"+(date.getMonth()+1)+"-"+date.getDate();
 		$("#pwValidDate").val(str2);
 		
-		$("#permitBeginTime").val("08:00");
-		$("#permitEndTime").val("18:00");
+		$("#permitBeginTime").val("00:00");
+		$("#permitEndTime").val("23:59");
 	}else if(model=="edit"){
 		var row = $("#userManager").datagrid("getSelected");
 		if(row){

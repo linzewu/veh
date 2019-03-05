@@ -1,0 +1,132 @@
+<div style="text-align: center;margin-top: 10px;"><a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_plateApply'))">打印</a></div>
+<DIV id="print_plateApply">
+<DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 30px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px"><span id="report3_jyjgmc"></span>机动车牌证申请表 </DIV>
+<table class="tg" style="table-layout: fixed; width: 720px; text-align: center;">
+<colgroup>
+<col style="width: 30px">
+<col style="width: 20px">
+<col style="width: 70px">
+<col style="width: 70px">
+<col style="width: 100px">
+<col style="width: 100px">
+<col style="width: 140px">
+<col style="width: 190px">
+</colgroup>
+  <tr>
+    <th class="tg-yw41" colspan="8" style="text-align: center; font-size: 25px;">申 请 人 信 息 栏</th>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2" rowspan="3" style="text-align: center;">机<br/>动<br/>车<br/>所<br/>有<br/>人</td>
+  	<td colspan="2">姓名/名称</td>
+  	<td colspan="2" name="report-plateInfo-syr"></td>
+  	<td>邮政编码</td>
+  	<td></td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2">邮寄地址</td>
+  	<td colspan="4"></td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2">手机号码</td>
+  	<td colspan="2"></td>
+  	<td>固定电话</td>
+  	<td></td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2">代<br/>理<br/>人</td>
+  	<td colspan="2">姓名/名称</td>
+  	<td></td>
+  	<td>手机号码</td>
+  	<td colspan="2"></td>
+  </tr>
+  <tr>
+    <th class="tg-yw41" colspan="8" style="text-align: center; font-size: 25px;">申 请 业 务 事 项</th>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="3" style="padding:10px 10px">号牌种类</td>
+  	<td colspan="2" name="report-plateInfo-hpzl"></td>
+  	<td colspan="2">号牌号码</td>
+  	<td name="report-plateInfo-hphm"></td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="3" style="padding:10px 10px">申请事项</td>
+  	<td colspan="5" name="report-plateInfo-jylb"></td>
+  </tr>
+  <tr class="plateSize">
+  	<td rowspan="2" style="padding:20px 5px 20px 5px">号牌</td>
+  	<td colspan="2"><input type="checkbox">补领</td>
+  	<td colspan="5">
+  		<input type="checkbox">丢失
+  		<input type="checkbox">灭失
+  		<input type="checkbox">前号牌
+  		<input type="checkbox">后号牌
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2"><input type="checkbox">换领</td>
+  	<td colspan="5">
+  		<input type="checkbox">前号牌
+  		<input type="checkbox">后号牌
+  	</td>
+  </tr>
+  
+  <tr class="plateSize">
+  	<td rowspan="2" style="20px 5px 20px 5px">行驶证</td>
+  	<td colspan="2"><input type="checkbox">补领</td>
+  	<td colspan="5">
+  		<input type="checkbox">丢失
+  		<input type="checkbox">灭失
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2"><input type="checkbox">换领</td>
+  	<td colspan="5">
+  	</td>
+  </tr>
+  
+  <tr class="plateSize">
+  	<td rowspan="3" style="20px 5px 20px 5px">登记证书</td>
+  	<td colspan="2"><input type="checkbox">申领</td>
+  	<td colspan="5">
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2"><input type="checkbox">补领</td>
+  	<td colspan="5">
+  		<input type="checkbox">丢失
+  		<input type="checkbox">灭失
+  		<input type="checkbox">未获得
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2"><input type="checkbox">换领</td>
+  	<td colspan="5">
+  	</td>
+  </tr>
+  
+  <tr class="plateSize">
+  	<td rowspan="3" style="padding:20px 5px 20px 5px">检验合格标志</td>
+  	<td colspan="2"><input type="checkbox">申请</td>
+  	<td colspan="5">
+  		<input type="checkbox">在登记地车辆管理所申请
+  		<input type="checkbox">在登记地以外车辆管理所申请
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2"><input type="checkbox">补领</td>
+  	<td colspan="5">
+  		<input type="checkbox">丢失
+  		<input type="checkbox">灭失
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="2"><input type="checkbox" id="hgbzhl">换领</td>
+  	<td colspan="5">
+  	</td>
+  </tr>
+  <tr class="plateSize">
+  	<td colspan="5" style="font-size: 25px;">机动车所有人及代理人对申请材料的真实有效性负责。</td>
+  	<td colspan="3" ><div style="text-align: left;">机动车所有人(代理人)签字：</div><br/><br/><br/>
+  	<div  style="text-align: right;">年        &nbsp;&nbsp;&nbsp;&nbsp; 月         &nbsp;&nbsp;&nbsp;&nbsp; 日</div></td>
+  </tr>
+</table>

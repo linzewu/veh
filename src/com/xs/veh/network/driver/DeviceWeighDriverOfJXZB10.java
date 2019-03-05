@@ -23,6 +23,8 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 	
 	private String sdcz="41046754";
 	
+	public static final byte  A= CharUtil.hexStringToByte("41")[0];
+	
 
 	public ProtocolType getProtocolType(byte[] bs) {
 		return ProtocolType.DATA;
@@ -48,7 +50,7 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 		while (true) {
 			if (this.signal.getSignal(s1)) {
 				deviceWeigh.sendMessage(dqsj);
-				byte[] data = this.getDevData(new byte[19]);
+				byte[] data = this.getDevData(new byte[19],A);
 				logger.info("称重开始："+CharUtil.byte2HexOfString(data));
 				
 				Integer zlh=Integer.parseInt(new String(new byte[]{data[3],data[4],data[5],data[6],data[7]}));
@@ -74,7 +76,7 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 		logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));*/
 		
 		deviceWeigh.sendMessage(dqsj);
-		byte[] data = this.getDevData(new byte[19]);
+		byte[] data = this.getDevData(new byte[19],A);
 		Integer zlh=Integer.parseInt(new String(new byte[]{data[3],data[4],data[5],data[6],data[7]}));
 		Integer ylh=Integer.parseInt(new String(new byte[]{data[8],data[9],data[10],data[11],data[12]}));
 		brakRollerData.setZlh(zlh);

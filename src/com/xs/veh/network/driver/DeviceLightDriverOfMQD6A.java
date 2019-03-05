@@ -478,7 +478,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		String hphm = vehCheckLogin.getHphm();
 		int i = 0;
 		this.deviceLight.getDisplay().sendMessage(hphm, DeviceDisplay.SP);
-		this.deviceLight.getDisplay().sendMessage("请至停止线", DeviceDisplay.XP);
+		this.deviceLight.getDisplay().sendMessage("前进准备检测灯光", DeviceDisplay.XP);
 		while (true) {
 			if (deviceSignal1.getSignal(s1) && !deviceSignal2.getSignal(s2)) {
 				i++;
@@ -490,7 +490,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 			if (!deviceSignal1.getSignal(s1)) {
 				this.deviceLight.getDisplay().sendMessage(hphm, DeviceDisplay.SP);
-				this.deviceLight.getDisplay().sendMessage("请至停止线", DeviceDisplay.XP);
+				this.deviceLight.getDisplay().sendMessage("前进准备检测灯光", DeviceDisplay.XP);
 				i = 0;
 			} else if (deviceSignal2.getSignal(s2)) {
 				this.deviceLight.getDisplay().sendMessage(hphm, DeviceDisplay.SP);
@@ -551,14 +551,14 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			 * deviceLight.sendMessage(sSdz); deviceLight.sendMessage(sYjgjc);
 			 */
 			if (zdList.size() == 2) {
-				leftMessageList.add("测量左主远光灯,请开启主远光灯");
-				leftMessageList.add("测量左副远光灯,请开启副远光灯");
-				leftMessageList.add("测量左近光灯,请开启近光灯");
+				leftMessageList.add("请开启主远光灯,测量左主远光灯");
+				leftMessageList.add("请开启副远光灯,测量左副远光灯");
+				leftMessageList.add("请开启近光灯,测量左近光灯");
 			}
 			if (ydList.size() == 2) {
-				rightMessageList.add("测量右主远光灯,请开启主远光灯");
-				rightMessageList.add("测量右副远光灯,请开启副远光灯");
-				rightMessageList.add("测量右近光灯,请开启近光灯");
+				rightMessageList.add("请开启主远光灯,测量右主远光灯");
+				rightMessageList.add("请开启副远光灯,测量右副远光灯");
+				rightMessageList.add("请开启近光灯,测量右近光灯");
 			}
 
 		} else if (qzdz.equals("02")) {
@@ -571,12 +571,12 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			settingList.add(sDcyg);
 
 			if (zdList.size() == 2) {
-				leftMessageList.add("测量左主远光灯,请开启主远光灯");
-				leftMessageList.add("测量左副远光灯,请开启副远光灯");
+				leftMessageList.add("请开启主远光灯,测量左主远光灯");
+				leftMessageList.add("请开启副远光灯,测量左副远光灯");
 			}
 			if (ydList.size() == 2) {
-				rightMessageList.add("测量右主远光灯,请开启主远光灯");
-				rightMessageList.add("测量右副远光灯,请开启副远光灯");
+				rightMessageList.add("请开启主远光灯,测量右主远光灯");
+				rightMessageList.add("请开启副远光灯,测量右副远光灯");
 			}
 
 		} else if (qzdz.equals("03")) {
@@ -591,13 +591,13 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			logger.info(sYjgjc);
 
 			if (zdList.size() == 1) {
-				leftMessageList.add("测量左远光灯,请开主远光灯");
-				leftMessageList.add("测量左近光灯,请开启近光灯");
+				leftMessageList.add("请开主远光灯,测量左远光灯");
+				leftMessageList.add("请开启近光灯,测量左近光灯");
 			}
 
 			if (ydList.size() == 1) {
-				rightMessageList.add("测量右远光灯,请开启远光灯");
-				rightMessageList.add("测量右近光灯,请开启近光灯");
+				rightMessageList.add("请开启远光灯,测量右远光灯");
+				rightMessageList.add("请开启近光灯,测量右近光灯");
 			}
 
 		} else if (qzdz.equals("04")) {
@@ -610,10 +610,10 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			settingList.add(sDcjg);
 
 			if (zdList.size() == 1) {
-				leftMessageList.add("测量左近光灯,请开启近光灯");
+				leftMessageList.add("请开启近光灯,测量左近光灯");
 			}
 			if (ydList.size() == 1) {
-				rightMessageList.add("测量右近光灯,请开启近光灯");
+				rightMessageList.add("请开启近光灯,测量右近光灯");
 			}
 		}
 

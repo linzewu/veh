@@ -68,7 +68,7 @@ public class DeviceSideslipDriverOfJxch extends AbstractDeviceSideslip {
 		String hphm = vehFlow.getHphm();
 		
 		display.sendMessage(hphm, DeviceDisplay.SP);
-		display.sendMessage("前转向轮侧滑", DeviceDisplay.XP);
+		display.sendMessage("请以5km/h的速度行驶   检测侧滑", DeviceDisplay.XP);
 		
 		// 等待测量结束
 		while (this.checkingFlag) {

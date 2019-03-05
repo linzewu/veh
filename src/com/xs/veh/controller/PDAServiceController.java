@@ -1,5 +1,6 @@
 package com.xs.veh.controller;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -72,9 +73,11 @@ public class PDAServiceController {
 	@UserOperation(code="external",name="车辆外检")
 	@RequestMapping(value = "external", method = RequestMethod.POST)
 	public @ResponseBody Map externalUpload(@Valid ExternalCheck externalCheck, BindingResult result)
-			throws InterruptedException {
+			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheck(externalCheck);
+			//检测结束，显示屏显示 XX 检测结束
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "F1");
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -84,9 +87,11 @@ public class PDAServiceController {
 	@UserOperation(code="externalDC",name="动态底盘检测")
 	@RequestMapping(value = "externalDC", method = RequestMethod.POST)
 	public @ResponseBody Map externalDCUpload(@Valid ExternalCheck externalCheck, BindingResult result)
-			throws InterruptedException {
+			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckDC(externalCheck);
+			//检测结束，显示屏显示 XX 检测结束
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "DC");
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -96,9 +101,11 @@ public class PDAServiceController {
 	@UserOperation(code="externalC1",name="底盘检测")
 	@RequestMapping(value = "externalC1", method = RequestMethod.POST)
 	public @ResponseBody Map externalC1Upload(@Valid ExternalCheck externalCheck, BindingResult result)
-			throws InterruptedException {
+			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckC1(externalCheck);
+			//检测结束，显示屏显示 XX 检测结束
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "C1");
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -199,9 +206,12 @@ public class PDAServiceController {
 	@UserOperation(code="processStart",name="检测过程开始",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "processStart")
 	public @ResponseBody Map processStart(@RequestParam("jyxm") String jyxm, @RequestParam("jylsh") String jylsh,
-			@RequestParam("jycs") Integer jycs) {
+			@RequestParam("jycs") Integer jycs) throws IOException {
 
 		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
+		//显示屏现在 XX项目 检测中
+		checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm);
+		
 		vehCheckProcess.setKssj(new Date());
 		this.checkDataManager.updateProcess(vehCheckProcess);
 

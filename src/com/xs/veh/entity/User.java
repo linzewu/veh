@@ -337,8 +337,8 @@ public class User extends BaseEntity {
 	
 	public static void main(String[] age) {
 		User user =new User();
-		user.setId(81);
-		user.setUserName("zouxiuling");
+		user.setId(1);
+		user.setUserName("admin");
 		user.setPassword("888888");
 		System.out.println(user.encodePwd("888888"));
 		

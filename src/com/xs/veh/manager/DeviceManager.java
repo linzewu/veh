@@ -1,17 +1,20 @@
 package com.xs.veh.manager;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.ResultHandler;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceMotion;
+import com.xs.veh.network.DeviceDisplay;
 
 @Service("deviceManager")
 public class DeviceManager {
@@ -115,6 +118,10 @@ public class DeviceManager {
 
 		this.hibernateTemplate.delete(deviceMotion);
 	}
-
+	@Async
+	public void asySetDefault(DeviceDisplay display) throws InterruptedException, IOException {
+		Thread.sleep(3000);
+		display.setDefault();
+	}
 	
 }

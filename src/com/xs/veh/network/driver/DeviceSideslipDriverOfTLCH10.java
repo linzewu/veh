@@ -23,6 +23,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 	private String ksjc;
 	
 	private String fw;
+	public static final byte  A= CharUtil.hexStringToByte("41")[0];
 
 	public ProtocolType getProtocolType(byte[] bs) {
 		if((bs[0]==0xF0||bs[0]==0xFC)&&bs.length==4){
@@ -60,12 +61,14 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 
 	@Override
 	public SideslipData startCheck(VehFlow vehFlow) throws  IOException, InterruptedException {
-		
-		deviceSideslip.sendMessage(ql);
-		logger.info("侧滑清零:"+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 		// 开始新的一次检测
 		createNew();
+		logger.info("发送侧滑清零:"+ql);
+		deviceSideslip.sendMessage(ql);
+		logger.info("侧滑清零:"+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		Thread.sleep(200);
 		// 显示屏显示信息
+		logger.info("发送开始检测:");
 		deviceSideslip.sendMessage(ksjc);
 		logger.info("开始检测："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 		logger.info("开始检测："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
@@ -113,7 +116,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 	private void createNew() {
 		this.sideslipData = new SideslipData();
 		sideslipData.setDatas(new ArrayList<Float>());
-
+		this.getTemp().clear();
 	}
 
 	@Override

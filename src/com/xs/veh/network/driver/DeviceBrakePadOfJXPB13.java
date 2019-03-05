@@ -304,7 +304,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 
 	private void processData(byte[] data) throws IOException, InterruptedException  {
 		int length = data.length;
-		if (length == 4) {
+		if (length == 4) {		
 			logger.info("返回数据：" + CharUtil.byte2HexOfString(data));
 			if (data[0] == 0x41 && data[1] == 0x04) {
 				switch (data[2]) {

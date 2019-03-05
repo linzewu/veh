@@ -265,9 +265,9 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			} else {
 				display.sendMessage("检判定结果：X", DeviceDisplay.XP);
 				Thread.sleep(5000);
-				display.sendMessage("等待是否复位,20秒", DeviceDisplay.XP);
-				// 不合格等待15秒
-				Thread.sleep(20000);
+//				display.sendMessage("等待是否复位,20秒", DeviceDisplay.XP);
+//				// 不合格等待15秒
+//				Thread.sleep(20000);
 			}
 		} else {
 			if (!vehFlow.getJyxm().equals("B0")) {

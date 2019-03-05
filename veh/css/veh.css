@@ -241,8 +241,8 @@ html {
 	BORDER-TOP: #333 1px solid;
 	BORDER-RIGHT: #333 1px solid;
 	BORDER-BOTTOM: #333 1px solid;
-	PADDING-BOTTOM: 2px;
-	PADDING-TOP: 2px;
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 0px;
 	PADDING-LEFT: 1px;
 	BORDER-LEFT: #333 1px solid;
 	LINE-HEIGHT: 20px;
@@ -346,3 +346,4 @@ html {
  
 .basetg td{font-size:12px;padding:5px 5px;overflow:hidden;border: 0px;text-align: left;}
 .basetg th{font-size:12px;font-weight:normal;padding:5px 5px;verflow:hidden;border: 0px;}
+.plateSize td{font-size: 20px;}

@@ -161,16 +161,16 @@ public class WorkPointThread extends Thread {
 						Map<String,Object> param=new HashMap<String,Object>();
 						if(device.getType()==Device.ZDJCSB){
 							BrakRollerData brakRollerData;
-							/*if(vehCheckLogin.getJycs()==1) {*/
+							if(vehCheckLogin.getJycs()==1) {
 								brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
-							/*}else {
+							}else {
 								BrakRollerData weightBrakRollerData = checkDataManager.getLastBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
 								brakRollerData =new BrakRollerData();
 								brakRollerData.setZlh(weightBrakRollerData.getZlh());
 								brakRollerData.setYlh(weightBrakRollerData.getYlh());
 								brakRollerData.setJzzlh(weightBrakRollerData.getJzzlh());
 								brakRollerData.setJzylh(weightBrakRollerData.getJzylh());
-							}*/
+							}
 							
 							param.put("brakRollerData", brakRollerData);
 							

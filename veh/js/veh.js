@@ -67,6 +67,7 @@ var veh = {
 			temp['jyyxqz']='';
 			temp['bxzzrq']='';
 			temp['jyrq']='';
+			temp['ycy']='';
 			$("#vehinfo").form("load",temp);
 			veh.setVehB16(temp['zs']);
 			veh.setVehH14();
@@ -986,6 +987,12 @@ var system = {
 			href : "/veh/html/flowConfig.html",
 			target : "#systemContex",
 			authorize : "系统管理员"
+		},{
+			"icon" : "/veh/images/video_editing.png",
+			"title" : "视频配置",
+			href : "/veh/html/config.html",
+			target : "#systemContex",
+			authorize : "系统管理员"
 		}
 	],
 	menus3:[
@@ -1249,6 +1256,7 @@ var report={
 			$("#tab-report").tabs("getSelected").panel("refresh");
 			$("#performanceCk").panel({"href":"/veh/html/report/performanceCk.html",baseInfo:row});
 			$("#performanceCkRep").panel({"href":"/veh/html/report/performanceCkRep.html",baseInfo:row});
+			$("#plateApply").panel({"href":"/veh/html/report/plateApply.html","onLoad":report.getPlateApply,baseInfo:row});
 			
 		}
 	},
@@ -1293,7 +1301,7 @@ var report={
 				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 			});
 			
-			var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
+			/**var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
 			var newJyxm="";
 			
 			if(jyxm.indexOf("B")>=0){
@@ -1317,7 +1325,7 @@ var report={
 				newJyxm+="R";
 			}
 			
-			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
+			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);**/
 			
 			$.each(data,function(i,n){
 				// 处理灯光
@@ -1473,7 +1481,7 @@ var report={
 					jg="-";
 				}
 				
-				var tr="<tr><td class=l >"+(i+1)+"</td><td class=l>"+n.yqjyxm+"</td><td class=l>"+		
+				var tr="<tr><td class=l >"+(i+1)+"</td><td>"+n.yqjyxm+"</td><td class=l>"+		
 						n.yqjyjg+"</td><td class=l>"+n.yqbzxz+"</td><td class=l>"+jg+"</td><td class=l>"+
 						(n.yqjybz==null?"":n.yqjybz)+"</td></tr>";
 				$("#tbody_yqsbjyjg").append(tr);
@@ -1492,8 +1500,19 @@ var report={
 					jg="-";
 				}
 				
-				var tr="<tr><td class=l>"+n.xh+"</td><td class=l>"+n.rgjyxm+"</td><td class=l>"+jg+"</td><td class=l colSpan=2>"+
-				(n.rgjysm==null?"":n.rgjysm)+"</td><td class=l>"+(n.rgjybz==null?"":n.rgjybz)+"</td></tr>";
+				var jysm = "";
+				if(n.rgjysm!=null){
+					var jysmArr = n.rgjysm.split(",");
+					for(var b=0;b<jysmArr.length;b++){
+						if(b == jysmArr.length-1){
+							jysm = jysm + comm.getParamNameByValue("rgjysm", jysmArr[b]);
+						}else{
+							jysm = jysm + comm.getParamNameByValue("rgjysm", jysmArr[b])+";";
+						}
+					}
+				}
+				var tr="<tr><td class=l>"+n.xh+"</td><td>"+n.rgjyxm+"</td><td class=l>"+jg+"</td><td class=l colSpan=2>"+
+				(jysm)+"</td><td class=l>"+(n.rgjybz==null?"":n.rgjybz)+"</td></tr>";
 				$("#tbody_rgjyjg").append(tr);
 			});
 			
@@ -1704,6 +1723,17 @@ var report={
 				center.panel("setTitle",title);
 			}
 		}
+	},
+	getPlateApply:function(){
+		var baseInfo = $(this).panel("options").baseInfo;
+		
+		$("#print_plateApply [name^='report-plateInfo-']").each(function(i,n){
+			var name = $(n).attr("name").replace("report-plateInfo-","");
+			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
+			if(name = "jylb" && baseInfo[name] == "01"){
+				$("#hgbzhl").attr("checked",true);
+			}
+		});
 	}
 }
 
