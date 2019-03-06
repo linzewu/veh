@@ -46,4 +46,6 @@ public class RCAConstant {
 	
 	public static final String XTLB = "18";
 	
+	public static final String  V18C23= "18C23";
+	
 }

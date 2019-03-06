@@ -330,6 +330,21 @@ var veh = {
 				body[0]['jyrq'] = body['djrq']
 				body[0]['jyyxqz'] = body['yxqz']
 				$("#vehinfo").form("load", body[0]);
+				$('#win_jqx').window('open');
+				$.post("/veh/compulsoryInsurance/getVehTax",param,function(taxData){
+					 taxData=$.parseJSON(taxData);
+					console.log("交强险(含车船税)信息:"+taxData)
+					var taxBody = taxData["body"];
+					console.log("交强险(含车船税)信息 body:"+taxBody)
+					$("#win_jqx [name^='jqx-info-']").each(function(i,n){
+						var name = $(n).attr("name").replace("jqx-info-","");
+						
+						$(n).text(taxBody["vehispara"][name]);
+					});
+					
+				},"json").error(function(e){
+					$.messager.alert("获取机动车交强险(含车船税)信息错误","错误类型:"+e.status);
+				});
 				if (did) {
 					clearInterval(did);
 					did = null;
@@ -364,6 +379,39 @@ var veh = {
 			}
 		};
 		this.ajaxVeh("/veh/veh/getVehInfo", param, callback);
+	},
+	bdxx : function(){
+		var sf = $("input[sid=sf]").combobox("getText");
+		var hphm = sf + $("input[sid=hphm]").textbox("getValue");
+		var hpzl = $("input[sid=hpzl]").combobox("getValue");
+		var clsbdh = $("input[sid=clsbdh]").textbox("getValue");
+
+		if (sf == "" || hphm == "" || hpzl == "" || clsbdh == "") {
+			$.messager.alert("提示", "获取机动车交强险(含车船税)信息必须输入号牌号码、号牌种类、车辆识别代号后4位");
+			return false;
+		}
+
+		var param = {
+			"hphm" : hphm,
+			"hpzl" : hpzl,
+			"clsbdh" : clsbdh
+		}
+		
+		$('#win_jqx').window('open');
+		$.post("/veh/compulsoryInsurance/getVehTax",param,function(taxData){
+							taxData=$.parseJSON(taxData);
+							console.log("交强险(含车船税)信息:"+taxData)
+							var taxBody = taxData["body"];
+							console.log("交强险(含车船税)信息 body:"+taxBody)
+							$("#win_jqx [name^='jqx-info-']").each(function(i,n){
+								var name = $(n).attr("name").replace("jqx-info-","");
+								
+								$(n).text(taxBody["vehispara"][name]);
+							});
+							
+						},"json").error(function(e){
+							$.messager.alert("获取机动车交强险(含车船税)信息错误","错误类型:"+e.status);
+						});
 	},
 	ajaxVeh : function(url, param, success) {
 		$.ajax({
