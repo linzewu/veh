@@ -40,6 +40,8 @@ public class RCAConstant {
 	
 	public static final String V18C72="18C72";
 	
+	public static final String V18C23="18C23";
+	
 	public  static final String ITEM_F1="F1";
 	
 	public static final String ROAD="路试";
