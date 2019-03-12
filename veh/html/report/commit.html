@@ -32,11 +32,99 @@
 		<input name="hphm" type="hidden">
 		<input name="clsbdh" type="hidden">
 		<input name="id" type="hidden">
+		<a href="javascript:void(0)" class="easyui-linkbutton c6"   onclick="getbdxx()" >保单信息</a>
 		<a href="#" class="easyui-linkbutton c6" data-options="onClick:commitForm">提交审核</a>
 	</td>
 </tr>
 </table>
 </form>
+
+<div id="win_jqxcomm" class="easyui-window" data-options="
+													    width:900,
+													    height:510,
+													    modal:true,
+													    title:'机动车交强险（含车船税）信息',
+													    minimizable:false,
+													    collapsible:false,
+													    maximizable:false,
+													    draggable:false,
+													    closed:true
+													    ">
+	
+		<table class="basetable" cellspacing="0" cellpadding="0">
+		<tr>
+			<td class="tl"><label>保险单号：</label></td >
+			<td class="tc" name="jqx-infos-bxdh">
+			</td>
+			<td class="tl"><label>保险公司代码：</label></td >
+			<td class="tc" name="jqx-infos-bxgsdm">
+			</td>
+			<td class="tl"><label>保险公司名称：</label></td >
+			<td class="tc" name="jqx-infos-bxgs">
+			</td>
+		</tr>
+		<tr>
+			<td class="tl"><label>号牌种类：</label></td >
+			<td class="tc" name="jqx-infos-hpzl">
+			</td>
+			<td class="tl"><label>号牌号码：</label></td >
+			<td class="tc" name="jqx-infos-hphm">
+			</td>
+			<td class="tl"><label>车辆识别代号：</label></td >
+			<td class="tc" name="jqx-infos-clsbdh">
+			</td>
+		</tr>
+		<tr>
+			<td class="tl"><label>生效日期：</label></td >
+			<td class="tc" name="jqx-infos-sxrq">
+			</td>
+			<td class="tl"><label>终止日期：</label></td >
+			<td class="tc" name="jqx-infos-zzrq">
+			</td>
+			<td class="tl"><label>被保险人名称：</label></td >
+			<td class="tc" name="jqx-infos-bbxr">
+			</td>
+		</tr>
+		<tr>
+			<td class="tl"><label>被保险人身份证明号码：</label></td >
+			<td class="tc" name="jqx-infos-bbxrsfzmhm">
+			</td>
+			<td class="tl"><label>交强险投保状态：</label></td >
+			<td class="tc" name="jqx-infos-jqxtbzt">
+			</td>
+			<td class="tl"><label>车船税完税/免税凭证号码：</label></td >
+			<td class="tc" name="jqx-infos-wspzhm">
+			</td>
+		</tr>
+		<tr>
+			<td class="tl"><label>车船税纳税情况：</label></td >
+			<td class="tc" name="jqx-infos-ccsnsqk">
+			</td>
+			<td class="tl"><label>车船税纳税金额：</label></td >
+			<td class="tc" name="jqx-infos-ccsnsje">
+			</td>
+			<td class="tl"><label>车船税完税/免税凭证号码：</label></td >
+			<td class="tc" name="jqx-infos-wspzhm">
+			</td>
+		</tr>
+		<tr>
+			<td class="tl"><label>车船税纳税人识别号：</label></td >
+			<td class="tc" name="jqx-infos-nsrsbh">
+			</td>
+			<td class="tl"><label>车船税纳税日期：</label></td >
+			<td class="tc" name="jqx-infos-ccsnsrq">
+			</td>
+			<td class="tl"><label>车船税纳税所属时期起始日期：</label></td >
+			<td class="tc" name="jqx-infos-ccsnsqsrq">
+			</td>
+		</tr>
+		<tr>
+			<td class="tl"><label>车船税纳税所属时期终止日期：</label></td >
+			<td class="tc" colspan="5" name="jqx-infos-ccsnszzrq">
+			</td>
+		</tr>
+		</table>														    
+</div>
 <script type="text/javascript">
 
 function sxrqSelect(date){
@@ -47,6 +135,10 @@ function sxrqSelect(date){
 var reportData = $("#checkingVeh").datagrid("getSelected");
 $("#commit_jylsh").text(reportData.jylsh);
 $("#commit_hphm").text(reportData.hphm);
+console.log(reportData)
+var jqx_hphm = reportData.hphm;
+var jqx_hpzl = reportData.hpzl;
+var jqx_clsbdh = reportData.clsbdh;
 
 	$(function(){
 		$.post("/veh/report/getInsurance",{jylsh:reportData.jylsh},function(data){
@@ -95,5 +187,64 @@ $("#commit_hphm").text(reportData.hphm);
          },"json")
 		//$("#commitForm").form("submit");
 	}
+	
+function getbdxx(){
+	if ( jqx_hphm == "" || jqx_hpzl == "" || jqx_clsbdh == "") {
+		$.messager.alert("提示", "获取机动车交强险(含车船税)信息必须输入号牌号码、号牌种类、车辆识别代号后4位");
+		return false;
+	}
+	var head = null;
+	var body = null;
+	var param = {
+			"hphm" : jqx_hphm,
+			"hpzl" : jqx_hpzl,
+			"clsbdh" : jqx_clsbdh
+		}
+		$.post("/veh/compulsoryInsurance/getVehTax",param,function(taxData){
+							taxData=$.parseJSON(taxData);
+							if ($.isArray(taxData)) {
+								head = taxData[0];
+							} else {
+								head = taxData["head"];
+								body = taxData["body"]
+							}
+
+							if (head["code"] == 1) {
+								$('#win_jqxcomm').window('open');
+								var taxBody = taxData["body"];
+								console.log("交强险(含车船税)信息 body:"+taxBody)
+								$("#win_jqxcomm [name^='jqx-infos-']").each(function(i,n){
+									var name = $(n).attr("name").replace("jqx-infos-","");
+									
+									$(n).text(taxBody[0][name]);
+								});
+								
+								if($("#bxpzh").textbox("getValue") == null || $("#bxpzh").textbox("getValue") == ""){
+									$("#bxpzh").textbox("setValue",taxBody[0]["bxdh"]);
+								}
+								if($("#bxje").numberbox("getValue") == null || $("#bxje").numberbox("getValue") == ""){
+									$("#bxje").numberbox("setValue",taxBody[0]["ccsnsje"]);
+								}
+								if($("#sxrq").datebox("getValue") == null || $("#sxrq").datebox("getValue") == ""){
+									$("#sxrq").datebox("setValue",taxBody[0]["sxrq"]);
+								}
+								if($("#zzrq").datebox("getValue") == null || $("#zzrq").datebox("getValue") == ""){
+									$("#zzrq").datebox("setValue",taxBody[0]["zzrq"]);
+								}
+								if($("#bxgs").textbox("getValue") == null || $("#bxgs").textbox("getValue") == ""){
+									$("#bxgs").textbox("setValue",taxBody[0]["bxgs"]);
+								}
+								
+							}else {
+								$.messager
+								.alert("警告",
+										"查询请求已发送，请确认信息无误后，等待5-10秒再试！ 对未查询交强险或车船税电子信息的,请告知车主提交凭证！")
+							}
+							
+							
+						},"json").error(function(e){
+							$.messager.alert("获取机动车交强险(含车船税)信息错误","错误类型:"+e.status);
+						});
+}
 	
 </script>
