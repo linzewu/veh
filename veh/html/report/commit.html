@@ -215,8 +215,14 @@ function getbdxx(){
 								console.log("交强险(含车船税)信息 body:"+taxBody)
 								$("#win_jqxcomm [name^='jqx-infos-']").each(function(i,n){
 									var name = $(n).attr("name").replace("jqx-infos-","");
-									
-									$(n).text(taxBody[0][name]);
+									if(name == "jqxtbzt"){
+										$(n).text(veh.formatterJqxtbzt(taxBody[0][name]));
+									}else if(name == "ccsnsqk"){
+										$(n).text(veh.formatterCcsnsqk(taxBody[0][name]));
+									}else{
+										$(n).text(taxBody[0][name]);
+									}
+									//$(n).text(taxBody[0][name]);
 								});
 								
 								if($("#bxpzh").textbox("getValue") == null || $("#bxpzh").textbox("getValue") == ""){

@@ -377,8 +377,13 @@ var veh = {
 								console.log("交强险(含车船税)信息 body:"+taxBody)
 								$("#win_jqx [name^='jqx-info-']").each(function(i,n){
 									var name = $(n).attr("name").replace("jqx-info-","");
-									
-									$(n).text(taxBody[0][name]);
+									if(name == "jqxtbzt"){
+										$(n).text(veh.formatterJqxtbzt(taxBody[0][name]));
+									}else if(name == "ccsnsqk"){
+										$(n).text(veh.formatterCcsnsqk(taxBody[0][name]));
+									}else{
+										$(n).text(taxBody[0][name]);
+									}
 								});
 							}else {
 								$.messager
@@ -739,6 +744,32 @@ var veh = {
 	},
 	loginPageReload:function(){
 		$("#panel-vheInfo").panel("refresh");
+	},
+	formatterJqxtbzt:function(value){
+		if(value == "1"){
+			return "确认";
+		}else if(value="2"){
+			return "一般投保退保";
+		}else if(value="3"){
+			return "重复投保退保";
+		}else if(value="4"){
+			return "起保前退保";
+		}else{
+			return value;
+		}
+	},
+	formatterCcsnsqk:function(value){
+		if(value == "1"){
+			return "完税";
+		}else if(value="2"){
+			return "免税";
+		}else if(value="3"){
+			return "减税";
+		}else if(value="4"){
+			return "拒缴";
+		}else{
+			return value;
+		}
 	}
 }
 
