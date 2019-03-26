@@ -685,9 +685,9 @@ var veh = {
 		$("input[textboxname=zxzxjxs]").combobox({
 			"onChange" : function(newValue, oldValue) {
 				if(newValue==1){
-					$("#i_ch").prop("checked", true);
+					$(":checkbox[name=jyxm][value=A1]").prop("checked", true);
 				}else{
-					$("#i_ch").prop("checked", false);
+					$(":checkbox[name=jyxm][value=A1]").prop("checked", false);
 				}
 			}
 		});

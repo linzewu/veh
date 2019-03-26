@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.xs.common.MyHibernateTemplate;
@@ -623,10 +624,10 @@ public class CheckDataManager {
 				ecj.setHphm(vehCheckLogin.getHphm());
 				ecj.setHpzl(vehCheckLogin.getHpzl());
 				ecj.setXh(i);
+				int[] item =null;
 				if (i == 1) {
 					ecj.setRgjyxm("车辆唯一性检测");
-					List bhgList = getBhgx(new int[] {1,2,3,4,5},jb);
-					setPd(ecj, bhgList);
+					item = new int[] {1,2,3,4,5};
 				} else if (i == 2) {
 					ecj.setRgjyxm("车辆特征参数检查");
 					/*if(externalChecks!=null&&!externalChecks.isEmpty()){
@@ -638,23 +639,21 @@ public class CheckDataManager {
 							}
 						}
 					}*/
-					List bhgList = getBhgx(new int[] {6,7,8,9,10,11,12,13,14,15},jb);
-					setPd(ecj, bhgList);
+					
+					item = new int[] {6,7,8,9,10,11,12,13,14,15};
 				} else if (i == 3) {
 					ecj.setRgjyxm("车辆外观检查");
-					List bhgList = getBhgx(new int[] {16,17,18,19,20,21},jb);
-					setPd(ecj, bhgList);
+					item = new int[] {16,17,18,19,20,21};
 				} else if (i == 4) {
 					ecj.setRgjyxm("安全装置检查");
-					List bhgList = getBhgx(new int[] {22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41},jb);
-					setPd(ecj, bhgList);
+					item = new int[] {22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41};
 				} else if (i == 5) {
 					ecj.setRgjyxm("联网查询");
-					List bhgList = getBhgx(new int[] {81},jb);
-					setPd(ecj, bhgList);
+					item = new int[] {81};
 				}
-				//ecj.setRgjgpd("1");
-				
+				List bhgList = getxm(item,jb,"2");
+				List hgList = getxm(item,jb,"1");
+				setPd(ecj, bhgList,hgList);
 				this.hibernateTemplate.save(ecj);
 			}
 		}
@@ -668,8 +667,10 @@ public class CheckDataManager {
 			ecj.setHpzl(vehCheckLogin.getHpzl());
 			ecj.setXh(i);
 			ecj.setRgjyxm("底盘动态检验");
-			List bhgList = getBhgx(new int[] {42,43,44,45},jb);
-			setPd(ecj, bhgList);
+			int[] item=new int[] {42,43,44,45};
+			List bhgList = getxm(item,jb,"2");
+			List hgList = getxm(item,jb,"1");
+			setPd(ecj, bhgList,hgList);
 			//ecj.setRgjgpd("1");
 			this.hibernateTemplate.save(ecj);
 			i++;
@@ -685,17 +686,21 @@ public class CheckDataManager {
 			ecj.setHpzl(vehCheckLogin.getHpzl());
 			ecj.setXh(i);
 			ecj.setRgjyxm("车辆底盘部件检查");
-			List bhgList = getBhgx(new int[] {46,47,48,49,50},jb);
-			setPd(ecj, bhgList);
+			int[] item=new int[] {46,47,48,49,50};
+			List bhgList = getxm(item,jb,"2");
+			List hgList = getxm(item,jb,"1");
+			setPd(ecj, bhgList,hgList);
 			//ecj.setRgjgpd("1");
 			this.hibernateTemplate.save(ecj);
 			i++;
 		}
 	}
 
-	private void setPd(ExternalCheckJudge ecj, List bhgList) {
+	private void setPd(ExternalCheckJudge ecj, List bhgList,List hgList) {
 		if(bhgList.size() > 0) {
 			ecj.setRgjgpd("2");
+		}else if(CollectionUtils.isEmpty(hgList)&&CollectionUtils.isEmpty(bhgList)) {
+			ecj.setRgjgpd("0");
 		}else {
 			ecj.setRgjgpd("1");
 		}
@@ -710,12 +715,12 @@ public class CheckDataManager {
 		ecj.setRgjysm(sm.toString());
 	}
 	
-	public List getBhgx(int[] bh,JSONObject jo) {
+	public List getxm(int[] bh,JSONObject jo,String type) {
 		List list = new ArrayList();
 		for(int i=0;i<bh.length;i++) {
 			Object o = jo.get("item"+bh[i]);
 			if(o != null) {
-				if("2".equals(o.toString())) {
+				if(type.equals(o.toString())) {
 					list.add(bh[i]);
 				}
 			}

@@ -685,9 +685,9 @@ var veh = {
 		$("input[textboxname=zxzxjxs]").combobox({
 			"onChange" : function(newValue, oldValue) {
 				if(newValue==1){
-					$("#i_ch").prop("checked", true);
+					$(":checkbox[name=jyxm][value=A1]").prop("checked", true);
 				}else{
-					$("#i_ch").prop("checked", false);
+					$(":checkbox[name=jyxm][value=A1]").prop("checked", false);
 				}
 			}
 		});
@@ -1332,11 +1332,12 @@ var report={
 				if(i.indexOf("H")==0){
 					var tt = i.split("_");
 					$.each(n,function(j,k){
-						
-						if((k.trim().indexOf("+")==0||k.trim().indexOf("-")==0)&&k.substring(1,2)==0){
-							k=k.substring(0,1)+k.substring(2);
+						if(j=="czpc"){
+							k=parseInt(k);
+							if(k>0){
+								k="+"+k;
+							}
 						}
-						
 						if(j=="czpy"){
 							k==null?"":(k+"H"); 
 						}
@@ -1347,9 +1348,19 @@ var report={
 						
 					});
 					
-					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
-						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					if(n.gx=="Y"){
+						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+veh.jgpd(n.czpypd)+dgpd_text.substring(2));
 					}
+					
+					if(n.gx=="J"){
+						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,2)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
+					}
+					
+					/*if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					}*/
 					$("#report1 tr[name="+tt[0]+"] td[name=dxcs]").text(n.dxcs);
 					
 				}else if(i.indexOf("S1")==0){
