@@ -1,7 +1,6 @@
 package com.xs.veh.manager;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +13,10 @@ import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.annotations.Synchronize;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -68,6 +65,9 @@ public class CheckDataManager {
 
 	@Resource(name = "hibernateTemplate")
 	private MyHibernateTemplate hibernateTemplate;
+	
+	@Autowired
+	private RoadCheackManager roadCheackManager;
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
@@ -235,7 +235,9 @@ public class CheckDataManager {
 				.find("from DeviceCheckJudeg where jylsh=? and bz1='R' ", jylsh);
 		
 		if (roadChecks != null && !roadChecks.isEmpty()) {
+			RoadCheck roadCheckInfo = roadCheackManager.getRoadCheck(jylsh);
 			data.put("roadChecks", roadChecks);
+			data.put("roadCheckInfo", roadCheckInfo);
 		}
 
 		List<RoadCheck> lsys = (List<RoadCheck>) this.hibernateTemplate.find("from RoadCheck where jylsh=?", jylsh);
@@ -768,9 +770,9 @@ public class CheckDataManager {
 				this.hibernateTemplate.save(deviceCheckJudegXtsj);
 
 				// 制动稳定性
-				String zdwdx = "不跑偏";
+				String zdwdx = "未跑偏";
 				if (roadCheck.getZdwdx().equals("1")) {
-					zdwdx = "不跑偏";
+					zdwdx = "未跑偏";
 				} else if (roadCheck.getZdwdx().equals("2")) {
 					zdwdx = "左跑偏";
 				} else if (roadCheck.getZdwdx().equals("3")) {
