@@ -1267,7 +1267,7 @@ var report={
 		if(!intjycs){
 			intjycs = baseInfo.jycs;
 		}
-		$("[name=xmpd]").text('');
+		//$("[name=xmpd]").text('');
 		$("[name=zczdpd]").text('');
 		$("[name=zjycs]").text(intjycs);
 		
