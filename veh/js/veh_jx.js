@@ -1446,11 +1446,21 @@ var report={
 						}else if(k.yqjgpd==0){
 							jg="—";
 						}
-						temStr+=k.yqjyxm+":"+k.yqjyjg+"("+k.yqbzxz+")"+jg+"  |  "
+						temStr+=k.yqjyxm+":"+k.yqjyjg+"("+k.yqbzxz+")"+jg+"   |   <br>"
 					});
-					$("#report1 td[name=roadCheck_info]").text(temStr);
+					$("#report1 td[name=roadCheck_info]").html(temStr);
 					$("#report1 td[name=roadCheck_pd]").text(veh.jgpd(lsjg));
 					$("#report1 td[name=roadCheck_dxcs]").text(1);
+					
+					var ycy = $("[name=report-baseInfo-ycy]").text();
+					if(ycy==""){
+						$("[name=report-baseInfo-ycy]").text(data['roadCheckInfo'].lsy);
+					}
+					var upLineDate = $("[report-baseInfo-upLineDate]").text();
+					if(upLineDate==""){
+						$("[name=report-baseInfo-upLineDate]").text(baseInfo['dlsj']);
+					}
+					
 					
 				}else if(i.indexOf("lsy")==0){
 					$("#report1 td[name=roadCheck_lsy]").text(n);
