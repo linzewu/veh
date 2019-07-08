@@ -37,7 +37,6 @@ import com.xs.veh.entity.RecordInfoOfCheck;
 import com.xs.veh.entity.RecordInfoOfCheckStaff;
 import com.xs.veh.entity.SecurityAuditPolicySetting;
 import com.xs.veh.entity.User;
-import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.manager.CoreFunctionManager;
 import com.xs.veh.manager.OperationLogManager;
 
@@ -163,7 +162,7 @@ public class LogAopAction {
 					if(args[c].getClass().getSuperclass() == BaseEntity.class || args[c].getClass() == LinkedHashMap.class
 							||args[c].getClass() == BlackList.class || args[c].getClass() == RecordInfoOfCheck.class
 							||args[c].getClass() == RecordInfoOfCheckStaff.class ||args[c].getClass() == SecurityAuditPolicySetting.class
-							||args[c].getClass() ==  VideoConfig.class) {
+							) {
 						sbStr.append("参数"+(c+1)+"="+JSONObject.fromObject(args[c]).toString()+",");
 					}else if(args[c].getClass() == String.class || args[c].getClass() == Integer.class) {
 						sbStr.append("参数"+(c+1)+"="+args[c]+",");
