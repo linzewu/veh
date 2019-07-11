@@ -1,0 +1,18 @@
+<label></label>
+<a class="easyui-linkbutton" onclick="startVideo()">开始录像</a>
+
+<script type="text/javascript">
+
+var reportData = $("#checkingVeh").datagrid("getSelected");
+function startVideo(){
+	$.post("",{jylsh:reportData.jylsh},function(data){
+		$.messager.progress({title:"授权签证人签名录像",msg:"录像中。。。",interval:3000});
+		setTimeout(function(){
+			$.messager.progress('close');
+		},1000*30);
+	})
+}
+
+
+
+</script>
