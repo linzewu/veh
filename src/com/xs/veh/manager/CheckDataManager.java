@@ -800,18 +800,20 @@ public class CheckDataManager {
 				deviceCheckJudegKzzdjl.setBz1("R");
 				xh++;
 				this.hibernateTemplate.save(deviceCheckJudegKzzdjl);
-
-				// 行车空载制动距离
-				DeviceCheckJudeg deviceCheckJudegKzmfdd = new DeviceCheckJudeg();
-				setDeviceCheckJudeg(deviceCheckJudegKzmfdd, vehCheckLogin);
-				deviceCheckJudegKzmfdd.setYqjyxm("空载MFFDD(m)");
-				deviceCheckJudegKzmfdd.setYqjyjg(roadCheck.getXckzmfdd().toString());
-				deviceCheckJudegKzmfdd.setYqjgpd(roadCheck.getLskzmfddpd().toString());
-				deviceCheckJudegKzmfdd.setYqbzxz("≥" + roadCheck.getLskzmfddxz());
-				deviceCheckJudegKzmfdd.setXh(xh.intValue());
-				deviceCheckJudegKzmfdd.setBz1("R");
-				xh++;
-				this.hibernateTemplate.save(deviceCheckJudegKzmfdd);
+				
+				if(!StringUtils.isEmpty(roadCheck.getXckzmfdd())) {
+					// 行车空载制动距离
+					DeviceCheckJudeg deviceCheckJudegKzmfdd = new DeviceCheckJudeg();
+					setDeviceCheckJudeg(deviceCheckJudegKzmfdd, vehCheckLogin);
+					deviceCheckJudegKzmfdd.setYqjyxm("空载MFFDD(m)");
+					deviceCheckJudegKzmfdd.setYqjyjg(roadCheck.getXckzmfdd().toString());
+					deviceCheckJudegKzmfdd.setYqjgpd(roadCheck.getLskzmfddpd().toString());
+					deviceCheckJudegKzmfdd.setYqbzxz("≥" + roadCheck.getLskzmfddxz());
+					deviceCheckJudegKzmfdd.setXh(xh.intValue());
+					deviceCheckJudegKzmfdd.setBz1("R");
+					xh++;
+					this.hibernateTemplate.save(deviceCheckJudegKzmfdd);
+				}
 
 			}
 
@@ -1165,6 +1167,19 @@ public class CheckDataManager {
 				vehCheckLogin.getJycs());
 		return datas;
 	}
+	
+	
+	public BrakRollerData getLastBrakRollerDataB0(VehCheckLogin vehCheckLogin) {
+		List<BrakRollerData> datas = (List<BrakRollerData>) this.hibernateTemplate.find(
+				"from BrakRollerData where jylsh=? and jyxm='B0' order by desc", vehCheckLogin.getJylsh(),
+				vehCheckLogin.getJycs());
+		if(CollectionUtils.isEmpty(datas)) {
+			return null;
+		}else {
+			return datas.get(0);
+		}
+	}
+	
 
 	// 获取整车轴荷
 	public Integer getZCZH(VehCheckLogin vehCheckLogin) {

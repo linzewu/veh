@@ -36,7 +36,7 @@
 			</div>
 			<div data-options="region:'south',border:0" style="height: 220px;" >
 				<div title="车辆检验项目"  class="easyui-panel panel_cyxm" data-options="fit:true">
-					<label>&nbsp;&nbsp;&nbsp;&nbsp;检测类型:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="editable:false,data:comm.getBaseParames('flowType'),valueField: 'id',textField: 'value'" value="0" style="width: 55px;" name="checkType" id="_checkType" >
+					<label style="font-size: 12px;">&nbsp;&nbsp;&nbsp;&nbsp;检测类型:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="editable:false,data:comm.getBaseParames('flowType'),valueField: 'id',textField: 'value'" value="0" style="width: 55px;" name="checkType" id="_checkType" >
 					<table  cellspacing="0" border="0" cellpadding="1" style="min-width: 872px;" id="jyxmT">
 						<!--<tr>
 							<td><span><label for="i_clwgjy">车辆外观检验:</label><input id="i_clwgjy" name="jyxm" type="checkbox" checked="checked" value="F1"></span></td>
@@ -72,17 +72,15 @@
 						</tr>-->
 						<tr>
 							<!--<td><span><label for="i_zbzl">整备质量测量:</label><input id="i_zbzl" name="jyxm" type="checkbox" value="Z1"></span></td>-->
-							<td  colspan="3">&nbsp;</td>
-							<td  style="" >
+							<td  colspan="6">&nbsp;</td>
+							<td >
 								<label>引车员:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="prompt:'请选择',editable:false,url:'/veh/user/getAllUsers',valueField: 'idCard',textField: 'realName'" style="width: 75px;" name="ycy" id="_ycy" >
 								<input type="hidden" name="ycysfzh" id="_ycysfzh">
 							</td>
-							<td  style="" >
+							<td>
 								<label>检测线:&nbsp;&nbsp;&nbsp;&nbsp;</label><input class="easyui-combobox" data-options="editable:false,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'" value="1" style="width: 75px;" name="jcxdh" id="_jcxdh" >
 							</td>
-							<td  style="">
-								
-							</td>
+							
 						</tr>
 					</table>
 					<div style="text-align: center;">
@@ -148,16 +146,16 @@ function showJyxm(obj){
 		var jyxmArr = data.data;
 		var rowCou = 0;
 		if (jyxmArr.length > 0){
-			rowCou = Math.ceil(jyxmArr.length/6);
+			rowCou = Math.ceil(jyxmArr.length/8);
 			var b = 0;
 			for (var r=0;r<rowCou;r++){
 				 var newRow=tb.insertRow(r);
-				 for (var t=0;t<6;t++){
+				 for (var t=0;t<8;t++){
 		             var newcellname=newRow.insertCell(t);
 		             if (b >= jyxmArr.length){
 		            	 newcellname.innerHTML="";
 		             }else{
-		             	 newcellname.innerHTML="<span><label or='i_jyxm"+b+"'>"+jyxmArr[b].paramName+":</label><input id='i_jyxm"+b+"' name='jyxm' type='checkbox' value='"+jyxmArr[b].paramValue+"'></span>";
+		             	 newcellname.innerHTML="<span><label for='i_jyxm"+b+"'>"+jyxmArr[b].paramName+":</label><input id='i_jyxm"+b+"' name='jyxm' type='checkbox' value='"+jyxmArr[b].paramValue+"'></span>";
 		             }
 		             b++;
 				 }

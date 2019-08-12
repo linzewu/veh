@@ -253,18 +253,18 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 		if (brakRollerData.getKzxczdl() != null) {
 			DecimalFormat decimalFormat = new DecimalFormat(".0");
-			display.sendMessage(decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
-					+ decimalFormat.format(brakRollerData.getKzbphl()), DeviceDisplay.SP);
+			display.sendMessage("左："+brakRollerData.getZzdl()+" 右："+brakRollerData.getYzdl()+"/"+decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
+					+ decimalFormat.format(brakRollerData.getKzbphl()), DeviceDisplay.XP);
 		}
 		
 
 		if (nextVehFlow != null && nexzw==intZw) {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
-				display.sendMessage("检判定结果：O", DeviceDisplay.XP);
-				Thread.sleep(2000);
+				display.sendMessage("检判定结果：O", DeviceDisplay.SP);
+				Thread.sleep(10000);
 			} else {
-				display.sendMessage("检判定结果：X", DeviceDisplay.XP);
-				Thread.sleep(5000);
+				display.sendMessage("检判定结果：X", DeviceDisplay.SP);
+				Thread.sleep(10000);
 //				display.sendMessage("等待是否复位,20秒", DeviceDisplay.XP);
 //				// 不合格等待15秒
 //				Thread.sleep(20000);
@@ -272,11 +272,11 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		} else {
 			if (!vehFlow.getJyxm().equals("B0")) {
 				if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
-					display.sendMessage("检判定结果：O", DeviceDisplay.XP);
+					display.sendMessage("检判定结果：O", DeviceDisplay.SP);
 				} else {
-					display.sendMessage("检判定结果：X", DeviceDisplay.XP);
+					display.sendMessage("检判定结果：X", DeviceDisplay.SP);
 				}
-				Thread.sleep(1500);
+				Thread.sleep(10000);
 			}else{
 				String zczw = vehCheckLogin.getZczw();
 				Integer maxzw = this.getMaxZw(zczw);

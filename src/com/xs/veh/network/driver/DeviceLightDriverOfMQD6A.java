@@ -186,7 +186,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			@Override
 			public void run() {
 				// 保护
-				int i = 1000;
+				int i = 0;
 				try {
 					while (!isGetData && i <= 1000) {
 						if (deviceSignal2.getSignal(s2)) {

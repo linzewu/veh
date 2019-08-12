@@ -18,7 +18,7 @@ public class CheckBitAopAfter {
 	/**
 	 * 方法结束执行
 	 */
-	@AfterReturning(returning="rvt",pointcut="execution(* org.springframework.orm.hibernate4.HibernateTemplate.find*(..)) || execution(* org.springframework.orm.hibernate4.HibernateTemplate.load(..)) || execution(* org.springframework.orm.hibernate4.HibernateTemplate.get(..))")
+	//@AfterReturning(returning="rvt",pointcut="execution(* org.springframework.orm.hibernate4.HibernateTemplate.find*(..)) || execution(* org.springframework.orm.hibernate4.HibernateTemplate.load(..)) || execution(* org.springframework.orm.hibernate4.HibernateTemplate.get(..))")
 	public void after(JoinPoint joinPoint,Object rvt) {
 		if(rvt instanceof List) {
 			List array = (List)rvt;

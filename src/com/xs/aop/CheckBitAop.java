@@ -40,7 +40,7 @@ public class CheckBitAop {
 	 * 
 	 * @throws UnsupportedEncodingException
 	 */
-	@Before("save() || update()  || merge()")
+//	@Before("save() || update()  || merge()")
 	public void doBefore(JoinPoint joinPoint) throws UnsupportedEncodingException, TamperWithDataException {
 		System.out.println("doBefore*********************************************" + joinPoint.getArgs());
 		Object[] params = joinPoint.getArgs();

@@ -2,7 +2,9 @@ package com.xs.veh.network;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
@@ -167,17 +169,20 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				}
 				display.sendMessage(
 						brakRollerData.getZw() + "轴：" + decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
-								+ decimalFormat.format(brakRollerData.getKzbphl()) + "/" + strpd,
-						brakRollerData.getZw() == 1 ? DeviceDisplay.SP : DeviceDisplay.XP);
+								+ decimalFormat.format(brakRollerData.getKzbphl()) + "/" + strpd+"/左："+brakRollerData.getZzdl()+
+								" 右："+brakRollerData.getYzdl()+" /左："+brakRollerData.getZdtlh()+"KG 右："+brakRollerData.getYdtlh()+"KG",
+						brakRollerData.getZw() == 1 ? DeviceDisplay.XP : DeviceDisplay.XP);
+				
 				zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
 				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+				Thread.sleep(10000);
 			} else {
 				parDataOfAnjian = new ParDataOfAnjian();
 				parDataOfAnjian.setZczczdl(brakRollerData.getZzdl() + brakRollerData.getYzdl());
 			}
 		}
 
-		Thread.sleep(2000);
+		//Thread.sleep(10000);
 
 		if (parDataOfAnjian != null) {
 			logger.info("驻车判定！");
@@ -214,24 +219,29 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 
 		
 		if(zdlh>0){
+			
+			List<String> notjyxm = notJYXM(datas);
+			
+			for(String j:notjyxm) {
+				BrakRollerData b =this.checkDataManager.getLastBrakRollerDataOfVehLoginInfo(vehCheckLogin, j);
+				zdlh += b.getZzdl() + b.getYzdl();
+				zclh += b.getZlh() + b.getYlh();
+			}
+			
 			otherInfoData.setJczczbzl(zclh);
 			otherInfoData.setZdlh(zdlh);
 			if (zclh != 0) {
 				Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 				otherInfoData.setZczdl(CheckDataManager.MathRound1(zczdl));
 			}
-			logger.info("11111111111111111111111111111");
 			otherInfoData.setZczdlxz();
-			logger.info("2222222222222222222222222222");
 			otherInfoData.setZczdlpd();
-			logger.info("3333333333333333333333333333333");
 			String strpd = "O";
 			if (otherInfoData.getZcpd().equals(BrakRollerData.PDJG_BHG.toString())) {
 				logger.info("整车判定不合格！");
 				strpd="X";
 				sfhg = false;
 			}
-			logger.info("4444444444444444444444444444444444444");
 			display.sendMessage("整车：" + decimalFormat.format(otherInfoData.getZczdl()) + "/" + strpd,
 					DeviceDisplay.XP);
 			Thread.sleep(2000);
@@ -255,6 +265,13 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 		for (BrakRollerData brakRollerData : datas) {
 			this.checkDataManager.saveData(brakRollerData);
 		}
+		
+		
+		
+		 this.checkDataManager.getBrakRollerDataB0(vehCheckLogin);
+		
+		
+		
 		for (VehFlow vehFlow : vehFlows) {
 			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 					vehCheckLogin.getJycs(), vehFlow.getJyxm());
@@ -262,6 +279,25 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			process.setJssj(new Date());
 			this.checkDataManager.updateProcess(process);
 		}
+	}
+	
+	private List<String> notJYXM(List<BrakRollerData> datas) {
+		Map<String,String> jyxmMap=new HashMap<String,String>();
+		for (BrakRollerData brakRollerData : datas) {
+			jyxmMap.put(brakRollerData.getJyxm(), brakRollerData.getJyxm());
+		}
+		
+		List<String> jyxmList =new ArrayList<String>();
+		
+		if(!jyxmMap.containsKey("B1")) {
+			jyxmList.add("B1");
+		}
+		
+		if(!jyxmMap.containsKey("B2")) {
+			jyxmList.add("B2");
+		}
+		
+		return jyxmList;
 	}
 
 	@Override

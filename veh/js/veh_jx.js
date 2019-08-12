@@ -1301,7 +1301,7 @@ var report={
 				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 			});
 			
-			/**var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
+			var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
 			var newJyxm="";
 			
 			if(jyxm.indexOf("B")>=0){
@@ -1325,7 +1325,7 @@ var report={
 				newJyxm+="R";
 			}
 			
-			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);**/
+			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
 			
 			$.each(data,function(i,n){
 				// 处理灯光

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +33,7 @@ import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.RoadCheackManager;
+import com.xs.veh.util.HKVisionUtil;
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -43,6 +45,9 @@ public class ReportController {
 
 	@Resource(name = "roadCheackManager")
 	private RoadCheackManager roadCheackManager;
+	
+	@Autowired
+	private HKVisionUtil h;
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
@@ -75,6 +80,16 @@ public class ReportController {
 		VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(jylsh);
 		checkDataManager.createDeviceCheckJudeg(vehCheckLogin);
 		System.out.println("更新完成");
+	}
+	
+	@RequestMapping(value = "test3",method=RequestMethod.GET)
+	public void test3() {
+		try {
+			String file = h.taskPicture("admin", "123456", "192.168.0.100", 8000,"12345677");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 	
 	@RequestMapping(value = "test2")

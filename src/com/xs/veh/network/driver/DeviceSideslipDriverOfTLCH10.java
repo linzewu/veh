@@ -76,7 +76,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		
 		String hphm = vehFlow.getHphm();
 		display.sendMessage(hphm, DeviceDisplay.SP);
-		display.sendMessage("前转向轮侧滑", DeviceDisplay.XP);
+		display.sendMessage("前转向轮侧滑时速5-10KM通过", DeviceDisplay.XP);
 		
 		try {
 			// 等待测量结束

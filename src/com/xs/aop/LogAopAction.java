@@ -96,10 +96,13 @@ public class LogAopAction {
 	@AfterThrowing(pointcut="controllerAspect()",throwing="e")
 	public void doAfterThrow(JoinPoint joinPoint,Throwable e) throws NoSuchMethodException, SecurityException {
 		OperationLog log = getLog(joinPoint);
-		log.setOperationResult(OperationLog.OPERATION_RESULT_ERROR);
-		log.setStatus(1);
-		log.setFailMsg(e.getMessage());
-		operationLogManager.saveOperationLog(log);
+		if(log!=null) {
+			log.setOperationResult(OperationLog.OPERATION_RESULT_ERROR);
+			log.setStatus(1);
+			log.setFailMsg(e.getMessage());
+			operationLogManager.saveOperationLog(log);
+		}
+		
 	}
 
 	/**

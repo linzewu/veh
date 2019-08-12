@@ -309,7 +309,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 			if (data[0] == 0x41 && data[1] == 0x04) {
 				switch (data[2]) {
 				case 0x31:
-					this.getDeviceBrakePad().getDisplay().sendMessage("前进！检测制动", DeviceDisplay.XP);
+					this.getDeviceBrakePad().getDisplay().sendMessage("时速5到10KM通过前进检测", DeviceDisplay.XP);
 					break;
 				case 0x32:
 					this.getDeviceBrakePad().getDisplay().sendMessage("请踩刹车", DeviceDisplay.XP);
