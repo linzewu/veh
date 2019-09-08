@@ -237,7 +237,8 @@ html {
 }
 
 #report TD {
-	FONT-SIZE: 12px;
+	FONT-SIZE: 13px;
+	font-family:微软雅黑;
 	BORDER-TOP: #333 1px solid;
 	BORDER-RIGHT: #333 1px solid;
 	BORDER-BOTTOM: #333 1px solid;
@@ -267,7 +268,7 @@ html {
 }
 
 #report .l {
-	TEXT-ALIGN: center
+	TEXT-ALIGN: center;
 }
 
 #report .r {
@@ -336,8 +337,8 @@ html {
 }
 
 .tg  {border-collapse:collapse;border-spacing:0; margin: auto; margin-top: 10px;}
-.tg td{font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg td{font-size:12px;padding:3px 3px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-size:12px;font-weight:normal;padding:3px 3px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg .tg-s6z2{text-align:center}
 .tg .tg-baqh{text-align:center;vertical-align:top}
 .tg .tg-yw4l{vertical-align:top}

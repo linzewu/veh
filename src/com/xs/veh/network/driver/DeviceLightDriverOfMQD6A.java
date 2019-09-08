@@ -2,6 +2,7 @@ package com.xs.veh.network.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -180,7 +181,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		setting(vehCheckLogin, vheFlows);
 		// 等待到位
 		dw(vehCheckLogin);
-
+		this.setKssj(new Date());
 		// 检测是否违规操作
 		new Thread(new Runnable() {
 			@Override

@@ -254,14 +254,20 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				i++;
 				char yg = (char) data[i];
 
-				String strTempLeft = new String(new char[] { zq, zb, zs, zg });
-				Integer intdataLeft = Integer.parseInt(strTempLeft);
-				dbdataLeft.append(intdataLeft.toString());
-				dbdataLeft.append(",");
-				String strTempRigth = new String(new char[] { yq, yb, ys, yg });
-				Integer intdataRigth = Integer.parseInt(strTempRigth);
-				dbdataRigth.append(intdataRigth.toString());
-				dbdataRigth.append(",");
+				String strTempLeft = new String(new char[] { zq, zb, zs, zg }).trim();
+				if(!"".equals(strTempLeft)) {
+					Integer intdataLeft = Integer.parseInt(strTempLeft);
+					dbdataLeft.append(intdataLeft.toString());
+					dbdataLeft.append(",");
+				}
+				
+				String strTempRigth = new String(new char[] { yq, yb, ys, yg }).trim();
+				if(!"".equals(strTempRigth)) {
+					Integer intdataRigth = Integer.parseInt(strTempRigth);
+					dbdataRigth.append(intdataRigth.toString());
+					dbdataRigth.append(",");
+				}
+				
 			}
 
 			int dbDataLeftLength = dbdataLeft.length();

@@ -59,7 +59,19 @@ public class VehCheckProcess extends BaseEntity {
 	@Column(length=10)
 	private String jyzt;
 	
+	@Column
+	private Integer voideSate;
 	
+	
+	
+
+	public Integer getVoideSate() {
+		return voideSate;
+	}
+
+	public void setVoideSate(Integer voideSate) {
+		this.voideSate = voideSate;
+	}
 
 	public Date getKssj() {
 		return kssj;

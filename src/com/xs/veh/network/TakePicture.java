@@ -148,22 +148,24 @@ public class TakePicture implements Runnable {
 //	}
 
 	public void run() {
+		try {
+			Thread.sleep(yc);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		logger.info("新拍照程序，开始，拍照项目："+jyxm);
 		try {
-			if(jyxm.equals("C1")) {
-				createC1();
+			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("B1")||jyxm.equals("DC")) {
+				createOther();
 			}else {
 				onLineDevice();
 			}
 		}catch (Exception e) {
 			logger.error("抓拍异常:",e);
 		}
-		
-		
-		
 	}
 	
-	private void createC1() {
+	private void createOther() {
 		
 		List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("sxtpz");
 		
@@ -172,62 +174,76 @@ public class TakePicture implements Runnable {
 		CheckEventManger checkEventManger =(CheckEventManger)SpringUtil.getBean("checkEventManger");
 		
 		for(BaseParams param:params) {
-			String value = param.getParamValue();
 			
-			JSONObject jo=JSONObject.fromObject(value);
+			String[] paramName =param.getParamName().split("_");
+			String pzjyxm =paramName[0];
 			
-			String sxtip = (String) jo.get("sxtip");
-			String sxtdk = (String) jo.get("sxtdk");
-			String sxtzh = (String) jo.get("sxtzh");
-			String sxtmm = (String) jo.get("sxtmm");
+			String jcxdh="1";
 			
-			HKVisionUtil hk=new HKVisionUtil();
-			FileInputStream fis=null;
-			 
-			try {
-				String file = hk.taskPicture(sxtzh, sxtmm, sxtip, Integer.parseInt(sxtdk),vehCheckLogin.getJylsh()+"_"+vehCheckLogin.getJycs()+"_"+jyxm);
+			if(paramName.length>1) {
+				jcxdh=paramName[1];
+			}
+			
+			
+			if(pzjyxm.equals(jyxm)&&jcxdh.equals(vehCheckLogin.getJcxdh())&&(StringUtils.isEmpty(param.getMemo())||zpzl.equals(param.getMemo()))) {
+				String value = param.getParamValue();
 				
-				fis =new FileInputStream(file);
+				JSONObject jo=JSONObject.fromObject(value);
 				
-				byte[] zp=new byte[fis.available()];
+				String sxtip = (String) jo.get("sxtip");
+				String sxtdk = (String) jo.get("sxtdk");
+				String sxtzh = (String) jo.get("sxtzh");
+				String sxtmm = (String) jo.get("sxtmm");
 				
-				fis.read(zp);
-				
-				CheckPhoto checkPhoto =new CheckPhoto();
-				
-				checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
-				checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
-				checkPhoto.setHphm(vehCheckLogin.getHphm());
-				checkPhoto.setHpzl(vehCheckLogin.getHpzl());
-				checkPhoto.setJycs(vehCheckLogin.getJycs());
-				checkPhoto.setJyjgbh(vehCheckLogin.getJyjgbh());
-				checkPhoto.setJylsh(vehCheckLogin.getJylsh());
-				checkPhoto.setJyxm(jyxm);
-				checkPhoto.setPssj(new Date());
-				checkPhoto.setStatus(0);
-				checkPhoto.setZp(zp);
-				
-				if(zpzl!=null) {
-					checkPhoto.setZpzl(zpzl);
-				}else {
-					zpzl=getZPZL(jyxm);
-					checkPhoto.setZpzl(zpzl);
-				}
-				
-				checkDataManager.saveCheckPhoto(checkPhoto);
-				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
-				
-			} catch (Exception e) {
-				logger.error("拍照错误：",e);
-			}finally {
-				if(fis!=null) {
-					try {
-						fis.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+				HKVisionUtil hk=new HKVisionUtil();
+				FileInputStream fis=null;
+				 
+				try {
+					String file = hk.taskPicture(sxtzh, sxtmm, sxtip, Integer.parseInt(sxtdk),vehCheckLogin.getJylsh()+"_"+vehCheckLogin.getJycs()+"_"+jyxm);
+					
+					fis =new FileInputStream(file);
+					
+					byte[] zp=new byte[fis.available()];
+					
+					fis.read(zp);
+					
+					CheckPhoto checkPhoto =new CheckPhoto();
+					
+					checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
+					checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
+					checkPhoto.setHphm(vehCheckLogin.getHphm());
+					checkPhoto.setHpzl(vehCheckLogin.getHpzl());
+					checkPhoto.setJycs(vehCheckLogin.getJycs());
+					checkPhoto.setJyjgbh(vehCheckLogin.getJyjgbh());
+					checkPhoto.setJylsh(vehCheckLogin.getJylsh());
+					checkPhoto.setJyxm(jyxm);
+					checkPhoto.setPssj(new Date());
+					checkPhoto.setStatus(0);
+					checkPhoto.setZp(zp);
+					
+					if(zpzl!=null) {
+						checkPhoto.setZpzl(zpzl);
+					}else {
+						zpzl=getZPZL(jyxm);
+						checkPhoto.setZpzl(zpzl);
+					}
+					
+					checkDataManager.saveCheckPhoto(checkPhoto);
+					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
+					
+				} catch (Exception e) {
+					logger.error("拍照错误：",e);
+				}finally {
+					if(fis!=null) {
+						try {
+							fis.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
+			
 			
 		}
 		
@@ -312,7 +328,7 @@ public class TakePicture implements Runnable {
 						}
 						
 						checkDataManager.saveCheckPhoto(checkPhoto);
-						checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh());
+						checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
 						
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -358,6 +374,7 @@ public class TakePicture implements Runnable {
 			break;
 		case "B4":
 			zpzl="0350";
+			break;
 		case "B5":
 			zpzl="0354";
 			break;
@@ -366,13 +383,28 @@ public class TakePicture implements Runnable {
 			break;
 		case "S1":
 			zpzl="0347";
+			break;
 		case "A1":
 			zpzl="0353";
-		
 			break;
+		case "C1":
+			zpzl="0323";
+			break;
+		default:
+			zpzl=null;
+			
 		}
 		
 		return zpzl;
+	}
+	
+	
+	public static void main(String[] age) {
+		TakePicture tp=new TakePicture("1", "1", 1, "1", "1", "1", "A1", 0);
+		
+		System.out.println(tp.getZPZL("A1"));
+		
+		
 	}
 
 }

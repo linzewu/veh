@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.Insurance;
+import com.xs.veh.entity.PlateApplyTable;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
@@ -253,6 +255,32 @@ public class ReportController {
 		this.checkDataManager.resetEventState(jylsh);
 		
 		return ResultHandler.toSuccessJSON("更新成功！");
+		
+	}
+	
+	
+	@UserOperation(code="savePlateApplyTable",name="保存牌证申请表")
+	@RequestMapping(value = "savePlateApplyTable")
+	public @ResponseBody PlateApplyTable  savePlateApplyTable(PlateApplyTable plateApplyTable) throws JsonProcessingException, InterruptedException {
+		this.checkDataManager.savePlateApplyTable(plateApplyTable);
+		return plateApplyTable;
+	}
+	
+	@UserOperation(code="getPlateApplyTable",name="保存牌证申请表")
+	@RequestMapping(value = "getPlateApplyTable")
+	public @ResponseBody PlateApplyTable  getPlateApplyTable(String jylsh) throws JsonProcessingException, InterruptedException {
+		return this.checkDataManager.getPlateApplyTable(jylsh);
+	}
+	
+	
+	@UserOperation(code="reloadVideo",name="重置视频下载")
+	@RequestMapping(value = "reloadVideo", method = RequestMethod.POST)
+	public @ResponseBody Map reloadVideo(@RequestParam("ids") String ids){
+		this.checkDataManager.saveReloadVideo(ids);
+		Map info=new HashMap();
+		info.put("state","1");
+		info.put("message", "视频状态重置成功！");
+		return info;
 		
 	}
 

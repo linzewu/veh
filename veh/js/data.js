@@ -1,5 +1,5 @@
 var jcxdh_combox=[{
-	jcxdh:'3200000195',
+	jcxdh:'3209000044',
 	name:'滨海县明迪服务有限公司'
 }];
 

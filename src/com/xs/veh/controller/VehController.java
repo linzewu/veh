@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
-import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
@@ -40,6 +41,8 @@ import net.sf.json.JSONObject;
 @RequestMapping(value = "/veh")
 @Modular(modelCode="veh",modelName="机动车检测")
 public class VehController {
+	
+	static Log logger = LogFactory.getLog( VehController.class);
 
 	@Value("${jyjgbh}")
 	private String jyjgbh;
@@ -69,6 +72,7 @@ public class VehController {
 	public @ResponseBody String getVehInfo(@RequestParam Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 		JSON json = vehManager.getVehInfoOfws(param);
+		logger.info("获取基本信息返回：="+json);
 		return json.toString();
 	}
 
@@ -225,6 +229,19 @@ public class VehController {
 		json.put("sf", sf);
 		json.put("cs", cs);
 		return json.toString();
+	}
+	
+	
+	@UserOperation(code="relogin",name="复检登陆")
+	@RequestMapping(value = "relogin", method = RequestMethod.POST)
+	public @ResponseBody String relohin(String jylsh, String fjjyxm) {
+		
+		this.vehManager.saveRelogin2(jylsh, fjjyxm);
+		
+		JSONObject json = new JSONObject();
+		json.put("state", "OK");
+		return json.toString();
+	
 	}
 
 }

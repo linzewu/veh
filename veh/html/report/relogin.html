@@ -1,0 +1,83 @@
+<script type="text/javascript">
+var reportData = $("#checkingVeh").datagrid("getSelected");
+var jyxm = reportData.jyxm;
+
+var jyxmArray = jyxm.split(",");
+
+$.each(jyxmArray,function(i,n){
+	$("#relogin_jyxm").append("<li><input type='checkbox' id='relogin_jyxm_item_"+n+"' name='relogin_jyxm_item' value="+n+" onChange='changeItemJyxm(this)' /><label for='relogin_jyxm_item_"+n+"'>"+comm.getParamNameByValue('jyxm',n)+"</label></li>");
+});
+
+
+function relogin(){
+	
+	
+	if(reportData.vehjczt!=2){
+		$.messager.alert("提示","未完成车辆无法复检！");
+		return;
+	}
+	
+	var jyxms = $("#relogin_jyxm input:checked");
+	
+	if(jyxms.length==0){
+		$.messager.alert("提示","请选择复检项目！");
+		return;
+	}
+	
+	var fjjyxm="";
+	
+	$.each(jyxms,function(i,n){
+		fjjyxm+=$(n).val()+",";
+	});
+	
+	var param={};
+	param.jylsh=reportData.jylsh;
+	
+	param.fjjyxm=fjjyxm.substring(0,fjjyxm.length-1);
+	
+	$.messager.progress();
+	$.post("/veh//veh/relogin",param,function(data){
+		$.messager.alert("提示","复检登陆成功！");
+	}).complete(function(){
+		$.messager.progress('close');
+	}).error(function(e){
+		$.messager.alert("错误","复检登陆失败！");
+	})
+	
+}
+
+function changeItemJyxm(object){
+	
+	var jyxm = $(object).val();
+	
+	
+	if(jyxm.indexOf("H")>-1){
+		
+		$("#relogin_jyxm input[value^='H']").prop("checked",$(object).is(':checked'))
+		
+	}
+	
+}
+
+
+</script>
+<div>
+
+<ul id="relogin_jyxm">
+	
+</ul>
+
+<div style="width: 100%;">
+<a class="easyui-linkbutton" onclick="relogin()" >复检登陆</a>
+
+</div>
+</div>
+
+<style>
+#relogin_jyxm li{
+	float: left;
+	width: 120px;
+	list-style: none;
+}
+
+</style>

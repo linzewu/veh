@@ -1,12 +1,18 @@
 package com.xs.veh.util;
 
-import java.util.UUID;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.sun.jna.NativeLong;
+import com.xs.common.BaseParamsUtil;
+import com.xs.veh.entity.BaseParams;
+import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.util.HCNetSDK.NET_DVR_TIME;
 
 @Component
@@ -22,7 +28,7 @@ public class HKVisionUtil {
 	
 	private long channel;
 	
-	private String picPath="D:\\pic";
+	//private String picPath=getConfigPath();
 	
 	
 	
@@ -35,8 +41,16 @@ public class HKVisionUtil {
 	private String devPassword;
 	
 	private long devChannel=1;
-
 	
+	public static String getConfigPath() {
+		
+		List<BaseParams> datas = BaseParamsUtil.getBaseParamsByType("splj");
+		if(!CollectionUtils.isEmpty(datas)) {
+			return datas.get(0).getParamValue();
+		}
+		return "D:\\pic";
+	}
+
 	
 	
 	protected static Log log = LogFactory.getLog(HKVisionUtil.class);
@@ -97,7 +111,7 @@ public class HKVisionUtil {
 			HCNetSDK.NET_DVR_JPEGPARA jpgparam =new HCNetSDK.NET_DVR_JPEGPARA();
 			jpgparam.wPicQuality=1;
 			jpgparam.wPicSize=5;
-			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, picPath+"\\"+recordId+".jpg");
+			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, getConfigPath()+"\\"+recordId+".jpg");
 			if(!flag) {
 				log.error("拍照失败:"+hCNetSDK.NET_DVR_GetLastError() );
 				throw new Exception("拍照失");
@@ -121,18 +135,18 @@ public class HKVisionUtil {
 			log.info("开始注册设备 端口："+devPort);
 			lUserID = register(devUserName,devPassword,devIp,devPort);
 			log.info("lUserID："+lUserID);
-			FileUtil.createDirectory(picPath);
+			FileUtil.createDirectory(getConfigPath());
 			NativeLong lChannel =new NativeLong(1);
 			HCNetSDK.NET_DVR_JPEGPARA jpgparam =new HCNetSDK.NET_DVR_JPEGPARA();
 			jpgparam.wPicQuality=1;
 			jpgparam.wPicSize=5;
 			
-			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, picPath+"\\"+fileName+".jpg");
+			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, getConfigPath()+"\\"+fileName+".jpg");
 			if(!flag) {
 				log.error("拍照失败:"+hCNetSDK.NET_DVR_GetLastError());
 				throw new Exception("拍照失");
 			}
-			String fileFpath =picPath+"\\"+fileName+".jpg";
+			String fileFpath =getConfigPath()+"\\"+fileName+".jpg";
 			return fileFpath;
 		}catch (Exception e) {
 			log.error("拍照失败:",e);
@@ -150,14 +164,14 @@ public class HKVisionUtil {
 	
 	
 	
-	public void downLoad(NET_DVR_TIME lpStartTime, NET_DVR_TIME lpStopTime,String saveFile) throws Exception {
+	public void downLoad(VideoConfig vc,NET_DVR_TIME lpStartTime, NET_DVR_TIME lpStopTime,String saveFile) throws Exception {
 		cameraInit();
-		NativeLong lUserID = register(userName,password,ip,port);
+		NativeLong lUserID = register(vc.getUserName(),vc.getPassword(),vc.getIp(),Integer.parseInt(vc.getPort()));
 		try {
-			FileUtil.createDirectory(picPath+"\\temp\\");
-			NativeLong lChannel =new NativeLong(channel);
+			FileUtil.createDirectory(getConfigPath()+"\\video\\");
+			NativeLong lChannel =new NativeLong(vc.getChannel()+32);
 			// 指定下载的文件
-			NativeLong tRet = hCNetSDK.NET_DVR_GetFileByTime(lUserID, lChannel, lpStartTime, lpStopTime, picPath+"\\temp\\"+saveFile+".mp4");
+			NativeLong tRet = hCNetSDK.NET_DVR_GetFileByTime(lUserID, lChannel, lpStartTime, lpStopTime, getConfigPath()+"\\video\\"+saveFile+".mp4");
 			int tError = hCNetSDK.NET_DVR_GetLastError();
 			if (tRet.longValue() == -1) {
 				log.error("NET_DVR_GetFileByTime fail,channel:" + lChannel + "error code:" + tError);
@@ -189,5 +203,18 @@ public class HKVisionUtil {
 			hCNetSDK.NET_DVR_Cleanup();
 		}
 	}
+	
+  public NET_DVR_TIME convert(Date date) {
+	  	NET_DVR_TIME lpStartTime = new HCNetSDK.NET_DVR_TIME();
+		Calendar now = Calendar.getInstance();
+		now.setTime(date);
+		lpStartTime.dwYear = now.get(Calendar.YEAR);
+		lpStartTime.dwMonth = (now.get(Calendar.MONTH) + 1);
+		lpStartTime.dwDay = now.get(Calendar.DAY_OF_MONTH);
+		lpStartTime.dwHour = now.get(Calendar.HOUR_OF_DAY);
+		lpStartTime.dwMinute = now.get(Calendar.MINUTE);
+		lpStartTime.dwSecond = now.get(Calendar.SECOND);
+		return lpStartTime;
+ }
 
 }

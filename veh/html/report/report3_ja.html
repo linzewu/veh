@@ -1,9 +1,9 @@
 <div style="text-align: center;margin-top: 10px;"><a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_area3'))">打印</a></div>
 <DIV id="print_area3">
-<DIV style="MARGIN-BOTTOM: 5px; FONT-SIZE: 18px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 5px"><span id="report3_jyjgmc"></span>机动车安全技术检验表（人工检验部分） </DIV>
+<DIV style="MARGIN-BOTTOM: 0px; FONT-SIZE: 18px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 0px"><span id="report3_jyjgmc"></span>江西君安车辆检测有限公司<br>机动车安全技术检验表（人工检验部分） </DIV>
   <div style="width: 720px;text-align: right;margin: 0 auto;font-size:12px;">
 		检验流水号：<span name="report-baseInfo-jylsh"></span></div>
-<table class="tg" style="table-layout: fixed; width: 700px">
+<table class="tg" style="table-layout: fixed; width: 720px">
 <colgroup>
 <col style="width: 40px">
 <col style="width: 60px">
@@ -30,7 +30,7 @@
 				<col style="width: 90px">
 				<col style="width: 105px">
 			</colgroup>
-    		<tr style="height: 20px;">
+    	<tr style="height: 20px;">
     			<td>号牌号码(编号)：</td>
     			<td name="report-baseInfo-hphm"></td>
     			<td>车辆类型：</td>
@@ -164,7 +164,7 @@
     <td class="tg-yw4l">16车身外观</td>
     <td class="tg-yw4l"></td>
     <td class="tg-s6z2" rowspan="2">5</td>
-    <td class="tg-yw4l" rowspan="2" colspan="2">联网查询车辆事故/违法信息（对发生过造成人员伤亡交通事故的送检机动车，人工检验时应重点检查损伤部位和损伤情况：）<br><br>                                                   </td>
+    <td class="tg-yw4l" rowspan="2" colspan="2">联网查询车辆事故/违法信息（对发生过造成人员伤亡交通事故的送检机动车，人工检验时应重点检查损伤部位和损伤情况：）<br><br></td>
     <td class="tg-yw4l" rowspan="2"></td>
   </tr>
   <tr>
@@ -247,7 +247,7 @@
     <td class="tg-yw4l" colspan="3">&nbsp;</td>
     <td class="tg-yw4l"></td>
   </tr>
-   <tr>
+    <tr>
     <td class="tg-yw4l"></td>
     <td class="tg-yw4l" colspan="2">&nbsp;</td>
     <td class="tg-yw4l"></td>
@@ -265,7 +265,7 @@
     <td class="tg-yw4l" colspan="8">车辆外廓尺寸（mm×mm×mm）：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;整备质量（kg）：</td>
   </tr>
   <tr>
-    <td class="tg-yw4l" colspan="8">机动车所有人： <span name="report-baseInfo-syr"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 手机电话：<span id="r3_sjhm"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 地址/邮编：<span id="r3_yjdz"></span></td>
+    <td class="tg-yw4l" colspan="8">机动车所有人： <span id="report-baseInfo-syr"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 手机电话：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 地址/邮编：</td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </tr>
   <tr>
     <td class="tg-yw4l" colspan="8">检验员建议：<br><br>
@@ -275,20 +275,5 @@
     <td class="tg-yw4l" colspan="8">注1：判定栏中填写“○”为合格，“X”为不合格，“—”表示不适用于送检车。<br>注2：当车辆外廓尺寸、整备质量检验项目使用仪器自动测量并打印在仪器设备检验表格中时，本表相应参数可不填。</td>
   </tr>
 </table>
+
 </DIV>
-
-<script type="text/javascript">
-
-var reportData = $("#checkingVeh").datagrid("getSelected");
-
-var jylsh = reportData.jylsh;
-
-$.post("/veh/report/getPlateApplyTable",{"jylsh":jylsh},function(data){
-	if(data){
-		$("#r3_sjhm").text(data.sjhm);
-		$("#r3_yjdz").text(data.yjdz);
-	}
-});
-
-
-</script>

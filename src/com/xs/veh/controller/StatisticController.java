@@ -87,6 +87,23 @@ public class StatisticController {
 		List<Map<String,Object>> dataList = statisticManager.findcllxheghz(begin, end,"findrygzltj","cllx",type);
 		data.put("rows", dataList);
 		data.put("total", dataList.size());
+		
+		Integer t =0;
+		Integer t2 =0;
+		
+		for(Map<String,Object> map:dataList) {
+			t=t+Integer.parseInt(map.get("zsl").toString());
+			t2=t2+Integer.parseInt(map.get("hgs").toString());
+			
+		}
+		
+		Map footMap=new HashMap();
+		
+		footMap.put("zsl",t);
+		footMap.put("hgs",t2);
+		List footList =new ArrayList();
+		footList.add(footMap);
+		data.put("footer", footList);
 				
 		return data;
 	}

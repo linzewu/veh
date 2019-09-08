@@ -36,9 +36,9 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.Message;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
@@ -78,8 +78,8 @@ public class VehManager {
 
 	private static Logger logger = Logger.getLogger(VehManager.class);
 
-	@Resource(name = "tmriJaxRpcOutAccessServiceStub")
-	private TmriJaxRpcOutAccessServiceStub tro;
+	@Resource(name = "TmriJaxRpcOutNewAccessServiceStub")
+	private TmriJaxRpcOutNewAccessServiceStub tro;
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
@@ -105,7 +105,7 @@ public class VehManager {
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
 
-	@Resource(name = "checkDataManager")
+	@Autowired
 	private CheckDataManager checkDataManager;
 
 	@Autowired
@@ -113,10 +113,18 @@ public class VehManager {
 
 	private Document write(String jkid, Map data)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
-		TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutAccessServiceStub.WriteObjectOut();
+		TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut();
 		woo.setJkid(jkid);
 		woo.setXtlb(RCAConstant.XTLB);
 		woo.setJkxlh(jkxlh);
+		
+		String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+		  String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+		  String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+		  woo.setDwjgdm(bmdm);
+		  woo.setDwmc(ywzdbm);
+		  woo.setZdbs(jcip);
+		
 		Document xml = BeanXMLUtil.map2xml(data, "vehispara");
 		String bo = xml.asXML();
 		woo.setUTF8XmlDoc(bo);
@@ -153,7 +161,7 @@ public class VehManager {
 	public Document queryws(String jkid, Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
-		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+		TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut();
 		if(jkid.equals("18C01") || jkid.equals("18C02")){
 			param.put("jczbh",jyjgbh);
 		}else{
@@ -163,6 +171,15 @@ public class VehManager {
 		qoo.setJkid(jkid);
 		qoo.setXtlb(RCAConstant.XTLB);
 		qoo.setJkxlh(jkxlh);
+		
+	  String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+	  String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+	  String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+	  qoo.setDwjgdm(bmdm);
+	  qoo.setDwmc(ywzdbm);
+	  qoo.setZdbs(jcip);
+		
+		
 		Document xml = BeanXMLUtil.map2xml(param, "QueryCondition");
 		qoo.setUTF8XmlDoc(xml.asXML());
 		QueryObjectOutResponse qoor = tro.queryObjectOut(qoo);
@@ -215,6 +232,7 @@ public class VehManager {
 			vcp.setJylsh(vehCheckLogin.getJylsh());
 			vcp.setJyxm(jyxmItem);
 			vcp.setJycs(vehCheckLogin.getJycs());
+			vcp.setVoideSate(0);
 			this.hibernateTemplate.save(vcp);
 			processArray.add(vcp);
 		}
@@ -396,6 +414,8 @@ public class VehManager {
 		jsonHead.put("code", "1");
 		jsonHead.put("isNetwork", isNetwork);
 		jo.put("head", jsonHead);
+		
+		
 
 		vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
 		this.hibernateTemplate.update(vheLogininfo);
@@ -483,6 +503,8 @@ public class VehManager {
 									vehFlows.add(v);
 								}
 							}
+						}else if(vcl.getJycs()>1&&device.getType()==Device.CZJCSB) {
+							continue;
 						} else {
 							VehFlow v = new VehFlow();
 							v.setGw(gwid);
@@ -868,6 +890,7 @@ public class VehManager {
 				vcp.setJylsh(vehCheckLogin.getJylsh());
 				vcp.setJyxm(jyxmItem);
 				vcp.setJycs(vehCheckLogin.getJycs());
+				vcp.setVoideSate(0);
 				this.hibernateTemplate.save(vcp);
 				processArray.add(vcp);
 			}
@@ -881,6 +904,124 @@ public class VehManager {
 		logger.info("复检项目：" + fjjyxm);
 		return vehCheckLogin;
 
+	}
+	
+	
+	public void saveRelogin2(String jylsh,String fjjyxm) {
+		
+		VehCheckLogin vehCheckLogin = this.getVehCheckLoginByJylsh(jyjgbh, jylsh);
+		
+		vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
+		
+		if(fjjyxm.indexOf("B")>-1||fjjyxm.indexOf("H")>-1||fjjyxm.indexOf("S")>-1||fjjyxm.indexOf("A")>-1) {
+			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
+		}
+		
+		if(fjjyxm.indexOf("F")>-1) {
+			vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_WKS);
+		}
+		
+		if(fjjyxm.indexOf("DC")>-1) {
+			vehCheckLogin.setVehdtdpzt(VehCheckLogin.ZT_WKS);
+		}
+		
+		if(fjjyxm.indexOf("C1")>-1) {
+			vehCheckLogin.setVehdpzt(VehCheckLogin.ZT_WKS);
+		}
+		
+		
+		if(fjjyxm.indexOf("R")>-1) {
+			vehCheckLogin.setVehlszt(VehCheckLogin.ZT_WKS);
+		}
+		
+		
+		vehCheckLogin.setJycs(vehCheckLogin.getJycs() + 1);
+		vehCheckLogin.setFjjyxm(fjjyxm);
+
+		Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
+
+		String[] jyxmArray = fjjyxm.split(",");
+		List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
+		for (String jyxmItem : jyxmArray) {
+			VehCheckProcess vcp = new VehCheckProcess();
+			vcp.setClsbdh(vehCheckLogin.getClsbdh());
+			vcp.setHphm(vehCheckLogin.getHphm());
+			vcp.setHpzl(vehCheckLogin.getHpzl());
+			vcp.setJylsh(vehCheckLogin.getJylsh());
+			vcp.setJyxm(jyxmItem);
+			vcp.setJycs(vehCheckLogin.getJycs());
+			vcp.setVoideSate(0);
+			this.hibernateTemplate.save(vcp);
+			processArray.add(vcp);
+		}
+		addVehFlow(vehCheckLogin, processArray, flow);
+		
+		
+		for (String jyxmItem : jyxmArray) {
+			if(jyxmItem.indexOf("B")>-1&&!jyxmItem.equals("B0")) {
+				// 制动复检
+				List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
+						"from BrakRollerData where jylsh=? and sjzt=? and jyxm=?", jylsh,
+						BaseDeviceData.SJZT_ZC,jyxmItem);
+				for (BrakRollerData brakRollerData : brakRollerDatas) {
+					brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
+					this.hibernateTemplate.save(brakRollerData);
+				}
+			}
+			
+			if(jyxmItem.equals("B0")) {
+				List<ParDataOfAnjian> parDataOfAnjian = (List<ParDataOfAnjian>) this.hibernateTemplate.find(
+						"from ParDataOfAnjian where jylsh=? and sjzt=? ", jylsh, BaseDeviceData.SJZT_ZC);
+				if (parDataOfAnjian != null && !parDataOfAnjian.isEmpty()) {
+					parDataOfAnjian.get(0).setSjzt(ParDataOfAnjian.SJZT_FJ);
+					this.hibernateTemplate.save(parDataOfAnjian.get(0));
+				}
+			}
+			
+			if(jyxmItem.indexOf("H")>-1) {
+				// 灯光复检
+				List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
+						"from LightData where jylsh=? and sjzt=? and jyxm=?", jylsh, BaseDeviceData.SJZT_ZC,jyxmItem);
+				for (LightData lightData : lightDatas) {
+					lightData.setSjzt(BaseDeviceData.SJZT_FJ);
+					this.hibernateTemplate.save(lightData);
+				}
+			}
+			
+			
+			if(jyxmItem.equals("S1")) {
+				List<SpeedData> speedDatas = (List<SpeedData>) this.hibernateTemplate.find(
+						"from SpeedData where jylsh=? and sjzt=? ", jylsh, BaseDeviceData.SJZT_ZC);
+				
+				for (SpeedData speedData : speedDatas) {
+					speedData.setSjzt(SpeedData.SJZT_FJ);
+					this.hibernateTemplate.save(speedData);
+				}
+			}
+			
+			
+			if(jyxmItem.equals("A1")) {
+				// 侧滑复检
+				List<SideslipData> sideslipDatas = (List<SideslipData>) this.hibernateTemplate.find(
+						"from SideslipData where jylsh=? and sjzt=? ", jylsh, BaseDeviceData.SJZT_ZC);
+
+				for (SideslipData sideslipDat : sideslipDatas) {
+					sideslipDat.setSjzt(SpeedData.SJZT_FJ);
+					this.hibernateTemplate.save(sideslipDat);
+				}
+			}
+			
+		}
+		
+		checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C65", null,
+				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+				vehCheckLogin.getVehcsbj());
+		checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C52", null,
+				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+				vehCheckLogin.getVehcsbj());
+
+		
+		
 	}
 
 	public List<Outline> getOutlineOfReportFlag() {
@@ -964,4 +1105,6 @@ public class VehManager {
 		}
 		
 	}
+	
+	
 }

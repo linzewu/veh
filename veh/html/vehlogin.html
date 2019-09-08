@@ -156,6 +156,9 @@ function showJyxm(obj){
 		            	 newcellname.innerHTML="";
 		             }else{
 		             	 newcellname.innerHTML="<span><label for='i_jyxm"+b+"'>"+jyxmArr[b].paramName+":</label><input id='i_jyxm"+b+"' name='jyxm' type='checkbox' value='"+jyxmArr[b].paramValue+"'></span>";
+		             	 if(jyxmArr[b].paramName == "车辆外观检验"){
+		             		 $("#i_jyxm"+b).attr("checked",true);
+		             	 }
 		             }
 		             b++;
 				 }

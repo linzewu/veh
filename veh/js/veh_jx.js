@@ -331,6 +331,10 @@ var veh = {
 				body[0]['jyrq'] = body['djrq']
 				body[0]['jyyxqz'] = body['yxqz']
 				$("#vehinfo").form("load", body[0]);
+				if(body[0]['zt']!='A'){
+					$.messager.alert("提示","该机动车状态："+comm.getParamNameByValue('jdczt',body[0]['zt']));
+				}
+				
 				if (did) {
 					clearInterval(did);
 					did = null;
@@ -1257,6 +1261,7 @@ var report={
 			$("#performanceCk").panel({"href":"/veh/html/report/performanceCk.html",baseInfo:row});
 			$("#performanceCkRep").panel({"href":"/veh/html/report/performanceCkRep.html",baseInfo:row});
 			$("#plateApply").panel({"href":"/veh/html/report/plateApply.html","onLoad":report.getPlateApply,baseInfo:row});
+			$("#relogin").panel({"href":"/veh/html/report/relogin.html","onLoad":report.getPlateApply,baseInfo:row});
 			
 		}
 	},

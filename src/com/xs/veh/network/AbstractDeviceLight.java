@@ -2,6 +2,7 @@ package com.xs.veh.network;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.xs.common.exception.SystemException;
@@ -16,6 +17,8 @@ import com.xs.veh.network.data.LightData;
  *
  */
 public abstract class AbstractDeviceLight {
+	
+	private Date kssj;
 
 	public enum DX {
 		/**
@@ -133,8 +136,18 @@ public abstract class AbstractDeviceLight {
 		if(lightDatas!=null){
 			lightDatas.clear();
 		}
-		
+		kssj=null;
 		lightDatas=new ArrayList<LightData>();
 		
 	}
+
+	public Date getKssj() {
+		return kssj;
+	}
+
+	public void setKssj(Date kssj) {
+		this.kssj = kssj;
+	}
+	
+	
 }

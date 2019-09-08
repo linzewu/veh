@@ -2,6 +2,7 @@ package com.xs.veh.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +91,11 @@ public class PDAServiceController {
 			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckDC(externalCheck);
+			
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(externalCheck.getJylsh());
+			
+			TakePicture.createNew(vehCheckLogin, "DC", 1,"0342");
+			
 			//检测结束，显示屏显示 XX 检测结束
 			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "DC");
 			return ResultHandler.toMessage(message);
@@ -219,6 +225,10 @@ public class PDAServiceController {
 
 		if (vehCheckProcess.getJyxm().equals("C1")) {
 			TakePicture.createNew(vehCheckLogin, "C1", 5000);
+		}
+		
+		if (vehCheckProcess.getJyxm().equals("DC")) {
+			TakePicture.createNew(vehCheckLogin, "DC", 5000,"0344");
 		}
 
 		checkEventManger.createEvent(jylsh, jycs, "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),

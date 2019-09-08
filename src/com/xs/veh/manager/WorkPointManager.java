@@ -238,10 +238,21 @@ public class WorkPointManager {
 		// 创建一条新队列
 		CheckQueue checkQueue = createNextQueue(vehFlows.get(vehFlows.size() - 1), vehCheckLogin);
 		// 如果队列为空，则检测过程结束
+		
 		if (checkQueue == null) {
-			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
-			checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
-			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
+			try {
+				logger.info("开始计算其他数据");
+				checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
+				logger.info("其他数据计算结束");
+				checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
+				logger.info("实践数据结束");
+				vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
+				logger.info("更新车辆数据结束");
+			}catch (Exception e) {
+				
+				logger.error("计算报告出错",e);
+			}
+			
 		}
 	}
 
@@ -263,6 +274,8 @@ public class WorkPointManager {
 		// 检测完成，删除队列
 		logger.info("检测结束");
 		checkAfter(vehCheckLogin, checkQueue, vehFlow);
+		logger.info("checkAfter 完成！");
+		
 		this.hibernateTemplate.flush();
 		this.hibernateTemplate.clear();
 	}

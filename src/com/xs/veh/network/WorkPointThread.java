@@ -157,31 +157,42 @@ public class WorkPointThread extends Thread {
 							
 						}
 					} else {
-						// 普通单项检测
-						Map<String,Object> param=new HashMap<String,Object>();
-						if(device.getType()==Device.ZDJCSB){
-							BrakRollerData brakRollerData;
-							if(vehCheckLogin.getJycs()==1) {
-								brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
-							}else {
-								BrakRollerData weightBrakRollerData = checkDataManager.getLastBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
-								brakRollerData =new BrakRollerData();
-								brakRollerData.setZlh(weightBrakRollerData.getZlh());
-								brakRollerData.setYlh(weightBrakRollerData.getYlh());
-								brakRollerData.setJzzlh(weightBrakRollerData.getJzzlh());
-								brakRollerData.setJzylh(weightBrakRollerData.getJzylh());
+						try {
+							// 普通单项检测
+							Map<String,Object> param=new HashMap<String,Object>();
+							if(device.getType()==Device.ZDJCSB){
+								BrakRollerData brakRollerData = null;
+								if(vehCheckLogin.getJycs()==1) {
+									brakRollerData = checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
+								}else {
+									
+									if(!vehFlow.getJyxm().equals("B0")) {
+										BrakRollerData weightBrakRollerData = checkDataManager.getLastBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
+										brakRollerData =new BrakRollerData();
+										brakRollerData.setZlh(weightBrakRollerData.getZlh());
+										brakRollerData.setYlh(weightBrakRollerData.getYlh());
+										brakRollerData.setJzzlh(weightBrakRollerData.getJzzlh());
+										brakRollerData.setJzylh(weightBrakRollerData.getJzylh());
+									}
+									
+								
+								}
+								
+								param.put("brakRollerData", brakRollerData);
+								
+								if(vehFlow.getJyxm().equals("B0")){
+									List<BrakRollerData> brakRollerB0Datas = checkDataManager.getBrakRollerDataB0(vehCheckLogin);
+									param.put("B0", brakRollerB0Datas);
+									Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
+									param.put("zclh", zclh);
+								}
 							}
-							
-							param.put("brakRollerData", brakRollerData);
-							
-							if(vehFlow.getJyxm().equals("B0")){
-								List<BrakRollerData> brakRollerB0Datas = checkDataManager.getBrakRollerDataB0(vehCheckLogin);
-								param.put("B0", brakRollerB0Datas);
-								Integer zclh = checkDataManager.getZCZH(vehCheckLogin);
-								param.put("zclh", zclh);
-							}
+							workPointManager.check(checkDevice, vehCheckLogin, checkQueue, vehFlow,param);
+						}catch (Exception e) {
+							logger.error("检测异常：",e);
+							throw e;
 						}
-						workPointManager.check(checkDevice, vehCheckLogin, checkQueue, vehFlow,param);
+						
 					}
 				}
 			}

@@ -1,12 +1,16 @@
-
 <script type="text/javascript"
 	src="/veh/js/data.js"></script>
-	<script type="text/javascript">
-</script>
 <script type="text/javascript">
 
-
-var cIP=null;
+var m_bDVRControl =null;
+var m_iLoginUserId;
+var m_iPlay = 0;                             //是否播放
+var m_iProtocolType = 0;                         //协议类型，0 – TCP， 1 - UDP
+var m_iStreamType = 0;                           //码流类型，0 表示主码流， 1 表示子码流
+var m_iChannelNum;
+var m_iIPChannelNum;
+var m_iIPChannelNum;
+var m_szDeviceType;
 
 function jyjgbhFormatter(value){
 	var text=value;
@@ -24,47 +28,21 @@ $(function(){
 });
 
 function init()
-{
-	// 检查插件是否已经安装过
-    var iRet = WebVideoCtrl.I_CheckPluginInstall();
-	if (-2 == iRet) {
-		alert("您的Chrome浏览器版本过高，不支持NPAPI插件！");
-		return;
-	} else if (-1 == iRet) {
-        $.messager.alert("提示","您还未安装过插件，请安装WebComponentsKit.exe！","info",function(){
-			window.open("/veh/codebase/WebComponentsKit.exe")
-		});
-		return;
-    }
-
-	var oPlugin = {
-		iWidth: 300,			// plugin width
-		iHeight: 300			// plugin height
-	};
-	
-	// 初始化插件参数及插入插件
-	WebVideoCtrl.I_InitPlugin(oPlugin.iWidth, oPlugin.iHeight, {
-        bWndFull: true,//是否支持单窗口双击全屏，默认支持 true:支持 false:不支持
-        iWndowType: 1,
-		cbSelWnd: function (xmlDoc) {
-			
-		}
-	});
-	WebVideoCtrl.I_InsertOBJECTPlugin("divPlugin");
-
-	// 检查插件是否最新
-	if (-1 == WebVideoCtrl.I_CheckPluginVersion()) {
-		  $.messager.alert("提示","您还未安装过插件，请安装WebComponentsKit.exe！","info",function(){
-				window.open("/veh/codebase/WebComponentsKit.exe")
-			});
-		return;
+{ 
+	var myDate = new Date();
+	var iYear = myDate.getFullYear();        
+	if(iYear < 1971 || iYear > 2037)
+	{
+		$.messager.alert("提示","为了正常使用本软件，请将系统日期年限设置在1971-2037范围内！");
 	}
-}
-
-function logout(){
-	WebVideoCtrl.I_Stop();
-	if(cIP!=null){
-		WebVideoCtrl.I_Logout(cIP);
+	if(document.getElementById("HIKOBJECT1").object == null)
+	{
+		$.messager.alert("提示","请先下载控件并注册！");
+		m_bDVRControl = null;
+	}
+	else
+	{
+		m_bDVRControl = document.getElementById("HIKOBJECT1");
 	}
 }
 
@@ -75,27 +53,26 @@ function login(){
 	var userName = $("#fm input[name=userName]").val();
 	var password = $("#fm input[name=password]").val();
 	
-	logout();
-	var oLiveView = {
-			iProtocol: 1,			// protocol 1：http, 2:https
-			szIP: ip,	// protocol ip
-			szPort: "80",			// protocol port
-			szUsername: userName,	// device username
-			szPassword: password,	// device password
-			iStreamType: 1,			// stream 1：main stream  2：sub-stream  3：third stream  4：transcode stream
-		//	iChannelID: n.channel,			// channel no
-			bZeroChannel: false		// zero channel
-		};
-		// 登录设备
-		WebVideoCtrl.I_Login(oLiveView.szIP, oLiveView.iProtocol, oLiveView.szPort, oLiveView.szUsername, oLiveView.szPassword, {
-			success: function (xmlDoc) {
-				cIP=n.ip;
-			   LogMessage("登录录像机成功过");
-			},
-			error:function(){
-				 LogMessage("登录录像机失败");
-			}
-		});
+	m_iLoginUserId = m_bDVRControl.Login(ip,port,userName,password);
+	if(m_iLoginUserId == -1)
+	{
+        var dRet = m_bDVRControl.GetLastError();
+        
+        $.messager.show({
+            title:'错误',
+            msg:"登陆影像录像机失败,错误码：" + dRet,
+            showType:'show',
+            width:200,
+            timeout:5000,
+            style:{
+                left:0,
+                right:'',
+                top:'',
+                bottom:-document.body.scrollTop-document.documentElement.scrollTop
+            }
+        });
+	}
+	return m_iLoginUserId;
 }
 
 function LogMessage(msg){
@@ -116,85 +93,133 @@ function LogMessage(msg){
 }
 
 function getChannel(){
-	login();
-	var szIP =  $("#fm input[name=ip]").val();
-	var nAnalogChannel =0;
-	 var channelList=[];
+	m_iLoginUserId =  login();
 	
-	WebVideoCtrl.I_GetDigitalChannelInfo(szIP, {
-		async: false,
-		success: function (xmlDoc) {
-			LogMessage("获取模拟通道成功！");	
-			var oChannels = $(xmlDoc).find("InputProxyChannelStatus");
-			nAnalogChannel = oChannels.length;
-			
-
-			$.each(oChannels, function (i) {
-				var channel={};
-				
-				channel.id=i;
-				
-				
-				var id = parseInt($(this).find("id").eq(0).text(), 10),
-					name = $(this).find("name").eq(0).text();
-				if ("" == name) {
-					name = "IPCamera " + ((id - nAnalogChannel) < 9 ? "0" + (id - nAnalogChannel) : (id - nAnalogChannel));
-				}
-				channel.name=name;
-				channel.id=id;
-				channelList.push(channel);
-			});
-			
-			
-			
-		},
-		error: function () {
-			LogMessage("获取模拟通道失败！");	
+	if(m_iLoginUserId>-1){
+		var szServerInfo = m_bDVRControl.GetServerInfo();
+		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false"
+		xmlDoc.loadXML(szServerInfo)
+		m_iChannelNum = parseInt(xmlDoc.documentElement.childNodes[0].childNodes[0].nodeValue);
+        m_iIPChannelNum = parseInt(xmlDoc.documentElement.childNodes[8].childNodes[0].nodeValue);
+        m_szDeviceType = xmlDoc.documentElement.childNodes[1].childNodes[0].nodeValue;
+        var channelList=[];
+		if(m_iChannelNum < 1)
+		{
+			LogMessage("获取模拟通道失败！");
 		}
-	});
-	 console.log(channelList)
-     $("#input_channel").combobox("loadData",channelList);
-      
+		else
+		{
+			LogMessage("获取模拟通道成功！");	
+			
+			for(var i = 0; i < m_iChannelNum; i ++)
+			{
+				var channel={};
+				var szChannelName = m_bDVRControl.GetChannelName(i);
+				if(szChannelName == "")
+				{
+					szChannelName = "通道" + (i + 1);
+				}
+				channel.id=i;
+				channel.name=szChannelName;
+				channelList.push(channel);
+			}
+		}
+        if (m_iIPChannelNum < 1) {
+            LogMessage("获取IP通道失败！");
+        }
+        else {
+            LogMessage("获取IP通道成功！");
+
+            if (m_iIPChannelNum >= 64) {
+                     LogMessage("IP通道个数大于等于64，" + "通道号取值从0开始！");
+                     m_iIPChanStart = 0;
+                }
+
+            else{
+                     LogMessage("如果设备有IP通道，IP通道号取值从32开始！");
+                     m_iIPChanStart = 32;
+            }
+
+            m_bDVRControl.GetIPParaCfg();
+            szIPChanInfo = m_bDVRControl.GetIPCConfig();
+            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = "false"
+            xmlDoc.loadXML(szIPChanInfo)
+            for (var i = m_iChannelNum; i < m_iChannelNum+m_iIPChannelNum; i++) {                   
+                m_iIPConnet = parseInt(xmlDoc.documentElement.childNodes[i].childNodes[3].childNodes[0].nodeValue);
+                if (m_iIPConnet == 1) {
+                	var channel={};
+                    LogMessage("获取IP通道" + (i-m_iChannelNum+1) + "成功！");                            
+                    var szChannelName = m_bDVRControl.GetChannelName(i+m_iIPChanStart );
+                    if (szChannelName == "") {
+                        szChannelName = "IP通道" + (i-m_iChannelNum + 1);
+                    }
+                    channel.name=szChannelName;
+                    channel.id=i;
+                    channelList.push(channel);
+                }
+            }
+        }
+        console.log(channelList)
+        $("#input_channel").combobox("loadData",channelList);
+	}
 }
 
 
 function play(){
 	
-	var  m_iNowChanNo = $("#fm input[name=channel]").val();
-	
-	var oWndInfo = WebVideoCtrl.I_GetWindowStatus(0),
-	szIP = $("#fm input[name=ip]").val(),
-	iStreamType =1,
-	iChannelID = parseInt(m_iNowChanNo, 10),
-	bZeroChannel = false,
-	szInfo = "";
+     var  m_iNowChanNo = $("#fm input[name=channel]").val();
+     console.log(m_iNowChanNo);
+     if (m_iNowChanNo !="") {
+    	 m_iNowChanNo=parseInt(m_iNowChanNo);
+    	 if(m_iNowChanNo>=m_iChannelNum)
+         {           
+              m_iNowChanNo=m_iNowChanNo-m_iChannelNum+ m_iIPChanStart;
+         } 
+    	 
+          if (m_iPlay == 1) {
 
-	if ("" == szIP) {
-		return;
-	}
-	
-	if (oWndInfo != null) {// 已经在播放了，先停止
-		WebVideoCtrl.I_Stop();
-	}
-	
-	var iRet = WebVideoCtrl.I_StartRealPlay(szIP, {
-		iStreamType: iStreamType,
-		iChannelID: iChannelID,
-		bZeroChannel: bZeroChannel
-	});
-	
-	if (0 == iRet) {
-		szInfo = "开始预览成功！";
-	} else {
-		szInfo = "开始预览失败！";
-	}
+              m_bDVRControl.StopRealPlay();
+              m_iPlay = 0;
+          }
+          
+          var bRet = m_bDVRControl.StartRealPlay(m_iNowChanNo, m_iProtocolType, m_iStreamType);
+
+          if (bRet) {
+
+              LogMessage("预览通道" + (m_iNowChanNo + 1) + "成功！");
+
+              m_iPlay = 1;
+
+          }
+
+          else {
+
+              LogMessage("预览通道" + (m_iNowChanNo + 1) + "失败！");
+
+              var dRet = m_bDVRControl.GetLastError();
+              LogMessage("预览失败，错误号：" + dRet);
+
+          }
+
+      }
+
+      else {
+
+          LogMessage("请选择通道号！");
+
+      }
 	
 }
 
 function query(){
+	
 	var jyjgbh = $("#jyjgbh").combobox("getValue");
+	
 	$("#dg").datagrid("reload",{"jyjgbh":jyjgbh});
 }
+
 </script>
 
     <table id="dg" title="检测线摄像头配置" class="easyui-datagrid" style="width:100%;height:400px"
@@ -274,7 +299,12 @@ function query(){
 		       </form>
 			</div>
 			<div data-options="region:'east'" style="width:300px; ">
-				<div id="divPlugin"></div>
+				<div  id="NetPlayOCX1" style="width: 290px;height: 95%; margin: 5px 0px 0px 5px;">
+					<object classid="CLSID:CAFCF48D-8E34-4490-8154-026191D73924"
+						codebase="/veh/codebase/NetVideoActiveX23.cab#version=2,3,11,2"
+						standby="Waiting..." id="HIKOBJECT1" width="100%" height="100%"
+						name="HIKOBJECT1"></object>
+				</div>
 			</div>
 		</div>  
    </div>
@@ -287,6 +317,7 @@ function query(){
        function newUser(){
            $('#dlg').dialog('open').dialog('center').dialog('setTitle','新增配置');
            $('#fm').form('clear');
+           
            $("#fm").form("load",{userName:'admin',password:'12345',port:'8000',});
           
        }

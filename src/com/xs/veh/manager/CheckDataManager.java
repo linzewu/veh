@@ -31,10 +31,12 @@ import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.Insurance;
+import com.xs.veh.entity.PlateApplyTable;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.SimpleRead;
 import com.xs.veh.network.data.BaseDeviceData;
@@ -46,6 +48,7 @@ import com.xs.veh.network.data.Outline;
 import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
+import com.xs.veh.util.HKVisionUtil;
 
 import net.sf.json.JSONObject;
 
@@ -71,9 +74,15 @@ public class CheckDataManager {
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
+	
+	@Autowired
+	private VideoManager videoManager;
 
 	@Value("${jyjgmc}")
 	private String jyjgmc;
+	
+	@Value("${jyjgbh}")
+	private String jyjgbh;
 	
 	@Value("${sf}")
 	private String sf;
@@ -89,6 +98,9 @@ public class CheckDataManager {
 	
 	@Resource(name = "deviceManager")
 	private DeviceManager deviceManager;
+	
+	@Autowired
+	private HKVisionUtil hkUtil;
 
 	public void saveData(BaseDeviceData data) {
 		this.hibernateTemplate.saveOrUpdate(data);
@@ -651,7 +663,7 @@ public class CheckDataManager {
 					item = new int[] {22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41};
 				} else if (i == 5) {
 					ecj.setRgjyxm("联网查询");
-					item = new int[] {81};
+					item = new int[] {80}; 
 				}
 				List bhgList = getxm(item,jb,"2");
 				List hgList = getxm(item,jb,"1");
@@ -1479,6 +1491,24 @@ public class CheckDataManager {
 		}
 	}
 	
+	public void savePlateApplyTable(PlateApplyTable plateApplyTable) {
+		
+		this.hibernateTemplate.saveOrUpdate(plateApplyTable);
+		
+	}
+	
+	public PlateApplyTable getPlateApplyTable(String jylsh) {
+		
+		List<PlateApplyTable> datas = (List<PlateApplyTable>) this.hibernateTemplate.find("from PlateApplyTable where jylsh=?", jylsh);
+		
+		if(!CollectionUtils.isEmpty(datas)) {
+			return datas.get(0);
+		}
+		
+		return null;
+		
+	}
+	
 
 	private String getDeviceId(String jyxm) {
 		List<BaseParams> bps = (List<BaseParams>) servletContext.getAttribute("bps");
@@ -1502,4 +1532,17 @@ public class CheckDataManager {
 		}
 		return zh_jyxm;
 	}
+	
+	
+	public void saveReloadVideo(String strIds) {
+		
+		String[] ids=strIds.split(",");
+		
+		for(String id:ids) {
+			VehCheckProcess vehCheckProcess = this.hibernateTemplate.load(VehCheckProcess.class, Integer.parseInt(id));
+			vehCheckProcess.setVoideSate(0);
+			this.hibernateTemplate.save(vehCheckProcess);
+		}
+	}
+	
 }

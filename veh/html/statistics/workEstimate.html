@@ -1,3 +1,5 @@
+ <script type="text/javascript" src="/veh/js/easyui/datagrid-filter.js"></script>
+
 <DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 20px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px"><span id=""></span>人员工作量统计表 </DIV>
 	 <table id="workEstimateManager" class="easyui-datagrid"
             data-options="
@@ -28,6 +30,8 @@
 	    <label>车辆类型：</label><input data-options="data:comm.getBaseParames('cllx'),	valueField: 'id',
 		textField: 'value'" prompt='请选择车辆类型' id="quer_cllx"  name="cllx" class="easyui-combobox vehInfoInput">
 		<a class="easyui-linkbutton" href="#" data-options="iconCls:'icon-search'" onclick="query()"></a>
+		
+		<a class="easyui-linkbutton" href="#"  onclick="sumCurrent()">合计</a>
 	</div>
 </div>
 
@@ -60,6 +64,21 @@ function query(){
 	
 }
 
+function sumCurrent(){
+	var rows = $('#workEstimateManager').datagrid("getRows");
+	
+	var t=0;
+	var t1=0;
+	
+	$.each(rows,function(i,n){
+		t+=n.zsl;
+		t1+=n.hgs;
+	});
+	
+	
+	$.messager.alert("提示","总数量："+t+"   合格数："+t1);
+}
+
 $(function(){
 	
 		var date = new Date();
@@ -67,5 +86,11 @@ $(function(){
 		$("#quer_endDate").val(str1);
 		var str2 =  (date.getFullYear()-1)+"-"+(date.getMonth()+1)+"-"+date.getDate();
 		$("#quer_beginDate").val(str2);
+		
+		setTimeout(function(){
+			var dg1 = $('#workEstimateManager').datagrid();
+			dg1.datagrid('enableFilter',[]);
+		},1000);
+		
 });
 </script>

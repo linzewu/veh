@@ -164,9 +164,11 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		
 		Date kssj=new Date();
 		
-	
-		
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
+		
+		if(dld.getKssj()!=null) {
+			kssj=dld.getKssj();
+		}
 		
 		String jg = (datas == null || datas.size() == 0) ? "X" : "O";
 		String strgq="";
@@ -214,14 +216,17 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		for (LightData data : datas){
 			this.checkDataManager.saveData(data);
 		}
-		
+		logger.info("灯光数据保存成功！");
 		for(VehFlow vehFlow: vheFlows){
+			logger.info("开始更新过程数据：流水号"+vehCheckLogin.getJylsh()+" 检验次数："+vehCheckLogin.getJycs());
 			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
 					vehFlow.getJyxm());
 			process.setKssj(kssj);
 			process.setJssj(new Date());
 			this.checkDataManager.updateProcess(process);
+			logger.info("过程数据更新成功！");
 		}
+		
 	}
 
 	@Override

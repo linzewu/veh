@@ -1,4 +1,35 @@
-<div style="text-align: center;margin-top: 10px;"><a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_plateApply'))">打印</a></div>
+
+<div style="text-align: center;margin-top: 10px;">
+
+<div>
+	<table style="margin:0 auto; width: 600px;" class="plateApply">
+		<tr>
+			<td style="width: 15%;text-align: right;">手机号码：</td>
+			<td style="text-align: left;"><input value="" class="easyui-textbox" name="sjhm" id="sqbid_sjhm" /></td>
+			<td style="width: 15%;text-align: right;">固定电话号：</td>
+			<td style="text-align: left;"><input value="" class="easyui-textbox" name="gddh" id="sqbid_gddh"  /></td>
+		</tr>
+		<tr>
+			<td style="width: 15%;text-align: right;">邮政编码：</td>
+			<td style="text-align: left;" colspan="3"><input value="" class="easyui-textbox" name="yzbm" style="width: 400px;" id="sqbid_yzbm" /></td>
+		</tr>
+		<tr>
+			<td style="width: 15%;text-align: right;">邮寄地址：</td>
+			<td style="text-align: left;" colspan="3"><input value="" class="easyui-textbox" name="yjdz" style="width: 400px;" id="sqbid_yjdz" /></td>
+		</tr>
+		<tr>
+			<td style="width: 15%;text-align: right;">申请方式：</td>
+			<td style="text-align: left;" colspan="3">
+				<input id="checkType_0" value="0" name="sqlx" class="easyui-checkbox" type="radio" checked="checked"  /><label for="checkType_0">在登记地车辆管理所申请</label>
+				<input id="checkType_1" value="1" name="sqlx" class="easyui-checkbox" type="radio"  /><label for="checkType_1">在登记地以外车辆管理所申请</label>
+				<input type="hidden" value="" name="id" id="sqbid_id">
+				<input type="hidden" value="" name="jylsh" id="sqbid_jylsh">
+			</td>
+		</tr>
+	</table>
+</div>
+<a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveSQB()" >保存</a>
+<a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_plateApply'))">打印</a></div>
 <DIV id="print_plateApply">
 <DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 30px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px"><span id="report3_jyjgmc"></span>机动车牌证申请表 </DIV>
 <table class="tg" style="table-layout: fixed; width: 720px; text-align: center;">
@@ -20,17 +51,17 @@
   	<td colspan="2">姓名/名称</td>
   	<td colspan="2" name="report-plateInfo-syr"></td>
   	<td>邮政编码</td>
-  	<td></td>
+  	<td><label id="sqb_yzbm"></label></td>
   </tr>
   <tr class="plateSize">
   	<td colspan="2">邮寄地址</td>
-  	<td colspan="4"></td>
+  	<td colspan="4"><label id="sqb_yjdz"></label></td>
   </tr>
   <tr class="plateSize">
   	<td colspan="2">手机号码</td>
-  	<td colspan="2"></td>
+  	<td colspan="2"><label id="sqb_sjhm"></label></td>
   	<td>固定电话</td>
-  	<td></td>
+  	<td><label id="sqb_gddh"></label></td>
   </tr>
   <tr class="plateSize">
   	<td colspan="2">代<br/>理<br/>人</td>
@@ -106,10 +137,10 @@
   
   <tr class="plateSize">
   	<td rowspan="3" style="padding:20px 5px 20px 5px">检验合格标志</td>
-  	<td colspan="2"><input type="checkbox">申请</td>
+  	<td colspan="2"><input type="checkbox"  checked="checked">申请</td>
   	<td colspan="5">
-  		<input type="checkbox">在登记地车辆管理所申请
-  		<input type="checkbox">在登记地以外车辆管理所申请
+  		<input type="checkbox" name="sqb_sqlx_0" checked="checked">在登记地车辆管理所申请
+  		<input type="checkbox" name="sqb_sqlx_1">在登记地以外车辆管理所申请
   	</td>
   </tr>
   <tr class="plateSize">
@@ -120,13 +151,95 @@
   	</td>
   </tr>
   <tr class="plateSize">
-  	<td colspan="2"><input type="checkbox" id="hgbzhl">换领</td>
+  	<td colspan="2"><input type="checkbox">换领</td>
   	<td colspan="5">
   	</td>
   </tr>
   <tr class="plateSize">
   	<td colspan="5" style="font-size: 25px;">机动车所有人及代理人对申请材料的真实有效性负责。</td>
   	<td colspan="3" ><div style="text-align: left;">机动车所有人(代理人)签字：</div><br/><br/><br/>
-  	<div  style="text-align: right;">年        &nbsp;&nbsp;&nbsp;&nbsp; 月         &nbsp;&nbsp;&nbsp;&nbsp; 日</div></td>
+  	<div  style="text-align: right;" id="plate_date">年        &nbsp;&nbsp;&nbsp;&nbsp; 月         &nbsp;&nbsp;&nbsp;&nbsp; 日</div></td>
   </tr>
 </table>
+
+
+<script type="text/javascript">
+
+var reportData = $("#checkingVeh").datagrid("getSelected");
+
+var jylsh = reportData.jylsh;
+
+$.post("/veh/report/getPlateApplyTable",{"jylsh":jylsh},function(data){
+	console.log(data);
+	if(data){
+		$("#sqbid_sjhm").textbox("setValue",data.sjhm);
+		$("#sqbid_gddh").textbox("setValue",data.gddh);
+		$("#sqbid_yzbm").textbox("setValue",data.yzbm);
+		$("#sqbid_yjdz").textbox("setValue",data.yjdz);
+		
+		if(data.sqlx==1){
+			$("#checkType_0").prop("checked",false);
+			$("#checkType_1").prop("checked",true);
+		}else{
+			$("#checkType_1").prop("checked",false);
+			$("#checkType_0").prop("checked",true);
+		}
+		
+		$("#sqbid_sqlx").val(data.sqlx);
+		$("#sqbid_jylsh").val(data.jylsh);
+		$("#sqbid_id").val(data.id);
+		setDate(data);
+	}
+});
+
+function saveSQB(){
+	var yzbm = $(".plateApply input[name=yzbm]").val();
+	var yjdz = $(".plateApply input[name=yjdz]").val();
+	var sqlx = $('input[name=sqlx]:radio:checked').val();
+	var id =  $(".plateApply input[name=id]").val();
+	var sjhm = $(".plateApply input[name=sjhm]").val();
+	var gddh = $(".plateApply input[name=gddh]").val();
+	
+	var param={};
+	param.yzbm=yzbm;
+	param.yjdz=yjdz;
+	param.sqlx=sqlx;
+	param.jylsh=jylsh;
+	param.id=id;
+	param.sjhm=sjhm;
+	param.gddh=gddh;
+	
+	console.log(param);
+	
+	$.post("/veh/report/savePlateApplyTable",param,function(data){
+		console.log(data);
+		$("#sqbid_id").val(data.id);
+		
+		setDate(data);
+	});
+	
+}
+
+
+function setDate(data){
+	$("#sqb_sjhm").text(data.sjhm);
+	$("#sqb_gddh").text(data.gddh);
+	$("#sqb_yzbm").text(data.yzbm);
+	$("#sqb_yjdz").text(data.yjdz);
+	console.log(data.sqlx==1)
+	if(data.sqlx==1){
+		$("input[name=sqb_sqlx_0]").prop("checked",false);
+		$("input[name=sqb_sqlx_1]").prop("checked",true);
+	}else{
+		$("input[name=sqb_sqlx_0]").prop("checked",true);
+		$("input[name=sqb_sqlx_1]").prop("checked",false);
+	}
+	
+	var datas = reportData.dlsj.split("-")
+	
+	$("#plate_date").text(datas[0]+'年'+datas[1]+"月"+datas[2]+"日");
+	
+}
+
+
+</script>

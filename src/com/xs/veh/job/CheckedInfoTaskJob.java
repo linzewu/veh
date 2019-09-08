@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,20 +27,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.QueryObjectOutResponse;
-import com.xs.rca.ws.client.TmriJaxRpcOutAccessServiceStub.WriteObjectOutResponse;
-import com.xs.veh.entity.BaseParams;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
+import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.manager.VehProcessManager;
+import com.xs.veh.manager.VideoManager;
 import com.xs.veh.network.data.Outline;
 import com.xs.veh.util.BeanXMLUtil;
+import com.xs.veh.util.HKVisionUtil;
 import com.xs.veh.util.RCAConstant;
 
 import sun.misc.BASE64Encoder;
@@ -49,7 +54,7 @@ public class CheckedInfoTaskJob {
 
 	private static Logger logger = Logger.getLogger(CheckedInfoTaskJob.class);
 
-	private TmriJaxRpcOutAccessServiceStub tro = null;
+	private TmriJaxRpcOutNewAccessServiceStub tro = null;
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -86,14 +91,23 @@ public class CheckedInfoTaskJob {
 	private String jyjgbh;
 	
 	@Autowired
+	private HKVisionUtil hkUtil;
+	
+	@Autowired
+	private VideoManager videoManager;
+	
+	@Autowired
 	private ServletContext servletContext;
+	
+	@Autowired
+	private VehProcessManager vehProcessManager;
 
 	@Resource(name = "baseParamsManager")
 	private BaseParamsManager baseParamsManager;
 
 	public CheckedInfoTaskJob() {
 		try {
-			tro = new TmriJaxRpcOutAccessServiceStub();
+			tro = new TmriJaxRpcOutNewAccessServiceStub();
 		} catch (AxisFault e) {
 			logger.error("链接专网查验平台失败", e);
 		} catch (IOException e) {
@@ -110,11 +124,19 @@ public class CheckedInfoTaskJob {
 	private Document queryws(String jkid, Map param)
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 
-		TmriJaxRpcOutAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+		TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qoo = new TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut();
 		param.put("jyjgbh", jyjgbh);
 		qoo.setJkid(jkid);
 		qoo.setXtlb(RCAConstant.XTLB);
 		qoo.setJkxlh(jkxlh);
+		
+		String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+		  String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+		  String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+		  qoo.setDwjgdm(bmdm);
+		  qoo.setDwmc(ywzdbm);
+		  qoo.setZdbs(jcip);
+		
 		Document xml = BeanXMLUtil.map2xml(param, "QueryCondition");
 		qoo.setUTF8XmlDoc(xml.asXML());
 		QueryObjectOutResponse qoor = tro.queryObjectOut(qoo);
@@ -125,7 +147,7 @@ public class CheckedInfoTaskJob {
 		return document;
 	}
 
-	private Document write(TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo, Object o) throws Exception {
+	private Document write(TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut woo, Object o) throws Exception {
 		try {
 			Document xml = BeanXMLUtil.bean2xml(o, "vehispara");
 			logger.debug("bo:" + xml.asXML());
@@ -168,7 +190,7 @@ public class CheckedInfoTaskJob {
 
 	private Document write(CheckEvents event, Map data) throws Exception {
 		try {
-			TmriJaxRpcOutAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutAccessServiceStub.WriteObjectOut();
+			TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut woo = new TmriJaxRpcOutNewAccessServiceStub.WriteObjectOut();
 			String jkid = event.getEvent();
 			if (jkid.equals("18C55_R")) {
 				jkid = "18C55";
@@ -179,6 +201,14 @@ public class CheckedInfoTaskJob {
 			woo.setJkid(jkid);
 			woo.setXtlb(RCAConstant.XTLB);
 			woo.setJkxlh(jkxlh);
+			
+			String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+			   String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
+			   String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
+			   woo.setDwjgdm(bmdm);
+			   woo.setDwmc(ywzdbm);
+			   woo.setZdbs(jcip);
+			
 			Document xml = BeanXMLUtil.map2xml(data, "vehispara");
 			woo.setUTF8XmlDoc(xml.asXML());
 			WriteObjectOutResponse wor = tro.writeObjectOut(woo);
@@ -438,6 +468,50 @@ public class CheckedInfoTaskJob {
 			throw new Exception("系统有效日期为："+startDataStr+"至"+endDataStr);
 		}
 	}
+	
+	
+	@Scheduled(fixedDelay = 1000*10)
+	private void dowloadVideo() throws Exception{
+		
+		List<VehCheckProcess> datas = this.vehProcessManager.getDowloadsData();
+		
+		List<VideoConfig> configs = videoManager.getConfig(jyjgbh);
+		
+		for(VehCheckProcess vcp: datas) {
+			
+			VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(jyjgbh, vcp.getJylsh());
+			
+			for(VideoConfig config: configs) {
+				if(config.getJyxm().indexOf(vcp.getJyxm())!=-1&&config.getJcxdh().equals(vehCheckLogin.getJcxdh())) {
+					try {
+						Date  kssj =vcp.getKssj();
+						if(vcp.getJyxm().equals("H4")) {
+							
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTime(vcp.getKssj());
+							calendar.add(Calendar.SECOND, 20);
+							kssj=calendar.getTime();
+						}
+						
+						hkUtil.downLoad(config, hkUtil.convert(kssj), hkUtil.convert(vcp.getJssj()), vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_"+config.getChannel()); 
+						vcp.setVoideSate(1);
+						vehProcessManager.saveVehProcessSync(vcp);
+					}catch (Exception e) {
+						vcp.setVoideSate(2);
+						vehProcessManager.saveVehProcessSync(vcp);
+					}
+					
+					
+				}
+				
+			}
+			
+			
+		}
+		
+		
+	}
+
 
 
 

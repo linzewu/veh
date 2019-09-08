@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.manager.VideoManager;
 
@@ -89,6 +90,61 @@ public class VideoController {
 		map.put("jyjgmc", jyjgmc_sys);
 		return map;
 	}
+	
+	
+	@RequestMapping(value = "play2",method= {RequestMethod.POST,RequestMethod.GET})
+	@UserOperation(code="play2",name="视频地址",userOperationEnum=CommonUserOperationEnum.NoLogin)
+	public String getPlayInfo2(HttpServletRequest request ,String jylsh) {
+		
+		List<Map> list = videoManager.getProcessDataByLsh(jylsh);
+		
+		if(list==null||list.isEmpty()){
+			return "video2";
+		}
+		//处理路试
+		isRoadTest(list);
+		
+		String jyjgbh=list.get(0).get("JYJGBH").toString();
+		String jcxdh =list.get(0).get("JCXDH").toString();
+		
+		List<VideoConfig> conifgs = videoManager.getConfig(jyjgbh);
+		
+		JSONArray ja=new JSONArray();
+		
+		for(Map item:list){
+			String jyxm = (String)item.get("JYXM");
+			if(jyxm!=null){
+				for(VideoConfig vc:conifgs){
+					if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(jcxdh)){
+						JSONObject jo = JSONObject.fromObject(vc);
+						Date kssj=(Date)item.get("KSSJ");
+						Date jssj=(Date)item.get("JSSJ");
+						
+						Integer jycs=(Integer)item.get("JYCS");
+						
+						String fzjg=(String)item.get("FZJG");
+						String hphm=(String)item.get("HPHM");
+						if(fzjg!=null){
+							hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+						}
+						SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						
+						jo.put("kssj",sd.format(kssj));
+						jo.put("jssj",sd.format(jssj));
+						jo.put("hphm",hphm);
+						jo.put("jyxm", jyxm);
+						jo.put("jycs", jycs.intValue());
+						ja.add(jo);
+						//break;
+					}
+				}
+			}
+		}
+		request.setAttribute("playInfo", ja.toString());
+		System.out.println("video2");
+		return "video2";
+	}
+	
 	
 	@RequestMapping(value = "getConfig", method = RequestMethod.POST)
 	@UserOperation(code="getConfig",name="查询视频配置")

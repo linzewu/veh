@@ -111,7 +111,7 @@ public class LogAopAction {
 	 * @return
 	 * @throws Throwable
 	 */
-	@Around("controllerAspect()")
+	//@Around("controllerAspect()")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable {
 		
 		Date beginDate=new Date();
