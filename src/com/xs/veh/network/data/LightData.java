@@ -124,7 +124,7 @@ public class LightData extends BaseDeviceData {
 	}
 
 	public String getCzpyxz() {
-		if(dg<1000) {
+		if(dg!=null&&dg<1000) {
 			this.czpyxz ="-300,-50";
 		}else {
 			this.czpyxz ="-350,-100";

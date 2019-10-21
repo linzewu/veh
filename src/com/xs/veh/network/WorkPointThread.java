@@ -118,7 +118,7 @@ public class WorkPointThread extends Thread {
 
 			VehCheckLogin vehCheckLogin = workPointManager.getVehCheckLogin(checkQueue);
 
-			int dgcount = workPointManager.getDGCount(vehCheckLogin.getJyxm());
+			int dgcount = workPointManager.getDGCount(vehCheckLogin.getJycs()==1?vehCheckLogin.getJyxm():vehCheckLogin.getFjjyxm());
 
 			logger.info("vehFlows:" + vehFlows.size());
 

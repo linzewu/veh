@@ -11,8 +11,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -36,9 +38,9 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.Message;
+import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
-import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
@@ -801,18 +803,17 @@ public class VehManager {
 				"from LightData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
 				BaseDeviceData.PDJG_BHG);
 		if (lightDatas != null && !lightDatas.isEmpty()) {
-			if (vehCheckLogin.getJyxm().indexOf("H1") >= 0) {
-				fjjyxm += "H1,";
+			
+			Set<String> dgjyxmSet=new HashSet<String>();
+			
+			for(LightData ld:lightDatas) {
+				dgjyxmSet.add(ld.getJyxm());
 			}
-			if (vehCheckLogin.getJyxm().indexOf("H2") >= 0) {
-				fjjyxm += "H2,";
+			
+			for(String s:dgjyxmSet) {
+				fjjyxm += s+",";
 			}
-			if (vehCheckLogin.getJyxm().indexOf("H3") >= 0) {
-				fjjyxm += "H3,";
-			}
-			if (vehCheckLogin.getJyxm().indexOf("H4") >= 0) {
-				fjjyxm += "H4,";
-			}
+			
 		}
 		for (LightData lightData : lightDatas) {
 			lightData.setSjzt(BaseDeviceData.SJZT_FJ);

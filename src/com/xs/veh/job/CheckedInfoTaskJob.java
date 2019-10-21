@@ -470,7 +470,7 @@ public class CheckedInfoTaskJob {
 	}
 	
 	
-	@Scheduled(fixedDelay = 1000*10)
+	@Scheduled(fixedDelay = 1000*5)
 	private void dowloadVideo() throws Exception{
 		
 		List<VehCheckProcess> datas = this.vehProcessManager.getDowloadsData();
@@ -485,7 +485,7 @@ public class CheckedInfoTaskJob {
 				if(config.getJyxm().indexOf(vcp.getJyxm())!=-1&&config.getJcxdh().equals(vehCheckLogin.getJcxdh())) {
 					try {
 						Date  kssj =vcp.getKssj();
-						if(vcp.getJyxm().equals("H4")) {
+						if(vcp.getJyxm().equals("H4")&&vcp.getJycs()==1) {
 							
 							Calendar calendar = Calendar.getInstance();
 							calendar.setTime(vcp.getKssj());

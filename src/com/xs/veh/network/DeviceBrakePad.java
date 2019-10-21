@@ -169,8 +169,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				}
 				display.sendMessage(
 						brakRollerData.getZw() + "轴：" + decimalFormat.format(brakRollerData.getKzxczdl()) + "/"
-								+ decimalFormat.format(brakRollerData.getKzbphl()) + "/" + strpd+"/左："+brakRollerData.getZzdl()+
-								" 右："+brakRollerData.getYzdl()+" /左："+brakRollerData.getZdtlh()+"KG 右："+brakRollerData.getYdtlh()+"KG",
+								+ decimalFormat.format(brakRollerData.getKzbphl()) + "/" + strpd,
 						brakRollerData.getZw() == 1 ? DeviceDisplay.XP : DeviceDisplay.XP);
 				
 				zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
@@ -252,8 +251,8 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			display.sendMessage("检判定结果：O", DeviceDisplay.XP);
 		} else {
 			display.sendMessage("检判定结果：X", DeviceDisplay.SP);
-//			display.sendMessage("是否复位，等待30S", DeviceDisplay.XP);
-//			Thread.sleep(30 * 1000);
+			display.sendMessage("是否复位，等待30S", DeviceDisplay.XP); 
+			Thread.sleep(30 * 1000);
 		}
 
 		Thread.sleep(2000);

@@ -2,17 +2,16 @@ package com.xs.veh.controller;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -39,12 +38,13 @@ import com.xs.veh.manager.RoleManager;
 import com.xs.veh.manager.SecurityAuditPolicySettingManager;
 import com.xs.veh.manager.SecurityLogManager;
 import com.xs.veh.manager.UserManager;
-import com.xs.veh.util.PageInfo;
 
 @Controller
 @RequestMapping(value = "/user",produces="application/json")
 @Modular(modelCode="user",modelName="用户管理",isEmpowered=false)
 public class UserController {
+	
+	static Logger logger = Logger.getLogger(UserController.class);
 	
 	@Autowired
 	private HttpServletRequest request;
@@ -179,6 +179,7 @@ public class UserController {
 				return data;
 			}
 			String encodePwd =user.encodePwd(password);
+		//	logger.info("encodePwd:="+encodePwd);   
 			if(!user.getPassword().equals(encodePwd)) {
 				Map data=ResultHandler.toMyJSON(0, requestContext.getMessage(Constant.ConstantMessage.LOGIN_FAILED));
 				

@@ -31,6 +31,7 @@ import com.xs.veh.network.DeviceLight;
 import com.xs.veh.network.DeviceSideslip;
 import com.xs.veh.network.DeviceSignal;
 import com.xs.veh.network.DeviceSpeed;
+import com.xs.veh.network.DeviceSuspension;
 import com.xs.veh.network.DeviceWeigh;
 
 import gnu.io.NoSuchPortException;
@@ -249,6 +250,19 @@ public class InitListener implements ServletContextListener {
 						| PortInUseException | IOException | UnsupportedCommOperationException
 						| TooManyListenersException e) {
 					log.error("速度设备打开异常", e);
+				}
+				servletContext.setAttribute(device.getThredKey(), dl);
+			}
+			
+			if(device.getType() ==Device.XJSB) {
+				DeviceSuspension dl = (DeviceSuspension) wac.getBean("deviceSuspension");
+				try {
+					dl.setDevice(device);
+					dl.open();
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
+						| PortInUseException | IOException | UnsupportedCommOperationException
+						| TooManyListenersException e) {
+					log.error("悬架设备打开异常", e);
 				}
 				servletContext.setAttribute(device.getThredKey(), dl);
 			}

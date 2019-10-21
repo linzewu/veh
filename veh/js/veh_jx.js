@@ -175,6 +175,7 @@ var veh = {
 							$("#panel-vheInfo").panel("refresh");
 						// veh.setDefaultConfig();
 							$(":checkbox[name=jyxm]").prop("checked",false);
+							$(":checkbox[name=jyxm][value=F1]").prop("checked",true);
 							$("#checkingVehList").datagrid("reload");
 							if(data["checkLog"]){
 								$.messager.alert("提示","本地登录成功！\n监控平台登录："+data["checkLog"].message);
@@ -243,6 +244,7 @@ var veh = {
 						$("#vehinfo").form("clear");
 						veh.setDefaultConfig();
 						$(":checkbox[name=jyxm]").prop("checked",false);
+						$(":checkbox[name=jyxm][value=F1]").prop("checked",true);
 						$("#checkingVehList").datagrid("reload");
 						$.messager.alert("提示","车辆登录成功。");
 					}
@@ -1288,6 +1290,7 @@ var report={
 			data:jycsarray,
 			value:intjycs,
 			onChange:function(newValue,oldValue){
+				$("#report1 td[name=xmpd]").text('—');
 				report.getReport1(panelObj,newValue);
 			}
 		});

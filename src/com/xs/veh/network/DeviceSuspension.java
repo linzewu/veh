@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.xs.common.exception.SystemException;
+import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
@@ -25,8 +28,15 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 	private AbstractDeviceSuspension ds;
 	private DeviceDisplay display;
 	private VehCheckLogin vehCheckLogin;
+	private DeviceSignal signal;
+
+	private Integer s1;
+	
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Autowired
+	private ServletContext servletContext;
 
 	public DeviceDisplay getDisplay() {
 		return display;
@@ -72,7 +82,7 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 					}
 				}
 				byte[] endodedData = new byte[length];
-				// logger.info("数据长度："+endodedData.length);
+				 logger.info("数据长度："+endodedData.length);
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
 				ds.device2pc(endodedData);
 			} catch (Exception e) {
@@ -92,6 +102,8 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 	@Override
 	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow, Map<String, Object> otherParam)
 			throws IOException, InterruptedException, SystemException {
+		logger.info("悬架开始检测");
+		
 		this.vehCheckLogin=vehCheckLogin;
 		
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
@@ -110,12 +122,12 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 
 		Thread.sleep(2000);
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
-//		boolean flag = true;
-//
-//		while (flag) {
-//			flag = this.signal.getSignal(s1);
-//			Thread.sleep(200);
-//		}
+		boolean flag = true;
+
+		while (flag) {
+			flag = this.signal.getSignal(s1);
+			Thread.sleep(200);
+		}
 		this.checkDataManager.saveData(suspensionData);
 		display.setDefault();
 	}
@@ -129,11 +141,40 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-
+		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
+		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
+		s1=this.getQtxxObject().getInt("kzsb-xhw");
 		// 初始悬架仪解码器
 		ds = (AbstractDeviceSuspension) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		
+		// 加载挂载设备
+		if (temp != null) {
+			Integer deviceid = Integer.parseInt(temp);
+			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
+		}
+		if (dwkg != null) {
+			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
+		}
+		
 		ds.init(this);
-
 	}
+
+	public DeviceSignal getSignal() {
+		return signal;
+	}
+
+	public void setSignal(DeviceSignal signal) {
+		this.signal = signal;
+	}
+
+	public Integer getS1() {
+		return s1;
+	}
+
+	public void setS1(Integer s1) {
+		this.s1 = s1;
+	}
+	
+	
 
 }

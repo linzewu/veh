@@ -13,6 +13,10 @@ public abstract class AbstractDeviceSuspension {
 	protected DeviceDisplay display;
 	protected SuspensionData suspensionData;
 	
+	protected DeviceSignal signal;
+	
+	protected Integer s1;
+	
 	private List<Byte> temp = new LinkedList<Byte>();
 	public abstract SuspensionData startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException;
 
@@ -29,11 +33,32 @@ public abstract class AbstractDeviceSuspension {
 	public void init(DeviceSuspension deviceSuspension) {
 		this.deviceSuspension = deviceSuspension;
 		display=deviceSuspension.getDisplay();
+		this.signal=deviceSuspension.getSignal();
+		this.s1=deviceSuspension.getS1();
 	}
 	
 	public byte[] getDevData(byte[] contex) throws InterruptedException {
 
 		for (int i = 0; i < contex.length; i++) {
+			while (temp.isEmpty()) {
+				Thread.sleep(50);
+			}
+			contex[i] = temp.remove(0);
+		}
+
+		return contex;
+	}
+	
+	public byte[] getDevData(byte[] contex, byte beginByte) throws InterruptedException {
+		while (temp.isEmpty()) {
+			Thread.sleep(50);
+		}
+		while (temp.remove(0)!=beginByte) {
+			
+		}
+		
+		contex[0]=beginByte;
+		for (int i = 1; i < contex.length; i++) {
 			while (temp.isEmpty()) {
 				Thread.sleep(50);
 			}

@@ -55,9 +55,14 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 
 	private byte[] zcsj = new byte[12];
 
-	private byte[] qxsj = new byte[1600];
+	private byte[] qxsj = new byte[1536];
 	
 	private List<VehFlow> vehFlows;
+	
+	private boolean flag1=false;
+	private boolean flag2=false;
+	
+	private Integer cIndex=0;
 	
 
 
@@ -199,7 +204,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				}
 				qxsj[currntIndex] = data[i];
 				currntIndex++;
-			//	logger.info("currntIndex: " + currntIndex);
+				logger.info("currntIndex: " + currntIndex);
 				if (currntIndex == qxsj.length) {
 					processQX(qxsj, currentComm);
 					break;
@@ -210,34 +215,66 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 			logger.info("返回数据：" + CharUtil.byte2HexOfString(data));
 			Integer index=null;
 			for(int z=0;z<data.length;z++){
-				if(data[z]==0x41){
-					int length = CharUtil.byteToInt(data[z+1]);
-					if(length==4){
-						index=z;
-						break;
+//				if(data[z]==0x41&&z+1<data.length){
+//					int length = CharUtil.byteToInt(data[z+1]);
+//					if(length==4){
+//						index=z;
+//						break;
+//					}
+//				}
+				if(data[z]==0x41) {
+					flag1=true;
+				}
+				if(data[z]==0x04) {
+					flag2=true;
+					if(flag1) {
+						temp = new byte[4];
+						temp[0]=0x41;
+						temp[1]=0x04;
+						cIndex=2;
+						continue;
 					}
 				}
+				
+				if(flag1&&flag2) {
+					temp[cIndex]=data[z]; 
+					cIndex++;
+					
+					if(cIndex>=3) {
+						cIndex=0;
+						flag1=false;
+						flag2=false;
+						processData(temp);
+					}
+							
+				}
+				
 			}
 			
-			if(index!=null){
-				temp = new byte[4];
-				temp[0]=data[index];
-				temp[1]=data[index+1];
-				temp[2]=data[index+2];
-				temp[3]=data[index+3];
-				processData(temp);
-			}
+//			if(index!=null){
+//				temp = new byte[4];
+//				temp[0]=data[index];
+//				temp[1]=data[index+1];
+//				temp[2]=data[index+2];
+//				temp[3]=data[index+3];
+//				processData(temp);
+//			}
 		
 		}
 
 	}
+	
+	public static void main(String[] age) {
+		int length = CharUtil.byteToInt(new byte[]{0x14}[0]);
+		System.out.println(length);
+	}
 
 	private void processQX(byte[] data, String common) {
 		logger.info("处理曲线数据 命令："+common);
-		if (data.length == 1600) {
+		if (data.length == qxsj.length) {
 			StringBuilder dbdataLeft = new StringBuilder();
 			StringBuilder dbdataRigth = new StringBuilder();
-			for (int i = 0; i < 1600; i++) {
+			for (int i = 0; i < qxsj.length; i++) {
 				char zq = (char) data[i];
 				i++;
 				char zb = (char) data[i];
@@ -318,15 +355,18 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 					this.getDeviceBrakePad().getDisplay().sendMessage("时速5到10KM通过前进检测", DeviceDisplay.XP);
 					break;
 				case 0x32:
+					logger.info("前进！检测手制动：" );
 					this.getDeviceBrakePad().getDisplay().sendMessage("请踩刹车", DeviceDisplay.XP);
 					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B1");
 					Thread.sleep(200);
 					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B2");
 					break;
 				case 0x35:
+					logger.info("前进！检测手制动：" );
 					this.getDeviceBrakePad().getDisplay().sendMessage("前进！检测手制动", DeviceDisplay.XP);
 					break;
 				case 0x36:
+					logger.info("前进！检测手制动：" );
 					this.getDeviceBrakePad().getDisplay().sendMessage("请拉手刹", DeviceDisplay.XP);
 					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B0");
 					break;

@@ -55,7 +55,7 @@ function openCamWin() {
 		var scanSizeData=[];
 		for(var i=0;i<scanSizeCount;i++){
 			var str = ScanCtrl.GetScanSizeName(i);
-			scanSizeData[i]={"value":i,"text":str};
+			scanSizeData[i]={"value":i,"text":str,"selected":i==2?true:false};
 		}
 		$("#upimageScanSize").combobox("loadData",scanSizeData);
 		

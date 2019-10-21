@@ -168,6 +168,7 @@ public class HKVisionUtil {
 		cameraInit();
 		NativeLong lUserID = register(vc.getUserName(),vc.getPassword(),vc.getIp(),Integer.parseInt(vc.getPort()));
 		try {
+			log.info("视频地址："+getConfigPath());
 			FileUtil.createDirectory(getConfigPath()+"\\video\\");
 			NativeLong lChannel =new NativeLong(vc.getChannel()+32);
 			// 指定下载的文件

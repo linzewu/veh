@@ -174,7 +174,7 @@ public class VehController {
 
 			// 上线状态
 			if (jyxm.indexOf("H") != -1 || jyxm.indexOf("B") != -1 || jyxm.indexOf("S") != -1
-					|| jyxm.indexOf("A") != -1) {
+					|| jyxm.indexOf("A") != -1||jyxm.indexOf("X") != -1) {
 				vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
 			} else {
 				vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_BJC);

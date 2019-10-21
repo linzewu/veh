@@ -307,10 +307,11 @@ public class CheckDataManager {
 		
 		for(LightData data:lightDatas){
 			
-			if(jycs==data.getJycs()){
-				String key=data.getJyxm() + "_" + data.getGx();
-				datas.put(key, data);
+			if(data.getJycs()>jycs) {
+				continue;
 			}
+			String key=data.getJyxm() + "_" + data.getGx();
+			datas.put(key, data);
 		}
 		
 		
@@ -708,6 +709,23 @@ public class CheckDataManager {
 			this.hibernateTemplate.save(ecj);
 			i++;
 		}
+		
+		if(!StringUtils.isEmpty(ec.getCwkc())&&!StringUtils.isEmpty(ec.getCwkk())&&!StringUtils.isEmpty(ec.getCwkg())) {
+			ExternalCheckJudge ecj = new ExternalCheckJudge();
+			ecj.setJylsh(vehCheckLogin.getJylsh());
+			ecj.setJycs(vehCheckLogin.getJycs());
+			ecj.setJyjgbh(vehCheckLogin.getJyjgbh());
+			ecj.setHphm(vehCheckLogin.getHphm());
+			ecj.setHpzl(vehCheckLogin.getHpzl());
+			ecj.setXh(i);
+			ecj.setRgjyxm("外廓尺寸人工测量(长x宽x高)");
+			//setPd(ecj, bhgList,hgList);
+			ecj.setRgjgpd("1");
+			ecj.setRgjybz(ec.getCwkc()+"x"+ec.getCwkk()+"x"+ec.getCwkg());
+			this.hibernateTemplate.save(ecj);
+			i++;
+			
+		}
 	}
 
 	private void setPd(ExternalCheckJudge ecj, List bhgList,List hgList) {
@@ -874,8 +892,8 @@ public class CheckDataManager {
 	}
 	
 	public static void main(String[] age) {
-		System.out.println(isInteger("+015"));
-		System.out.println(String.valueOf(Integer.parseInt("+015")));
+		Integer i =new Integer(1);
+		int j=1;
 	}
 
 	private Integer createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, Integer xh) {
@@ -946,16 +964,16 @@ public class CheckDataManager {
 		}
 		
 		// 光强度总和
-		if(!StringUtils.isEmpty(zgqjg)) {
-			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			zgq.setYqjyxm(zgqxm);
-			zgq.setYqjyjg(zgqjg);
-			zgq.setYqbzxz("≤" + zgqxz);
-			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
-			zgq.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(zgq);
-		}
+//		if(!StringUtils.isEmpty(zgqjg)) {
+//			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+//			zgq.setYqjyxm(zgqxm);
+//			zgq.setYqjyjg(zgqjg);
+//			zgq.setYqbzxz("≤" + zgqxz);
+//			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
+//			zgq.setXh(xh);
+//			xh++;
+//			this.hibernateTemplate.save(zgq);
+//		}
 
 		return xh;
 	}
@@ -975,7 +993,7 @@ public class CheckDataManager {
 				dcj1.setXh(xh);
 				dcj1.setYqjyxm(getZW(brd.getZw()) +temp+ "制动率(%)");
 				dcj1.setYqjyjg(brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString());
-				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString());
+				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString()+".0");
 				dcj1.setYqjgpd(brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString());
 				dcj1.setXh(xh);
 				xh++;
@@ -1544,5 +1562,7 @@ public class CheckDataManager {
 			this.hibernateTemplate.save(vehCheckProcess);
 		}
 	}
+	
+	
 	
 }

@@ -20,55 +20,28 @@ public class SuspensionData extends BaseDeviceData {
 	@Override
 	public void setZpd() {
 		// TODO Auto-generated method stub
-
 	}
 	//左静态
 	@Column
-	private String zjt;
+	private String zjtlh;
     //右静态
 	@Column
-	private String yjt;
-	//左动态
-	@Column
-	private String zdt;
-	//右动态
-	@Column
-	private String ydt;
+	private String yjtlh;
 	//左吸收率
 	@Column
 	private String zxsl;
 	//右吸收率
 	@Column
 	private String yxsl;
-	public String getZjt() {
-		return zjt;
-	}
-	public String getYjt() {
-		return yjt;
-	}
-	public String getZdt() {
-		return zdt;
-	}
-	public String getYdt() {
-		return ydt;
-	}
+	//左右差
+	@Column
+	private String zyc;
+	
 	public String getZxsl() {
 		return zxsl;
 	}
 	public String getYxsl() {
 		return yxsl;
-	}
-	public void setZjt(String zjt) {
-		this.zjt = zjt;
-	}
-	public void setYjt(String yjt) {
-		this.yjt = yjt;
-	}
-	public void setZdt(String zdt) {
-		this.zdt = zdt;
-	}
-	public void setYdt(String ydt) {
-		this.ydt = ydt;
 	}
 	public void setZxsl(String zxsl) {
 		this.zxsl = zxsl;
@@ -76,7 +49,23 @@ public class SuspensionData extends BaseDeviceData {
 	public void setYxsl(String yxsl) {
 		this.yxsl = yxsl;
 	}
-	
-	
+	public String getZyc() {
+		return zyc;
+	}
+	public void setZyc(String zyc) {
+		this.zyc = zyc;
+	}
+	public String getZjtlh() {
+		return zjtlh;
+	}
+	public void setZjtlh(String zjtlh) {
+		this.zjtlh = zjtlh;
+	}
+	public String getYjtlh() {
+		return yjtlh;
+	}
+	public void setYjtlh(String yjtlh) {
+		this.yjtlh = yjtlh;
+	}
 
 }
