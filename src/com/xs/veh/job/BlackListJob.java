@@ -1,9 +1,11 @@
 package com.xs.veh.job;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.websocket.Session;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,6 +14,7 @@ import com.xs.veh.entity.BlackList;
 import com.xs.veh.entity.SecurityAuditPolicySetting;
 import com.xs.veh.manager.BlackListManager;
 import com.xs.veh.manager.SecurityAuditPolicySettingManager;
+import com.xs.veh.websocket.MyWebSocket;
 
 @Component("blackListJob")
 public class BlackListJob {
@@ -47,6 +50,19 @@ public class BlackListJob {
 			}
 		}
 	}
+	
+//	@Scheduled(fixedDelay = 5000)
+//	private void vehOutlineReport() throws IOException {
+//		if(!MyWebSocket.sessionMap.isEmpty()) {
+//			
+//			for(String key : MyWebSocket.sessionMap.keySet()) {
+//				
+//				Session session = MyWebSocket.sessionMap.get(key);
+//				session.getBasicRemote().sendText("你好！"+key);
+//			}
+//			
+//		}
+//	}
 
 	
 

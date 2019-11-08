@@ -27,6 +27,7 @@ import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.DeviceBrakRoller;
 import com.xs.veh.network.DeviceBrakePad;
 import com.xs.veh.network.DeviceDisplay;
+import com.xs.veh.network.DeviceDyno;
 import com.xs.veh.network.DeviceLight;
 import com.xs.veh.network.DeviceSideslip;
 import com.xs.veh.network.DeviceSignal;
@@ -263,6 +264,19 @@ public class InitListener implements ServletContextListener {
 						| PortInUseException | IOException | UnsupportedCommOperationException
 						| TooManyListenersException e) {
 					log.error("悬架设备打开异常", e);
+				}
+				servletContext.setAttribute(device.getThredKey(), dl);
+			}
+			
+			if(device.getType() ==Device.CGJ) {
+				DeviceDyno dl = (DeviceDyno) wac.getBean("deviceDyno");
+				try {
+					dl.setDevice(device);
+					dl.open();
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
+						| PortInUseException | IOException | UnsupportedCommOperationException
+						| TooManyListenersException e) {
+					log.error("测功机打开异常", e);
 				}
 				servletContext.setAttribute(device.getThredKey(), dl);
 			}

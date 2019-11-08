@@ -966,7 +966,7 @@ var system = {
 		"title" : "数据字典",
 		href : "/veh/html/dataDictionary.html",
 		target : "#systemContex",
-		authorize : "超级管理员"
+		authorize : "超级管理员,系统管理员"
 	},{		
 		"icon" : "/veh/images/limit.png",
 		"title" : "检测项目和标准限值",
@@ -986,19 +986,19 @@ var system = {
 			"title" : "设备管理",
 			href : "/veh/html/DeviceManager.html",
 			target : "#systemContex",
-			authorize : "系统管理员"
+			authorize : "系统管理员,超级管理员"
 		},{
 			"icon" : "/veh/images/Workflow.png",
 			"title" : "检测流程",
 			href : "/veh/html/flowConfig.html",
 			target : "#systemContex",
-			authorize : "系统管理员"
+			authorize : "系统管理员,超级管理员"
 		},{
 			"icon" : "/veh/images/video_editing.png",
 			"title" : "视频配置",
 			href : "/veh/html/config.html",
 			target : "#systemContex",
-			authorize : "系统管理员"
+			authorize : "系统管理员,超级管理员"
 		}
 	],
 	menus3:[

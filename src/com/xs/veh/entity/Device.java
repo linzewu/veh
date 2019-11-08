@@ -51,6 +51,12 @@ public class Device extends BaseEntity {
 	 */
 	public final static Integer XJSB = 7;
 	
+
+	/**
+	 * 悬架设备
+	 */
+	public final static Integer CGJ = 8;
+	
 	
 
 	

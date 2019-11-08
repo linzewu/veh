@@ -1,5 +1,6 @@
 package com.xs.common;
 
+import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,7 +126,7 @@ public class CharUtil {
 		//byte[] b = CharUtil.hexStringToByte("FF0007EE");
 		
 		
-		System.out.println(CharUtil.getCheckSum("2a5343"));
+		System.out.println(CharUtil.getCheckSum("2A5056303031303030"));
 		//System.out.println(CharUtil.hexStringToByte("41")[0]);
 	}
 
@@ -254,6 +255,33 @@ public class CharUtil {
 		return CharUtil.byte2HexOfString(new byte[]{b});
 
 	}
+	
+	public static String bytesToAscii(byte[] bytes, int offset, int dateLen) {
+		if ((bytes == null) || (bytes.length == 0) || (offset < 0) || (dateLen <= 0)) {
+			return null;
+		}
+		if ((offset >= bytes.length) || (bytes.length - offset < dateLen)) {
+			return null;
+		}
+ 
+		String asciiStr = null;
+		byte[] data = new byte[dateLen];
+		System.arraycopy(bytes, offset, data, 0, dateLen);
+		try {
+			asciiStr = new String(data, "ISO8859-1");
+		} catch (UnsupportedEncodingException e) {
+		}
+		return asciiStr;
+	}
+ 
+	public static String bytesToAscii(byte[] bytes, int dateLen) {
+		return bytesToAscii(bytes, 0, dateLen);
+	}
+ 
+	public static String bytesToAscii(byte[] bytes) {
+		return bytesToAscii(bytes, 0, bytes.length);
+	}
+
 	
 	
 	
