@@ -3,7 +3,7 @@
 <head>
 
 <link rel="stylesheet" type="text/css"
-	href="/veh/js/easyui/themes/default/easyui.css">
+	href="/veh/js/easyui/themes/black/easyui.css">
 <link rel="stylesheet" type="text/css"
 	href="/veh/js/easyui/themes/color.css">
 <script type="text/javascript" src="/veh/js/easyui/jquery.min.js"></script>
@@ -11,6 +11,8 @@
 <script type="text/javascript" src="/veh/js/Highcharts-7.2.0/highcharts.js"></script>
 <script type="text/javascript" src="/veh/js/Highcharts-7.2.0/highcharts-more.js"></script>
 <script type="text/javascript" src="/veh/js/Highcharts-7.2.0/modules/exporting.js"></script>
+<script type="text/javascript" src="/veh/js/Highcharts-7.2.0/themes/gray.js"></script>
+
 
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -52,7 +54,7 @@
 	
 </script>
 <body class="easyui-layout">
-    <div data-options="region:'north',title:'动力性检测',split:false,collapsible:false" style="height:120px;background:#eee;text-align: center;">
+    <div data-options="region:'north',title:'动力性检测',split:false,collapsible:false" style="height:120px;background:#666;text-align: center;">
     	<label style="letter-spacing: 2px;font-size: 48px;font-weight: bolder;">提示信息</label>
     </div>
     <div data-options="region:'south'" style="height:50px;"></div>
@@ -64,8 +66,8 @@
     		 	<div id="div_speed" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto">
     			</div>
     		 </div>
-    		 <div data-options="region:'center',fit:true" >
-    		 	<div id="div_speed_line" style="width:450px;height:300px"></div>
+    		 <div data-options="region:'center',fit:true">
+    		 	<div id="div_speed_line" style="width:450px;height:300px;padding-left: 30px;"></div>
     		 </div>
     		 <div data-options="region:'south'" style="height: 320px;">
     		 	<div class="easyui-layout" data-options="fit:true">
