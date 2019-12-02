@@ -1,5 +1,7 @@
 package com.xs.veh.util;
 
+import java.io.File;
+
 public class ClientDemo {
 	
 	 public static String EXTEND_PATH;
@@ -14,7 +16,7 @@ public class ClientDemo {
 		  
 		    
 		    
-	    	EXTEND_PATH = "D:\\extend";
+	    	EXTEND_PATH = "D:"+File.separator +"extend";
 	    }
 
 }

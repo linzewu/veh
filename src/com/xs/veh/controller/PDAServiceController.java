@@ -260,6 +260,7 @@ public class PDAServiceController {
 	public @ResponseBody Map zbzlUpload(@Valid CurbWeightData curbWeight, BindingResult result)
 			throws InterruptedException {
 		if (!result.hasErrors()) {
+			curbWeight.setJyxm("Z1");
 			vehManager.saveCurbWeight(curbWeight);
 			
 			

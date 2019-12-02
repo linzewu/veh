@@ -718,7 +718,7 @@ public class CheckDataManager {
 			ecj.setHphm(vehCheckLogin.getHphm());
 			ecj.setHpzl(vehCheckLogin.getHpzl());
 			ecj.setXh(i);
-			ecj.setRgjyxm("外廓尺寸人工测量(长x宽x高)");
+			ecj.setRgjyxm("外廓尺寸测量(长x宽x高 mm)");
 			//setPd(ecj, bhgList,hgList);
 			ecj.setRgjgpd("1");
 			ecj.setRgjybz(ec.getCwkc()+"x"+ec.getCwkk()+"x"+ec.getCwkg());
