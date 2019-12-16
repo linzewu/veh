@@ -182,7 +182,6 @@ var veh = {
 							}else{
 								$.messager.alert("提示","本地登录成功！");
 							}
-							
 						}else{
 							$.messager.alert("提示",head.message,"error");
 						}

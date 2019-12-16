@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -14,7 +16,9 @@ import com.xs.common.ResultHandler;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceMotion;
+import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.network.DeviceDisplay;
+import com.xs.veh.network.DeviceManyWeigh;
 
 @Service("deviceManager")
 public class DeviceManager {
@@ -24,6 +28,10 @@ public class DeviceManager {
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
+	
+	@Autowired
+	private ServletContext servletContext;
+
 
 	public Integer getMaxLine() {
 
@@ -80,6 +88,14 @@ public class DeviceManager {
 		return devices;
 	}
 	
+	public List<Device> getDevicesByteType(Integer type) {
+
+		List<Device> devices = (List<Device>) this.hibernateTemplate
+				.find("From Device where type=? order by jcxxh asc", type);
+
+		return devices;
+	}
+	
 	public List<Device> getDevicesDisplay(Integer jcxxh) {
 		List<Device> devices = (List<Device>) this.hibernateTemplate
 				.find("From Device where jcxxh=? and type = ? ", jcxxh,91);
@@ -118,10 +134,22 @@ public class DeviceManager {
 
 		this.hibernateTemplate.delete(deviceMotion);
 	}
+	
+	
 	@Async
 	public void asySetDefault(DeviceDisplay display) throws InterruptedException, IOException {
 		Thread.sleep(3000);
 		display.setDefault();
+	}
+	
+	@Async
+	public void upZ1(Integer deviceId,Integer vehCheckLoginId) throws InterruptedException, IOException {
+		Device device=new Device();
+		device.setId(deviceId);
+		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
+		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
+		vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_JCZ);
+		dmw.startCheck(vehCheckLogin);
 	}
 	
 }

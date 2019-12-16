@@ -126,7 +126,7 @@ public class CharUtil {
 		//byte[] b = CharUtil.hexStringToByte("FF0007EE");
 		
 		
-		System.out.println(CharUtil.getCheckSum("2A5056303031303030"));
+		System.out.println(CharUtil.getCheckSum("41046B"));
 		//System.out.println(CharUtil.hexStringToByte("41")[0]);
 	}
 

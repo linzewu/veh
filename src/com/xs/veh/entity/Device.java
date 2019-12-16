@@ -53,10 +53,15 @@ public class Device extends BaseEntity {
 	
 
 	/**
-	 * 悬架设备
+	 * 测功机
 	 */
 	public final static Integer CGJ = 8;
 	
+	
+	/**
+	 * 多轴称重台
+	 */
+	public final static Integer DZCZT = 9;
 	
 
 	

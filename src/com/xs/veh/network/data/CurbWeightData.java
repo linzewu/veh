@@ -19,6 +19,39 @@ public class CurbWeightData  extends BaseDeviceData {
 	@Column
 	private Integer zbzlpd;
 	
+	@Column
+	private Integer qzzl;
+	
+	@Column
+	private Integer hzzl;
+	
+	
+	
+	
+
+	public Integer getQzzl() {
+		return qzzl;
+	}
+
+
+
+	public void setQzzl(Integer qzzl) {
+		this.qzzl = qzzl;
+	}
+
+
+
+	public Integer getHzzl() {
+		return hzzl;
+	}
+
+
+
+	public void setHzzl(Integer hzzl) {
+		this.hzzl = hzzl;
+	}
+
+
 
 	@Override
 	public void setZpd() {

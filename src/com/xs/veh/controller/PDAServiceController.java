@@ -2,15 +2,16 @@ package com.xs.veh.controller;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.dom4j.DocumentException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +28,16 @@ import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.CheckPhoto;
+import com.xs.veh.entity.Device;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
+import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.network.DeviceManyWeigh;
 import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.CurbWeightData;
 
@@ -53,7 +57,14 @@ public class PDAServiceController {
 
 	@Resource(name = "checkEventManger")
 	private CheckEventManger checkEventManger;
-
+	
+	@Autowired
+	private DeviceManager deviceManager;
+	
+	@Autowired
+	private ServletContext servletContext;
+	
+	
 	@RequestMapping(value = "getCheckList")
 	@UserOperation(code="getCheckList",name="查询待检列表")
 	public @ResponseBody String getCheckList(HttpServletRequest request, @RequestParam Integer status)
@@ -280,6 +291,52 @@ public class PDAServiceController {
 		
 		return this.vehManager.getLastCurbWeightDataOfJylsh(jylsh);
 		
+	}
+	
+	
+	@RequestMapping(value = "getZ1CheckList")
+	@UserOperation(code="getZ1CheckList",name="查询整备质量待检列表")
+	public @ResponseBody String getZ1CheckList(HttpServletRequest request)
+			throws JsonProcessingException {
+		List<VehCheckLogin> data = vehManager.getZ1VehCheckLoginByZt(VehCheckLogin.ZT_WKS);
+		ObjectMapper om = new ObjectMapper();
+		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(data));
+		return jsonp;
+	}
+	
+	@RequestMapping(value = "getZ1Device")
+	@UserOperation(code="getZ1Device",name="查询多轴称重台列表")
+	public @ResponseBody String getZ1Device(HttpServletRequest request)
+			throws JsonProcessingException {
+		List<Device> devices = deviceManager.getDevicesByteType(Device.DZCZT);
+		ObjectMapper om = new ObjectMapper();
+		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(devices));
+		return jsonp;
+	}
+	
+	
+	@RequestMapping(value = "upZ1")
+	@UserOperation(code="upZ1",name="整备质量发车")
+	public @ResponseBody Map upZ1(@RequestParam Integer devideId,@RequestParam Integer vehCheckLoginId)
+			throws InterruptedException, IOException {
+		deviceManager.upZ1(devideId, vehCheckLoginId);
+		return ResultHandler.toSuccessJSON("发车成功！");
+	}
+	
+	
+	
+	@RequestMapping(value = "z1dw")
+	@UserOperation(code="z1dw",name="整备质量到位")
+	public @ResponseBody Map z1dw(@RequestParam Integer deviceId,@RequestParam Integer zw)
+			throws InterruptedException, IOException {
+		
+		Device device=new Device();
+		device.setId(deviceId);
+		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
+		
+		//前轴到位
+		dmw.setDw(zw);
+		return ResultHandler.toSuccessJSON("成功！");
 	}
 	
 	

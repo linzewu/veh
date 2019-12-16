@@ -50,6 +50,7 @@ import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.Flow;
+import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLog;
 import com.xs.veh.entity.VehCheckLogin;
@@ -566,6 +567,15 @@ public class VehManager {
 		}
 
 		return jyxm;
+	}
+	
+	
+	public List<VehCheckLogin> getZ1VehCheckLoginByZt(Integer zt) {
+
+		DetachedCriteria detachedCrit = DetachedCriteria.forClass(VehCheckLogin.class);
+		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
+				.find("from VehCheckLogin where vehzbzlzt = ? and vehjczt!=?", zt, VehCheckLogin.JCZT_TB);
+		return vheCheckLogins;
 	}
 
 	public List<VehCheckLogin> getVehCheckLoginOfSXZT(Integer zt) {
@@ -1104,6 +1114,12 @@ public class VehManager {
 		}else {
 			return null;
 		}
+		
+	}
+	
+	public void saveTestVeh(TestVeh testVeh) {
+		
+		this.hibernateTemplate.save(testVeh);
 		
 	}
 	

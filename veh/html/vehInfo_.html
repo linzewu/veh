@@ -114,7 +114,7 @@
 		</td>
 	</tr>
 </table>
-<div class="line_01">以下信息非必填项</div>
+<div class="line_01">其他信息</div>
 
 <table  class="basetable" cellspacing="0" cellpadding="0">
 	<tr>
@@ -228,6 +228,121 @@
 		textField: 'value',editable:false"  name="dybj" disabled="disabled" >
 		</td>
 	</tr>
-	
 </table>
+
+<div class="line_01">综合检测信息</div>
+<table  class="basetable" cellspacing="0" cellpadding="0" id="tb_zhjy">
+	<tr>
+		<td class="tl"><label>委托人：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput"  name="zjwtr" >
+		</td>
+		<td class="tl"><label>道路运输证号：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput"  name="dlyxzh" >
+		</td>
+		<td class="tl"><label>综检业务类型：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('zjywlx'),	valueField: 'id',
+		textField: 'value'"  name="zjywlx">
+		</td>
+	</tr>
+	<tr>
+		
+		<td class="tl"><label>检测性质：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('jcxz'),	valueField: 'id',
+		textField: 'value'"  name="jcxz">
+		</td>
+		<td class="tl"><label>进气方式：</label></td>
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('jqfs'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="jqfs" >
+		</td>
+		<td class="tl"><label>额定功率(kw)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="edgl" >
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>额定转速(r/min)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="edzs" >
+		</td>
+		<td class="tl"><label>额定扭矩(NM)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednj" >
+		</td>
+		<td class="tl"><label>额定扭矩转速(r/min)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednjzs" >
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>额定扭矩功率(kw)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednjgl" >
+		</td>
+		
+		<td class="tl"><label>额定油耗：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="edyh" >
+		</td>
+		
+		<td class="tl"><label>轮胎类型：</label></td >
+		<td class="tc">
+			<input data-options="editable:false,data:comm.getBaseParames('ltlx'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="ltlx"  >
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>货车车身型：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('hccsxs'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="hccsxs"  >
+		</td>
+		<td class="tl"><label>动力性评级标准：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('dlxpjbz'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="dlxpjbz"  >
+		</td>
+		<!-- <td class="tl"><label>车速下限：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="csbxx" >
+		</td> -->
+		<td class="tl"><label>排量(ml)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="pl" >
+		</td>
+	</tr>
+	<!-- <tr>
+		<td class="tl"><label>车速上限：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="csbsx" >
+		</td>
+		<td class="tl"><label>油耗限值：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="yhxz" >
+		</td>
+		
+		<td class="tl"><label>油耗车速：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="yhcs" >
+		</td>
+	</tr> -->
+	<tr>
+		<td class="tl"><label>轮胎断面宽度(mm)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ltdmkd" id="ltdmkd">
+		</td>
+		<td class="tl"><label>客车等级：</label></td >
+		<td class="tc"  colspan="3">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('kcdj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="kcdj"  >
+		</td>
+		
+		
+	</tr>
+</table>
+
 <input name="jyxm" id="str_jyxm" type="hidden">

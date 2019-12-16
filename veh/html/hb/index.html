@@ -1,255 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<meta charset="UTF-8">
+<title>上海翔尚机动车环保尾气检测系统</title>
 <link rel="stylesheet" type="text/css"
-	href="/veh/js/easyui/themes/metro/easyui.css">
+	href="/veh/js/easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css"
 	href="/veh/js/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css" href="/veh/css/veh.css">
+<link rel="stylesheet" type="text/css"
+	href="/veh/js/easyui/themes/icon.css">
 <script type="text/javascript" src="/veh/js/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="/veh/js/easyui/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="/veh/js/Highcharts-7.2.0/highcharts.js"></script>
-<script type="text/javascript" src="/veh/js/Highcharts-7.2.0/highcharts-more.js"></script>
-<script type="text/javascript" src="/veh/js/Highcharts-7.2.0/modules/exporting.js"></script>
-<script type="text/javascript" src="/veh/js/Highcharts-7.2.0/themes/gray.js"></script>
-
-
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<script type="text/javascript"
+	src="/veh/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript"
+	src="/veh/js/easyui/datagrid-groupview.js"></script>
+<script type="text/javascript" src="/veh/js/common.js"></script>
+<script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/veh/codebase/webVideoCtrl.js"></script>
 </head>
-
-<script type="text/javascript">
-	var url = 'ws://' + window.location.host + '/veh/websocket/deviceId_100';
-	var sock = new WebSocket(url); //打开WebSocket
-
-	sock.onopen = function() { //处理连接开启事件
-		console.log('Opening');
-		//sock.send('Marco!');
-	};
-
-	sock.onmessage = function(e) { //处理信息
-		console.log('Received Message: ', e.data);
-		if(e.data.indexOf('*')==0){
-			$("#hb_sd").val(e.data.substring(1,7));
-			$("#hb_nj").val(e.data.substring(7,12));
-			$("#hb_gl").val(e.data.substring(12,18));
-			$("#hb_jsd").val(e.data.substring(18,24));
-			$("#hb_xsjl").val(e.data.substring(24,32));
-		}
-	};
-
-	sock.onclose = function() { //处理连接关闭事件
-		console.log('Closing');
-	};
-
-	function sayMarco() { //发送信息函数
-		console.log('Sending Marco!');
-		sock.send('Marco!');
-	}
-
-	$(window).unload(function() {
-		//响应事件
-		sock.close();
-	});
-	
-</script>
-<body class="easyui-layout" >
-    <div data-options="region:'north',title:'动力性检测',split:false,collapsible:false" style="height:120px;text-align: center;">
-    	<label style="letter-spacing: 2px;font-size: 48px;font-weight: bolder;">提示信息</label>
-    </div>
-    <div data-options="region:'south'" style="height:50px;"></div>
-    <div data-options="region:'east',title:'检测信息' ,collapsible:false" style="width:500px;"></div>
-    <div data-options="region:'west',title:'车辆基本信息',collapsible:false" style="width:300px;"></div>
-    <div data-options="region:'center',title:'仪表区域' " >
-    	<div class="easyui-layout" data-options="fit:true">
-    		 <div data-options="region:'west',border:false " style="width:500px;height: 320px;">
-    		 	<div id="div_speed" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto">
-    			</div>
-    		 </div>
-    		 <div data-options="region:'center',fit:true">
-    		 	<div id="div_speed_line" style="width:450px;height:300px;padding-left: 30px;"></div>
-    		 </div>
-    		 <div data-options="region:'south'" style="height: 320px;">
-    		 	<div class="easyui-layout" data-options="fit:true">
-    		 		 <div data-options="region:'west'" style="width:500px;height: 320px;">
-    		 		 </div>
-    		 		 <div data-options="region:'center',fit:true" ></div>
-    		 	</div>
-    		 </div>
-    	</div>
-    	
-    	<div id="hb_context">
-			<div id="hb_info">
-				<label >速度：</label><input id="hb_sd" readonly="readonly">
-				<label >扭矩：</label><input id="hb_nj" readonly="readonly">
-				<label >功率：</label><input id="hb_gl" readonly="readonly">
-				<label >加速度：</label><input id="hb_jsd" readonly="readonly">
-				<label >行驶距离：</label><input id="hb_xsjl" readonly="readonly">
-			</div>
-			<div id="hb_cs">
-				<a class="easyui-linkbutton" onclick="sendMessage('qddj')">启动电机</a>
-				<a class="easyui-linkbutton" onclick="sendMessage('gbdj')">关闭电机</a>
-				<a class="easyui-linkbutton" onclick="sendMessage('jlql')">距离清零</a>
-				<a class="easyui-linkbutton" onclick="sendMessage('ksjz')">开始加载</a>
-				<a class="easyui-linkbutton" onclick="sendMessage('tzjz')">停止加载</a>
-				<div class="easyui-slider" data-options="min:0,max:1000,step:100,onComplete:setGL" style="width:300px" ></div>
-			</div>
+<body  class="easyui-layout">
+	<div data-options="region:'north'" class="header">
+		<div style="float: left; margin: 0 0 0 30px;">
+			<img alt="" src="/veh/images/logo.png" style="border: 0; margin: 0">
 		</div>
-    
- 	</div>
-
-
+		<div class="header-title" style="float: left;">上海翔尚机动车环保尾气检测系统</div>
+	</div>
+</body>
 
 <script type="text/javascript">
-
-	function setGL(newValue){
-		
-		var data={};
-		var param=[newValue];
-		
-		data.common="send";
-		data.message="jzlsz";
-		data.param=param;
-		var strData = JSON.stringify(data);
-		sock.send(strData);
-		
-	}
-
-
-	function sendMessage(common){
-		var data={};
-		data.common="send";
-		data.message=common;
-		var strData = JSON.stringify(data);
-		sock.send(strData);
-	}
-	
-	var speedChart = Highcharts.chart('div_speed',{
-		chart: {
-			type: 'gauge',
-			plotBackgroundColor: null,
-			plotBackgroundImage: null,
-			plotBorderWidth: 0,
-			plotShadow: false
-		},
-		title: {
-			text: '速度仪'
-		},
-		pane: {
-			startAngle: -150,
-			endAngle: 150,
-			background: [{
-				backgroundColor: {
-					linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-					stops: [
-						[0, '#FFF'],
-						[1, '#333']
-					]
-				},
-				borderWidth: 0,
-				outerRadius: '109%'
-			}, {
-				backgroundColor: {
-					linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-					stops: [
-						[0, '#333'],
-						[1, '#FFF']
-					]
-				},
-				borderWidth: 1,
-				outerRadius: '107%'
-			}, {
-				// default background
-			}, {
-				backgroundColor: '#DDD',
-				borderWidth: 0,
-				outerRadius: '105%',
-				innerRadius: '103%'
-			}]
-		},
-		// the value axis
-		yAxis: {
-			min: 0,
-			max: 200,
-			minorTickInterval: 'auto',
-			minorTickWidth: 1,
-			minorTickLength: 10,
-			minorTickPosition: 'inside',
-			minorTickColor: '#666',
-			tickPixelInterval: 30,
-			tickWidth: 2,
-			tickPosition: 'inside',
-			tickLength: 10,
-			tickColor: '#666',
-			labels: {
-				step: 2,
-				rotation: 'auto'
-			},
-			title: {
-				text: 'km/h'
-			},
-			plotBands: [{
-				from: 0,
-				to: 120,
-				color: '#55BF3B' // green
-			}, {
-				from: 120,
-				to: 160,
-				color: '#DDDF0D' // yellow
-			}, {
-				from: 160,
-				to: 200,
-				color: '#DF5353' // red
-			}]
-		},
-		series: [{
-			name: '速度',
-			data: [0],
-			tooltip: {
-				valueSuffix: ' km/h'
-			}
-		}]
-	}, function (chart) {
-		if (!chart.renderer.forExport) {
-			setInterval(function () {
-				var point = chart.series[0].points[0],
-					newVal,
-					inc = Math.round((Math.random() - 0.5) * 20);
-				newVal = point.y + inc;
-				if (newVal < 0 || newVal > 200) {
-					newVal = point.y - inc;
-				}
-				point.update(newVal);
-			}, 300);
-		}
-	});
-	
-	
-	Highcharts.setOptions({
-		global: {
-			useUTC: false
-		}
-	});
-	var speed_line_chart = Highcharts.chart('div_speed_line', {
-		title: {
-			text: '动态模拟实时数据'
-		},
-		yAxis: {
-			title: {
-				text: '速度(km/h)'
-			}
-		},
-		series: [{
-			name: '速度',
-			data: ([0])
-		}]
-	});
-	
-	
-
-	
-	
 </script>
-
-</body>
 </html>

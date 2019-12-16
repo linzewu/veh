@@ -326,8 +326,22 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column
 	private Integer vehzbzlzt;
 	
+	//综合检测状态
+	@Column
+	private Integer vehzhjz;
 	
 	
+	
+
+	public Integer getVehzhjz() {
+		return vehzhjz;
+	}
+
+
+	public void setVehzhjz(Integer vehzhjz) {
+		this.vehzhjz = vehzhjz;
+	}
+
 
 	public Integer getVehzbzlzt() {
 		return vehzbzlzt;

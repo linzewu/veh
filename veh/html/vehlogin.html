@@ -173,7 +173,23 @@ function showJyxm(obj){
 $(function(){
 	$('#_checkType').combobox({
 	onChange: function(newValue,oldValue){
-		showJyxm(newValue)
+		showJyxm(newValue);
+		var requestArray=["zjwtr","dlyxzh","zjywlx","jcxz","rlzl","jqfs","edgl","ednj","ednjzs","ednjgl","edyh","ltlx","ltdmkd","kcdj","hccsxs","dlxpjbz"];
+		if(newValue==1){
+			$.each(requestArray,function(i,n){
+				
+				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
+				
+				eval(" $('input[textboxname='+n+']')."+type+"({required: true}) ")
+				
+				//$("input[textboxname="+n+"]").validatebox({required: true})
+			});
+		}else{
+			$.each(requestArray,function(i,n){
+				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
+				eval(" $('input[textboxname='+n+']')."+type+"({required: false}) ")
+			});
+		}
 	}
 });
 })

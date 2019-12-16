@@ -27,11 +27,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckLog;
+import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
+import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.VehManager;
 
 import net.sf.json.JSON;
@@ -58,6 +61,9 @@ public class VehController {
 
 	@Autowired
 	private HttpSession session;
+	
+	@Autowired
+	private BaseParamsManager baseParamsManager;
 
 	/**
 	 * 注册时间类型的属性编辑器，将String转化为Date
@@ -121,10 +127,12 @@ public class VehController {
 
 	@UserOperation(code="vehLogin",name="机动车登录")
 	@RequestMapping(value = "vehLogin", method = RequestMethod.POST)
-	public @ResponseBody String vehLogin(VehCheckLogin vehCheckLogin, VehInfo vehInfo)
+	public @ResponseBody String vehLogin(VehCheckLogin vehCheckLogin, VehInfo vehInfo,TestVeh testVeh)
 			throws RemoteException, UnsupportedEncodingException, DocumentException, InterruptedException {
 
 		if (!vehManager.isLoged(vehCheckLogin)) {
+			
+			
 			String jylsh = this.vehManager.getJylsh();
 			String jyxm = vehCheckLogin.getJyxm();
 			vehCheckLogin.setJylsh(jylsh.trim());
@@ -171,6 +179,15 @@ public class VehController {
 			} else {
 				vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_BJC);
 			}
+			
+			// 综合检测
+			if (jyxm.indexOf("EP") != -1||jyxm.indexOf("OP") != -1||jyxm.indexOf("PF") != -1) {
+				vehCheckLogin.setVehzhjz(VehCheckLogin.ZT_WKS);
+			} else {
+				vehCheckLogin.setVehzhjz(VehCheckLogin.ZT_BJC);
+			}
+						
+		
 
 			// 上线状态
 			if (jyxm.indexOf("H") != -1 || jyxm.indexOf("B") != -1 || jyxm.indexOf("S") != -1
@@ -184,7 +201,18 @@ public class VehController {
 				vehCheckLogin.setDly(user.getRealName());
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
+			
+			//如果是综合检测
+			if(vehCheckLogin.getCheckType()==1) {
+				processTestVeh(vehCheckLogin,testVeh);
+			}
+			
+			
+			
+			
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
+			//写入综合检测表
+			this.vehManager.saveTestVeh(testVeh);
 			
 			for(int i=0;i<50;i++){
 				Thread.sleep(100);
@@ -205,6 +233,83 @@ public class VehController {
 			return messager.toString();
 		}
 
+	}
+	/**
+	 * 综合检测数据处理
+	 * @param vehCheckLogin
+	 * @param testVeh
+	 */
+	private void processTestVeh(VehCheckLogin vehCheckLogin, TestVeh testVeh) {
+		
+		if(vehCheckLogin.getCheckType()==1) {
+			String[] jyxmArray= vehCheckLogin.getJyxm().split(",");
+			StringBuffer ajjyxm = new StringBuffer();
+			StringBuffer zhjyxm = new StringBuffer();
+			for(String jyxm:jyxmArray ) {
+				if(sfzhjcxm(jyxm)) {
+					zhjyxm.append(jyxm+",");
+				}else {
+					ajjyxm.append(jyxm+",");
+				}
+			}
+//			if(ajjyxm.length()>0) {
+//				
+//				vehCheckLogin.setJyxm(ajjyxm.substring(0, ajjyxm.length()-1));
+//				
+//			}
+			if(zhjyxm.length()>0) {
+				testVeh.setJcxm(zhjyxm.substring(0, zhjyxm.length()-1));
+			}
+			
+			if(vehCheckLogin.getCllx().indexOf("G")==0||vehCheckLogin.getCllx().indexOf("B")==0) {
+				testVeh.setSfgc(1);
+			}else {
+				testVeh.setSfgc(0);
+			}
+			
+			if(vehCheckLogin.getCllx().indexOf("K")==0) {
+				testVeh.setSfkc(1);
+			}else {
+				testVeh.setSfkc(0);
+			}
+			
+			testVeh.setQdzkzzl(4300);
+			
+			testVeh.setYsjc(1);
+			
+			testVeh.setCsbsx("40");
+			
+			testVeh.setCsbxx("32.8");
+			
+			if("高级".equals(testVeh.getKcdj())) {
+				testVeh.setYhcs("60");
+			}else {
+				testVeh.setYhcs("50");
+			}
+			
+			testVeh.setYHxz();
+			
+		}
+		
+	}
+	
+	/**
+	 * 检测是否综合检测
+	 * @param jyxm
+	 * @return
+	 */
+	private boolean sfzhjcxm(String jyxm) {
+		
+		BaseParams param = baseParamsManager.getBaseParam("zhjyxm", jyxm);
+		
+		if("zh".equals(param.getMemo())) {
+			
+			return true;
+		}
+		
+		
+		return false;
+		
 	}
 
 	/**
