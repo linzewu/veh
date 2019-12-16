@@ -128,9 +128,27 @@ public class RoadCheck implements SafeSerializable {
 	@Column
 	private Integer lsxtsjpd;
 	
+	@Column
+	private Integer zcll;
+	
+	@Column
+	private Float zczdl;
 	
 	
 	
+	
+	public Integer getZcll() {
+		return zcll;
+	}
+	public void setZcll(Integer zcll) {
+		this.zcll = zcll;
+	}
+	public Float getZczdl() {
+		return zczdl;
+	}
+	public void setZczdl(Float zczdl) {
+		this.zczdl = zczdl;
+	}
 	public Float getLskzmfddxz() {
 		return lskzmfddxz;
 	}
