@@ -859,14 +859,14 @@ public class CheckDataManager {
 				}
 				
 				if(roadCheck.getZcll()!=null) {
-					deviceCheckJudegZcpd.setYqjyjg("驻车拉力"+roadCheck.getZcll()+"N("+roadCheck.getZczdl()+")"+ (roadCheck.getLszczdpd().equals("1") ? "2min未溜" : "2min内溜车"));
+					deviceCheckJudegZcpd.setYqjyjg("驻车制动力"+roadCheck.getZcll()+"N 驻车制动率："+roadCheck.getZczdl()+"%"+ ((roadCheck.getLszczdpd()==1)? "2min未溜" : "2min内溜车"));
 				}else {
-					deviceCheckJudegZcpd.setYqjyjg(roadCheck.getLszczdpd().equals("1") ? "2min未溜" : "2min内溜车");
+					deviceCheckJudegZcpd.setYqjyjg((roadCheck.getLszczdpd()==1) ? "2min未溜" : "2min内溜车");
 				}
 				
 				
 				deviceCheckJudegZcpd.setYqjgpd(roadCheck.getLszczdpd().toString());
-				deviceCheckJudegZcpd.setYqbzxz("正反2min");
+				deviceCheckJudegZcpd.setYqbzxz("正反2min未溜车");
 				deviceCheckJudegZcpd.setXh(xh.intValue());
 				deviceCheckJudegZcpd.setBz1("R");
 				xh++;
