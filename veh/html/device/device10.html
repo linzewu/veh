@@ -5,7 +5,7 @@
 	        style="padding:10px;background:#fafafa;height:220px;width:100%;">
 	</div>
 	<div class="easyui-tabs" style="width:98%;">
-		<div title="通讯协议"   
+		<div title="通讯协议10"   
 		        style="padding:10px;background:#fafafa;height:330px;width:100%;">
 			<table class="simpletable" cellpadding="0" cellspacing="0" >
 				<tr>
@@ -18,43 +18,42 @@
 				</tr>
 				<tr>
 					<td class="simpletable-l"><label>解码器：</label></td>
-					<td class="simpletable-r"><input id="device90-decode" name="deviceDecode" data-options="required:true,data:comm.getBaseParames('deviceDecode'),valueField: 'id',textField: 'value'" class="easyui-combobox"></td>
-					<td class="simpletable-l" style="width: 15%"><label>声级计设备：</label></td>
-					<td class="simpletable-r">
-						<input class="easyui-combobox" name="kzsb-sjj"  data-options=" valueField: 'id',textField: 'name',data:getSSJ()" >
-					</td>
+					<td class="simpletable-r" colspan="3"><input id="device90-decode" name="deviceDecode" data-options="required:true,data:comm.getBaseParames('deviceDecode'),valueField: 'id',textField: 'value'" class="easyui-combobox"></td>
 				</tr>
 				<tr>
 					<td colspan="4" class="simpletable-l" style="padding: 10px 0 10px 10px">
 						<div class="easyui-tabs" style="width: 680px;">
-							<div title="开关及输出">
+							<!-- <div title="控制协议">
 								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
 									<tr>
-										<td class="simpletable-l" style="width: 15%"><label>到位开关1</label></td>
-										<td class="simpletable-r" style="width: 35%">
-											<input class="easyui-combobox" name="kzsb-dwkg1" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
-											<input class="easyui-combobox" name="kzsb-xhw1" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
+										<td class="simpletable-l" style="width: 15%"><label>开始检测：</label></td>
+										<td class="simpletable-r" style="width:35">
+											<input class="easyui-textbox" name="t-kscz" required="true">
 										</td>
-										<td class="simpletable-l" style="width: 15%"><label>到位开关2</label></td>
-										<td class="simpletable-r" style="width: 35%">
-											<input class="easyui-combobox" name="kzsb-dwkg2" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
-											<input class="easyui-combobox" name="kzsb-xhw2" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
-										</td>
-									</tr>
-									<tr>
-										<td class="simpletable-l" style="width: 15%"><label>显示屏</label></td>
-										<td class="simpletable-r">
-											<input class="easyui-combobox" name="kzsb-xsp"  data-options=" valueField: 'id',textField: 'name',data:getXsp()" >
-										</td>
-										<td class="simpletable-l" style="width: 15%"><label>灯光仪靠位</label></td>
-										<td class="simpletable-r">
-											<span>左&nbsp;</span><input type="radio" name="kw"  value="L" >
-											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-											<span>右&nbsp;</span><input type="radio" name="kw"  value="R" >
+										<td class="simpletable-l" style="width: 15%"><label>结束检测：</label></td>
+										<td class="simpletable-r" style="width:35">
+											<input class="easyui-textbox" name="t-jscz" required="true">
 										</td>
 									</tr>
 								</table>
-							</div>
+							</div> -->
+							<!-- <div title="开关及输出">
+								<table class="simpletable" cellpadding="0" cellspacing="0" style="margin: 10px 10px 10px 10px;" >
+									<tr>
+										<td class="simpletable-l" style="width: 15%"><label>到位开关</label></td>
+										<td class="simpletable-r" style="width: 35%">
+											<input class="easyui-combobox" name="kzsb-dwkg" style="width: 100px;" data-options=" valueField: 'id',textField: 'name',data:getGdkg()" >
+											<input class="easyui-combobox" name="kzsb-xhw" style="width: 80px;" data-options=" valueField: 'id',textField: 'name',data:getGdkgXh()" >
+										</td>
+									</tr>
+									<tr>
+										<td class="simpletable-l" style="width: 35%"><label>显示屏</label></td>
+										<td class="simpletable-r" colspan="3">
+											<input class="easyui-combobox" name="kzsb-xsp"  data-options=" valueField: 'id',textField: 'name',data:getXsp()" >
+										</td>
+									</tr>
+								</table>
+							</div> -->
 						</div>
 					</td>
 				</tr>
@@ -76,17 +75,10 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="simpletable-l"><label>控制台：</label></td>
-					<td class="simpletable-r" colspan="3">
-						<input class="easyui-textbox" id="device_console"  data-options="multiline:true,editable:false" style="width: 400px;height: 140px;">
-						<a href="#" class="easyui-linkbutton" onclick="getRtx()">获取报文</a>&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="#" class="easyui-linkbutton" onclick="lightTest()">测试</a>
-					</td>
-				</tr>
-				<tr>
 					<td class="simpletable-l" colspan="4" style="text-align: center;">
-						<a href="#" class="easyui-linkbutton" onclick="deviceLightStart()">启动设备</a>&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="#" class="easyui-linkbutton" onclick="deviceStop()">停止设备</a>
+						<a href="#" class="easyui-linkbutton" onclick="weighStart()">启动设备</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton" onclick="deviceStop()">停止设备</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton" onclick="weighTest()">测试</a>
 					</td>
 				</tr>
 			</table>
@@ -96,29 +88,17 @@
 </form>
 <script type="text/javascript">
 
-function lightTest(){
+function weighTest(){
 	var row = $("#deviceManager").datagrid("getSelected");
 	var call=function(data){
 		$.messager.alert("提示",data.message);
 	}
 	
-	$.post("/veh/device/deviceLightTest",{'id':row.id},call,"json");
+	$.post("/veh/device/weighTest",{'id':row.id},call,"json");
 }
 
 
 
-function appSetting(){
-	var row = $("#deviceManager").datagrid("getSelected");
-	var call=function(data){
-		$.messager.alert("提示",data.message);
-	}
-	
-	$.messager.confirm("确认","切勿频繁发送，否则会缩短芯片寿命。是否继续？",function(r){
-		if(r){
-			$.post("/veh/device/deviceLightSetting",{'id':row.id},call,"json");
-		}
-	});
-}
 
 function getState(){
 	var row = $("#deviceManager").datagrid("getSelected");
@@ -131,6 +111,7 @@ function getState(){
 	}
 	$.post("/veh/device/getState",{'id':row.id},call,"json");
 }
+
 
 
 

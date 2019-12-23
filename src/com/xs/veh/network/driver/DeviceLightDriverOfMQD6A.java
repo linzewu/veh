@@ -182,7 +182,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 
 	@Override
-	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
+	public List<LightData> startCheck(final VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
 			throws IOException, InterruptedException, SystemException {
 		this.vehCheckLogin=vehCheckLogin;
 		// 设置检测参数
@@ -191,32 +191,35 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		dw(vehCheckLogin);
 		this.setKssj(new Date());
 		// 检测是否违规操作
-//		new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				// 保护
-//				int i = 0;
-//				try {
-//					while (!isGetData && i <= 1000) {
-//						if (deviceSignal2.getSignal(s2)) {
-//							// 仪器归位
-//							isIllegal = true;
-//							break;
-//						}
-//						Thread.sleep(300);
-//						i++;
-//					}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// 保护
+				int i = 0;
+				try {
+					while (!isGetData && i <= 1000) {
+						if (deviceSignal2.getSignal(s2)) {
+							// 仪器归位
+							isIllegal = true;
+							break;
+						}
+						Thread.sleep(300);
+						i++;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 
 		if (isCheckLeft) {
 			currentPosition = 'L';
 			checking();
 			TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H1");
 		}
+		
+		checkVolume();
+		
 		if (isCheckRight) {
 			currentPosition = 'R';
 			checking();
@@ -232,6 +235,28 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
 		return getData(vheFlows, vehCheckLogin);
 
+	}
+	
+	
+	private void checkVolume() throws IOException {
+		
+		boolean f1 = vehCheckLogin.getJyxm().indexOf("VL")>0;
+		
+		if(f1&&vehCheckLogin.getJycs()==1&&deviceLight.getDeviceVolume()!=null) {
+			deviceLight.getDisplay().sendMessage("按喇叭3秒", deviceLight.getDisplay().SP);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						deviceLight.getDeviceVolume().startCheck(vehCheckLogin);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
 	}
 
 	private List<LightData> getData(List<VehFlow> vheFlows, VehCheckLogin vehCheckLogin)

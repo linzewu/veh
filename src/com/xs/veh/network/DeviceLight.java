@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
@@ -52,6 +53,8 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	private DeviceDisplay display;
 	
+	private DeviceVolume deviceVolume;
+	
 	private String kw="L";
 
 	public DeviceDisplay getDisplay() {
@@ -82,6 +85,14 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 
 	
 	
+
+	public DeviceVolume getDeviceVolume() {
+		return deviceVolume;
+	}
+
+	public void setDeviceVolume(DeviceVolume deviceVolume) {
+		this.deviceVolume = deviceVolume;
+	}
 
 	public String getKw() {
 		return kw;
@@ -237,10 +248,17 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		String temp = (String) qtxx.get("kzsb-xsp");
 		String dwkg1 = (String) qtxx.get("kzsb-dwkg1");
 		String dwkg2 = (String) qtxx.get("kzsb-dwkg2");
+		
+		String sjj=(String) qtxx.get("kzsb-sjj");
 
 		dld.s1 = Integer.valueOf(qtxx.getString("kzsb-xhw1"));
 
 		dld.s2 = Integer.valueOf(qtxx.getString("kzsb-xhw2"));
+		
+		if(!StringUtils.isEmpty(sjj)) {
+			Integer deviceid = Integer.parseInt(sjj);
+			deviceVolume = (DeviceVolume) servletContext.getAttribute(deviceid + "_" + Device.KEY);
+		}
 
 		// 加载挂载设备
 		if (temp != null) {

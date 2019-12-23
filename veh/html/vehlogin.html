@@ -128,7 +128,15 @@
 
 <script type="text/javascript">
 showJyxm("0");
-function showJyxm(obj){	
+function showJyxm(obj){
+	
+	 var chk_value =[]; 
+	 
+	 $("input[name=jyxm]:checked").each(function(){
+		 chk_value.push($(this).val()); 
+	 });
+	
+	
 	var tb = document.getElementById('jyxmT');
 	if (tb.rows.length > 1){
 		for(var d=tb.rows.length-2;d>=0;d--){
@@ -141,6 +149,9 @@ function showJyxm(obj){
 	}else{
 		jctype = "zhjyxm";
 	}
+	
+	
+	
 	$.post("/veh/bps/getBaseParamsByType",{type:jctype},function(data){
 		
 		var jyxmArr = data.data;
@@ -155,10 +166,15 @@ function showJyxm(obj){
 		             if (b >= jyxmArr.length){
 		            	 newcellname.innerHTML="";
 		             }else{
-		             	 newcellname.innerHTML="<span><label for='i_jyxm"+b+"'>"+jyxmArr[b].paramName+":</label><input id='i_jyxm"+b+"' name='jyxm' type='checkbox' value='"+jyxmArr[b].paramValue+"'></span>";
+		             	 newcellname.innerHTML="<span><label for='i_jyxm"+b+"'>"+jyxmArr[b].paramName+":</label><input id='i_jyxm"+b+"' name='jyxm' type='checkbox' value='"+jyxmArr[b].paramValue+"'  ></span>";
 		             	 if(jyxmArr[b].paramName == "车辆外观检验"){
 		             		 $("#i_jyxm"+b).attr("checked",true);
 		             	 }
+		             	 
+		             	 if($.inArray(jyxmArr[b].paramValue,chk_value)>-1){
+		             		$("#i_jyxm"+b).attr("checked",true);
+		             	 }
+		             	 
 		             }
 		             b++;
 				 }
@@ -174,20 +190,28 @@ $(function(){
 	$('#_checkType').combobox({
 	onChange: function(newValue,oldValue){
 		showJyxm(newValue);
-		var requestArray=["zjwtr","dlyxzh","zjywlx","jcxz","rlzl","jqfs","edgl","ednj","ednjzs","ednjgl","edyh","ltlx","ltdmkd","kcdj","hccsxs","dlxpjbz"];
+		var requestArray=["gl","zjwtr","dlyxzh","zjywlx","jcxz","rlzl","jqfs","jgl","ednj","ednjzs","ednjgl","edyh","ltlx","ltdmkd","kcdj","hccsxs","dlxpjbz"];
 		if(newValue==1){
 			$.each(requestArray,function(i,n){
 				
 				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
-				
-				eval(" $('input[textboxname='+n+']')."+type+"({required: true}) ")
-				
-				//$("input[textboxname="+n+"]").validatebox({required: true})
+				console.log(n)
+				console.log(" $('input[textboxname='+n+']')."+type+"('"+type+"').validatebox('options').required = true; ")
+				//eval(" $('input[textboxname='+n+']')."+type+"({required: true}) ")
+				//eval(" $('input[textboxname='+n+']')."+type+"('"+type+"').validatebox('options').required = true; ")
+				$('input[textboxname='+n+']').textbox('textbox').validatebox('options').required = true;
+				$('input[textboxname='+n+']').textbox('textbox').validatebox('validate');
 			});
 		}else{
 			$.each(requestArray,function(i,n){
 				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
-				eval(" $('input[textboxname='+n+']')."+type+"({required: false}) ")
+				//eval(" $('input[textboxname='+n+']')."+type+"({required: false}) ")
+				
+				//eval(" $('input[textboxname='+n+']')."+type+"('"+type+"').validatebox('options').required = true; ");
+				
+				$('input[textboxname='+n+']').textbox('textbox').validatebox('options').required = false;
+				$('input[textboxname='+n+']').textbox('textbox').validatebox('validate');
+				
 			});
 		}
 	}

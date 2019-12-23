@@ -63,6 +63,11 @@ public class Device extends BaseEntity {
 	 */
 	public final static Integer DZCZT = 9;
 	
+	/**
+	 * 声级计
+	 */
+	public final static Integer SJJ = 10;
+	
 
 	
 	public final static Integer GDKG = 90;

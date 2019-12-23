@@ -144,12 +144,24 @@ public class DeviceManager {
 	
 	@Async
 	public void upZ1(Integer deviceId,Integer vehCheckLoginId) throws InterruptedException, IOException {
+		
+		
 		Device device=new Device();
 		device.setId(deviceId);
 		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
 		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
-		vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_JCZ);
 		dmw.startCheck(vehCheckLogin);
+		
+		
+		
+		
+	}
+	
+	
+	public void updateZ1State(Integer vehCheckLoginId) {
+		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
+		vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_JCZ);
+		this.hibernateTemplate.save(vehCheckLogin);
 	}
 	
 }

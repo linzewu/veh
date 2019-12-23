@@ -202,17 +202,20 @@ public class VehController {
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
 			
+			
 			//如果是综合检测
 			if(vehCheckLogin.getCheckType()==1) {
 				processTestVeh(vehCheckLogin,testVeh);
+				//写入综合检测表
+				this.vehManager.saveTestVeh(testVeh);
 			}
 			
 			
 			
-			
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
-			//写入综合检测表
-			this.vehManager.saveTestVeh(testVeh);
+			
+		
+			
 			
 			for(int i=0;i<50;i++){
 				Thread.sleep(100);
@@ -273,13 +276,25 @@ public class VehController {
 				testVeh.setSfkc(0);
 			}
 			
-			testVeh.setQdzkzzl(4300);
+			testVeh.setQdzkzzl(1200);
 			
 			testVeh.setYsjc(1);
 			
 			testVeh.setCsbsx("40");
 			
 			testVeh.setCsbxx("32.8");
+			
+			testVeh.setQccd(vehCheckLogin.getCwkc());
+			testVeh.setQcgd(vehCheckLogin.getCwkg());
+			
+			testVeh.setQycmzzl(0);
+			testVeh.setJycs(vehCheckLogin.getJycs());
+			
+			testVeh.setJylsh(vehCheckLogin.getJylsh());
+			
+			testVeh.setEdgl(vehCheckLogin.getGl().intValue());
+			
+			testVeh.setJcwc(0);
 			
 			if("高级".equals(testVeh.getKcdj())) {
 				testVeh.setYhcs("60");

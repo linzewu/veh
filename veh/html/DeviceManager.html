@@ -120,12 +120,24 @@
 		$.post("/veh/device/stopAllDevice",call,"json");
 	}
 	
+	function getSSJ(){
+		var row = $("#deviceManager").datagrid("getSelected");
+		var rows = $("#deviceManager").datagrid("getRows");
+		var array=[];
+		$.each(rows,function(i,n){
+			if(n.type==10){
+				array.push({"name":n.name,"id":+n.id})
+			}
+		});
+		return array;
+	}
+	
 	function getGdkg(){
 		var row = $("#deviceManager").datagrid("getSelected");
 		var rows = $("#deviceManager").datagrid("getRows");
 		var array=[];
 		$.each(rows,function(i,n){
-			if(n.jcxxh==row.jcxxh&&n.type==90){
+			if(n.type==90){
 				console.log(n)
 				array.push({"name":n.name,"id":+n.id,"kggs":n.qtxx.kggs})
 			}

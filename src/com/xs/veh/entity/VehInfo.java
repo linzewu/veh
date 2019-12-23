@@ -112,8 +112,8 @@ public class VehInfo extends BaseEntity implements Serializable {
 	@Column(length=3)
 	private String rlzl;
 	
-	@Column(length=6)
-	private Integer pl;
+	@Column(length=6,precision=1)
+	private Float pl;
 	
 	@Column(length=5,precision=1)
 	private Float gl;
@@ -438,11 +438,13 @@ public class VehInfo extends BaseEntity implements Serializable {
 		this.rlzl = rlzl;
 	}
 
-	public Integer getPl() {
+	
+
+	public Float getPl() {
 		return pl;
 	}
 
-	public void setPl(Integer pl) {
+	public void setPl(Float pl) {
 		this.pl = pl;
 	}
 

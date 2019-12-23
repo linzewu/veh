@@ -79,7 +79,7 @@ public class TestVeh extends BaseEntity {
 	private String edyh;
 	
 	//PL	排量(ml)		整数
-	private Integer pl;
+	private String pl;
 	
 	//LTLX	轮胎类型	0:子午胎；1:斜交胎；9：其他
 	private Integer ltlx;
@@ -319,11 +319,13 @@ public class TestVeh extends BaseEntity {
 		this.edyh = edyh;
 	}
 
-	public Integer getPl() {
+	public String getPl() {
 		return pl;
 	}
 
-	public void setPl(Integer pl) {
+	
+
+	public void setPl(String pl) {
 		this.pl = pl;
 	}
 
@@ -466,7 +468,7 @@ public class TestVeh extends BaseEntity {
 	
 	public String setYHxz() {
 		
-		String yhxz="";
+		String yhxz="-";
 		
 		if(sfkc==1) {
 			if(qccd<=6000) {
@@ -555,8 +557,7 @@ public class TestVeh extends BaseEntity {
 				yhxz="34.4";
 			}
 		}
-		
-		
+		this.yhxz=yhxz;
 		return yhxz;
 	}
 

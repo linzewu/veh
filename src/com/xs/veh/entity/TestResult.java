@@ -94,23 +94,23 @@ public class TestResult extends BaseEntity {
 	
 	//Fe或Fm
 	@Column
-	private Integer dlx_fem;
+	private String dlx_fem;
 	
 	//Ftc		整数
 	@Column
-	private Integer dlx_ftc;
+	private String dlx_ftc;
 	
 	//Fc		整数
 	@Column
-	private Integer dlx_fc;
+	private String dlx_fc;
 	
 	//Ff		整数
 	@Column
-	private Integer dlx_ff;
+	private String dlx_ff;
 	
 	//DLX_XZXS	功率修正系数ad或者aa		整数
 	@Column
-	private Integer dlx_xzxs;
+	private String dlx_xzxs;
 	
 	//DLX_SDQX	动力性速度曲线
 	@Column(length=10000)
@@ -284,43 +284,43 @@ public class TestResult extends BaseEntity {
 		this.dlx_bzxs = dlx_bzxs;
 	}
 
-	public Integer getDlx_fem() {
+	public String getDlx_fem() {
 		return dlx_fem;
 	}
 
-	public void setDlx_fem(Integer dlx_fem) {
+	public void setDlx_fem(String dlx_fem) {
 		this.dlx_fem = dlx_fem;
 	}
 
-	public Integer getDlx_ftc() {
+	public String getDlx_ftc() {
 		return dlx_ftc;
 	}
 
-	public void setDlx_ftc(Integer dlx_ftc) {
+	public void setDlx_ftc(String dlx_ftc) {
 		this.dlx_ftc = dlx_ftc;
 	}
 
-	public Integer getDlx_fc() {
+	public String getDlx_fc() {
 		return dlx_fc;
 	}
 
-	public void setDlx_fc(Integer dlx_fc) {
+	public void setDlx_fc(String dlx_fc) {
 		this.dlx_fc = dlx_fc;
 	}
 
-	public Integer getDlx_ff() {
+	public String getDlx_ff() {
 		return dlx_ff;
 	}
 
-	public void setDlx_ff(Integer dlx_ff) {
+	public void setDlx_ff(String dlx_ff) {
 		this.dlx_ff = dlx_ff;
 	}
 
-	public Integer getDlx_xzxs() {
+	public String getDlx_xzxs() {
 		return dlx_xzxs;
 	}
 
-	public void setDlx_xzxs(Integer dlx_xzxs) {
+	public void setDlx_xzxs(String dlx_xzxs) {
 		this.dlx_xzxs = dlx_xzxs;
 	}
 

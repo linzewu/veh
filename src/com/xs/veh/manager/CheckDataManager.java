@@ -852,9 +852,9 @@ public class CheckDataManager {
 				DeviceCheckJudeg deviceCheckJudegZcpd = new DeviceCheckJudeg();
 				setDeviceCheckJudeg(deviceCheckJudegZcpd, vehCheckLogin);
 				deviceCheckJudegZcpd.setYqjyxm("路试驻车" + (roadCheck.getZcpd() == 0 ? "20%" : "15%") + "坡道路试");
-				deviceCheckJudegZcpd.setYqjyjg(roadCheck.getLszczdpd().equals("1") ? "5min未溜" : "5min内溜车");
+				deviceCheckJudegZcpd.setYqjyjg(roadCheck.getLszczdpd().equals("1") ? "2min未溜" : "2min内溜车");
 				deviceCheckJudegZcpd.setYqjgpd(roadCheck.getLszczdpd().toString());
-				deviceCheckJudegZcpd.setYqbzxz("正反5min");
+				deviceCheckJudegZcpd.setYqbzxz("正反2min");
 				deviceCheckJudegZcpd.setXh(xh.intValue());
 				deviceCheckJudegZcpd.setBz1("R");
 				xh++;

@@ -317,9 +317,12 @@ public class PDAServiceController {
 	
 	@RequestMapping(value = "upZ1")
 	@UserOperation(code="upZ1",name="整备质量发车")
-	public @ResponseBody Map upZ1(@RequestParam Integer devideId,@RequestParam Integer vehCheckLoginId)
+	public @ResponseBody Map upZ1( Integer deviceId, Integer vehCheckLoginId)
 			throws InterruptedException, IOException {
-		deviceManager.upZ1(devideId, vehCheckLoginId);
+		
+		deviceManager.upZ1(deviceId, vehCheckLoginId);
+		deviceManager.updateZ1State(vehCheckLoginId); 
+		
 		return ResultHandler.toSuccessJSON("发车成功！");
 	}
 	
@@ -327,7 +330,7 @@ public class PDAServiceController {
 	
 	@RequestMapping(value = "z1dw")
 	@UserOperation(code="z1dw",name="整备质量到位")
-	public @ResponseBody Map z1dw(@RequestParam Integer deviceId,@RequestParam Integer zw)
+	public @ResponseBody Map z1dw( Integer deviceId, Integer zw)
 			throws InterruptedException, IOException {
 		
 		Device device=new Device();

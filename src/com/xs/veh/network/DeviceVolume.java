@@ -1,8 +1,6 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -10,15 +8,11 @@ import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.hibernate4.HibernateTemplate;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
-import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
-import com.xs.veh.network.data.BrakRollerData;
-import com.xs.veh.network.data.CurbWeightData;
+import com.xs.veh.network.data.VolumeData;
 
 import gnu.io.SerialPortEvent;
 
@@ -27,20 +21,11 @@ import gnu.io.SerialPortEvent;
  * @author linze
  *
  */
-@Service("deviceManyWeigh")
+@Service("deviceVolume")
 @Scope("prototype")
-public class DeviceManyWeigh extends SimpleRead  {
+public class DeviceVolume extends SimpleRead  {
 
-	private AbstractDeviceManyWeigh dw;
-
-	private DeviceDisplay display;
-
-	private DeviceSignal signal;
-	
-
-	private Integer s1;
-	
-	private Integer s2;
+	private AbstractDeviceVolume dv;
 
 	@Autowired
 	private ServletContext servletContext;
@@ -63,38 +48,10 @@ public class DeviceManyWeigh extends SimpleRead  {
 		this.vehCheckLogin = vehCheckLogin;
 	}
 
-	public Integer getS1() {
-		return s1;
-	}
-
-	public void setS1(Integer s1) {
-		this.s1 = s1;
-	}
-
-	public DeviceDisplay getDisplay() {
-		return display;
-	}
-
-	public DeviceSignal getSignal() {
-		return signal;
-	}
-
-	public void setDisplay(DeviceDisplay display) {
-		this.display = display;
-	}
-
-	public void setSignal(DeviceSignal signal) {
-		this.signal = signal;
-	}
 
 
-	public Integer getS2() {
-		return s2;
-	}
 
-	public void setS2(Integer s2) {
-		this.s2 = s2;
-	}
+
 
 	@Override
 	public void serialEvent(SerialPortEvent event) {
@@ -126,7 +83,7 @@ public class DeviceManyWeigh extends SimpleRead  {
 				byte[] endodedData = new byte[length];
 				// logger.info("数据长度："+endodedData.length);
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
-				dw.device2pc(endodedData);
+				dv.device2pc(endodedData);
 			} catch (Exception e) {
 				logger.error("称重台通讯异常", e);
 			}
@@ -142,24 +99,11 @@ public class DeviceManyWeigh extends SimpleRead  {
 
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
-		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
-		s1 = getQtxxObject().getInt("kzsb-xhw");
-
-		dw = (AbstractDeviceManyWeigh) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
-		// 加载挂载设备
-		if (temp != null) {
-			Integer deviceid = Integer.parseInt(temp);
-			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
-		}
-		if (dwkg != null) {
-			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
-		}
-		dw.init(this);
+		dv = (AbstractDeviceVolume) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 	}
 
 	/**
-	 * 称重
+	 * 声级测试
 	 * 
 	 * @param vehCheckLogin
 	 * @param vehFlow
@@ -169,28 +113,12 @@ public class DeviceManyWeigh extends SimpleRead  {
 	public void startCheck(VehCheckLogin vehCheckLogin) throws IOException, InterruptedException {
 		
 		this.vehCheckLogin=vehCheckLogin;
-		CurbWeightData curbWeightData = dw.startCheck(vehCheckLogin);
-		Thread.sleep(2000);
-		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
-		boolean flag = true;
-
-		while (flag) {
-			flag = this.signal.getSignal(s1);
-			Thread.sleep(200);
-		}
-		this.checkDataManager.saveData(curbWeightData);
-		display.setDefault();
+		VolumeData volumeData = dv.startCheck(vehCheckLogin);
+		this.checkDataManager.saveData(volumeData);
+		
 	}
 	
 	public void setDw(Integer zw) {
-		
-		if(zw==0) {
-			dw.qzdw=true;
-		}
-		
-		if(zw==1) {
-			dw.hzdw=true;
-		}
 		
 	}
 
