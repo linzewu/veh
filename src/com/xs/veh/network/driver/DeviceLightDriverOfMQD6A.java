@@ -1,5 +1,6 @@
 package com.xs.veh.network.driver;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +17,9 @@ import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceLight;
 import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.LightData;
+
+import groovy.lang.GroovyObject;
+import groovy.util.GroovyScriptEngine;
 
 public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
@@ -168,6 +172,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	public static Integer ZT_CC = 2;
 
 	public boolean isIllegal = false;
+	
+	private VehCheckLogin vehCheckLogin;
 
 	@Override
 	public void sysSetting() {
@@ -176,7 +182,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	@Override
 	public List<LightData> startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
 			throws IOException, InterruptedException, SystemException {
-
+		this.vehCheckLogin=vehCheckLogin;
 		// 设置检测参数
 		setting(vehCheckLogin, vheFlows);
 		// 等待到位
@@ -399,6 +405,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			lightData.setGq(0);
 		} else if (CharUtil.isNumeric(gq)) {
 			lightData.setGq(Integer.parseInt(gq) * 100);
+			lightData=extend(lightData);
 		} else {
 			deviceLight.sendMessage(mtz);
 			Thread.sleep(300);
@@ -419,6 +426,28 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		}
 
 	}
+	
+	
+	private LightData extend(LightData lightData) {
+		File file=new File("Z:\\extend.groovy");
+		if(file.exists()) {
+			logger.info("进入扩展！");
+			try {
+				lightData.setDgpdxz(vehCheckLogin);
+				GroovyScriptEngine engine = new GroovyScriptEngine("Z:\\");
+				Class scriptClass = engine.loadScriptByName("extend.groovy");
+				GroovyObject scriptInstance = (GroovyObject)scriptClass.newInstance();
+				LightData ret = (LightData)scriptInstance.invokeMethod("extend", new Object[]{lightData});
+				return ret;
+			}catch (Exception e) {
+				logger.info("扩展类执行异常",e);
+			}
+		}
+		return lightData;
+		
+		
+	}
+
 
 	private boolean isEmptyData(byte[] highData) {
 
