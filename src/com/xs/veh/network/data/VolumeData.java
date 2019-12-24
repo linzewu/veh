@@ -15,7 +15,7 @@ public class VolumeData  extends BaseDeviceData {
 	
 	@Column
 	private String fb;
-
+	
 	
 	public String getFb() {
 		return fb;
@@ -31,6 +31,10 @@ public class VolumeData  extends BaseDeviceData {
 	public void setZpd() {
 		
 	}
+	
+	
+	
+	
 	
 	
 	

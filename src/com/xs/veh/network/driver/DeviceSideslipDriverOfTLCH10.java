@@ -23,6 +23,11 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 	private String ksjc;
 	
 	private String fw;
+	
+	private String xh;
+	
+	private String dk;
+	
 	public static final byte  A= CharUtil.hexStringToByte("41")[0];
 
 	public ProtocolType getProtocolType(byte[] bs) {
@@ -60,7 +65,10 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 	}
 
 	@Override
-	public SideslipData startCheck(VehFlow vehFlow) throws  IOException, InterruptedException {
+	public SideslipData startCheck(VehFlow vehFlow,Integer zs) throws  IOException, InterruptedException {
+		
+		String fp=(zs==2)?"后":"前";
+		
 		// 开始新的一次检测
 		createNew();
 		logger.info("发送侧滑清零:"+ql);
@@ -76,7 +84,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		
 		String hphm = vehFlow.getHphm();
 		display.sendMessage(hphm, DeviceDisplay.SP);
-		display.sendMessage("前转向轮侧滑时速5-10KM通过", DeviceDisplay.XP);
+		display.sendMessage(fp+"转向轮侧滑时速5-10KM通过", DeviceDisplay.XP);
 		
 		try {
 			// 等待测量结束
@@ -99,6 +107,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 					}
 				}
 			}
+			
 		}catch (Exception e) {
 			//仪表异常
 			logger.info("仪表异常返回，强制复位："+fw);
@@ -108,7 +117,15 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 			Thread.sleep(5000);
 			//deviceSideslip.sendMessage(ql);
 			throw e;
+		}finally {
+			logger.info("继电器吸合:");
+			deviceSideslip.sendMessage(xh);
+			Thread.sleep(500);
+			logger.info("继电器吸合:");
+			deviceSideslip.sendMessage(dk);
+			
 		}
+		
 	}
 	/**
 	 * 创建一次新的检测数据
@@ -125,6 +142,8 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		ql="41046259";
 		ksjc="41046655";
 		fw="41045269";
+		xh="41046A51";
+		dk="41046B50";
 	}
 	
 	

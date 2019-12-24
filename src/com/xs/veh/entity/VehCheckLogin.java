@@ -330,8 +330,24 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column
 	private Integer vehzhjz;
 	
+	//转向轴数
+	@Column
+	private Integer zxzs;
 	
 	
+	
+	
+	
+
+	public Integer getZxzs() {
+		return zxzs;
+	}
+
+
+	public void setZxzs(Integer zxzs) {
+		this.zxzs = zxzs;
+	}
+
 
 	public Integer getVehzhjz() {
 		return vehzhjz;

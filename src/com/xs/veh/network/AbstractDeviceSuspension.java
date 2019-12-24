@@ -18,7 +18,7 @@ public abstract class AbstractDeviceSuspension {
 	protected Integer s1;
 	
 	private List<Byte> temp = new LinkedList<Byte>();
-	public abstract SuspensionData startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException;
+	public abstract List<SuspensionData> startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException;
 
 	public List<Byte> getTemp() {
 		return temp;

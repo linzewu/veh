@@ -19,7 +19,20 @@ public class SuspensionData extends BaseDeviceData {
 
 	@Override
 	public void setZpd() {
-		// TODO Auto-generated method stub
+		
+		Float zxslFloat=Float.parseFloat(zxsl);
+		Float yxslFloat=Float.parseFloat(yxsl);
+		Float zycFloat = Float.parseFloat(zyc);
+		boolean zlpd = zxslFloat>=40;
+		boolean ylpd = yxslFloat>=40;
+		boolean zycpd = zycFloat<=15;
+		
+		if(zlpd&&ylpd&&zycpd) {
+			this.setZpd(BaseDeviceData.PDJG_HG);
+		}else {
+			this.setZpd(BaseDeviceData.PDJG_BHG);
+		}
+		
 	}
 	//左静态
 	@Column
@@ -36,6 +49,10 @@ public class SuspensionData extends BaseDeviceData {
 	//左右差
 	@Column
 	private String zyc;
+	
+	@Column
+	private Integer zs;
+	
 	
 	public String getZxsl() {
 		return zxsl;

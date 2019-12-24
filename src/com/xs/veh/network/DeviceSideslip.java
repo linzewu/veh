@@ -155,13 +155,50 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	 */
 	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws InterruptedException, IOException{
 		
+		
+		
+		SideslipData sideslipData =check(vehCheckLogin,vehFlow,otherParam,1);
+		
+		SideslipData hSideslipData=null;
+		
+		Thread.sleep(200);
+		if(vehCheckLogin.getCheckType()==1&&vehCheckLogin.getZxzs()==2) {
+			hSideslipData=check(vehCheckLogin,vehFlow,otherParam,2);
+		}
+		
+		
+		
+		String jg="-";
+		if(sideslipData.getChpd() == SideslipData.PDJG_HG){
+			jg="O";
+		}else if(sideslipData.getChpd() == SideslipData.PDJG_BHG){
+			jg="X";
+		}
+		this.display.sendMessage("前转向结果：" + jg, DeviceDisplay.XP);
+		Thread.sleep(2000);
+		
+		if(hSideslipData!=null) {
+			if(hSideslipData.getChpd() == SideslipData.PDJG_HG){
+				jg="O";
+			}else if(hSideslipData.getChpd() == SideslipData.PDJG_BHG){
+				jg="X";
+			}
+			this.display.sendMessage("后转向结果：" + jg, DeviceDisplay.XP);
+		}
+		Thread.sleep(2000);
+		display.setDefault();
+	}
+	
+	
+	
+	private SideslipData check(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam,Integer zs) throws InterruptedException, IOException{
 		this.vehCheckLogin=vehCheckLogin;
 		
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
 				vehFlow.getJyxm());
 		process.setKssj(new Date());
 		
-		SideslipData sideslipData = sd.startCheck(vehFlow);
+		SideslipData sideslipData = sd.startCheck(vehFlow,zs);
 		
 		process.setJssj(new Date());
 		this.checkDataManager.updateProcess(process);
@@ -177,21 +214,9 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		sideslipData.setChpd(vehCheckLogin);
 		sideslipData.setZpd();
 		sideslipData.setStrData();
-		Thread.sleep(2000);
-		
-		String jg="-";
-		
-		if(sideslipData.getChpd() == SideslipData.PDJG_HG){
-			jg="O";
-		}else if(sideslipData.getChpd() == SideslipData.PDJG_BHG){
-			jg="X";
-		}
-		
-		
-		this.display.sendMessage("判定结果：" + jg, DeviceDisplay.XP);
-		Thread.sleep(1500);
-		display.setDefault();
+		sideslipData.setZxzs(zs);
 		this.checkDataManager.saveData(sideslipData);
+		return sideslipData;
 	}
 
 	@Override

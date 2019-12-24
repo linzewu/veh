@@ -19,6 +19,7 @@ public abstract class AbstractDeviceVolume {
 	public abstract VolumeData startCheck(VehCheckLogin vc) throws IOException, InterruptedException;
 
 	public void device2pc(byte[] ed) throws IOException {
+		
 		for (byte b : ed) {
 			temp.add(b);
 		}

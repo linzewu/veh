@@ -48,8 +48,38 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 	}
 
 	@Override
-	public SuspensionData startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow)
+	public List<SuspensionData> startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow)
 			throws IOException, InterruptedException {
+		
+		List<SuspensionData> array=new ArrayList<SuspensionData>();
+		
+		SuspensionData data1 = check(vehCheckLogin,vehFlow,1);
+		
+		this.display.sendMessage("前轴完毕向前行驶", DeviceDisplay.XP);
+		boolean flag = true;
+		while (flag) {
+			flag = this.signal.getSignal(s1);
+			Thread.sleep(200);
+		}
+		SuspensionData data2 = check(vehCheckLogin,vehFlow,2);
+		
+		array.add(data1);
+		array.add(data2);
+		return array;
+	}
+	
+	
+	public SuspensionData check(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Integer zs)
+			throws IOException, InterruptedException {
+		
+		String pf;
+		
+		if(zs==1) {
+			pf="前轴";
+		}else {
+			pf="后轴";
+		}
+		
 		lDatas.clear();
 		rDatas.clear();
 		this.getTemp().clear();
@@ -60,10 +90,10 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 		
 		// 开始新的一次检测
 		createNew();
-		this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
-		this.display.sendMessage("请上悬架仪检测", DeviceDisplay.XP);
-		dw(vehCheckLogin);
-		this.display.sendMessage("悬架到位，开始检测", DeviceDisplay.XP);
+//		this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
+//		this.display.sendMessage("前轴，请到位", DeviceDisplay.XP);
+		dw(vehCheckLogin,pf);
+		this.display.sendMessage(pf+"到位开始检测", DeviceDisplay.XP);
 		deviceSuspension.sendMessage(ksjc);
 		
 		logger.info("开始检测返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4],(byte)0x41)));
@@ -106,12 +136,21 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 		suspensionData.setYjtlh(yjtlz);
 		suspensionData.setZyc(zyc);
 		
-		this.display.sendMessage("检测完成", DeviceDisplay.SP);
-		this.display.sendMessage(zxgxl+"/"+yxgxl+"/"+zyc, DeviceDisplay.XP);
+		suspensionData.setZpd();
 		
-		Thread.sleep(2000);
+		String strpd = "X";
+		if(suspensionData.getZpd()==SuspensionData.PDJG_HG) {
+			 strpd = "O";
+		}
+		
+		this.display.sendMessage("检测结果"+strpd, DeviceDisplay.SP);
+		this.display.sendMessage(zxgxl+"/"+yxgxl+"/"+zyc, DeviceDisplay.XP);
+		Thread.sleep(3000);
+		
 		return this.suspensionData;
 	}
+	
+	
 	
 	
 	
@@ -134,16 +173,16 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 		
 	}
 
-	private void dw(VehCheckLogin vehCheckLogin) throws InterruptedException, IOException {
+	private void dw(VehCheckLogin vehCheckLogin,String pf) throws InterruptedException, IOException {
 		int i = 0;
 		while (true) {
 			if (this.signal.getSignal(s1)) {
 				this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
-				this.display.sendMessage("悬架到位", DeviceDisplay.XP);
+				this.display.sendMessage(pf+"悬架已到位", DeviceDisplay.XP);
 				i++;
 			} else {
 				this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
-				this.display.sendMessage("请上悬架仪检测", DeviceDisplay.XP);
+				this.display.sendMessage(pf+"悬架请到位", DeviceDisplay.XP);
 				i = 0;
 			}
 			if (i >= 6) {

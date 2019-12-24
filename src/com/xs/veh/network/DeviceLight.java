@@ -256,8 +256,10 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		dld.s2 = Integer.valueOf(qtxx.getString("kzsb-xhw2"));
 		
 		if(!StringUtils.isEmpty(sjj)) {
+			logger.info("初始化声级计："+sjj);
 			Integer deviceid = Integer.parseInt(sjj);
 			deviceVolume = (DeviceVolume) servletContext.getAttribute(deviceid + "_" + Device.KEY);
+			logger.info("声级计："+deviceVolume);
 		}
 
 		// 加载挂载设备
@@ -279,7 +281,6 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		}
 
 		dld.kwfx = (Integer) qtxx.get("sz-ssfx");
-
 		dld.setDeviceLight(this);
 	}
 

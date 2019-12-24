@@ -110,15 +110,12 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 				vehFlow.getJyxm());
 		process.setKssj(new Date());
 		
-		SuspensionData suspensionData = ds.startCheck(vehCheckLogin, vehFlow);
+		List<SuspensionData> suspensionDatas = ds.startCheck(vehCheckLogin, vehFlow);
+		
 		
 		process.setJssj(new Date());
-		this.checkDataManager.updateProcess(process);
 		
-		//sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
-
-		suspensionData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, suspensionData),
-				vehFlow.getJyxm());
+		
 
 		Thread.sleep(2000);
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
@@ -128,7 +125,16 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 			flag = this.signal.getSignal(s1);
 			Thread.sleep(200);
 		}
-		this.checkDataManager.saveData(suspensionData);
+		
+		this.checkDataManager.updateProcess(process);
+		
+		//sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
+		for(SuspensionData suspensionData: suspensionDatas) {
+			suspensionData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, suspensionData),
+					vehFlow.getJyxm());
+			this.checkDataManager.saveData(suspensionData);
+		}
+		
 		display.setDefault();
 	}
 

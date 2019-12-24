@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -202,20 +203,24 @@ public class VehController {
 				vehCheckLogin.setDlysfzh(user.getIdCard());
 			}
 			
+			List<BaseParams> baseParams =  baseParamsManager.getBaseParamByType("sdwz");
+			boolean sdFlag =false;
+			if(!CollectionUtils.isEmpty(baseParams)) {
+				sdFlag= baseParams.get(0).getParamValue().equals("true");
+			}
 			
 			//如果是综合检测
 			if(vehCheckLogin.getCheckType()==1) {
 				processTestVeh(vehCheckLogin,testVeh);
 				//写入综合检测表
 				this.vehManager.saveTestVeh(testVeh);
+			}else if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0) {
+				testVeh.setJcxm("S1");
+				//写入综合检测表
+				this.vehManager.saveTestVeh(testVeh);
 			}
 			
-			
-			
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
-			
-		
-			
 			
 			for(int i=0;i<50;i++){
 				Thread.sleep(100);

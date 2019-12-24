@@ -59,7 +59,7 @@ public class DeviceSideslipDriverOfJxch extends AbstractDeviceSideslip {
 	}
 
 	@Override
-	public SideslipData startCheck(VehFlow vehFlow) throws  IOException, InterruptedException {
+	public SideslipData startCheck(VehFlow vehFlow,Integer zs) throws  IOException, InterruptedException {
 		
 		// 开始新的一次检测
 		createNew();

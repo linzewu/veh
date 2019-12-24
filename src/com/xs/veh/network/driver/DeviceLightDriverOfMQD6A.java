@@ -238,11 +238,11 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 	}
 	
 	
-	private void checkVolume() throws IOException {
+	private void checkVolume() throws IOException, InterruptedException {
 		
-		boolean f1 = vehCheckLogin.getJyxm().indexOf("VL")>0;
-		
-		if(f1&&vehCheckLogin.getJycs()==1&&deviceLight.getDeviceVolume()!=null) {
+		boolean f1 = vehCheckLogin.getJyxm().indexOf("VL")>=0;
+		logger.info("声级计：f1="+f1+"vehCheckLogin.getJycs()="+vehCheckLogin.getJycs()+"object="+deviceLight.getDeviceVolume());
+		if(f1&&deviceLight.getDeviceVolume()!=null) {
 			deviceLight.getDisplay().sendMessage("按喇叭3秒", deviceLight.getDisplay().SP);
 			new Thread(new Runnable() {
 				@Override
@@ -253,9 +253,13 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 						e.printStackTrace();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
+					}catch (Exception e) {
+						e.printStackTrace();
+						logger.error("声级计检测异常！",e);
 					}
 				}
 			}).start();
+			Thread.sleep(2000);
 		}
 	}
 

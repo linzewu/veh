@@ -33,7 +33,21 @@ public class SideslipData extends BaseDeviceData {
 	@Column(length=4000)
 	private String strData;
 	
+	@Column
+	private Integer zxzs;
 	
+	
+	
+
+	public Integer getZxzs() {
+		return zxzs;
+	}
+
+
+	public void setZxzs(Integer zxzs) {
+		this.zxzs = zxzs;
+	}
+
 
 	public Integer getChpd() {
 		return chpd;

@@ -85,7 +85,7 @@ public class DeviceVolume extends SimpleRead  {
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
 				dv.device2pc(endodedData);
 			} catch (Exception e) {
-				logger.error("称重台通讯异常", e);
+				logger.error("声级计通讯异常", e);
 			}
 			break;
 		}
@@ -100,6 +100,7 @@ public class DeviceVolume extends SimpleRead  {
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		dv = (AbstractDeviceVolume) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		dv.init(this);
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class DeviceVolume extends SimpleRead  {
 	 * @throws InterruptedException
 	 */
 	public void startCheck(VehCheckLogin vehCheckLogin) throws IOException, InterruptedException {
-		
+		logger.info("进入声级计检测");
 		this.vehCheckLogin=vehCheckLogin;
 		VolumeData volumeData = dv.startCheck(vehCheckLogin);
 		this.checkDataManager.saveData(volumeData);

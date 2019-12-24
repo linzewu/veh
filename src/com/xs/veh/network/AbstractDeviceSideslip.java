@@ -22,7 +22,7 @@ public abstract class AbstractDeviceSideslip {
 	
 	private List<Byte> temp = new LinkedList<Byte>();
 
-	public abstract SideslipData startCheck(VehFlow vehFlow) throws IOException, InterruptedException;
+	public abstract SideslipData startCheck(VehFlow vehFlow,Integer zs) throws IOException, InterruptedException;
 
 	public void device2pc(byte[] ed) throws IOException {
 		for (byte b : ed) {

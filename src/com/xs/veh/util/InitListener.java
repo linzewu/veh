@@ -33,6 +33,7 @@ import com.xs.veh.network.DeviceSideslip;
 import com.xs.veh.network.DeviceSignal;
 import com.xs.veh.network.DeviceSpeed;
 import com.xs.veh.network.DeviceSuspension;
+import com.xs.veh.network.DeviceVolume;
 import com.xs.veh.network.DeviceWeigh;
 
 import gnu.io.NoSuchPortException;
@@ -279,6 +280,19 @@ public class InitListener implements ServletContextListener {
 					log.error("测功机打开异常", e);
 				}
 				servletContext.setAttribute(device.getThredKey(), dl);
+			}
+			
+			if(device.getType() ==Device.SJJ) {
+				DeviceVolume dv = (DeviceVolume) wac.getBean("deviceVolume");
+				try {
+					dv.setDevice(device);
+					dv.open();
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
+						| PortInUseException | IOException | UnsupportedCommOperationException
+						| TooManyListenersException e) {
+					log.error("声级计开异常", e);
+				}
+				servletContext.setAttribute(device.getThredKey(), dv);
 			}
 		}
 
