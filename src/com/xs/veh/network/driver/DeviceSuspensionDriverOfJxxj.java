@@ -135,7 +135,7 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 		suspensionData.setZjtlh(zjtlz);
 		suspensionData.setYjtlh(yjtlz);
 		suspensionData.setZyc(zyc);
-		
+		suspensionData.setZs(zs);
 		suspensionData.setZpd();
 		
 		String strpd = "X";

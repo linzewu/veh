@@ -179,8 +179,26 @@ public class SystemController {
 	@RequestMapping(value = "sysParamReload", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> sysParamReload() {
 		List<BaseParams> bps = baseParamsManager.getBaseParams();
+		servletContext.setAttribute("bpsMap", bpslist2map(bps));
 		servletContext.setAttribute("bps", bps);
 		return ResultHandler.toSuccessJSON("系统参数刷新成功");
+	}
+	
+	private Map<String, List<BaseParams>> bpslist2map(List<BaseParams> bps ){
+		
+		Map<String, List<BaseParams>> map =new HashMap<String, List<BaseParams>>();
+		
+		for(BaseParams bp: bps) {
+			
+			List<BaseParams> itemList = map.get(bp.getType());
+			if(itemList==null) {
+				itemList=new ArrayList<BaseParams>();
+				map.put(bp.getType(), itemList);
+			}
+			itemList.add( bp);
+		}
+		
+		return map;
 	}
 	
 	@UserOperation(code="uploadSwitch",name="联网开关")

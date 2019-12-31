@@ -186,10 +186,13 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		
 		int nexzw=-1;
 		if(nextVehFlow!=null){
-			nexzw=Integer.parseInt(nextVehFlow.getJyxm().substring(1,2));
-			if(nexzw==0){
-				nexzw =Integer.parseInt(nextVehFlow.getMemo());
+			if(nextVehFlow.getJyxm().indexOf("B")==0||nextVehFlow.getJyxm().indexOf("L")==0) {
+				nexzw=Integer.parseInt(nextVehFlow.getJyxm().substring(1,2));
+				if(nexzw==0){
+					nexzw =Integer.parseInt(nextVehFlow.getMemo());
+				}
 			}
+			
 		}
 		
 		logger.info("intZw:" + intZw);

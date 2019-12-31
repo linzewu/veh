@@ -23,7 +23,7 @@ public abstract class AbstractDeviceManyWeigh {
 	
 	
 	
-	public abstract CurbWeightData startCheck(VehCheckLogin vc) throws IOException, InterruptedException;
+	public abstract CurbWeightData startCheck(VehCheckLogin vc) throws Exception, InterruptedException;
 
 	public void device2pc(byte[] ed) throws IOException {
 		for (byte b : ed) {
@@ -46,8 +46,8 @@ public abstract class AbstractDeviceManyWeigh {
 		while (temp.isEmpty()) {
 			Thread.sleep(50);
 		}
-		while (temp.remove(0)!=beginByte) {
-			
+		while (temp.isEmpty()||temp.remove(0)!=beginByte) {
+			Thread.sleep(10);
 		}
 		
 		contex[0]=beginByte;

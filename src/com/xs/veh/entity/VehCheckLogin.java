@@ -335,9 +335,6 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	private Integer zxzs;
 	
 	
-	
-	
-	
 
 	public Integer getZxzs() {
 		return zxzs;

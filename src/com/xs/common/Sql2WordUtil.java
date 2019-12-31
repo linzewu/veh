@@ -64,6 +64,41 @@ public class Sql2WordUtil {
 		}
 	}
 	
+	public static Object getData(String key,Map data) {
+		
+		if(key==null||data==null) {
+			return null;
+		}
+		
+		String[] keys =  key.split("\\.");
+		String firstKey = keys[0];
+		int index1=firstKey.indexOf("[");
+		int index2=firstKey.indexOf("]");
+		
+		Object obj = null;
+		
+		if(index1!=-1&&index2!=-1) {
+			String key1=firstKey.substring(0,index1);
+			int index =Integer.parseInt(firstKey.substring(index1+1,index2));
+			List array =(List) data.get(key1);
+			obj = array.get(index);
+		}else {
+			obj = data.get(firstKey);
+		}
+		
+		if(keys.length==1) {
+			return obj;
+			
+		}else {
+			String newKey="";
+			for(int i=1;i<keys.length;i++) {
+				newKey = newKey+keys[i]+".";
+			}
+			newKey=newKey.substring(0,newKey.length()-1);
+			return getData(newKey, (Map) obj);
+		}
+		
+	}
 	
 	
 	public static Document createTemplate(String template,Map<String, Object> data,Map<String,List<BaseParams>> bpsMap) throws Exception {
@@ -76,7 +111,7 @@ public class Sql2WordUtil {
 		for(Node node:shapes) {
 			Shape shape = (Shape) node;
 			com.aspose.words.ImageData i = shape.getImageData();// 获得图片数据
-			Object imgObj=data.get(shape.getAlternativeText()); 
+			Object imgObj=getData(shape.getAlternativeText(),data); 
 			if(imgObj==null) {
 				continue;
 			}
@@ -107,7 +142,7 @@ public class Sql2WordUtil {
 					String[] temp = fieldName.split("##");
 					String value=temp[1];
 					String key =temp[2].toLowerCase();
-					fieldValues[i]=(String)data.get(key);
+					fieldValues[i]=(String)getData(key,data);
 					if(value.equals(fieldValues[i])) {
 						fieldValues[i]="☑";
 					}else {
@@ -115,7 +150,7 @@ public class Sql2WordUtil {
 					}
 				}else if(bpsMap!=null&&bpsMap.containsKey(fieldName.toLowerCase())){
 					
-					fieldValues[i] = translateParamVlaue(data.get(fieldName),bpsMap.get(fieldName.toLowerCase()));
+					fieldValues[i] = translateParamVlaue(getData(fieldName,data),bpsMap.get(getLastKsy(fieldName.toLowerCase())));
 					
 				}else {
 					fieldValues[i] = translateMapValue(data, fieldName.toLowerCase());
@@ -129,6 +164,24 @@ public class Sql2WordUtil {
 			
 		}
 		return doc;
+		
+	}
+	
+	private static String getLastKsy(String key) {
+		
+	
+		String[] keys = key.split("\\.");
+		
+		String lastKey = keys[keys.length-1];
+		
+		int index1=lastKey.indexOf("[");
+		int index2=lastKey.indexOf("]");
+		
+		if(index1!=-1&&index2!=-1) {
+			return lastKey.substring(0,index1);
+		}else {
+			return lastKey;
+		}
 		
 	}
 	
@@ -177,19 +230,31 @@ public class Sql2WordUtil {
 	
 	public static String translateMapValue(Map<String,Object> map,String key){
 		
-		if(map.get(key) instanceof BigDecimal ){
-			BigDecimal bg = (BigDecimal) map.get(key);
+		Object obj = getData(key, map);
+		
+		if(obj instanceof BigDecimal ){
+			BigDecimal bg = (BigDecimal) obj;
 			return bg.toString();
 		}
-		if(map.get(key) instanceof Date ){
+		if(obj instanceof Date ){
 			if(key.indexOf("PSSJ")==0){
-				return getStringDate((Date) map.get(key),1);
+				return getStringDate((Date) obj,1);
 			}
-			return getStringDate((Date) map.get(key),0);
+			return getStringDate((Date) obj,0);
 		}
-		if(map.get(key) instanceof Character){
-			return ((Character)map.get(key)).toString();
+		if(obj instanceof Character){
+			return ((Character)obj).toString();
 		}
-		return (String) map.get(key);
+		
+		if(obj instanceof Integer){
+			return ((Integer)obj).toString();
+		}
+		
+		if(obj instanceof Float){
+			return ((Float)obj).toString();
+		}
+
+		
+		return (String) obj;
 	}
 }

@@ -2,7 +2,10 @@ package com.xs.veh.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TooManyListenersException;
 
 import javax.servlet.ServletContext;
@@ -29,6 +32,7 @@ import com.xs.veh.network.DeviceBrakePad;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceDyno;
 import com.xs.veh.network.DeviceLight;
+import com.xs.veh.network.DeviceManyWeigh;
 import com.xs.veh.network.DeviceSideslip;
 import com.xs.veh.network.DeviceSignal;
 import com.xs.veh.network.DeviceSpeed;
@@ -104,6 +108,7 @@ public class InitListener implements ServletContextListener {
 			// 加载参数表
 			List<BaseParams> bps = baseParamsManager.getBaseParams();
 			servletContext.setAttribute("bps", bps);
+			servletContext.setAttribute("bpsMap", bpslist2map(bps));
 			// 打开所有设备
 			openDevice();
 			// 启动工位线程
@@ -114,6 +119,24 @@ public class InitListener implements ServletContextListener {
 			e.printStackTrace();
 		}
 
+	}
+	
+	
+	private Map<String, List<BaseParams>> bpslist2map(List<BaseParams> bps ){
+		
+		Map<String, List<BaseParams>> map =new HashMap<String, List<BaseParams>>();
+		
+		for(BaseParams bp: bps) {
+			
+			List<BaseParams> itemList = map.get(bp.getType());
+			if(itemList==null) {
+				itemList=new ArrayList<BaseParams>();
+				map.put(bp.getType(), itemList);
+			}
+			itemList.add( bp);
+		}
+		
+		return map;
 	}
 
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
@@ -293,6 +316,20 @@ public class InitListener implements ServletContextListener {
 					log.error("声级计开异常", e);
 				}
 				servletContext.setAttribute(device.getThredKey(), dv);
+			}
+			
+			
+			if(device.getType() ==Device.DZCZT) {
+				DeviceManyWeigh dmw = (DeviceManyWeigh) wac.getBean("deviceManyWeigh");
+				try {
+					dmw.setDevice(device);
+					dmw.open();
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
+						| PortInUseException | IOException | UnsupportedCommOperationException
+						| TooManyListenersException e) {
+					log.error("多轴称重台打开异常", e);
+				}
+				servletContext.setAttribute(device.getThredKey(), dmw);
 			}
 		}
 

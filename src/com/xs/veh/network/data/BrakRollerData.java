@@ -193,8 +193,74 @@ public class BrakRollerData extends BaseDeviceData {
 	@Column
 	private Integer jzyzdlcd;
 	
+	//综检轴荷
+	@Column
+	private Integer zjzh;
+	
+	@Column
+	private Integer zlzzl;
+	
+	@Column
+	private Integer ylzzl;
+	
+	@Column
+	private Integer zlzzlpd;
+	
+	@Column
+	private Integer ylzzlpd;
+	
+	@Column
+	private Integer zzlxz;
 	
 	
+
+	public Integer getZzlxz() {
+		return zzlxz;
+	}
+
+	public void setZzlxz(Integer zzlxz) {
+		this.zzlxz = zzlxz;
+	}
+
+	public Integer getZlzzl() {
+		return zlzzl;
+	}
+
+	public void setZlzzl(Integer zlzzl) {
+		this.zlzzl = zlzzl;
+	}
+
+	public Integer getYlzzl() {
+		return ylzzl;
+	}
+
+	public void setYlzzl(Integer ylzzl) {
+		this.ylzzl = ylzzl;
+	}
+
+	public Integer getZlzzlpd() {
+		return zlzzlpd;
+	}
+
+	public void setZlzzlpd(Integer zlzzlpd) {
+		this.zlzzlpd = zlzzlpd;
+	}
+
+	public Integer getYlzzlpd() {
+		return ylzzlpd;
+	}
+
+	public void setYlzzlpd(Integer ylzzlpd) {
+		this.ylzzlpd = ylzzlpd;
+	}
+
+	public Integer getZjzh() {
+		return zjzh;
+	}
+
+	public void setZjzh(Integer zjzh) {
+		this.zjzh = zjzh;
+	}
 
 	public Integer getJzzzdlcd() {
 		return jzzzdlcd;

@@ -281,7 +281,6 @@ public class ReportController {
 		info.put("state","1");
 		info.put("message", "视频状态重置成功！");
 		return info;
-		
 	}
 
 }

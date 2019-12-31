@@ -215,8 +215,7 @@ public class VehController {
 				//写入综合检测表
 				this.vehManager.saveTestVeh(testVeh);
 			}else if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0) {
-				testVeh.setJcxm("S1");
-				//写入综合检测表
+				processTestVehS1(vehCheckLogin,testVeh);
 				this.vehManager.saveTestVeh(testVeh);
 			}
 			
@@ -310,6 +309,58 @@ public class VehController {
 			testVeh.setYHxz();
 			
 		}
+		
+	}
+	
+	
+	private void processTestVehS1(VehCheckLogin vehCheckLogin, TestVeh testVeh) {
+		testVeh.setEdgl(0);
+		testVeh.setEdnj(0);
+		testVeh.setEdnjgl(0);
+		testVeh.setEdnjzs(0);
+		testVeh.setJgl(0);
+		testVeh.setEdyh("0");
+		testVeh.setEdzs(0);
+		testVeh.setHccsxs(0);
+		testVeh.setLtdmkd(0);
+		testVeh.setJcxm("S1");
+		testVeh.setLtlx(0);
+		if(vehCheckLogin.getCllx().indexOf("G")==0||vehCheckLogin.getCllx().indexOf("B")==0) {
+			testVeh.setSfgc(1);
+		}else {
+			testVeh.setSfgc(0);
+		}
+		
+		if(vehCheckLogin.getCllx().indexOf("K")==0) {
+			testVeh.setSfkc(1);
+		}else {
+			testVeh.setSfkc(0);
+		}
+		
+		testVeh.setQdzkzzl(1200);
+		
+		testVeh.setYsjc(1);
+		
+		testVeh.setCsbsx("40");
+		
+		testVeh.setCsbxx("32.8");
+		
+		testVeh.setQccd(vehCheckLogin.getCwkc());
+		testVeh.setQcgd(vehCheckLogin.getCwkg());
+		
+		testVeh.setQycmzzl(0);
+		testVeh.setJycs(vehCheckLogin.getJycs());
+		
+		testVeh.setJylsh(vehCheckLogin.getJylsh());
+		
+		testVeh.setEdgl(0);
+		
+		testVeh.setJcwc(0);
+		
+		testVeh.setYhcs("50");
+		
+		testVeh.setYhxz("0");
+			
 		
 	}
 	

@@ -26,10 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
@@ -202,7 +204,7 @@ public class CheckedInfoTaskJob {
 			woo.setXtlb(RCAConstant.XTLB);
 			woo.setJkxlh(jkxlh);
 			
-			String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
+			   String bmdm = baseParamsManager.getBaseParam("jkcs", "bmdm").getParamName();
 			   String ywzdbm = baseParamsManager.getBaseParam("jkcs", "ywzdbm").getParamName();
 			   String jcip = baseParamsManager.getBaseParam("jkcs", "jcip").getParamName();
 			   woo.setDwjgdm(bmdm);
@@ -315,6 +317,13 @@ public class CheckedInfoTaskJob {
 
 	@Scheduled(fixedDelay = 1000)
 	public void scanEventJob() throws Exception {
+		List<BaseParams> bps = baseParamsManager.getBaseParamByType("lwsc");
+		if(!CollectionUtils.isEmpty(bps)) {
+			if("false".equals(bps.get(0).getParamValue())) {
+				return ;
+			}
+		}
+		
 //		if (!isNetwork || !getUploadSwitch()) {
 //			return;
 //		}

@@ -1,11 +1,13 @@
 package com.xs.veh.manager;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -17,11 +19,16 @@ import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceMotion;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceManyWeigh;
+import com.xs.veh.network.data.CurbWeightData;
+import com.xs.veh.network.driver.DeviceManyWeighDriverOfJXZB10;
 
 @Service("deviceManager")
 public class DeviceManager {
+	
+	static Logger logger = Logger.getLogger(DeviceManager.class);
 
 	@Value("${defaultDevice}")
 	private String defaultDevice;
@@ -31,6 +38,12 @@ public class DeviceManager {
 	
 	@Autowired
 	private ServletContext servletContext;
+	
+	@Autowired
+	private CheckDataManager checkDataManager;
+	
+	@Autowired
+	private VehManager vehManager;
 
 
 	public Integer getMaxLine() {
@@ -143,16 +156,19 @@ public class DeviceManager {
 	}
 	
 	@Async
-	public void upZ1(Integer deviceId,Integer vehCheckLoginId) throws InterruptedException, IOException {
+	public void upZ1(Integer deviceId,Integer vehCheckLoginId) throws InterruptedException, Exception {
 		
+		logger.info("整备质量开始");
 		
 		Device device=new Device();
 		device.setId(deviceId);
 		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
 		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
-		dmw.startCheck(vehCheckLogin);
+		CurbWeightData cwd = dmw.startCheck(vehCheckLogin);
 		
+		vehManager.saveCurbWeight(cwd);
 		
+		logger.info("整备质量结束");
 		
 		
 	}
@@ -161,7 +177,13 @@ public class DeviceManager {
 	public void updateZ1State(Integer vehCheckLoginId) {
 		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
 		vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_JCZ);
-		this.hibernateTemplate.save(vehCheckLogin);
+		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
+				vehCheckLogin.getJycs(), "Z1");
+		vehCheckProcess.setKssj(new Date());
+		
+		this.hibernateTemplate.saveOrUpdate(vehCheckProcess);
+		
+		this.hibernateTemplate.saveOrUpdate(vehCheckLogin);
 	}
 	
 }

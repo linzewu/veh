@@ -238,11 +238,14 @@ function init(){
 	if(reportData){
 		$.post("/veh/report/getCheckPhotos",{jylsh:reportData.jylsh},function(data){
 			$.each(data,function(i,n){
-				$.post("/veh/report/getCheckPhoto",{id:n.id},function(data){
-					$("#image"+n.zpzl).attr("src","data:image/jpeg;base64,"+data);
-					$("#"+temp+n.zpzl).attr("zid",n.id);
-					
-				});
+				setTimeout(function(){
+					$.post("/veh/report/getCheckPhoto",{id:n.id},function(data){
+						$("#image"+n.zpzl).attr("src","data:image/jpeg;base64,"+data);
+						$("#"+temp+n.zpzl).attr("zid",n.id);
+						
+					});
+				},100*i);
+				
 			});
 			
 		});

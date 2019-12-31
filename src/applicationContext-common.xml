@@ -72,7 +72,7 @@
 			<tx:method name="reStart*" propagation="REQUIRED" />
 			<tx:method name="upLine" propagation="REQUIRED" />
 			<tx:method name="check*" propagation="REQUIRED" />
-			<tx:method name="*" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" />
 		</tx:attributes>
 	</tx:advice>
 

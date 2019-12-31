@@ -54,6 +54,14 @@ public class SuspensionData extends BaseDeviceData {
 	private Integer zs;
 	
 	
+	
+	
+	public Integer getZs() {
+		return zs;
+	}
+	public void setZs(Integer zs) {
+		this.zs = zs;
+	}
 	public String getZxsl() {
 		return zxsl;
 	}

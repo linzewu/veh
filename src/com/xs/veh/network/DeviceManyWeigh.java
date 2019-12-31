@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -19,6 +20,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
+import com.xs.veh.network.driver.DeviceManyWeighDriverOfJXZB10;
 
 import gnu.io.SerialPortEvent;
 
@@ -30,6 +32,8 @@ import gnu.io.SerialPortEvent;
 @Service("deviceManyWeigh")
 @Scope("prototype")
 public class DeviceManyWeigh extends SimpleRead  {
+	
+	static Logger logger = Logger.getLogger(DeviceManyWeigh.class);
 
 	private AbstractDeviceManyWeigh dw;
 
@@ -45,7 +49,7 @@ public class DeviceManyWeigh extends SimpleRead  {
 	@Autowired
 	private ServletContext servletContext;
 
-	@Resource(name = "checkDataManager")
+	@Autowired
 	private CheckDataManager checkDataManager;
 
 	@Resource(name = "hibernateTemplate")
@@ -144,7 +148,7 @@ public class DeviceManyWeigh extends SimpleRead  {
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
-		s1 = getQtxxObject().getInt("kzsb-xhw");
+		//s1 = getQtxxObject().getInt("kzsb-xhw");
 
 		dw = (AbstractDeviceManyWeigh) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		// 加载挂载设备
@@ -166,20 +170,18 @@ public class DeviceManyWeigh extends SimpleRead  {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin) throws IOException, InterruptedException {
+	public CurbWeightData startCheck(VehCheckLogin vehCheckLogin) throws Exception, InterruptedException {
+		
+		logger.info("整备质量检测开始");
 		
 		this.vehCheckLogin=vehCheckLogin;
 		CurbWeightData curbWeightData = dw.startCheck(vehCheckLogin);
 		Thread.sleep(2000);
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
-		boolean flag = true;
-
-		while (flag) {
-			flag = this.signal.getSignal(s1);
-			Thread.sleep(200);
-		}
-		this.checkDataManager.saveData(curbWeightData);
+		Thread.sleep(2000);
 		display.setDefault();
+		
+		return curbWeightData;
 	}
 	
 	public void setDw(Integer zw) {

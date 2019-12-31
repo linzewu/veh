@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,6 +46,8 @@ import com.xs.veh.network.data.CurbWeightData;
 @RequestMapping(value = "/pda")
 @Modular(modelCode="PDAService",modelName="PDA")
 public class PDAServiceController {
+	
+	static Logger logger = Logger.getLogger(PDAServiceController.class);
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
@@ -88,8 +91,10 @@ public class PDAServiceController {
 			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheck(externalCheck);
+			
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(externalCheck.getJylsh());
 			//检测结束，显示屏显示 XX 检测结束
-			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "F1");
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "F1",Integer.parseInt(vehCheckLogin.getJcxdh()));
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -108,7 +113,7 @@ public class PDAServiceController {
 			TakePicture.createNew(vehCheckLogin, "DC", 1,"0342");
 			
 			//检测结束，显示屏显示 XX 检测结束
-			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "DC");
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "DC",Integer.parseInt(vehCheckLogin.getJcxdh()));
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -121,8 +126,10 @@ public class PDAServiceController {
 			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckC1(externalCheck);
+			
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(externalCheck.getJylsh());
 			//检测结束，显示屏显示 XX 检测结束
-			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "C1");
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "C1",Integer.parseInt(vehCheckLogin.getJcxdh()));
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -223,30 +230,36 @@ public class PDAServiceController {
 	@UserOperation(code="processStart",name="检测过程开始",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "processStart")
 	public @ResponseBody Map processStart(@RequestParam("jyxm") String jyxm, @RequestParam("jylsh") String jylsh,
-			@RequestParam("jycs") Integer jycs) throws IOException {
-
-		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
-		//显示屏现在 XX项目 检测中
-		checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm);
-		
-		vehCheckProcess.setKssj(new Date());
-		this.checkDataManager.updateProcess(vehCheckProcess);
-
-		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
-
-		if (vehCheckProcess.getJyxm().equals("C1")) {
-			TakePicture.createNew(vehCheckLogin, "C1", 5000);
+			@RequestParam("jycs") Integer jycs) throws Exception {
+		try {
+			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
+			
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+			//显示屏现在 XX项目 检测中
+			checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
+			
+			vehCheckProcess.setKssj(new Date());
+			this.checkDataManager.updateProcess(vehCheckProcess);
+	
+			
+	
+			if (vehCheckProcess.getJyxm().equals("C1")) {
+				TakePicture.createNew(vehCheckLogin, "C1", 5000);
+			}
+			
+			if (vehCheckProcess.getJyxm().equals("DC")) {
+				TakePicture.createNew(vehCheckLogin, "DC", 5000,"0344");
+			}
+	
+			checkEventManger.createEvent(jylsh, jycs, "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),
+					vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh(),vehCheckLogin.getVehcsbj());
+	
+			this.checkDataManager.updateProcess(vehCheckProcess);
+			return ResultHandler.toSuccessJSON("过程开始成功");
+		}catch (Exception e) {
+			logger.error("过程开始错误。",e);
+			throw e;
 		}
-		
-		if (vehCheckProcess.getJyxm().equals("DC")) {
-			TakePicture.createNew(vehCheckLogin, "DC", 5000,"0344");
-		}
-
-		checkEventManger.createEvent(jylsh, jycs, "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),
-				vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh(),vehCheckLogin.getVehcsbj());
-
-		this.checkDataManager.updateProcess(vehCheckProcess);
-		return ResultHandler.toSuccessJSON("过程开始成功");
 	}
 	
 	
@@ -318,10 +331,12 @@ public class PDAServiceController {
 	@RequestMapping(value = "upZ1")
 	@UserOperation(code="upZ1",name="整备质量发车")
 	public @ResponseBody Map upZ1( Integer deviceId, Integer vehCheckLoginId)
-			throws InterruptedException, IOException {
+			throws InterruptedException, Exception {
 		
 		deviceManager.upZ1(deviceId, vehCheckLoginId);
-		deviceManager.updateZ1State(vehCheckLoginId); 
+		deviceManager.updateZ1State(vehCheckLoginId);
+		
+		
 		
 		return ResultHandler.toSuccessJSON("发车成功！");
 	}

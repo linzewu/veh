@@ -259,7 +259,7 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 					}
 				}
 			}).start();
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 		}
 	}
 

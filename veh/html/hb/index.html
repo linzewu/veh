@@ -5,6 +5,7 @@
 <title>上海翔尚机动车环保尾气检测系统</title>
 <link rel="stylesheet" type="text/css"
 	href="/veh/js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/veh/js/easyui/themes/icon.css">
 <link rel="stylesheet" type="text/css"
 	href="/veh/js/easyui/themes/color.css">
 <link rel="stylesheet" type="text/css" href="/veh/css/veh.css">
@@ -21,11 +22,29 @@
 <script type="text/javascript" src="/veh/codebase/webVideoCtrl.js"></script>
 </head>
 <body  class="easyui-layout">
-	<div data-options="region:'north'" class="header">
+	<div data-options="region:'north'" class="header" style="height: 52px">
 		<div style="float: left; margin: 0 0 0 30px;">
 			<img alt="" src="/veh/images/logo.png" style="border: 0; margin: 0">
 		</div>
 		<div class="header-title" style="float: left;">上海翔尚机动车环保尾气检测系统</div>
+	</div>
+	
+	<div data-options="region:'center'">
+		 <div class="easyui-panel" style="padding:5px;">
+	        <a href="#" class="easyui-menubutton" data-options="menu:'#dpcgq'">底盘测功器</a>
+	        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-edit'">Edit</a>
+	      
+	    </div>
+	    <div id="dpcgq" style="width:150px;">
+	        <div >底盘预热</div>
+	        <div >寄生功率测试</div>
+	        
+	    </div>
+	    <div id="mm1" style="width:150px;">
+	        <div data-options="iconCls:'icon-undo'">Undo</div>
+	        <div data-options="iconCls:'icon-redo'">Redo</div>
+	        
+	    </div>
 	</div>
 </body>
 
