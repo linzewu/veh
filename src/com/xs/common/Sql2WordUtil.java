@@ -21,7 +21,10 @@ import com.aspose.words.NodeCollection;
 import com.aspose.words.NodeType;
 import com.aspose.words.SaveFormat;
 import com.aspose.words.Shape;
+import com.aspose.words.Table;
 import com.xs.veh.entity.BaseParams;
+
+import net.sf.json.JSONArray;
 
 public class Sql2WordUtil {
 	
@@ -101,12 +104,19 @@ public class Sql2WordUtil {
 	}
 	
 	
+	
+	
+	
 	public static Document createTemplate(String template,Map<String, Object> data,Map<String,List<BaseParams>> bpsMap) throws Exception {
 	
 		InputStream wordTemplate = Sql2WordUtil.class.getClassLoader().getResourceAsStream(template);
 		Document doc = new Document(wordTemplate);
 		NodeCollection shapeCollection = doc.getChildNodes(NodeType.SHAPE, true);// 查询文档中所有wmf图片
 		Node[] shapes = shapeCollection.toArray();// 序列化
+		
+		
+		
+		
 		
 		for(Node node:shapes) {
 			Shape shape = (Shape) node;
@@ -253,7 +263,10 @@ public class Sql2WordUtil {
 		if(obj instanceof Float){
 			return ((Float)obj).toString();
 		}
-
+		
+		if(obj==null) {
+			return "—";
+		}
 		
 		return (String) obj;
 	}

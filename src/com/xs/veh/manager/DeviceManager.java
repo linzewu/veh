@@ -23,7 +23,6 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceManyWeigh;
 import com.xs.veh.network.data.CurbWeightData;
-import com.xs.veh.network.driver.DeviceManyWeighDriverOfJXZB10;
 
 @Service("deviceManager")
 public class DeviceManager {

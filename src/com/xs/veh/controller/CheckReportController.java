@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aspose.words.CellCollection;
 import com.aspose.words.Document;
+import com.aspose.words.Node;
+import com.aspose.words.NodeCollection;
+import com.aspose.words.NodeType;
+import com.aspose.words.Range;
+import com.aspose.words.Table;
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.common.Constant;
@@ -30,6 +35,8 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.ZHCheckDataManager;
+
+import net.sf.json.JSONArray;
 
 @Controller
 @RequestMapping(value = "/checkReport",produces="application/json")
@@ -145,12 +152,37 @@ public class CheckReportController {
 			String template = "道路运输车辆性能检验记录单.docx";
 			fileName = "template_performance_record"+lsh+".jpg";
 			Document doc = Sql2WordUtil.map2WordUtil(template, dataMap,bpsMap);
+			
+			NodeCollection tableCollection = doc.getChildNodes(NodeType.TABLE, true);
+			for(Node node:tableCollection.toArray()) {
+				Table table = (Table) node;
+				table.getText();
+			}
+			
 			doc.save(filePath+"template_performance_record"+lsh+".doc");
 			Sql2WordUtil.toCase(doc, filePath, fileName);
 			
 			
 		
 		return ResultHandler.toMyJSON(Constant.ConstantState.STATE_SUCCESS, "打印道路运输车辆性能检验记录单成功", fileName);
+	}
+	
+	
+	public  Document prcessTable(Table table,JSONArray jo) throws Exception {
+		
+		for(int i=0;i<jo.size();i++) {
+			
+			jo.getJSONObject(i);
+			
+			 Node deepClone = table.getLastRow().deepClone(true);
+			 CellCollection cells = table.getLastRow().getCells();
+	         
+			// cells.get(0).getRange().replace("", jo.getJSONObject(i), true, true);
+			
+		}
+		
+		
+		return null;
 	}
 	
 	
