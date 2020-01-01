@@ -77,8 +77,9 @@ public class PDAServiceController {
 			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheck(externalCheck);
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(externalCheck.getJylsh());
 			//检测结束，显示屏显示 XX 检测结束
-			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "F1");
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "F1",Integer.parseInt(vehCheckLogin.getJcxdh()));
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -97,7 +98,7 @@ public class PDAServiceController {
 			TakePicture.createNew(vehCheckLogin, "DC", 1,"0342");
 			
 			//检测结束，显示屏显示 XX 检测结束
-			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "DC");
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "DC",Integer.parseInt(vehCheckLogin.getJcxdh()));
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -110,8 +111,9 @@ public class PDAServiceController {
 			throws InterruptedException, IOException {
 		if (!result.hasErrors()) {
 			Message message = externalCheckManager.saveExternalCheckC1(externalCheck);
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(externalCheck.getJylsh());
 			//检测结束，显示屏显示 XX 检测结束
-			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "C1");
+			this.checkDataManager.processEndSendMsg(externalCheck.getHphm(), "C1",Integer.parseInt(vehCheckLogin.getJcxdh()));
 			return ResultHandler.toMessage(message);
 		} else {
 			return ResultHandler.resultHandle(result, null, "校验出错");
@@ -215,14 +217,15 @@ public class PDAServiceController {
 			@RequestParam("jycs") Integer jycs) throws IOException {
 
 		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
+		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+
 		//显示屏现在 XX项目 检测中
-		checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm);
+		checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
 		
 		vehCheckProcess.setKssj(new Date());
 		this.checkDataManager.updateProcess(vehCheckProcess);
 
-		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
-
+		
 		if (vehCheckProcess.getJyxm().equals("C1")) {
 			TakePicture.createNew(vehCheckLogin, "C1", 5000);
 		}

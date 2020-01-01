@@ -1479,10 +1479,17 @@ public class CheckDataManager {
 	 * @param jyxm
 	 * @throws IOException
 	 */
-	public void displaySendMsg(String hphm,String jyxm) throws IOException {
+	public void displaySendMsg(String hphm,String jyxm,Integer jcxdh) throws IOException {
 		String zh_jyxm = getJyxm_zh(jyxm);
 		// 获取显示屏
-		String deviceId = getDeviceId(jyxm);
+		String deviceIds = getDeviceId(jyxm);
+		
+		if(StringUtils.isEmpty(deviceIds)) {
+			return ;
+		}
+		
+		String[] deviceIdArray = deviceIds.split(",");
+		String deviceId  = deviceIdArray[jcxdh-1];
 
 		if (!"".equals(deviceId)) {
 			Device device = new Device();
@@ -1499,11 +1506,19 @@ public class CheckDataManager {
 	}
 	
 	//@Async
-	public void processEndSendMsg(String hphm,String jyxm) throws IOException, InterruptedException {
+	public void processEndSendMsg(String hphm,String jyxm,Integer jcxdh) throws IOException, InterruptedException {
 		
 		String zh_jyxm = getJyxm_zh(jyxm);
 		// 获取显示屏
-		String deviceId = getDeviceId(jyxm);
+		String deviceIds = getDeviceId(jyxm);
+		
+		if(StringUtils.isEmpty(deviceIds)) {
+			return ;
+		}
+		
+		String[] deviceIdArray = deviceIds.split(",");
+		String deviceId  = deviceIdArray[jcxdh-1];
+
 
 		if (!"".equals(deviceId)) {
 			Device device = new Device();
