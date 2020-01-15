@@ -126,8 +126,23 @@ public class CharUtil {
 		//byte[] b = CharUtil.hexStringToByte("FF0007EE");
 		
 		
-		System.out.println(CharUtil.getCheckSum("410470"));
+	//	System.out.println(CharUtil.getCheckSum("410470"));
 		//System.out.println(CharUtil.hexStringToByte("41")[0]);
+		
+		byte[] db=new byte[] {0b0,0b1,0b0,0b1,0b0,0b1,0b0,0b1};
+		System.out.println(Integer.parseInt("0.0") );
+		
+		//System.out.println(byte2String(db));
+	//	System.out.println(Integer.toHexString(Integer.parseInt(byte2String(db),2)));
+		
+	}
+	public static String byte2String(byte[] b) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < b.length; i++) {
+			sb.append(b[i]);
+		}
+		
+		return sb.toString();
 	}
 
 	public static String byte2HexOfString(byte[] b) {
@@ -253,6 +268,18 @@ public class CharUtil {
 		}
 		byte b = (byte) (~i + 1);
 		return CharUtil.byte2HexOfString(new byte[]{b});
+
+	}
+	
+	
+	public static String getCheckSum2(String hex) {
+
+		byte[] vs = CharUtil.hexStringToByte(hex);
+		byte i = 0;
+		for (byte v : vs) {
+			i += v;
+		}
+		return CharUtil.byte2HexOfString(new byte[]{i});
 
 	}
 	

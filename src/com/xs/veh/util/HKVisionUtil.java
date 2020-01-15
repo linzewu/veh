@@ -111,7 +111,8 @@ public class HKVisionUtil {
 			HCNetSDK.NET_DVR_JPEGPARA jpgparam =new HCNetSDK.NET_DVR_JPEGPARA();
 			jpgparam.wPicQuality=1;
 			jpgparam.wPicSize=5;
-			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, getConfigPath()+"\\"+recordId+".jpg");
+			FileUtil.createDirectory(getConfigPath()+"\\photos\\");
+			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, getConfigPath()+"\\photos\\"+recordId+".jpg");
 			if(!flag) {
 				log.error("拍照失败:"+hCNetSDK.NET_DVR_GetLastError() );
 				throw new Exception("拍照失");
@@ -140,13 +141,13 @@ public class HKVisionUtil {
 			HCNetSDK.NET_DVR_JPEGPARA jpgparam =new HCNetSDK.NET_DVR_JPEGPARA();
 			jpgparam.wPicQuality=1;
 			jpgparam.wPicSize=5;
-			
-			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, getConfigPath()+"\\"+fileName+".jpg");
+			FileUtil.createDirectory(getConfigPath()+"\\photos\\");
+			boolean flag = hCNetSDK.NET_DVR_CaptureJPEGPicture(lUserID, lChannel, jpgparam, getConfigPath()+"\\photos\\"+fileName+".jpg");
 			if(!flag) {
 				log.error("拍照失败:"+hCNetSDK.NET_DVR_GetLastError());
 				throw new Exception("拍照失");
 			}
-			String fileFpath =getConfigPath()+"\\"+fileName+".jpg";
+			String fileFpath =getConfigPath()+"\\photos\\"+fileName+".jpg";
 			return fileFpath;
 		}catch (Exception e) {
 			log.error("拍照失败:",e);

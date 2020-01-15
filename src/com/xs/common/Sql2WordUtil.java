@@ -23,6 +23,7 @@ import com.aspose.words.SaveFormat;
 import com.aspose.words.Shape;
 import com.aspose.words.Table;
 import com.xs.veh.entity.BaseParams;
+import com.xs.veh.network.data.BaseDeviceData;
 
 import net.sf.json.JSONArray;
 
@@ -86,7 +87,7 @@ public class Sql2WordUtil {
 			List array =(List) data.get(key1);
 			obj = array.get(index);
 		}else {
-			obj = data.get(firstKey);
+			obj = data.get(firstKey)==null? data.get(firstKey.toUpperCase()):data.get(firstKey);
 		}
 		
 		if(keys.length==1) {
@@ -242,12 +243,19 @@ public class Sql2WordUtil {
 		
 		Object obj = getData(key, map);
 		
+		String lastKey=getLastKsy(key);
+		
+		if(obj instanceof Double ){
+			Double bg = (Double) obj;
+			return bg.toString();
+		}
+		
 		if(obj instanceof BigDecimal ){
 			BigDecimal bg = (BigDecimal) obj;
 			return bg.toString();
 		}
 		if(obj instanceof Date ){
-			if(key.indexOf("PSSJ")==0){
+			if(lastKey.indexOf("PSSJ")==0){
 				return getStringDate((Date) obj,1);
 			}
 			return getStringDate((Date) obj,0);
@@ -257,6 +265,18 @@ public class Sql2WordUtil {
 		}
 		
 		if(obj instanceof Integer){
+			
+			if(lastKey.indexOf("pd")==lastKey.length()-2) {
+				Integer pd = (Integer)obj;
+				if(pd==BaseDeviceData.PDJG_HG) {
+					return "○";
+				}else if(pd==BaseDeviceData.PDJG_BHG) {
+					return "X";
+				}else if(pd==BaseDeviceData.PDJG_WJ) {
+					return "—";
+				}
+			}
+			
 			return ((Integer)obj).toString();
 		}
 		
@@ -266,6 +286,19 @@ public class Sql2WordUtil {
 		
 		if(obj==null) {
 			return "—";
+		}
+		
+		if(obj instanceof String) {
+			if(lastKey.indexOf("pd")==lastKey.length()-2) {
+				String pd = (String)obj;
+				if(pd.equals(BaseDeviceData.PDJG_HG.toString())) {
+					return "○";
+				}else if(pd.equals(BaseDeviceData.PDJG_BHG.toString())) {
+					return "X";
+				}else if(pd.equals(BaseDeviceData.PDJG_WJ.toString())) {
+					return "—";
+				}
+			}
 		}
 		
 		return (String) obj;

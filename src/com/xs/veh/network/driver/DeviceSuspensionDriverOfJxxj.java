@@ -130,11 +130,11 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 		String yjtlz =new String(new byte[] {data[22],data[23],data[24],data[25]});
 		
 		
-		suspensionData.setZxsl(zxgxl);
-		suspensionData.setYxsl(yxgxl);
-		suspensionData.setZjtlh(zjtlz);
-		suspensionData.setYjtlh(yjtlz);
-		suspensionData.setZyc(zyc);
+		suspensionData.setZxsl(String.valueOf(Float.parseFloat(zxgxl)));
+		suspensionData.setYxsl(String.valueOf(Float.parseFloat(yxgxl)));
+		suspensionData.setZjtlh(String.valueOf(Float.parseFloat(zjtlz)));
+		suspensionData.setYjtlh(String.valueOf(Float.parseFloat(yjtlz)));
+		suspensionData.setZyc(String.valueOf(Float.parseFloat(zyc)));
 		suspensionData.setZs(zs);
 		suspensionData.setZpd();
 		
@@ -158,7 +158,7 @@ public class DeviceSuspensionDriverOfJxxj extends AbstractDeviceSuspension {
 
 	private void getProcessData() throws InterruptedException {
 		for(int i=0;i<320;i++){
-			byte[] array = this.getDevData(new byte[8],(byte)0x41);
+			byte[] array = this.getDevData(new byte[8]);
 			if(0x4C==array[2]) {
 				String strData = new String(new byte[]{array[3],array[4],array[5],array[6]});
 				lDatas.add(Integer.parseInt(strData));

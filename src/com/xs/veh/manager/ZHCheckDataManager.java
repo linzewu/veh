@@ -1,5 +1,6 @@
 package com.xs.veh.manager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -24,17 +25,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xs.common.MyHibernateTemplate;
 import com.xs.veh.entity.DeviceCheckJudegZJ;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.OtherInfoData;
-import com.xs.veh.network.data.Outline;
 import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
@@ -282,12 +284,24 @@ public class ZHCheckDataManager {
 			@Override
 			public Map<String,Map<String,Object>> doInHibernate(Session session) throws HibernateException {
 				
+				
+				Calendar c1 = Calendar.getInstance();
+				c1.setTime(vehCheckLogin.getDlsj());
+				c1.set(Calendar.HOUR_OF_DAY, 0);
+				c1.set(Calendar.MINUTE, 0);
+				c1.set(Calendar.SECOND, 0);
+				c1.set(Calendar.MILLISECOND, 0);
+				
+				SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				
+				logger.info("日期："+sdf.format(c1.getTime()));
+				
 				Calendar c=Calendar.getInstance();
 				c.setTime(vehCheckLogin.getDlsj());
 				c.add(Calendar.MONTH, 1);
 				
-				SQLQuery wtQuery = session.createSQLQuery("select * from QCPFWQ2018.dbo.ASMCLSJB where JCRQ>? and JCRQ<? and cphm=? and CPYS=?");
-				wtQuery.setParameter(0, vehCheckLogin.getDlsj())
+				SQLQuery wtQuery = session.createSQLQuery("select * from QCPFWQ2018.dbo.ASMCLSJB where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				wtQuery.setParameter(0, c1)
 				.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
 				.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
 				wtQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -298,8 +312,8 @@ public class ZHCheckDataManager {
 				}
 				
 				
-				SQLQuery sdsQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.SDSCLSJB where JCRQ>? and JCRQ<? and cphm=? and CPYS=?");
-				sdsQuery.setParameter(0, vehCheckLogin.getDlsj())
+				SQLQuery sdsQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.SDSCLSJB where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				sdsQuery.setParameter(0, c1)
 				.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
 				.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
 				sdsQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -309,8 +323,8 @@ public class ZHCheckDataManager {
 					sdsMap= sdsList.get(sdsList.size()-1);
 				}
 				
-				SQLQuery lgdQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.lgdclsjb where JCRQ>? and JCRQ<? and cphm=? and CPYS=?");
-				lgdQuery.setParameter(0, vehCheckLogin.getDlsj())
+				SQLQuery lgdQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.lgdclsjb where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				lgdQuery.setParameter(0, c1)
 					.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
 					.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
 				lgdQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -320,8 +334,8 @@ public class ZHCheckDataManager {
 					lgdMap= lgdList.get(lgdList.size()-1);
 				}
 				
-				SQLQuery ydQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.YDCLSJB where JCRQ>? and JCRQ<? and cphm=? and CPYS=?");
-				ydQuery.setParameter(0, vehCheckLogin.getDlsj())
+				SQLQuery ydQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.YDCLSJB where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				ydQuery.setParameter(0, c1)
 					.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
 					.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
 				ydQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -342,39 +356,94 @@ public class ZHCheckDataManager {
 				Map<String,Map<String,Map<String,Object>>> data =new HashMap<String, Map<String,Map<String,Object>>>();
 				
 				if(!CollectionUtils.isEmpty(wtMap)) {
-					Date jcrq = (Date)wtMap.get("jcrq");
-					list.add(jcrq.getTime());
+					Date jcrq = (Date)wtMap.get("JCRQ");
+					Date jssj = (Date)wtMap.get("JSSJ");
+					
+					Calendar jssjCalendar = Calendar.getInstance();
+					jssjCalendar.setTime(jssj);
+					Calendar jcrqCalendar = Calendar.getInstance();
+					jcrqCalendar.setTime(jcrq);
+					
+					jcrqCalendar.set(Calendar.HOUR_OF_DAY, jssjCalendar.get(Calendar.HOUR_OF_DAY));
+					jcrqCalendar.set(Calendar.MINUTE, jssjCalendar.get(Calendar.MINUTE));
+					jcrqCalendar.set(Calendar.SECOND, jssjCalendar.get(Calendar.SECOND));
+					
+					Long timeKey =jcrqCalendar.getTimeInMillis();
+					
+					list.add(timeKey);
 					Map<String,Map<String,Object>> subData =new HashMap<String, Map<String,Object>>();
 					subData.put("wt",wtMap);
-					data.put(String.valueOf(jcrq.getTime()),subData);
+					data.put(String.valueOf(timeKey),subData);
 				}
 				
 				if(!CollectionUtils.isEmpty(sdsMap)) {
-					Date jcrq = (Date)sdsMap.get("jcrq");
-					list.add(jcrq.getTime());
+					Date jcrq = (Date)sdsMap.get("JCRQ");
+					Date jssj = (Date)sdsMap.get("JSSJ");
+					
+					Calendar jssjCalendar = Calendar.getInstance();
+					jssjCalendar.setTime(jssj);
+					Calendar jcrqCalendar = Calendar.getInstance();
+					jcrqCalendar.setTime(jcrq);
+					
+					jcrqCalendar.set(Calendar.HOUR_OF_DAY, jssjCalendar.get(Calendar.HOUR_OF_DAY));
+					jcrqCalendar.set(Calendar.MINUTE, jssjCalendar.get(Calendar.MINUTE));
+					jcrqCalendar.set(Calendar.SECOND, jssjCalendar.get(Calendar.SECOND));
+					
+					Long timeKey =jcrqCalendar.getTimeInMillis();
+					
+					
+					list.add(timeKey);
 					
 					Map<String,Map<String,Object>> subData =new HashMap<String, Map<String,Object>>();
 					subData.put("sds",sdsMap);
 					
-					data.put(String.valueOf(jcrq.getTime()),subData);
+					data.put(String.valueOf(timeKey),subData);
 				}
 				
 				if(!CollectionUtils.isEmpty(lgdMap)) {
-					Date jcrq = (Date)lgdMap.get("jcrq");
-					list.add(jcrq.getTime());
+					Date jcrq = (Date)lgdMap.get("JCRQ");
+					Date jssj = (Date)lgdMap.get("JSSJ");
+					
+					Calendar jssjCalendar = Calendar.getInstance();
+					jssjCalendar.setTime(jssj);
+					Calendar jcrqCalendar = Calendar.getInstance();
+					jcrqCalendar.setTime(jcrq);
+					
+					jcrqCalendar.set(Calendar.HOUR_OF_DAY, jssjCalendar.get(Calendar.HOUR_OF_DAY));
+					jcrqCalendar.set(Calendar.MINUTE, jssjCalendar.get(Calendar.MINUTE));
+					jcrqCalendar.set(Calendar.SECOND, jssjCalendar.get(Calendar.SECOND));
+					
+					Long timeKey =jcrqCalendar.getTimeInMillis();
+					
+					
+					list.add(timeKey);
 					
 					Map<String,Map<String,Object>> subData =new HashMap<String, Map<String,Object>>();
 					subData.put("lgd",lgdMap);
 					
-					data.put(String.valueOf(jcrq.getTime()),subData);
+					data.put(String.valueOf(timeKey),subData);
 				}
 				
 				if(!CollectionUtils.isEmpty(ydMap)) {
-					Date jcrq = (Date)ydMap.get("jcrq");
-					list.add(jcrq.getTime());
+					Date jcrq = (Date)ydMap.get("JCRQ");
+					Date jssj = (Date)ydMap.get("JSSJ");
+					
+					Calendar jssjCalendar = Calendar.getInstance();
+					jssjCalendar.setTime(jssj);
+					Calendar jcrqCalendar = Calendar.getInstance();
+					jcrqCalendar.setTime(jcrq);
+					
+					jcrqCalendar.set(Calendar.HOUR_OF_DAY, jssjCalendar.get(Calendar.HOUR_OF_DAY));
+					jcrqCalendar.set(Calendar.MINUTE, jssjCalendar.get(Calendar.MINUTE));
+					jcrqCalendar.set(Calendar.SECOND, jssjCalendar.get(Calendar.SECOND));
+					
+					Long timeKey =jcrqCalendar.getTimeInMillis();
+					
+					
+					list.add(timeKey);
 					Map<String,Map<String,Object>> subData =new HashMap<String, Map<String,Object>>();
 					subData.put("yd",ydMap);
-					data.put(String.valueOf(jcrq.getTime()),subData);
+					data.put(String.valueOf(timeKey),subData);
 				}
 				
 				if(!CollectionUtils.isEmpty(list)) {
@@ -437,32 +506,36 @@ public class ZHCheckDataManager {
 		
 		List parDataOfAnjians =this.hibernateTemplate.find("from ParDataOfAnjian where jylsh=? order by id desc", vehCheckLogin.getJylsh());
 		
-		List outlines =this.hibernateTemplate.find("from Outline where jylsh=? order by id desc ", vehCheckLogin.getJylsh());
+	//	List outlines =this.hibernateTemplate.find("from Outline where jylsh=? order by id desc ", vehCheckLogin.getJylsh());
+		
+		List<TestResult> testResults =  (List<TestResult>) this.hibernateTemplate.find("from TestResult where jylsh=? order by id desc ",vehCheckLogin.getJylsh());
 		
 		OtherInfoData otherInfoData = null;
 		ParDataOfAnjian parDataOfAnjian=null;
 		
-		Outline outline=null;
+		TestResult testResult=null;
 		
 		if(otherInfoDatas!=null&&!otherInfoDatas.isEmpty()){
 			otherInfoData=(OtherInfoData) otherInfoDatas.get(0);
 		}
 		
+		
 		if(parDataOfAnjians!=null&&!parDataOfAnjians.isEmpty()){
 			parDataOfAnjian=(ParDataOfAnjian) parDataOfAnjians.get(0);
 		}
 		
-		if(outlines!=null&&!outlines.isEmpty()){
-			 outline =(Outline) outlines.get(0);
+		if(!CollectionUtils.isEmpty(testResults)) {
+			testResult=testResults.get(0);
 		}
-
+		
+		
 		Integer xh = 1;
 
 		// 清空报告
 		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
 			@Override
 			public Integer doInHibernate(Session session) throws HibernateException {
-				int res = session.createQuery("delete DeviceCheckJudeg where jylsh=? and jyjgbh=? ")
+				int res = session.createQuery("delete DeviceCheckJudegZJ where jylsh=? and jyjgbh=? ")
 						.setString(0, vehCheckLogin.getJylsh()).setString(1, vehCheckLogin.getJyjgbh()).executeUpdate();
 				return res;
 			}
@@ -500,20 +573,40 @@ public class ZHCheckDataManager {
 		xh = createLightDataJudeg(vehCheckLogin, flagMap, xh);
 
 		// 侧滑报告判定
-		List<SideslipData> sideslipDatas = (List<SideslipData>) this.hibernateTemplate.find(
-				"from SideslipData where jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
-				SideslipData.SJZT_ZC);
+//		List<SideslipData> sideslipDatas = (List<SideslipData>) this.hibernateTemplate.find(
+//				"from SideslipData where jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
+//				SideslipData.SJZT_ZC);
+		
+		Map<String, Object>  adatas = getAData(vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
 
-		if (sideslipDatas != null && !sideslipDatas.isEmpty()) {
-			SideslipData sideslipData = sideslipDatas.get(0);
-			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("转向轮横向侧滑值(m/km)");
-			dcj1.setYqjyjg(sideslipData.getSideslip() == null ? "" : sideslipData.getSideslip().toString());
-			dcj1.setYqbzxz(sideslipData.getChxz().replace(",", "~"));
-			dcj1.setYqjgpd(sideslipData.getChpd() == null ? "" : sideslipData.getChpd().toString());
-			dcj1.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(dcj1);
+		if (!CollectionUtils.isEmpty(adatas)) {
+			
+			SideslipData sideslipData = (SideslipData)adatas.get("a1");
+			
+			if(sideslipData!=null) {
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setYqjyxm("第一转向轮横向侧滑值(m/km)");
+				dcj1.setYqjyjg(sideslipData.getSideslip() == null ? "" : sideslipData.getSideslip().toString());
+				dcj1.setYqbzxz(sideslipData.getChxz().replace(",", "~"));
+				dcj1.setYqjgpd(sideslipData.getChpd() == null ? "" : sideslipData.getChpd().toString());
+				dcj1.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj1);
+			}
+			
+			SideslipData sideslipData2 = (SideslipData)adatas.get("a2");
+			
+			if(sideslipData2!=null) {
+				DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj2.setYqjyxm("第二转向轮横向侧滑值(m/km)");
+				dcj2.setYqjyjg(sideslipData2.getSideslip() == null ? "" : sideslipData2.getSideslip().toString());
+				dcj2.setYqbzxz(sideslipData2.getChxz().replace(",", "~"));
+				dcj2.setYqjgpd(sideslipData2.getChpd() == null ? "" : sideslipData2.getChpd().toString());
+				dcj2.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj2);
+			}
+			
 		}
 
 		// 速度报告判定
@@ -533,51 +626,429 @@ public class ZHCheckDataManager {
 			this.hibernateTemplate.save(dcj1);
 		}
 		
-		CurbWeightData curbWeightData = this.vehManager.getLastCurbWeightDataOfJylsh(vehCheckLogin.getJylsh());
-
-		if (vehCheckLogin.getJylb().equals("00") && curbWeightData != null&&vehCheckLogin.getJyxm().indexOf("Z1")>=0) {
-			String cllx=vehCheckLogin.getCllx();
-			int xzgj=100;
-			String temp1="±3%或±";
-			if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z1")==0||cllx.indexOf("Z2")==0||cllx.indexOf("Z5")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
-				xzgj=500;
-			}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0||cllx.indexOf("Z3")==0||cllx.indexOf("Z4")==0){
-				xzgj=100;
-			}else if(cllx.indexOf("N")==0){
-				xzgj=100;
-				temp1="±5%或±";
-			}else if(cllx.indexOf("M")==0){
-				xzgj=10;
+//		CurbWeightData curbWeightData = this.vehManager.getLastCurbWeightDataOfJylsh(vehCheckLogin.getJylsh());
+//
+//		if (vehCheckLogin.getJylb().equals("00") && curbWeightData != null&&vehCheckLogin.getJyxm().indexOf("Z1")>=0) {
+//			String cllx=vehCheckLogin.getCllx();
+//			int xzgj=100;
+//			String temp1="±3%或±";
+//			if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z1")==0||cllx.indexOf("Z2")==0||cllx.indexOf("Z5")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
+//				xzgj=500;
+//			}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0||cllx.indexOf("Z3")==0||cllx.indexOf("Z4")==0){
+//				xzgj=100;
+//			}else if(cllx.indexOf("N")==0){
+//				xzgj=100;
+//				temp1="±5%或±";
+//			}else if(cllx.indexOf("M")==0){
+//				xzgj=10;
+//			}
+//			
+//			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+//			dcj1.setXh(xh);
+//			dcj1.setYqjyxm("整备质量(KG)");
+//			dcj1.setYqjyjg(curbWeightData.getZbzl()==null ? "" : curbWeightData.getZbzl().toString());
+//			dcj1.setYqbzxz(temp1+xzgj+"KG");
+//			dcj1.setYqjgpd(curbWeightData.getZbzlpd().toString());
+//			dcj1.setXh(xh);
+//			xh++;
+//			this.hibernateTemplate.save(dcj1);
+//		}
+//		
+		if(testResult!=null) {
+			
+			if(testResult.getDlx_pd()!=null) {
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setXh(xh);
+				dcj1.setYqjyxm("动力性（km/h）");
+				dcj1.setYqjyjg(testResult.getDlx_wdcs()==null ? "" : testResult.getDlx_wdcs().toString());
+				dcj1.setYqbzxz("≥"+testResult.getDlx_edcs());
+				
+				String pd=BaseDeviceData.PDJG_WJ.toString();
+				
+				if("不合格".equals(testResult.getDlx_pd())) {
+					pd=BaseDeviceData.PDJG_BHG.toString();
+				}else if("合格".equals(testResult.getDlx_pd())) {
+					pd=BaseDeviceData.PDJG_HG.toString();
+				}
+				
+				dcj1.setYqjgpd(pd);
+				dcj1.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj1);
 			}
+			logger.info(!testResult.getYH_PD().equals("0"));
+			if(testResult.getYH_PD()!=null&& !testResult.getYH_PD().equals("0")) {
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setXh(xh);
+				dcj1.setYqjyxm("经济性（L/100 km）");
+				dcj1.setYqjyjg(testResult.getYh_scz()==null ? "" : testResult.getYh_scz().toString());
+				dcj1.setYqbzxz("≤"+testResult.getYh_bzxz());
+				dcj1.setYqjgpd(testResult.getYH_PD().toString());
+				dcj1.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj1);
+			}
+			
+			Map<String, Map<String, Object>>  pfxData =  getPFXData(vehCheckLogin);
+			
+			if(pfxData!=null) {
+				
+				if(pfxData.get("sds")!=null) {
+					
+					Map<String, Object> sds = pfxData.get("sds");
+					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj1.setXh(xh);
+					dcj1.setYqjyxm("高怠速HC(10¯6)");
+					Double hcgclz =(Double)sds.get("HCGCLZ");
+					Double hcgxz = (Double)sds.get("HCGXZ");
+					
+					dcj1.setYqjyjg(hcgclz==null ? "" : hcgclz.toString());
+					dcj1.setYqbzxz("≤"+hcgxz);
+					dcj1.setYqjgpd(hcgxz<=hcgxz?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj1.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj1);
+					
+					DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					Double cogclz =(Double)sds.get("COGCLZ");
+					Double cogxz = (Double)sds.get("COGXZ");
+					
+					dcj2.setXh(xh);
+					dcj2.setYqjyxm("高怠速CO(%)");
+					dcj2.setYqjyjg(cogclz==null ? "" : cogclz.toString());
+					dcj2.setYqbzxz("≤"+cogxz);
+					dcj2.setYqjgpd(cogclz<=cogxz?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj2.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj2);
+					
+					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					Double kqxs =(Double)sds.get("KQXS");
+					Double kqxsxz = (Double)sds.get("KQXSXZ");
+					dcj3.setXh(xh);
+					dcj3.setYqjyxm("高怠速λ");
+					dcj3.setYqjyjg(kqxs==null ? "" : kqxs.toString());
+					dcj3.setYqbzxz("≤"+kqxsxz);
+					dcj3.setYqjgpd(kqxs<=kqxsxz?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj3.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj3);
+					
+					DeviceCheckJudegZJ dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					Double hcdclz =(Double)sds.get("HCDCLZ");
+					Double hcdxz = (Double)sds.get("HCDXZ");					
+					
+					dcj4.setXh(xh);
+					dcj4.setYqjyxm("怠速HC(10¯6)");
+					dcj4.setYqjyjg(hcdclz==null ? "" : hcdclz.toString());
+					dcj4.setYqbzxz("≤"+hcdxz);
+					dcj4.setYqjgpd(hcdclz<=hcdxz?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj4.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj4);
+					
+					DeviceCheckJudegZJ dcj5 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					
+					Double codclz =(Double)sds.get("CODCLZ");
+					Double codxz = (Double)sds.get("CODXZ");		
+					
+					dcj5.setXh(xh);
+					dcj5.setYqjyxm("怠速CO(10¯6)");
+					dcj5.setYqjyjg(codclz==null ? "" : codclz.toString());
+					dcj5.setYqbzxz("≤"+codxz);
+					dcj5.setYqjgpd(codclz<=codxz?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj5.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj5);
+					
+				}
+				
+				if(pfxData.get("wt")!=null) {
+					Map<String, Object> wt = pfxData.get("wt");
+					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					
+				
+					
+					Double clzco40 =(Double)wt.get("CLZCO40");
+					Double xzco40 = (Double)wt.get("XZCO40");
+					
+					Double clzhc40 =(Double)wt.get("CLZHC40");
+					Double xzhc40 = (Double)wt.get("XZHC40");	
+					
+					Double clzno40 =(Double)wt.get("CLZNO40");
+					Double xzno40 = (Double)wt.get("XZNO40");	
+					
+					if(clzco40!=0||clzhc40!=0||clzno40!=0) {
+						DeviceCheckJudegZJ dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+						dcj4.setXh(xh);
+						dcj4.setYqjyxm("稳态2540工况CO(%)");
+						dcj4.setYqjyjg(clzco40==null ? "" : clzco40.toString());
+						dcj4.setYqbzxz("≤"+xzco40);
+						dcj4.setYqjgpd(clzco40<=xzco40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+						dcj4.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj4);
+						
+						
+						DeviceCheckJudegZJ dcj5 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+						dcj5.setXh(xh);
+						dcj5.setYqjyxm("稳态2540工况HC(10¯6)");
+						dcj5.setYqjyjg(clzhc40==null ? "" : clzhc40.toString());
+						dcj5.setYqbzxz("≤"+xzhc40);
+						dcj5.setYqjgpd(clzhc40<=xzhc40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+						dcj5.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj5);
+						
+						DeviceCheckJudegZJ dcj6 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+						
+						dcj6.setXh(xh);
+						dcj6.setYqjyxm("稳态2540工况NO(10¯6)");
+						dcj6.setYqjyjg(clzno40==null ? "" : clzno40.toString());
+						dcj6.setYqbzxz("≤"+xzno40);
+						dcj6.setYqjgpd(clzno40<=xzno40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+						dcj6.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj6);
+					}else {
+						Double clzhc25 =(Double)wt.get("CLZHC25");
+						Double xzhc25 = (Double)wt.get("XZHC25");		
+						
+						dcj1.setXh(xh);
+						dcj1.setYqjyxm("稳态5025工况HC(10¯6)");
+						dcj1.setYqjyjg(clzhc25==null ? "" : clzhc25.toString());
+						dcj1.setYqbzxz("≤"+xzhc25);
+						dcj1.setYqjgpd(clzhc25<=xzhc25?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+						dcj1.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj1);
+						
+						DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+						
+						Double clzco25 =(Double)wt.get("CLZCO25");
+						Double xzco25 = (Double)wt.get("XZCO25");		
+						
+						dcj2.setXh(xh);
+						dcj2.setYqjyxm("稳态5025工况CO(%)");
+						dcj2.setYqjyjg(clzco25==null ? "" : clzco25.toString());
+						dcj2.setYqbzxz("≤"+xzco25);
+						dcj2.setYqjgpd(clzco25<=xzco25?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+						dcj2.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj2);
+						
+						
+						DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+						
+						Double clzno25 =(Double)wt.get("CLZNO25");
+						Double xzno25 = (Double)wt.get("XZNO25");		
+						
+						dcj3.setXh(xh);
+						dcj3.setYqjyxm("稳态5025工况NO(10¯6)");
+						dcj3.setYqjyjg(clzno25==null ? "" : clzno25.toString());
+						dcj3.setYqbzxz("≤"+xzno25);
+						dcj3.setYqjgpd(clzno25<=xzno25?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+						dcj3.setXh(xh);
+						xh++;
+						this.hibernateTemplate.save(dcj3);
+					}
+					
+					
+				}
+				
+				if(pfxData.get("yd")!=null) {
+					
+					Map<String, Object> yd = pfxData.get("yd");
+					
+					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					
+					Double ydpjz =(Double)yd.get("YDPJZ");
+					Double ydxz = (Double)yd.get("YDXZ");		
+					
+					dcj1.setXh(xh);
+					dcj1.setYqjyxm("光吸收系数  m¯1");
+					dcj1.setYqjyjg(ydpjz==null ? "" : ydpjz.toString());
+					dcj1.setYqbzxz("≤"+ydxz);
+					dcj1.setYqjgpd(ydpjz<=ydxz?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj1.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj1);
+					
+				}
+				
+				if(pfxData.get("lgd")!=null) {
+					Map<String, Object> lgd = pfxData.get("lgd");
+					
+					Double ydz1 =(Double)lgd.get("YDZ1");
+					Double ydxz1 = (Double)lgd.get("YDXZ1");		
+					
+					
+					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj1.setXh(xh);
+					dcj1.setYqjyxm("加载减速工况100%（m¯1）");
+					dcj1.setYqjyjg(ydz1==null ? "" : ydz1.toString());
+					dcj1.setYqbzxz("≤"+ydxz1);
+					dcj1.setYqjgpd(ydz1<=ydxz1?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj1.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj1);
+					
+					DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					
+					Double ydz2 =(Double)lgd.get("YDZ2");
+					Double ydxz2 = (Double)lgd.get("YDXZ2");	
+					
+					dcj2.setXh(xh);
+					dcj2.setYqjyxm("加载减速工况80%（m¯1）");
+					dcj2.setYqjyjg(ydz2==null ? "" : ydz2.toString());
+					dcj2.setYqbzxz("≤"+ydxz2);
+					dcj2.setYqjgpd(ydz2<=ydxz2?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj2.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj2);
+					
+					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					
+					Double sjgl =(Double)lgd.get("SJGL");
+					Double xzgl = (Double)lgd.get("XZGL");	
+					
+					dcj3.setXh(xh);
+					dcj3.setYqjyxm("实测最大轮边功率 (kw)");
+					dcj3.setYqjyjg(sjgl==null ? "" : sjgl.toString());
+					dcj3.setYqbzxz("≤"+xzgl);
+					dcj3.setYqjgpd(sjgl<=xzgl?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj3.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj3);
+					
+				}
+				
+			}
+			
+		}
+		
+		//外廓尺寸测量报告
+//		if(outline!=null){
+//			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+//			dcj1.setXh(xh);
+//			dcj1.setYqjyxm("外廓尺寸(mmxmmxmm)");
+//			dcj1.setYqjyjg(outline.getCwkc()+"x"+outline.getCwkk()+"x"+outline.getCwkg());
+//			
+//			if(vehCheckLogin.getJylb().equals("00")){
+//				dcj1.setYqbzxz("±1%或50mm");
+//			}else{
+//				dcj1.setYqbzxz("±2%或100mm");
+//			}
+//			dcj1.setYqjgpd(outline.getClwkccpd().toString());
+//			dcj1.setXh(xh);
+//			xh++;
+//			this.hibernateTemplate.save(dcj1);
+//		}
+		
+		Map<String,Object> xjMap =  getXJData(vehCheckLogin, vehCheckLogin.getJycs());
+		SuspensionData xj1 = (SuspensionData)xjMap.get("xj1");
+		SuspensionData xj2 = (SuspensionData)xjMap.get("xj2");
+		
+		if(xj1!=null) {
+			
+			Float zxslFloat=Float.parseFloat(xj1.getZxsl());
+			Float yxslFloat=Float.parseFloat(xj1.getYxsl());
+			Float zycFloat = Float.parseFloat(xj1.getZyc());
 			
 			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setXh(xh);
-			dcj1.setYqjyxm("整备质量(KG)");
-			dcj1.setYqjyjg(curbWeightData.getZbzl()==null ? "" : curbWeightData.getZbzl().toString());
-			dcj1.setYqbzxz(temp1+xzgj+"KG");
-			dcj1.setYqjgpd(curbWeightData.getZbzlpd().toString());
+			dcj1.setYqjyxm("悬架前轴左吸收率");
+			dcj1.setYqjyjg(zxslFloat+"%");
+			dcj1.setYqbzxz("≥40");
+			dcj1.setYqjgpd(zxslFloat>=40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+			dcj1.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj1);
+			
+			
+			
+			DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj2.setXh(xh);
+			dcj2.setYqjyxm("悬架前轴右吸收率");
+			dcj2.setYqjyjg(yxslFloat+"%");
+			dcj2.setYqbzxz("≥40");
+			dcj2.setYqjgpd(yxslFloat>=40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+			dcj2.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj2);
+			
+			DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj3.setXh(xh);
+			dcj3.setYqjyxm("悬架前轴左右差");
+			dcj3.setYqjyjg(zycFloat+"%");
+			dcj3.setYqbzxz("≤15");
+			dcj3.setYqjgpd(zycFloat<=15?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+			dcj3.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj3);
+			
+			
+		}
+		
+		if(xj2!=null) {
+			
+			Float zxslFloat=Float.parseFloat(xj2.getZxsl());
+			Float yxslFloat=Float.parseFloat(xj2.getYxsl());
+			Float zycFloat = Float.parseFloat(xj2.getZyc());
+			
+			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj1.setXh(xh);
+			dcj1.setYqjyxm("悬架后轴左吸收率");
+			dcj1.setYqjyjg(zxslFloat+"%");
+			dcj1.setYqbzxz("≥40");
+			dcj1.setYqjgpd(zxslFloat>=40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+			dcj1.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj1);
+			
+			
+			
+			DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj2.setXh(xh);
+			dcj2.setYqjyxm("悬架后轴右吸收率");
+			dcj2.setYqjyjg(yxslFloat+"%");
+			dcj2.setYqbzxz("≥40");
+			dcj2.setYqjgpd(yxslFloat>=40?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+			dcj2.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj2);
+			
+			DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj3.setXh(xh);
+			dcj3.setYqjyxm("悬架后轴左右差");
+			dcj3.setYqjyjg(zycFloat+"%");
+			dcj3.setYqbzxz("≤15");
+			dcj3.setYqjgpd(zycFloat<=15?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+			dcj3.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(dcj3);
+			
+			
+		}
+		
+		Map<String,Object> sjjData = getSJJData(vehCheckLogin, vehCheckLogin.getJycs());
+		
+		VolumeData volumeData =(VolumeData) sjjData.get("sjj");
+		
+		if(volumeData!=null) {
+			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			dcj1.setXh(xh);
+			dcj1.setYqjyxm("喇叭声压级(dB(A))");
+			dcj1.setYqjyjg(volumeData.getFb());
+			dcj1.setYqbzxz("90dB(A)~115bD(A)");
+			boolean pd =Float.parseFloat(volumeData.getFb().trim())>=90&&Float.parseFloat(volumeData.getFb().trim())<=115;
+			dcj1.setYqjgpd(pd?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 			dcj1.setXh(xh);
 			xh++;
 			this.hibernateTemplate.save(dcj1);
 		}
 		
-		//外廓尺寸测量报告
-		if(outline!=null){
-			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setXh(xh);
-			dcj1.setYqjyxm("外廓尺寸(mmxmmxmm)");
-			dcj1.setYqjyjg(outline.getCwkc()+"x"+outline.getCwkk()+"x"+outline.getCwkg());
-			
-			if(vehCheckLogin.getJylb().equals("00")){
-				dcj1.setYqbzxz("±1%或50mm");
-			}else{
-				dcj1.setYqbzxz("±2%或100mm");
-			}
-			dcj1.setYqjgpd(outline.getClwkccpd().toString());
-			dcj1.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(dcj1);
-		}
+		
 	}
 	
 	private Integer createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, Integer xh) {
@@ -828,6 +1299,28 @@ public class ZHCheckDataManager {
 				dcj2.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj2);
+				
+				if(brd.getJyxm().indexOf("L")==-1&&!"B0".equals(brd.getJyxm())) {
+					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj3.setXh(xh);
+					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞力");
+					dcj3.setYqjyjg(brd.getZzzl() == null ? "" : brd.getZzzl().toString());
+					dcj3.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
+					dcj3.setYqjgpd(brd.getZlzzlpd() == null ? "" : brd.getZlzzlpd().toString());
+					dcj3.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj3);
+					
+					DeviceCheckJudegZJ dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj4.setXh(xh);
+					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞力");
+					dcj4.setYqjyjg(brd.getYzzl() == null ? "" : brd.getZzzl().toString());
+					dcj4.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
+					dcj4.setYqjgpd(brd.getYlzzlpd() == null ? "" : brd.getYlzzlpd().toString());
+					dcj4.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj4);
+				}
 
 			}
 			flagMap.put(brd.getJyxm(), brd);
@@ -912,6 +1405,12 @@ public class ZHCheckDataManager {
 		deviceCheckJudeg.setHpzl(vehCheckLogin.getHpzl());
 		deviceCheckJudeg.setJycs(vehCheckLogin.getJycs());
 		deviceCheckJudeg.setJyjgbh(vehCheckLogin.getJyjgbh());
+	}
+	
+	
+	public List<DeviceCheckJudegZJ> getDeviceCheckJudegZJ(String jylsh) {
+		List<DeviceCheckJudegZJ> datas = (List<DeviceCheckJudegZJ>) this.hibernateTemplate.find("from DeviceCheckJudegZJ where jylsh=?", jylsh);
+		return datas;
 	}
 
 }

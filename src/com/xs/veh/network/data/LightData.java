@@ -233,7 +233,7 @@ public class LightData extends BaseDeviceData {
 			if (this.czpc == null || this.dg == null) {
 				return;
 			}
-			Integer l = Integer.parseInt(this.czpc.trim());
+			Float l = Float.parseFloat(this.czpc.trim());
 			Integer h = this.dg;
 			if (h == 0) {
 				return;

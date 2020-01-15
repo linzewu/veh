@@ -148,7 +148,7 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 	public void sendMessage(String message) throws IOException {
 		Integer dhcf = Integer.parseInt(qtxxObject.get("dhcf").toString());
 		Integer xylx = Integer.parseInt(qtxxObject.get("xylx").toString());
-
+		message=message.toUpperCase();
 		if (dhcf == 0) {
 			message += "\r\n";
 		}

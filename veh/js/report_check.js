@@ -34,7 +34,8 @@ function printXnjyjld(){
 
 //刷新性能检验报告单
 function refreshXnjybgd(){
-	$.post("/veh/checkReport/printJyBgReport",{lsh:""},function(data){
+	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+	$.post("/veh/checkReport/printJyBgReport",{lsh:baseInfo.jylsh},function(data){
 		if(data.state==1){
 			
 			$("#printTempletRep img").attr("src","../cache/report/"+data.data);

@@ -119,8 +119,9 @@ public abstract class AbstractDeviceBrakRoller {
 		while (temp.isEmpty()) {
 			Thread.sleep(50);
 		}
-		while (temp.remove(0)!=beginByte) {
-			
+		
+		while (temp.isEmpty()||temp.remove(0)!=beginByte) {
+			Thread.sleep(20);
 		}
 		
 		contex[0]=beginByte;

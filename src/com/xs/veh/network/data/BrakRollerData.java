@@ -210,15 +210,38 @@ public class BrakRollerData extends BaseDeviceData {
 	private Integer ylzzlpd;
 	
 	@Column
-	private Integer zzlxz;
+	private Float zzlxz=3.5f;
+	
+	@Column
+	private Float zzzlxz;
+	
+	@Column
+	private Float yzzlxz;
+	
 	
 	
 
-	public Integer getZzlxz() {
+	public Float getZzzlxz() {
+		return zzzlxz;
+	}
+
+	public void setZzzlxz(Float zzzlxz) {
+		this.zzzlxz = zzzlxz;
+	}
+
+	public Float getYzzlxz() {
+		return yzzlxz;
+	}
+
+	public void setYzzlxz(Float yzzlxz) {
+		this.yzzlxz = yzzlxz;
+	}
+
+	public Float getZzlxz() {
 		return zzlxz;
 	}
 
-	public void setZzlxz(Integer zzlxz) {
+	public void setZzlxz(Float zzlxz) {
 		this.zzlxz = zzlxz;
 	}
 
@@ -1089,6 +1112,41 @@ public class BrakRollerData extends BaseDeviceData {
 		}else{
 			this.setZpd(PDJG_HG);
 		}
+	}
+	
+	public void setZlzzlPd() {
+		
+		if(zzzl!=null&&zlh!=null&&zlh!=0) {
+			return;
+		}
+		if(yzzl!=null&&ylh!=null&&ylh!=0) {
+			return;
+		}
+		
+		if((zzzl)>0.035*zlh+ylh) {
+			this.zlzzlpd=PDJG_BHG;
+		}else {
+			this.zlzzlpd=PDJG_HG;
+		}
+		
+	}
+	
+	
+	public void setYlzzlPd() {
+		
+		if(zzzl!=null&&zlh!=null&&zlh!=0) {
+			return;
+		}
+		if(yzzl!=null&&ylh!=null&&ylh!=0) {
+			return;
+		}
+		
+		if((yzzl)>0.035*ylh+ylh) {
+			this.ylzzlpd=PDJG_BHG;
+		}else {
+			this.ylzzlpd=PDJG_HG;
+		}
+		
 	}
 	
 	
