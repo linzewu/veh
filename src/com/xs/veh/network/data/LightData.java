@@ -124,11 +124,20 @@ public class LightData extends BaseDeviceData {
 	}
 
 	public String getCzpyxz() {
-		if(dg!=null&&dg<1000) {
-			this.czpyxz ="-300,-50";
-		}else {
-			this.czpyxz ="-350,-100";
+		
+		if(this.gx==LightData.GX_YGD) {
+			if(dg!=null) {
+				this.czpyxz ="0.8,100";
+			}
+		}else if(this.gx==LightData.GX_JGD) {
+			if(dg!=null&&dg<1000) {
+				this.czpyxz ="-300,-50";
+			}else {
+				this.czpyxz ="-350,-100";
+			}
 		}
+		
+		
 		return czpyxz;
 	}
 
@@ -348,21 +357,24 @@ public class LightData extends BaseDeviceData {
 		if ((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz.equals("A")) {
 			return;
 		}
-		/*if (this.gx == GX_JGD) {
-			if (cllx.indexOf("K") == 0) {
-				this.czpyxz = "0.7,0.9";
-			} else {
-				this.czpyxz = "0.6,0.8";
-			}
-		}
+//		if (this.gx == GX_JGD) {
+//			if (cllx.indexOf("K") == 0) {
+//				this.czpyxz = "0.7,0.9";
+//			} else {
+//				this.czpyxz = "0.6,0.8";
+//			}
+//		}
 		if (this.gx == GX_YGD) {
-			this.czpyxz = "0.8,0.95";
-		}*/
-		
-		if(dg>1000) {
-			this.czpyxz ="-350,-50";
-		}else {
-			this.czpyxz ="-350,-100";
+			Float f =  (0.8f*this.dg)-this.dg;
+			this.czpyxz = f+",100";
+		}
+		if (this.gx == GX_JGD) {
+			if(dg>1000) {
+				this.czpyxz ="-350,-50";
+			}else {
+				this.czpyxz ="-350,-100";
+			}
+			
 		}
 		
 	}

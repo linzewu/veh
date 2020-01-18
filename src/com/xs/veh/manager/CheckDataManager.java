@@ -961,7 +961,13 @@ public class CheckDataManager {
 							}
 						}
 						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : czpc);
-						dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
+						if(lightData.getGx() == LightData.GX_YGD) {
+							String[] ygdxz = lightData.getCzpyxz().split(",");
+							dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : (ygdxz[0]+"H~"+ygdxz[1]+"mm"));
+						}else {
+							dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
+						}
+						
 						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
 						dcj2.setXh(xh);
 						xh++;

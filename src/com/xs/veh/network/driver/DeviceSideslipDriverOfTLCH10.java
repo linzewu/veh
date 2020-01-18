@@ -1,6 +1,7 @@
 package com.xs.veh.network.driver;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -10,8 +11,8 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceSideslip;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceSideslip;
-import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.SimpleRead.ProtocolType;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.SideslipData;
 
 public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
@@ -58,6 +59,11 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		sideslipData.setSideslip((float) (data/10.0));
 		
 	}
+	
+	public static void main(String[] age) {
+		DecimalFormat decimalFormat = new DecimalFormat("0.0");
+		System.out.println(String.format("%.1f", 1.66));
+	}
 
 	@Override
 	public SideslipData startCheck(VehFlow vehFlow) throws  IOException, InterruptedException {
@@ -85,6 +91,9 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 				String strData=new String(new byte[]{data[3],data[4],data[5],data[6],data[7],data[8]}).trim();
 				logger.info("侧滑："+strData);
 				float  sideslip=Float.parseFloat(strData);
+				String strSideslip = String.format("%.1f", sideslip);
+				sideslip=Float.parseFloat(strSideslip);
+				
 				if(data[2]==0x7a){
 					TakePicture.createNew(this.deviceSideslip.getVehCheckLogin(),"A1");
 					this.sideslipData.setSideslip(sideslip);
