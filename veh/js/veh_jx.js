@@ -1301,6 +1301,7 @@ var report={
 		
 		$.post("/veh/report/getReport1",{jylsh:baseInfo.jylsh,jycs:intjycs},function(data){
 			$("#report1_jyjgmc").text(data.title);
+			$("#report1 [name=gcsj]").text(data.gcsj);
 			
 			$("#report1 [name^='report-baseInfo-']").each(function(i,n){
 				var name = $(n).attr("name").replace("report-baseInfo-","");

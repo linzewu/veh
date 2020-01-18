@@ -394,7 +394,7 @@ public class LightData extends BaseDeviceData {
 		if(czpcNew.indexOf("+")==0) {
 			czpcNew=czpcNew.substring(1);
 		}
-		Integer numCzpc = Integer.parseInt(czpcNew);
+		Float numCzpc = Float.parseFloat(czpcNew);
 
 		if (xz1 <= numCzpc && xz2 >= numCzpc) {
 			this.czpypd = CheckDataManager.PDJG_HG;
