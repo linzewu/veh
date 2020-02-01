@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import com.xs.veh.entity.Insurance;
 import com.xs.veh.entity.PlateApplyTable;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.RoadCheackManager;
 import com.xs.veh.util.HKVisionUtil;
@@ -58,6 +60,23 @@ public class ReportController {
 	@RequestMapping(value = "getReport1", method = RequestMethod.POST)
 	public @ResponseBody Map getReport1(@RequestParam String jylsh,int jycs) {
 		Map data = checkDataManager.getReport1(jylsh,jycs);
+		List<VehCheckProcess> datas = checkDataManager.getVehCheckProcess(jylsh);
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String gcsj="";
+		if(datas.get(0).getKssj()!=null) {
+			gcsj=sdf.format(datas.get(0).getKssj())+"-";
+		}
+		
+		String jssj ="";
+		for(VehCheckProcess vcp: datas) {
+			if(vcp.getJssj()!=null) {
+				jssj = sdf.format(vcp.getJssj());
+			}
+		}
+		
+		gcsj+=jssj;
+		data.put("gcsj",gcsj);
+		
 		return data;
 	}
 
