@@ -6,7 +6,7 @@
 					data-options="url:'/veh/veh/getVehChecking',fitColumns:true,singleSelect:true,fit:true,pagination:true,pageSize:20,toolbar:'#checkingVehToolbar',footer:'#checkingVehFooter',queryParams:{statusArry:'0,1'},onDblClickRow:veh.loadVehCheckInfo">
 					<thead>
 						<tr>
-							<th data-options="field:'hphm',width:80">号牌号码</th>
+							<th data-options="field:'hphm',formatter:formatterHphm,width:80">号牌号码</th>
 							<th data-options="field:'hpzl',width:80,formatter:function(value){return comm.getParamNameByValue('hpzl',value)}">号牌种类</th>
 							<th data-options="field:'jcxdh',width:50">检测线</th>
 						</tr>
@@ -20,7 +20,7 @@
 						<tr>
 							<th data-options="field:'clxh',width:80">车辆型号</th>
 							<th data-options="field:'jylsh',width:100">检验流水号</th>
-							<th data-options="field:'hphm',width:80">号牌号码</th>
+							<th data-options="field:'hphm',width:80,formatter:formatterHphm">号牌号码</th>
 							<th data-options="field:'hpzl',width:80,formatter:function(value){return comm.getParamNameByValue('hpzl',value)}">号牌种类</th>
 							<th data-options="field:'jcxdh',width:50">检测线</th>
 						</tr>
@@ -185,6 +185,7 @@ function showJyxm(obj){
 		$.messager.alert("获取检验项目错误","错误类型:"+e.status);
 	});
 }
+
 
 $(function(){
 	$('#_checkType').combobox({

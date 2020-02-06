@@ -31,6 +31,7 @@ import com.xs.enums.CommonUserOperationEnum;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.ExternalCheck;
+import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.manager.CheckDataManager;
@@ -230,13 +231,18 @@ public class PDAServiceController {
 	@UserOperation(code="processStart",name="检测过程开始",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "processStart")
 	public @ResponseBody Map processStart(@RequestParam("jyxm") String jyxm, @RequestParam("jylsh") String jylsh,
-			@RequestParam("jycs") Integer jycs) throws Exception {
+			@RequestParam("jycs") Integer jycs,@RequestParam(value="jcxdh",required=false) Integer jcxdh) throws Exception {
 		try {
 			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
 			
 			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
 			//显示屏现在 XX项目 检测中
-			checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
+			if(jcxdh!=null) {
+				checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,jcxdh);
+			}else {
+				checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
+			}
+			
 			
 			vehCheckProcess.setKssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
@@ -336,7 +342,30 @@ public class PDAServiceController {
 		deviceManager.upZ1(deviceId, vehCheckLoginId);
 		deviceManager.updateZ1State(vehCheckLoginId);
 		
+		return ResultHandler.toSuccessJSON("发车成功！");
+	}
+	
+	
+	@RequestMapping(value = "getQDZCheckList")
+	@UserOperation(code="getQDZCheckList",name="查询驱动轴称重待检列表")
+	public @ResponseBody String getQDZCheckList(HttpServletRequest request)
+			throws JsonProcessingException {
+		List<TestVeh> data = vehManager.getTestVehWaitList();
+		ObjectMapper om = new ObjectMapper();
+		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(data));
+		return jsonp;
+	}
+	
+	
+	@RequestMapping(value = "upQDZ")
+	@UserOperation(code="upQDZ",name="驱动轴称重")
+	public @ResponseBody Map upQDZ( Integer deviceId, Integer testVehId)
+			throws InterruptedException, Exception {
 		
+		TestVeh testVeh = vehManager.getTestVeh(testVehId);
+		deviceManager.upQDZ(deviceId, testVeh);
+		testVeh.setYsjc(2);
+		vehManager.saveTestVeh(testVeh);
 		
 		return ResultHandler.toSuccessJSON("发车成功！");
 	}

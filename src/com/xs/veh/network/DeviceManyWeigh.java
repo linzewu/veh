@@ -163,7 +163,7 @@ public class DeviceManyWeigh extends SimpleRead  {
 	}
 
 	/**
-	 * 称重
+	 * 整备质量称重
 	 * 
 	 * @param vehCheckLogin
 	 * @param vehFlow
@@ -183,6 +183,22 @@ public class DeviceManyWeigh extends SimpleRead  {
 		
 		return curbWeightData;
 	}
+	
+	//驱动轴称重
+	public Integer startCheckQdz(VehCheckLogin vehCheckLogin) throws Exception, InterruptedException {
+		
+		logger.info("驱动轴称重开始");
+		
+		this.vehCheckLogin=vehCheckLogin;
+		Integer qdzzl = dw.startCheckQdz(vehCheckLogin);
+		Thread.sleep(2000);
+		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
+		Thread.sleep(2000);
+		display.setDefault();
+		
+		return qdzzl;
+	}
+	
 	
 	public void setDw(Integer zw) {
 		

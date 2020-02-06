@@ -1,19 +1,12 @@
 package com.xs.veh.network.driver;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 
 import com.xs.common.CharUtil;
 import com.xs.veh.entity.VehCheckLogin;
-import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceManyWeigh;
-import com.xs.veh.network.AbstractDeviceWeigh;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceManyWeigh;
-import com.xs.veh.network.DeviceWeigh;
-import com.xs.veh.network.SimpleRead.ProtocolType;
-import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
 
 public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
@@ -74,6 +67,17 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 
 	}
 	
+	@Override
+	public Integer startCheckQdz(VehCheckLogin vehCheckLogin) throws Exception, InterruptedException {
+		
+		deviceManyWeigh.sendMessage(ql);
+		logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		// 开始新的一次检测
+		createNew();
+		Integer qz = check(vehCheckLogin, "驱动");
+		return qz;
+	}
+	
 	
 	private Integer check(VehCheckLogin vehCheckLogin,String zw) throws Exception, InterruptedException {
 		try {
@@ -103,7 +107,7 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 					dw=qzdw;
 				}
 				
-				if("后".equals(zw)) {
+				if("后".equals(zw)||"驱动".equals(zw)) {
 					dw=hzdw;
 				}
 				
@@ -159,5 +163,8 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 	public void init(DeviceManyWeigh deviceManyWeigh) {
 		super.init(deviceManyWeigh);
 	}
+
+
+	
 
 }

@@ -280,9 +280,15 @@ public class VehController {
 				testVeh.setSfkc(0);
 			}
 			
-			testVeh.setQdzkzzl(1200);
+			testVeh.setQdzkzzl(0);
+			//柴油车 必须先做驱动轴称重
+			if(testVeh.getRlzl().equals("B")) {
+				testVeh.setYsjc(0);
+			}else {
+				testVeh.setYsjc(1);
+			}
 			
-			testVeh.setYsjc(1);
+			
 			
 			testVeh.setCsbsx("40");
 			
@@ -417,6 +423,14 @@ public class VehController {
 		JSONObject json = new JSONObject();
 		json.put("state", "OK");
 		return json.toString();
+	
+	}
+	
+	@UserOperation(code="getTestVehBylsh",name="获取综合检测基本信息")
+	@RequestMapping(value = "getTestVehBylsh", method = RequestMethod.POST)
+	public @ResponseBody TestVeh getTestVehBylsh(String jylsh) {
+		TestVeh testVeh = this.vehManager.getTestVehBylsh(jylsh);
+		return testVeh;
 	
 	}
 

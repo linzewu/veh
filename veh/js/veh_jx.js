@@ -84,16 +84,33 @@ var veh = {
 			var ss=row;
 			ss['sf']=ss['hphm'].substring(0,1);
 			var hpmh = ss['hphm'].substring(1);
-			$("#win_form_veh").form("load",ss);
-			$("#win_form_veh input[sid=hphm]").textbox("setValue",hpmh);
-			var jyxmArry = row.jyxm.split(",");
-			$(".vehCheckeItem").empty();
-			$.each(jyxmArry,function(i,n){
-				var itemName=comm.getParamNameByValue('jyxm',n);
-				var li ="<li><a href=\"#\" class=\"easyui-linkbutton c6\" >"+itemName+"</a></li>";
-				$(".vehCheckeItem").append(li);
-				$.parser.parse('.vehCheckeItem');
-			});
+			
+			 $.post("/veh/veh/getTestVehBylsh",{jylsh:ss.jylsh},function(data){
+				 	
+				 	if(ss.checkType==1){
+				 		$.extend(ss, data);
+				 	}
+				 
+					$("#win_form_veh").form("load",ss);
+					$("#win_form_veh input[sid=hphm]").textbox("setValue",hpmh);
+					var jyxmArry = row.jyxm.split(",");
+					$(".vehCheckeItem").empty();
+					$.each(jyxmArry,function(i,n){
+						var itemName;
+						if(ss.checkType==1){
+							itemName= comm.getParamNameByValue('zhjyxm',n)
+						}else{
+							itemName=comm.getParamNameByValue('jyxm',n);
+						}
+						
+						
+						var li ="<li><a href=\"#\" class=\"easyui-linkbutton c6\" >"+itemName+"</a></li>";
+						$(".vehCheckeItem").append(li);
+						$.parser.parse('.vehCheckeItem');
+					});
+			 });
+			
+		
 		}
 		$("#win_checke_veh_info .easyui-textbox").textbox("disable");
 		$("#win_checke_veh_info .easyui-combobox").combobox("disable");

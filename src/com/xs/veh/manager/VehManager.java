@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.xs.common.Message;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
@@ -1119,9 +1120,50 @@ public class VehManager {
 	
 	public void saveTestVeh(TestVeh testVeh) {
 		
-		this.hibernateTemplate.save(testVeh);
+		this.hibernateTemplate.saveOrUpdate(testVeh);
 		
 	}
+	
+	public TestVeh getTestVehWaitBylsh(String jylsh){
+		
+		List<TestVeh> testVehs = (List<TestVeh>) this.hibernateTemplate.find("from TestVeh where jylsh=? and ysjc!=1", jylsh);
+		
+		if(!CollectionUtils.isEmpty(testVehs)) {
+			return testVehs.get(0);
+		}else {
+			return null;
+		}
+		
+	}
+	
+	public TestVeh getTestVehBylsh(String jylsh){
+		
+		List<TestVeh> testVehs = (List<TestVeh>) this.hibernateTemplate.find("from TestVeh where jylsh=?", jylsh);
+		
+		if(!CollectionUtils.isEmpty(testVehs)) {
+			return testVehs.get(0);
+		}else {
+			return null;
+		}
+		
+	}
+	
+	public TestVeh getTestVeh(Integer testVehId){
+		
+		TestVeh testVehs = this.hibernateTemplate.load(TestVeh.class, testVehId);
+		
+		return testVehs;
+		
+	}
+	
+	public List<TestVeh> getTestVehWaitList(){
+		
+		List<TestVeh> testVehs = (List<TestVeh>) this.hibernateTemplate.find("from TestVeh where ysjc=0");
+		
+		return testVehs;
+		
+	}
+	
 	
 	
 }

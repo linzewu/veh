@@ -18,6 +18,7 @@ import com.xs.common.ResultHandler;
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.DeviceMotion;
+import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.network.DeviceDisplay;
@@ -164,10 +165,38 @@ public class DeviceManager {
 		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
 		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
 		CurbWeightData cwd = dmw.startCheck(vehCheckLogin);
-		
 		vehManager.saveCurbWeight(cwd);
 		
+		TestVeh testVeh = vehManager.getTestVehWaitBylsh(vehCheckLogin.getJylsh());
+		if(testVeh!=null) {
+			testVeh.setYsjc(1);
+			testVeh.setQdzkzzl(cwd.getHzzl());
+		}
+		
+		
 		logger.info("整备质量结束");
+		
+	}
+	
+	@Async
+	public void upQDZ(Integer deviceId,TestVeh testVeh) throws InterruptedException, Exception {
+		
+		logger.info("驱动轴开始");
+		Device device=new Device();
+		device.setId(deviceId);
+		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
+		
+		//TestVeh testVeh = hibernateTemplate.load(TestVeh.class, testVehId);
+		
+		VehCheckLogin  vehCheckLogin = checkDataManager.getVehCheckLogin(testVeh.getJylsh());
+		
+		Integer qdz = dmw.startCheckQdz(vehCheckLogin);
+		//testVeh = vehManager.getTestVehWaitBylsh(vehCheckLogin.getJylsh());
+		testVeh.setYsjc(1);
+		testVeh.setQdzkzzl(qdz);
+		vehManager.saveTestVeh(testVeh);
+		
+		logger.info("驱动轴结束");
 		
 		
 	}

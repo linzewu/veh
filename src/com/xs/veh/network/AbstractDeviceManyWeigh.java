@@ -24,6 +24,8 @@ public abstract class AbstractDeviceManyWeigh {
 	
 	
 	public abstract CurbWeightData startCheck(VehCheckLogin vc) throws Exception, InterruptedException;
+	
+	public abstract Integer startCheckQdz(VehCheckLogin vc) throws Exception, InterruptedException;
 
 	public void device2pc(byte[] ed) throws IOException {
 		for (byte b : ed) {
