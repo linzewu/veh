@@ -32,22 +32,56 @@
 	<div data-options="region:'center'">
 		 <div class="easyui-panel" style="padding:5px;">
 	        <a href="#" class="easyui-menubutton" data-options="menu:'#dpcgq'">底盘测功器</a>
-	        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-edit'">Edit</a>
-	      
+	        <a href="#" class="easyui-menubutton" data-options="menu:'#qywqfxy'">汽油尾气分析仪</a>
+	      	<a href="#" class="easyui-menubutton" data-options="menu:'#cywqfxy'">柴油尾气分析仪</a>
+	      	<a href="#" class="easyui-menubutton" data-options="menu:'#cysbjc'">柴油设备检查</a>
 	    </div>
-	    <div id="dpcgq" style="width:150px;">
-	        <div >底盘预热</div>
-	        <div >寄生功率测试</div>
+	    <div id="dpcgq" style="width:200px;">
+	        <div onclick="open_Page('底盘预热','dpyr.html','550px')">底盘预热</div>
+	        <div onclick="open_Page('寄生功率测试','kzhx.html','600px')">寄生功率测试</div>
+	        <div onclick="open_Page('底盘加载滑行测试','jzhx.html','600px')">底盘加载滑行测试</div>
+	        <div onclick="open_Page('底盘负荷标定','dpfhbd.html','600px')">底盘负荷标定</div>
+	        <div onclick="open_Page('转速自检','dpxsdjc.html','600px')">底盘线速度检查</div>
+	        <div >底盘变加载滑行和响应时间</div>
+	        <div onclick="open_Page('基本惯量确定','dpjbglcs.html','600px')">底盘基本惯量测试</div>
+	        <div onclick="open_Page('基本惯量--计量','dpjbglcsjl.html','600px')">底盘基本惯量测试计量</div>
+	        <div onclick="open_Page('控制器检查','kzqjc.html','600px')">控制器检查</div>
+	        <div onclick="open_Page('功率吸收能力检查','glxsdycs.html','560px')">功率吸收能力检查</div>
 	        
 	    </div>
-	    <div id="mm1" style="width:150px;">
-	        <div data-options="iconCls:'icon-undo'">Undo</div>
-	        <div data-options="iconCls:'icon-redo'">Redo</div>
-	        
+	    <div id="qywqfxy" style="width:150px;">
+	        <div >高气标定</div>
+	        <div >底气检查和响应时间</div>
+	        <div >泄露检查</div>
+	        <div >环境参数校准</div>
+	        <div >氧传感器自检</div>
+	        <div >低流量自检</div>
+	    </div>
+	    <div id="cywqfxy" style="width:150px;">
+	        <div >高气标定</div>
+	        <div >高气标定NO2</div>
+	        <div >低气检查</div>
+	        <div >低气检查NO2</div>
+	        <div >泄露检查</div>
+	        <div >低流量自检</div>
+	    </div>
+	    <div id="cysbjc" style="width:150px;">
+	        <div >不透光烟度计检查</div>
+	        <div >滤纸式烟度计检查</div>
 	    </div>
 	</div>
+	
+	<div id="dpyr_win" class="easyui-window" title="底盘预热" style="width:1000px;height:450px"
+        data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:true,collapsible:false,minimizable:false">
+</div>
 </body>
 
 <script type="text/javascript">
+function open_Page(title,page,height){
+	var url ="/veh/html/hb/"+page+"?"+new Date().getTime();
+	$("#dpyr_win").window({"title":title,"height":height});
+	$("#dpyr_win").window('open');
+	$("#dpyr_win").window('refresh', url);
+}
 </script>
 </html>

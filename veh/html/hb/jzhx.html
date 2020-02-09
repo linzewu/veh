@@ -1,0 +1,32 @@
+<div id="jzhxLay" class="easyui-layout" style="width:960px;height:560px;">
+		<div style="font-size: 20px; color: red;">加载滑行（相对误差均小于7%合格）</div>
+		<div align="center" style="color: blue; height: 180px; font-size: 60px; width:100%;">
+			km/h
+			<br/>
+			kW
+		</div>
+		<div style="background-color: black; color: yellow; height: 100px; font-size: 40px; line-height:100px; width:100%;">
+			放下举升板，打开变频器电源后点开始
+		</div>
+        <br/>
+        <div align="center" style="width:100%;">
+	       	<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">停车</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">结束</a>&nbsp;&nbsp;
+			<span style="font-size: 15px; font-weight: bold;">加载功率<input class="easyui-textbox" style="width:40px;">KW      基准质量：907kg</span>
+		</div><br/>
+		<table class="easyui-datagrid" style="height:200px"
+        data-options="fitColumns:true,singleSelect:true,rownumbers:true,">
+		    <thead>
+		        <tr>
+		            <th data-options="field:'code',width:100">项目</th>
+		            <th data-options="field:'name',width:100">内阻(KW)</th>
+		            <th data-options="field:'name1',width:100">滑行功率</th>
+		            <th data-options="field:'name2',width:100">滑行时间</th>
+		            <th data-options="field:'price',width:100">理论时间</th>
+		            <th data-options="field:'price1',width:100">误差(%)</th>
+		            <th data-options="field:'price2',width:100">是否合格</th>
+		        </tr>
+		    </thead>
+		</table>
+    </div>

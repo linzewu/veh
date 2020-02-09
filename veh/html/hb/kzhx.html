@@ -1,0 +1,29 @@
+<div id="kzhxLay" class="easyui-layout" style="width:960px;height:560px;">
+		<div style="font-size: 20px; color: red;">空载滑行（25km/h和40km/h时内阻不得大于2.5kw）</div>
+		<div align="center" style="color: blue; height: 180px; font-size: 60px; width:100%;">
+			<br/>
+			km/h
+		</div>
+		<div style="background-color: black; color: yellow; height: 100px; font-size: 40px; line-height:100px; width:100%;">
+			落下举升板，变频器通电源后点开始
+		</div>
+        <br/>
+        <div align="center" style="width:100%;">
+	       	<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">急停</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">报告</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">结束</a>
+		</div><br/>
+		<table class="easyui-datagrid" style="height:200px"
+        data-options="fitColumns:true,singleSelect:true,rownumbers:true,">
+		    <thead>
+		        <tr>
+		            <th data-options="field:'code',width:100">项目</th>
+		            <th data-options="field:'name',width:100">内阻(KW)</th>
+		            <th data-options="field:'price',width:100">时间(S)</th>
+		            <th data-options="field:'price1',width:100">开始速度</th>
+		            <th data-options="field:'price2',width:100">结束速度</th>
+		        </tr>
+		    </thead>
+		</table>
+    </div>
