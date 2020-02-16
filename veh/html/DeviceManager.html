@@ -1,7 +1,33 @@
 <script type="text/javascript">
+	
+	var hbDeviceManager=null;
+	
+	function jcxGroupFormatter(group){
+		console.log(group)
+		if(group){
+			return group+"线";
+		}else{
+			return "未分组";
+		}
+	}
+	
+	
+	setTimeout(function(){
+		 $("#hbDeviceConfigManager").datagrid();
+		 hbDeviceManager=gridUtil.createNew("#hbDeviceConfigManager",{idField:"id",url:"/veh/hb"});
+	},1000);
+	
+	
+
 	var device  = gridUtil.createNew("#deviceManager",{idField:"id",url:"/veh/device"});
 	
 	var workpointManager  = gridUtil.createNew("#workpointManager",{idField:"id",url:"/veh/workpoint"});
+	
+	
+	function getAllDevices(){
+		var rows = $("#deviceManager").datagrid("getRows");
+		return rows;
+	}
 	
 	function deviceFormatter(value,row,index){
 		return  comm.getParamNameByValue('deviceType',value);
@@ -323,8 +349,20 @@
 				deviceDisplayStart();
 			}
 		});
+	}
+	
+	function deviceFormatter(value,rows){
 		
+		var rows = $("#deviceManager").datagrid("getRows");
+		var text = value;
+		$.each(rows,function(i,n){
+			if(value==n.id){
+				text=n.name;
+				return;
+			}
+		});
 		
+		return text;
 	}
 	
 </script>
@@ -341,7 +379,7 @@
 				<tr>
 					<th data-options="field:'name',width:100">设备名称</th>
 					<th data-options="field:'type',width:100,formatter:deviceFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('deviceType'),valueField: 'id',textField: 'value'}}">设备类型</th>
-					<th data-options="field:'jcxxh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">线别</th>
+					<th data-options="field:'jcxxh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">线别</th>
 					<th data-options="field:'sbcs',width:100">设备厂商</th>
 					<th data-options="field:'sbxh',width:100">设备型号</th>
 				</tr>
@@ -384,6 +422,26 @@
 			<a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="workpointManager.reStart()">重启</a>
 		</div>
 	</div>
+	<div data-options="title:'环保设备IP绑定'">
+		<table id="hbDeviceConfigManager"  data-options="url:'/veh/hb/getHBDeviceConfig',fitColumns:true,singleSelect:true,fit:true,toolbar:'#hbDeviceConfigManagerToolbar'">
+			<thead> 
+				<tr>
+					<th data-options="field:'deviceId',width:100,formatter:deviceFormatter,editor:{type:'combobox',options:{required:true,data:getAllDevices(),valueField: 'id',textField: 'name',groupField:'jcxxh',groupFormatter:jcxGroupFormatter}}">检测设备</th>
+					<th data-options="field:'ip',width:100,editor:{type:'textbox',options:{required:true}}">ip地址</th>
+				</tr>
+			</thead>
+		</table>
+		
+		<div id="hbDeviceConfigManagerToolbar">
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="hbDeviceManager.append()">添加配置</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="hbDeviceManager.accept()">保存</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="hbDeviceManager.reject()">取消</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="hbDeviceManager.editData()">编辑配置</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="hbDeviceManager.remove()">删除配置</a>
+		</div>
+		
+	</div>
+	
 </div>
 <div id="deviceInfo_win" class="easyui-window" title="设备详细信息" style="width:800px;height:600px"
         data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:false,collapsible:false,minimizable:false">
