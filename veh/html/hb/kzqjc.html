@@ -1,8 +1,36 @@
-<div style="display: inline; font-size: 20px;">
-	<table>
+<div style="display: inline; font-size: 20px; width: 100%">
+	<table style="width: 90%">
 	<tr>
 		<td>转速：</td>
 		<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
+		<td rowspan="7" style="vertical-align: middle;"><div class="easyui-panel" title="PID" style="width:400px;height:200px;font-size: 20px;">
+        <table>
+        	<tr>
+				<td>KP：</td>
+				<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
+				<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">读</span></a></td>
+				<td>恒电流</td>
+			</tr>
+			<tr>
+				<td>KI：</td>
+				<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
+				<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">写</span></a></td>
+				<td>恒扭矩</td>
+			</tr>
+			<tr>
+				<td>设定值：</td>
+				<td></td>
+				<td></td>
+				<td>恒转速</td>
+			</tr>
+			<tr>
+				<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
+				<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">设定</span></a></td>
+				<td></td>
+				<td></td>
+			</tr>
+        </table>
+    </div></td>
 	</tr>
 	<tr>
 		<td>AD值：</td>
@@ -29,22 +57,29 @@
 		<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
 	</tr>
 </table>
+
+<table style="width: 90%; ">
+	<tr>
+		<td colspan="4" align="center">托板继电器，输出继电器</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">合闸</span></a></td>
+		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">合闸</span></a></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">分闸</span></a></td>
+		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">分闸</span></a></td>
+		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">返回</span></a></td>
+	</tr>
+	<tr>
+		<td width="25%" align="right">遥控</td>
+		<td colspan="3"><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
+	</tr>
+</table>
 </div>
 
-	<div class="easyui-panel" title="PID" style="width:400px;height:200px;padding:10px;display: inline;">
-        <table>
-        	<tr>
-				<td>KP：</td>
-				<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-				<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">读</span></a></td>
-				<td>恒电流</td>
-			</tr>
-			<tr>
-				<td>KI：</td>
-				<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-				<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">写</span></a></td>
-				<td>恒扭矩</td>
-			</tr>
-        </table>
-    </div>
+	
 
