@@ -1,0 +1,64 @@
+<table style="font-size: 18px;">
+	<tr>
+		<td>车速：</td>
+		<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+		<td>扭矩：</td>
+		<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+		<td>功率：</td>
+		<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+		<td>
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">启动电机</a>
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">停止电机</a>
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">退出</a>
+			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">卸载</a>
+		</td>
+		<td>放下举升板，打开变<br>频器电源后点开始</td>
+	</tr>
+</table>
+
+<div style="width: 100%; font-size: 16px;">
+	响应时间测试
+	<table style="width: 90%">
+		<tr>
+			<td width="13%">速度：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td width="13%"></td>
+			<td></td>
+			<td><input type="radio">16km/h  4——>7     <input type="radio">40km/h  15——>19</td>
+			<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a></td>
+		</tr>
+		<tr>
+			<td>起始负荷：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td>90%负荷：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td><input type="radio">16km/h  7——>4     <input type="radio">40km/h  19——>15</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>最后负荷：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td>95%负荷：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td><input type="radio">24km/h  12——>16     <input type="radio">48km/h  4——>12</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>响应时间(秒)：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td>稳定时间(秒)：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td><input type="radio">24km/h  16——>12     <input type="radio">48km/h  12——>4</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>超调量：</td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td><input class="easyui-textbox" style="width:70px; height: 28px;"></td>
+			<td colspan="3">判断依据：（到90%负荷响应时间小于0.2秒，到95%负荷稳定时间小于0.3秒即合格）<br>
+			<input class="easyui-textbox" style="width:70px; height: 28px;">
+			</td>
+		</tr>
+	</table>
+	
+</div>

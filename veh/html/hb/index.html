@@ -31,31 +31,53 @@
 	
 	<div data-options="region:'center'">
 		 <div class="easyui-panel" style="padding:5px;">
+		 	<a href="#" class="easyui-menubutton" data-options="menu:'#wj'">文件</a>
+		 	<a href="#" class="easyui-menubutton" onclick="open_Page('系统自检','xtzj.html','550px')">系统自检</a>
+		 	<a href="#" class="easyui-menubutton" onclick="open_Page('设备日常检验','rcjc.html','550px')">日常检查</a>
 	        <a href="#" class="easyui-menubutton" data-options="menu:'#dpcgq'">底盘测功器</a>
 	        <a href="#" class="easyui-menubutton" data-options="menu:'#qywqfxy'">汽油尾气分析仪</a>
 	      	<a href="#" class="easyui-menubutton" data-options="menu:'#cywqfxy'">柴油尾气分析仪</a>
 	      	<a href="#" class="easyui-menubutton" data-options="menu:'#cysbjc'">柴油设备检查</a>
+	      	<a href="#" class="easyui-menubutton" data-options="menu:'#rcgzjl'">日常故障记录</a>
+	      	<a href="#" class="easyui-menubutton" data-options="menu:'#rysbxxb'">人员设备信息表</a>
+	      	<a href="#" class="easyui-menubutton" data-options="menu:'#obdjc'">OBD检测</a>
+	      	<a href="#" class="easyui-menubutton" data-options="menu:'#qcpfcs'">汽车排放测试</a>
 	    </div>
+	    <div id="wj" style="width:200px;">
+	        <div onclick="open_Page('通信口设置','txksz.html','550px')">通信口设置</div>
+	    </div>
+	    
+	    
+	    
+	    
 	    <div id="dpcgq" style="width:200px;">
-	        <div onclick="open_Page('底盘预热','dpyr.html','550px')">底盘预热</div>
-	        <div onclick="open_Page('寄生功率测试','kzhx.html','600px')">寄生功率测试</div>
-	        <div onclick="open_Page('底盘加载滑行测试','jzhx.html','600px')">底盘加载滑行测试</div>
+	    	<div onclick="open_Page('寄生功率测试LGD','jsglcslgd.html','550px')">寄生功率测试LGD</div>
+	    	<div onclick="open_Page('底盘负荷准确度测试LGD','dpfhzqdcslgd.html','550px')">底盘负荷准确度测试LGD</div>
+	        <div onclick="open_Page('*底盘预热','dpyr.html','550px')">*底盘预热</div>
+	        <div onclick="open_Page('*寄生功率测试','kzhx.html','600px')">*寄生功率测试</div>
+	        <div onclick="open_Page('*底盘加载滑行测试','jzhx.html','600px')">*底盘加载滑行测试</div>
 	        <div onclick="open_Page('底盘负荷标定','dpfhbd.html','600px')">底盘负荷标定</div>
+	        
+	        <div onclick="open_Page('底盘变负荷滑行-时间','dpbfhhxsj.html','600px')">底盘变负荷滑行-时间</div>
+	        <div >底盘变负荷滑行-车速</div>
+	        <div onclick="open_Page('底盘负荷准确度测试','dpfhzqdcs.html','600px')">底盘负荷准确度测试</div>
+	        
+	        <div onclick="open_Page('底盘加载响应时间(共)','dpjzxyshg.html','600px')">底盘加载响应时间(共)</div>
+	        <div>底盘加载精度测试</div>
 	        <div onclick="open_Page('转速自检','dpxsdjc.html','600px')">底盘线速度检查</div>
-	        <div >底盘变加载滑行和响应时间</div>
 	        <div onclick="open_Page('基本惯量确定','dpjbglcs.html','600px')">底盘基本惯量测试</div>
 	        <div onclick="open_Page('基本惯量--计量','dpjbglcsjl.html','600px')">底盘基本惯量测试计量</div>
-	        <div onclick="open_Page('控制器检查','kzqjc.html','600px')">控制器检查</div>
+	        <div onclick="open_Page('控制器检查','kzqjc.html','450px')">控制器检查</div>
 	        <div onclick="open_Page('功率吸收能力检查','glxsdycs.html','560px')">功率吸收能力检查</div>
 	        
 	    </div>
 	    <div id="qywqfxy" style="width:150px;">
-	        <div >高气标定</div>
-	        <div >底气检查和响应时间</div>
-	        <div >泄露检查</div>
-	        <div >环境参数校准</div>
-	        <div >氧传感器自检</div>
-	        <div >低流量自检</div>
+	        <div onclick="open_Page('高气标定','gqbd.html','450px')">高气标定</div>
+	        <div onclick="open_Page('*低气检查和响应时间','dqjchxysj.html','600px')">*低气检查和响应时间</div>
+	        <div>五点气体检查</div>
+	        <div >*泄露检查</div>
+	        <div >*氧传感器自检</div>
+	        <div >*低流量自检</div>
 	    </div>
 	    <div id="cywqfxy" style="width:150px;">
 	        <div >高气标定</div>
@@ -68,6 +90,15 @@
 	    <div id="cysbjc" style="width:150px;">
 	        <div >不透光烟度计检查</div>
 	        <div >滤纸式烟度计检查</div>
+	    </div>
+	    
+	    <div id="rcgzjl" style="width:200px;">
+	    </div>
+	    <div id="rysbxxb" style="width:200px;">
+	    </div>
+	    <div id="obdjc" style="width:200px;">
+	    </div>
+	    <div id="qcpfcs" style="width:200px;">
 	    </div>
 	</div>
 	
