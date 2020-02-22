@@ -9,7 +9,7 @@
 			<td>绝对误差：</td>
 			<td>T90</td>
 			<td>T10</td>
-			<td rowspan="9">
+			<td rowspan="5">
 				
 		        <table>
 		        	<tr>
@@ -33,14 +33,11 @@
 		        		</td>
 		        	</tr>
 		        	<tr>
-		        		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:150"><span style="font-size: 15px">取PEF</span></a>
+		        		<td>
 		        			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:150"><span style="font-size: 15px">取数</span></a>
 		        		</td>
 		        	</tr>
-		        	<tr>
-		        		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:150"><span style="font-size: 15px">检漏</span></a>
-		        		</td>
-		        	</tr>
+		        	
 		        	<tr>
 		        		<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:150"><span style="font-size: 15px">标准气检查</span></a>
 		        		</td>
@@ -64,33 +61,7 @@
 		       
 			</td>
 		</tr>
-		<tr>
-			<td>C3H8</td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>HC</td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>CO</td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
+		
 		<tr>
 			<td>CO2</td>
 			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
@@ -110,17 +81,7 @@
 			<td></td>
 		</tr>
 		<tr>
-			<td>O2</td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td><input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td colspan="3" align="center">PEF  <input class="easyui-textbox" style="width:100px;height: 30px;"></td>
-			<td colspan="4" rowspan="2">T90~T10判断依据<br>T90.NO<6.5S,T90.CO<5.5判断通过<br>T10.NO<6.7S,T10.CO<5.7判断通过</td>
+			<td colspan="3"></td>
 		</tr>
 		<tr>
 			<td colspan="3">标气成分  <select></select></td>
@@ -128,75 +89,36 @@
 	</table>
 	<table style="width: 99%; border: 1px solid #95B8E7; border-spacing: 0px;" border="1" >		
 		<tr>
-			<td colspan="4" align="center">表 B.6 排气分析仪测量范围和示值允许误差</td>
+			<td colspan="4" >判断依据<br>B.3.4.5分析仪量程和准确度</td>
 		</tr>
 		<tr>
-			<td rowspan="2">气体种类</td>
-			<td rowspan="2">测量范围</td>
-			<td colspan="2">示值允许误差</td>
+			<td colspan="4" align="center">表 B.1 分析仪量程和准确度要求</td>
 		</tr>
-		<tr>			
+		<tr>
+			<td>气体</td>
+			<td>量程</td>
 			<td>相对误差</td>
 			<td>绝对误差</td>
 		</tr>
 		<tr>
-			<td rowspan="3">HC</td>
-			<td>(0~2000)X10<sup>-6</sup></td>
-			<td>±3%</td>
-			<td>±4%X10<sup>-6</sup></td>
-		</tr>
-		<tr>
-			<td>(2001~5000)X10<sup>-6</sup></td>
-			<td>±5%</td>
-			<td>-</td>
-		</tr>
-		<tr>
-			<td>(5001~9999)X10<sup>-6</sup></td>
-			<td>±10%</td>
-			<td>-</td>
-		</tr>
-		
-		<tr>
-			<td rowspan="2">CO</td>
-			<td>(0.00~10.00)X10<sup>-2</sup></td>
-			<td>±3%</td>
-			<td>±0.02%X10<sup>-2</sup></td>
-		</tr>
-		<tr>
-			<td>(10.01~14.00)X10<sup>-2</sup></td>
-			<td>±5%</td>
-			<td>-</td>
-		</tr>
-		
-		<tr>
-			<td rowspan="2">CO2</td>
-			<td>(0.0~16.0)X10<sup>-2</sup></td>
-			<td>±3%</td>
-			<td>±0.3%X10<sup>-2</sup></td>
-		</tr>
-		<tr>
-			<td>(16.1~18.0)X10<sup>-2</sup></td>
-			<td>±5%</td>
-			<td>-</td>
-		</tr>
-		
-		<tr>
-			<td rowspan="2">NO</td>
-			<td>(0~4000)X10<sup>-6</sup></td>
+			<td >NO</td>
+			<td>0~4000X10<sup>-6</sup></td>
 			<td>±4%</td>
 			<td>±25X10<sup>-6</sup></td>
 		</tr>
 		<tr>
-			<td>(4001~5000)X10<sup>-6</sup></td>
-			<td>±8%</td>
-			<td>-</td>
+			<td>NO2</td>
+			<td>0~1000X10<sup>-6</sup></td>
+			<td>±4%</td>
+			<td>±25X10<sup>-6</sup></td>
 		</tr>
 		<tr>
-			<td>O2</td>
-			<td>(0.0~25.0)X10<sup>-2</sup></td>
+			<td>CO2</td>
+			<td>0~18X10<sup>-2</sup></td>
 			<td>±5%</td>
-			<td>±0.1X10<sup>-2</sup></td>
-		</tr>
+			<td>-</sup></td>
+		</tr>	
+		
 		<tr>
 			<td colspan="4">注：表中所列绝对误差和相对误差，满足其中一项要求即可</td>
 		</tr>
