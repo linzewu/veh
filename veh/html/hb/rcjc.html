@@ -1,12 +1,11 @@
 <table class="easyui-datagrid" style="height:450px"
-        data-options="fitColumns:true,singleSelect:true,rownumbers:true,">
+        data-options="fitColumns:true,singleSelect:true,rownumbers:true,url:'/veh/hb/getRoutineCheck'">
 		    <thead>
 		        <tr>
-		            <th data-options="field:'code',width:100">项目</th>
-		            <th data-options="field:'name',width:100">检查日期</th>
-		            <th data-options="field:'name1',width:100">检查时间</th>
-		            <th data-options="field:'name2',width:100">结论</th>
-		            <th data-options="field:'price',width:100">下次检查时间</th>
+		            <th data-options="field:'projaceName',width:100">项目</th>
+		            <th data-options="field:'checkDate',width:100">检查时间</th>
+		            <th data-options="field:'conclusion',width:100">结论</th>
+		            <th data-options="field:'nextTime',width:100">下次检查时间</th>
 		        </tr>
 		    </thead>
 		</table>

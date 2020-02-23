@@ -8,7 +8,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.SuspensionData;
 
-public abstract class AbstractDeviceSuspension {
+public abstract class AbstractDeviceSuspension extends  AbstractDevice{
 	protected DeviceSuspension deviceSuspension;
 	protected DeviceDisplay display;
 	protected SuspensionData suspensionData;

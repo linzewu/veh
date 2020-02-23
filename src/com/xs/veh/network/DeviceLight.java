@@ -288,4 +288,9 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceLight";
+	}
+
 }

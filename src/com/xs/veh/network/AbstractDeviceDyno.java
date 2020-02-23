@@ -7,28 +7,29 @@ import java.util.List;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.DynoData;
-public abstract class AbstractDeviceDyno {
+public abstract class AbstractDeviceDyno extends  AbstractDevice{
 	
 	protected DeviceDyno deviceDyno;
 	protected DeviceDisplay display;
 	protected DynoData dynoData;
 	
 	protected DeviceSignal signal;
-	
 	protected Integer s1;
 	
 	private List<Byte> temp = new LinkedList<Byte>();
 	
-	private byte[] temp2=new byte[34];
-	public abstract DynoData startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException;
 
 	public List<Byte> getTemp() {
 		return temp;
 	}
 	
-	public abstract void device2pc(byte[] ed) throws IOException;
+	public void device2pc(byte[] ed) throws IOException {
+		for (byte b : ed) {
+			temp.add(b);
+		}
+	}
 	
-	public abstract void sendCommon(String common,Object... param) throws IOException;
+	public abstract void sendCommon(String common,Object... param) throws IOException, InterruptedException;
 	
 	
 	public void init(DeviceDyno deviceDyno) {
@@ -50,12 +51,26 @@ public abstract class AbstractDeviceDyno {
 		return contex;
 	}
 	
-	public byte[] getDevData(byte[] contex, byte beginByte) throws InterruptedException {
+	public void tempiSEmpty() throws InterruptedException {
+		int count=0;
 		while (temp.isEmpty()) {
 			Thread.sleep(50);
+			count++;
+			if(count==3) {
+				throw new InterruptedException("数据等待超时！");
+			}
 		}
-		while (temp.remove(0)!=beginByte) {
-			
+	}
+	
+	public byte[] getDevData(byte[] contex, byte beginByte) throws InterruptedException {
+		
+		try {
+			tempiSEmpty();
+			while (temp.remove(0)!=beginByte) {
+				tempiSEmpty();
+			}
+		}catch (Exception e) {
+			return null;
 		}
 		
 		contex[0]=beginByte;

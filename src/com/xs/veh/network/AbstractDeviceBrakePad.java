@@ -7,7 +7,7 @@ import java.util.List;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
 
-public abstract class AbstractDeviceBrakePad {
+public abstract class AbstractDeviceBrakePad extends AbstractDevice {
 	
 	protected DeviceBrakePad deviceBrakePad;
 	
@@ -22,7 +22,7 @@ public abstract class AbstractDeviceBrakePad {
 
 	public abstract List<BrakRollerData> startCheck(List<VehFlow> vehFlows) throws InterruptedException, IOException ;
 
-	public abstract void device2pc(byte[] data) throws IOException,InterruptedException;
+	
 	
 	public abstract void init(DeviceBrakePad deviceBrakePad);
 	

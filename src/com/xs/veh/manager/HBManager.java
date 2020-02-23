@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.xs.veh.entity.HBDeviceConfig;
+import com.xs.veh.entity.HBRoutineCheck;
 
 @Service("hbManager")
 public class HBManager {
@@ -28,6 +29,13 @@ public class HBManager {
 			params.add(queryParam.getIp());
 		}
 		List<HBDeviceConfig> datas = (List<HBDeviceConfig>) this.hibernateTemplate.find(sql, params.toArray());
+		return datas;
+	}
+	
+	
+	public List<HBRoutineCheck> getRoutineCheck(){
+		String sql ="from HBRoutineCheck ";
+		List<HBRoutineCheck> datas = (List<HBRoutineCheck>) this.hibernateTemplate.find(sql);
 		return datas;
 	}
 	

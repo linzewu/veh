@@ -20,6 +20,15 @@
 <script type="text/javascript" src="/veh/js/common.js"></script>
 <script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
 <script type="text/javascript" src="/veh/codebase/webVideoCtrl.js"></script>
+<style type="text/css">
+
+.hbdevice{
+	float: left;
+	margin: 10px 3px 1px 3px;
+}
+
+</style>
+
 </head>
 <body  class="easyui-layout">
 	<div data-options="region:'north'" class="header" style="height: 52px">
@@ -31,8 +40,6 @@
 	
 	<div data-options="region:'center'">
 		 <div class="easyui-panel" style="padding:5px;">
-		 	<a href="#" class="easyui-menubutton" data-options="menu:'#wj'">文件</a>
-		 	<a href="#" class="easyui-menubutton" onclick="open_Page('系统自检','xtzj.html','550px')">系统自检</a>
 		 	<a href="#" class="easyui-menubutton" onclick="open_Page('设备日常检验','rcjc.html','550px')">日常检查</a>
 	        <a href="#" class="easyui-menubutton" data-options="menu:'#dpcgq'">底盘测功器</a>
 	        <a href="#" class="easyui-menubutton" data-options="menu:'#qywqfxy'">汽油尾气分析仪</a>
@@ -42,9 +49,6 @@
 	      	<a href="#" class="easyui-menubutton" data-options="menu:'#rysbxxb'">人员设备信息表</a>
 	      	<a href="#" class="easyui-menubutton" data-options="menu:'#obdjc'">OBD检测</a>
 	      	<a href="#" class="easyui-menubutton" data-options="menu:'#qcpfcs'">汽车排放测试</a>
-	    </div>
-	    <div id="wj" style="width:200px;">
-	        <div onclick="open_Page('通信口设置','txksz.html','550px')">通信口设置</div>
 	    </div>
 	    
 	    <div id="hb_view_index_context">
@@ -106,11 +110,15 @@
 	</div>
 	
 	<div id="dpyr_win" class="easyui-window" title="底盘预热" style="width:1000px;height:450px"
-        data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:true,collapsible:false,minimizable:false">
-</div>
+        data-options="iconCls:'icon-save',modal:true,closed:true,resizable:false,maximizable:true,collapsible:false,minimizable:false"></div>
 </body>
 
 <script type="text/javascript">
+var sockMap={};
+var deviceData=null;
+
+var cgjsock=null;
+
 function open_Page(title,page,height){
 	var url ="/veh/html/hb/"+page+"?"+new Date().getTime();
 	$("#dpyr_win").window({"title":title,"height":height});
@@ -118,13 +126,12 @@ function open_Page(title,page,height){
 	$("#dpyr_win").window('refresh', url);
 }
 
-var sockMap={};
-
-$(function(){
+function initDevice(){
 	$.post("/veh/hb/getHBDeviceConfigByIp",function(data){
+		deviceData=data;
 		$.each(data,function(i,n){
-			 var deviceHtml=$("<div id=\"hb_view_index_device_"+n.id+"\"></div>");
-		     deviceHtml.attr("class","easyui-draggable");
+			 var deviceHtml=$("<div id=\"hb_view_index_device_"+n.id+"\" class=\"\"></div>");
+		     deviceHtml.attr("class","easyui-draggable hbdevice");
 		     deviceHtml.attr("data-options","handle:'#device_id_"+n.id+"'");
 		     deviceHtml.css({"width":"200px","border":"1px solid #ccc"});
 		     deviceHtml.append("<div id=\"#device_id_"+n.id+"\" style=\"background:#ddd;padding:5px;\">"+n.name+"</div>");
@@ -141,13 +148,44 @@ $(function(){
 					});
 					sockMap["deviceId_"+n.id]=sock;
 				}
-				
-				
 			});
 		});
 	});
-	
+}
+
+$(function(){
+	initDevice();
+	setTimeout(function(){
+		var cgjDevice=getDevice(8);
+		cgjsock=sockMap["deviceId_"+cgjDevice.id];
+	},2500)
 });
+
+function sendMessage(sock,common,param){
+	var data={};
+	data.common="send";
+	data.message=common;
+	data.param=param;
+	var strData = JSON.stringify(data);
+	console.log(strData);
+	if(sock){
+		sock.send(strData);
+	}
+	
+}
+
+function getDevice(type){
+	var device=null;
+	$.each(deviceData,function(i,n){
+		if(n.type==type){
+			device=n;
+			return;
+		}
+	});
+	return device;
+}
+
+
 
 
 </script>

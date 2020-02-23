@@ -182,4 +182,9 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 
 	}
 
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceWeigh";
+	}
+
 }

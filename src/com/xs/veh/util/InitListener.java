@@ -39,6 +39,7 @@ import com.xs.veh.network.DeviceSpeed;
 import com.xs.veh.network.DeviceSuspension;
 import com.xs.veh.network.DeviceVolume;
 import com.xs.veh.network.DeviceWeigh;
+import com.xs.veh.network.SimpleRead;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -155,7 +156,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 光电开关
-			if (device.getType() == Device.GDKG) {
+			else if (device.getType() == Device.GDKG) {
 				DeviceSignal deviceSignal = (DeviceSignal) wac.getBean("deviceSignal");
 				try {
 					deviceSignal.setDevice(device);
@@ -175,7 +176,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 初始化显示屏
-			if (device.getType() == Device.XSP) {
+			else if (device.getType() == Device.XSP) {
 				DeviceDisplay dd = (DeviceDisplay) wac.getBean("deviceDisplay");
 
 				System.out.println(device.getCom());
@@ -195,7 +196,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 制动设备
-			if (device.getType() == Device.ZDJCSB) {
+			else if (device.getType() == Device.ZDJCSB) {
 				DeviceBrakRoller dl = (DeviceBrakRoller) wac.getBean("deviceBrakRoller");
 				try {
 					dl.setDevice(device);
@@ -210,7 +211,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 灯光设备
-			if (device.getType() == Device.DGJCSB) {
+			else if (device.getType() == Device.DGJCSB) {
 				DeviceLight dl = (DeviceLight) wac.getBean("deviceLight");
 				try {
 					dl.setDevice(device);
@@ -224,7 +225,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 侧滑设备
-			if (device.getType() == Device.CHJCSB) {
+			else if (device.getType() == Device.CHJCSB) {
 				DeviceSideslip dl = (DeviceSideslip) wac.getBean("deviceSideslip");
 				try {
 					dl.setDevice(device);
@@ -238,7 +239,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 称重
-			if (device.getType() == Device.CZJCSB) {
+			else if (device.getType() == Device.CZJCSB) {
 				DeviceWeigh dl = (DeviceWeigh) wac.getBean("deviceWeigh");
 				try {
 					dl.setDevice(device);
@@ -252,7 +253,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 平板设备
-			if (device.getType() == Device.ZDPBSB) {
+			else if (device.getType() == Device.ZDPBSB) {
 				DeviceBrakePad dbp = (DeviceBrakePad) wac.getBean("deviceBrakePad");
 				try {
 					dbp.setDevice(device);
@@ -266,7 +267,7 @@ public class InitListener implements ServletContextListener {
 			}
 
 			// 速度设备
-			if (device.getType() == Device.SDJCSB) {
+			else if (device.getType() == Device.SDJCSB) {
 				DeviceSpeed dl = (DeviceSpeed) wac.getBean("deviceSpeed");
 				try {
 					dl.setDevice(device);
@@ -279,7 +280,7 @@ public class InitListener implements ServletContextListener {
 				servletContext.setAttribute(device.getThredKey(), dl);
 			}
 			
-			if(device.getType() ==Device.XJSB) {
+			else if(device.getType() ==Device.XJSB) {
 				DeviceSuspension dl = (DeviceSuspension) wac.getBean("deviceSuspension");
 				try {
 					dl.setDevice(device);
@@ -292,7 +293,7 @@ public class InitListener implements ServletContextListener {
 				servletContext.setAttribute(device.getThredKey(), dl);
 			}
 			
-			if(device.getType() ==Device.CGJ) {
+			else if(device.getType() ==Device.CGJ) {
 				DeviceDyno dl = (DeviceDyno) wac.getBean("deviceDyno");
 				try {
 					dl.setDevice(device);
@@ -305,7 +306,7 @@ public class InitListener implements ServletContextListener {
 				servletContext.setAttribute(device.getThredKey(), dl);
 			}
 			
-			if(device.getType() ==Device.SJJ) {
+			else if(device.getType() ==Device.SJJ) {
 				DeviceVolume dv = (DeviceVolume) wac.getBean("deviceVolume");
 				try {
 					dv.setDevice(device);
@@ -317,9 +318,7 @@ public class InitListener implements ServletContextListener {
 				}
 				servletContext.setAttribute(device.getThredKey(), dv);
 			}
-			
-			
-			if(device.getType() ==Device.DZCZT) {
+			else if(device.getType() == Device.DZCZT) {
 				DeviceManyWeigh dmw = (DeviceManyWeigh) wac.getBean("deviceManyWeigh");
 				try {
 					dmw.setDevice(device);
@@ -330,6 +329,26 @@ public class InitListener implements ServletContextListener {
 					log.error("多轴称重台打开异常", e);
 				}
 				servletContext.setAttribute(device.getThredKey(), dmw);
+			}
+			else {
+				String springName =device.getDeviceSpringName();
+				if(springName!=null) {
+					
+					SimpleRead sr = (SimpleRead) wac.getBean(springName);
+					try {
+						sr.setDevice(device);
+						sr.open();
+					} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
+							| PortInUseException | IOException | UnsupportedCommOperationException
+							| TooManyListenersException e) {
+						log.error(device.getName()+"设备打开异常", e);
+					}
+					servletContext.setAttribute(device.getThredKey(), sr);
+					
+				}else {
+					log.error("设备SpringName为null，请检查代码");
+				}
+				
 			}
 		}
 

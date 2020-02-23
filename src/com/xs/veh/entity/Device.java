@@ -19,60 +19,78 @@ public class Device extends BaseEntity {
 	/**
 	 * 制动设备
 	 */
-	public final static Integer ZDJCSB = 1;
+	public final static int ZDJCSB = 1;
 
 	/**
 	 * 灯光设备
 	 */
-	public final static Integer DGJCSB = 2;
+	public final static int DGJCSB = 2;
 
 	/**
 	 * 速度设备
 	 */
-	public final static Integer SDJCSB = 3;
+	public final static int SDJCSB = 3;
 
 	/**
 	 * 侧滑设备
 	 */
-	public final static Integer CHJCSB = 4;
+	public final static int CHJCSB = 4;
 
 	/**
 	 * 称重设备
 	 */
-	public final static Integer CZJCSB = 5;
+	public final static int CZJCSB = 5;
 	
 	/**
 	 * 平板设备
 	 */
-	public final static Integer ZDPBSB = 6;
+	public final static int ZDPBSB = 6;
 	
 	/**
 	 * 悬架设备
 	 */
-	public final static Integer XJSB = 7;
+	public final static int XJSB = 7;
 	
 
 	/**
 	 * 测功机
 	 */
-	public final static Integer CGJ = 8;
+	public final static int CGJ = 8;
 	
 	
 	/**
 	 * 多轴称重台
 	 */
-	public final static Integer DZCZT = 9;
+	public final static int DZCZT = 9;
 	
 	/**
 	 * 声级计
 	 */
-	public final static Integer SJJ = 10;
+	public final static int SJJ = 10;
 	
-
+	/**
+	 * 转速计
+	 */
+	public final static int ZSJ = 11;
 	
-	public final static Integer GDKG = 90;
+	/**
+	 * 烟度计
+	 */
+	public final static int YDJ = 12;
+	
+	/**
+	 * 尾气分析仪
+	 */
+	public final static int WQFXY = 13;
+	
+	/**
+	 * 柴油NO分析仪
+	 */
+	public final static int CYFXY = 14;
+	
+	public final static int GDKG = 90;
 
-	public final static Integer XSP = 91;
+	public final static int XSP = 91;
 
 	public static final String KEY = "device";
 
@@ -222,6 +240,64 @@ public class Device extends BaseEntity {
 
 	public String getThredKey() {
 		return this.getId() + "_" + KEY;
+	}
+	
+	
+	public String getDeviceSpringName() {
+		String deviceName=null;
+		switch (type) {
+		case Device.CGJ:
+			deviceName="deviceDyno";
+			break;
+		case Device.CHJCSB:
+			deviceName="deviceSideslip";
+			break;
+		case Device.CYFXY:
+			deviceName="deviceEGANO";
+			break;
+		case Device.CZJCSB:
+			deviceName="deviceWeigh";
+			break;
+		case Device.DGJCSB:
+			deviceName="deviceLight";
+			break;
+		case Device.DZCZT:
+			deviceName="deviceManyWeigh";
+			break;
+		case Device.GDKG:
+			deviceName="deviceSignal";
+			break;
+		case Device.SDJCSB:
+			deviceName="deviceSpeed";
+			break;
+		case Device.SJJ:
+			deviceName="deviceVolume";
+			break;
+		case Device.WQFXY:
+			deviceName="deviceEGA";
+			break;
+		case Device.XJSB:
+			deviceName="deviceSuspension";
+			break;
+		case Device.XSP:
+			deviceName="deviceSuspension";
+			break;
+		case Device.YDJ:
+			deviceName="deviceSmokemeter";
+			break;
+		case Device.ZDJCSB:
+			deviceName="deviceBrakRoller";
+			break;
+		case Device.ZDPBSB:
+			deviceName="deviceBrakePad";
+			break;
+		case Device.ZSJ:
+			deviceName="deviceTachometer";
+			break;
+		default:
+			break;
+		}
+		return deviceName;
 	}
 
 }

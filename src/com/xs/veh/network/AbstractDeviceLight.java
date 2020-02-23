@@ -20,7 +20,7 @@ import com.xs.veh.network.data.LightData;
  * @author linze
  *
  */
-public abstract class AbstractDeviceLight {
+public abstract class AbstractDeviceLight extends AbstractDevice{
 	
 	Logger logger = Logger.getLogger(AbstractDeviceLight.class);
 	

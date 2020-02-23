@@ -225,4 +225,9 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		
 	}
 
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceSideslip";
+	}
+
 }

@@ -10,7 +10,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.driver.DeviceSideslipDriverOfTLCH10;
 
-public abstract class AbstractDeviceSideslip {
+public abstract class AbstractDeviceSideslip extends AbstractDevice {
 	private Logger logger = Logger.getLogger(AbstractDeviceSideslip.class);
 	protected DeviceSideslip deviceSideslip;
 	

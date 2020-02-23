@@ -79,4 +79,9 @@ public class DeviceDisplay extends SimpleRead {
 		this.setAddListener(false);
 
 	}
+
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceDisplay";
+	}
 }

@@ -8,7 +8,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.SpeedData;
 
-public abstract class AbstractDeviceSpeed {
+public abstract class AbstractDeviceSpeed extends AbstractDevice{
 	
 	protected DeviceSpeed deviceSpeed;
 

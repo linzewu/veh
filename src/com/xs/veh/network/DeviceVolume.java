@@ -123,4 +123,9 @@ public class DeviceVolume extends SimpleRead  {
 		
 	}
 
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceVolume";
+	}
+
 }

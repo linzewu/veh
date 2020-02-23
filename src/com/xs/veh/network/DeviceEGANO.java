@@ -18,19 +18,20 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
-import com.xs.veh.network.data.SuspensionData;
+import com.xs.veh.network.data.DynoData;
 
 import gnu.io.SerialPortEvent;
-@Service("deviceSuspension")
+@Service("deviceEGANO")
 @Scope("prototype")
-public class DeviceSuspension extends SimpleRead implements ICheckDevice {
+/**
+ * 柴油尾气检测
+ * @author linze
+ *
+ */
+public class DeviceEGANO extends SimpleRead implements ICheckDevice {
 	
-	private AbstractDeviceSuspension ds;
-	private DeviceDisplay display;
+	private AbstractDeviceEGANO egaNO;
 	private VehCheckLogin vehCheckLogin;
-	private DeviceSignal signal;
-
-	private Integer s1;
 	
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
@@ -38,13 +39,7 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 	@Autowired
 	private ServletContext servletContext;
 
-	public DeviceDisplay getDisplay() {
-		return display;
-	}
 
-	public void setDisplay(DeviceDisplay display) {
-		this.display = display;
-	}
 
 	public VehCheckLogin getVehCheckLogin() {
 		return vehCheckLogin;
@@ -53,6 +48,9 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 	public void setVehCheckLogin(VehCheckLogin vehCheckLogin) {
 		this.vehCheckLogin = vehCheckLogin;
 	}
+	
+	
+
 
 	@Override
 	public void serialEvent(SerialPortEvent ev) {
@@ -82,11 +80,11 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 					}
 				}
 				byte[] endodedData = new byte[length];
-				 logger.info("数据长度："+endodedData.length);
+				// logger.info("数据长度："+endodedData.length);
 				System.arraycopy(readBuffer, 0, endodedData, 0, length);
-				ds.device2pc(endodedData);
+				egaNO.device2pc(endodedData);
 			} catch (Exception e) {
-				logger.error("悬架仪通讯异常", e);
+				logger.error("测功机通讯异常", e);
 			}
 			break;
 		}
@@ -102,89 +100,26 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 	@Override
 	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow, Map<String, Object> otherParam)
 			throws IOException, InterruptedException, SystemException {
-		logger.info("悬架开始检测");
-		
-		this.vehCheckLogin=vehCheckLogin;
-		
-		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
-				vehFlow.getJyxm());
-		process.setKssj(new Date());
-		
-		List<SuspensionData> suspensionDatas = ds.startCheck(vehCheckLogin, vehFlow);
-		
-		
-		process.setJssj(new Date());
-		
-		
 
-		Thread.sleep(2000);
-		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
-		boolean flag = true;
-
-		while (flag) {
-			flag = this.signal.getSignal(s1);
-			Thread.sleep(200);
-		}
-		
-		this.checkDataManager.updateProcess(process);
-		
-		//sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
-		for(SuspensionData suspensionData: suspensionDatas) {
-			suspensionData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, suspensionData),
-					vehFlow.getJyxm());
-			this.checkDataManager.saveData(suspensionData);
-		}
-		
-		display.setDefault();
 	}
 
 	@Override
 	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows, Map<String, Object> otherParam)
 			throws InterruptedException, IOException, SystemException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
-		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
-		s1=this.getQtxxObject().getInt("kzsb-xhw");
-		// 初始悬架仪解码器
-		ds = (AbstractDeviceSuspension) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
-		
-		// 加载挂载设备
-		if (temp != null) {
-			Integer deviceid = Integer.parseInt(temp);
-			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
-		}
-		if (dwkg != null) {
-			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
-		}
-		
-		ds.init(this);
-	}
-
-	public DeviceSignal getSignal() {
-		return signal;
-	}
-
-	public void setSignal(DeviceSignal signal) {
-		this.signal = signal;
-	}
-
-	public Integer getS1() {
-		return s1;
-	}
-
-	public void setS1(Integer s1) {
-		this.s1 = s1;
+		egaNO = (AbstractDeviceEGANO) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
+		egaNO.init(this);
 	}
 
 	@Override
 	public String getDeviceSpringName() {
-		return "deviceSuspension";
+		return "deviceEGANO";
 	}
+
 	
 	
 

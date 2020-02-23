@@ -23,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.xs.veh.entity.Device;
 import com.xs.veh.network.DeviceDyno;
+import com.xs.veh.network.IHBCommon;
 
 import net.sf.json.JSONObject;
 
@@ -75,11 +76,8 @@ public class MyWebSocket {
 		 */
 		@OnMessage
 		public void onMessage(String message, Session session) throws Exception {
-			
-		
-			
+			logger.info("message"+ message);
 			JSONObject jo=JSONObject.fromObject(message);
-			
 			String common = jo.getString("common");
 			List<String> param=null;
 			if(jo.has("param")) {
@@ -101,25 +99,20 @@ public class MyWebSocket {
 		        }
 		}
 		
-		private void sendCommon(String common,Session session,List<String> param) throws IOException {
+		private void sendCommon(String common,Session session,List<String> param) throws IOException, InterruptedException {
 			String key = session.getPathParameters().get("clienName");
 			String deviceId = key.split("_")[1];
-			
+			logger.info("设备ID_"+deviceId);
 			WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
 			servletContext = wac.getBean(ServletContext.class);
-			
-			DeviceDyno dl = (DeviceDyno)servletContext.getAttribute(deviceId+"_"+Device.KEY);
-			
+			IHBCommon dl = (IHBCommon)servletContext.getAttribute(deviceId+"_"+Device.KEY);
 			if(!CollectionUtils.isEmpty(param)) {
 				logger.info(param);
 				logger.info(param.size());
-				dl.getDs().sendCommon(common,param.toArray(new Object[param.size()]));
+				dl.sendCommon(common,param.toArray(new Object[param.size()]));
 			}else {
-				dl.getDs().sendCommon(common);
+				dl.sendCommon(common);
 			}
-			
-			
-			
 		}
 	 
 		/**

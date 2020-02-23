@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.network.data.CurbWeightData;
 
-public abstract class AbstractDeviceManyWeigh {
+public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 	static Logger logger = Logger.getLogger(AbstractDeviceManyWeigh.class);
 	
 	protected DeviceManyWeigh deviceManyWeigh;

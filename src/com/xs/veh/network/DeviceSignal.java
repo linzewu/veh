@@ -148,4 +148,9 @@ public class DeviceSignal extends SimpleRead {
 		
 		
 	}
+
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceSignal";
+	}
 }

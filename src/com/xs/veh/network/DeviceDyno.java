@@ -11,6 +11,7 @@ import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
@@ -23,7 +24,7 @@ import com.xs.veh.network.data.DynoData;
 import gnu.io.SerialPortEvent;
 @Service("deviceDyno")
 @Scope("prototype")
-public class DeviceDyno extends SimpleRead implements ICheckDevice {
+public class DeviceDyno extends SimpleRead implements ICheckDevice,IHBCommon {
 	
 	private AbstractDeviceDyno ds;
 	private DeviceDisplay display;
@@ -56,13 +57,6 @@ public class DeviceDyno extends SimpleRead implements ICheckDevice {
 	
 	
 
-	public AbstractDeviceDyno getDs() {
-		return ds;
-	}
-
-	public void setDs(AbstractDeviceDyno ds) {
-		this.ds = ds;
-	}
 
 	@Override
 	public void serialEvent(SerialPortEvent ev) {
@@ -120,15 +114,15 @@ public class DeviceDyno extends SimpleRead implements ICheckDevice {
 				vehFlow.getJyxm());
 		process.setKssj(new Date());
 		
-		DynoData dynoData = ds.startCheck(vehCheckLogin, vehFlow);
+		//DynoData dynoData = ds.startCheck(vehCheckLogin, vehFlow);
 		
 		process.setJssj(new Date());
 		this.checkDataManager.updateProcess(process);
 		
 		//sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
 
-		dynoData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, dynoData),
-				vehFlow.getJyxm());
+//		dynoData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, dynoData),
+//				vehFlow.getJyxm());
 
 		Thread.sleep(2000);
 		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
@@ -138,7 +132,7 @@ public class DeviceDyno extends SimpleRead implements ICheckDevice {
 			flag = this.signal.getSignal(s1);
 			Thread.sleep(200);
 		}
-		this.checkDataManager.saveData(dynoData);
+		//this.checkDataManager.saveData(dynoData);
 		display.setDefault();
 	}
 
@@ -152,16 +146,16 @@ public class DeviceDyno extends SimpleRead implements ICheckDevice {
 	public void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		String temp = (String) this.getQtxxObject().get("kzsb-xsp");
 		String dwkg = (String) this.getQtxxObject().get("kzsb-dwkg");
-		s1=this.getQtxxObject().getInt("kzsb-xhw");
+		//s1=this.getQtxxObject().getInt("kzsb-xhw");
 		// 初始悬架仪解码器
 		ds = (AbstractDeviceDyno) Class.forName(this.getDevice().getDeviceDecode()).newInstance();
 		
 		// 加载挂载设备
-		if (temp != null) {
+		if (!StringUtils.isEmpty(temp)) {
 			Integer deviceid = Integer.parseInt(temp);
 			display = (DeviceDisplay) servletContext.getAttribute(deviceid + "_" + Device.KEY);
 		}
-		if (dwkg != null) {
+		if (!StringUtils.isEmpty(dwkg)) {
 			signal = (DeviceSignal) servletContext.getAttribute(dwkg + "_" + Device.KEY);
 		}
 		
@@ -182,6 +176,16 @@ public class DeviceDyno extends SimpleRead implements ICheckDevice {
 
 	public void setS1(Integer s1) {
 		this.s1 = s1;
+	}
+
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceDyno";
+	}
+
+	@Override
+	public void sendCommon(String common, Object... param) throws IOException, InterruptedException {
+		ds.sendCommon(common,param);
 	}
 	
 	

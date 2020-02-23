@@ -313,4 +313,9 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 
 	}
 
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceBrakePad";
+	}
+
 }

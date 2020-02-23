@@ -4,28 +4,36 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.xs.veh.entity.VehCheckLogin;
-import com.xs.veh.network.data.CurbWeightData;
-import com.xs.veh.network.data.VolumeData;
+import com.xs.veh.entity.VehFlow;
+import com.xs.veh.network.data.DynoData;
+import com.xs.veh.network.data.HBEGAData;
 
-public abstract class AbstractDeviceVolume extends AbstractDevice {
-	static Logger logger = Logger.getLogger(AbstractDeviceVolume.class);
+/**
+ * 尾气分析器
+ * @author linze
+ *
+ */
+public abstract class AbstractDeviceEGA extends AbstractDevice {
 	
-	protected DeviceVolume deviceVolume;
-	
-	
-	public abstract VolumeData startCheck(VehCheckLogin vc) throws IOException, InterruptedException;
+	protected DeviceEGA deviceEGA;
+	protected HBEGAData data;
+	private List<Byte> temp = new LinkedList<Byte>();
 
-	public void device2pc(byte[] ed) throws IOException {
-		
-		for (byte b : ed) {
-			temp.add(b);
-		}
+	public List<Byte> getTemp() {
+		return temp;
+	}
+	
+	
+	public abstract void sendCommon(String common,Object... param) throws IOException;
+	
+	
+	public void init(DeviceEGA deviceEGA) {
+		this.deviceEGA = deviceEGA;
 	}
 	
 	public byte[] getDevData(byte[] contex) throws InterruptedException {
+
 		for (int i = 0; i < contex.length; i++) {
 			while (temp.isEmpty()) {
 				Thread.sleep(50);
@@ -54,16 +62,5 @@ public abstract class AbstractDeviceVolume extends AbstractDevice {
 
 		return contex;
 	}
-	
-	private List<Byte> temp = new LinkedList<Byte>();
-
-	public List<Byte> getTemp() {
-		return temp;
-	}
-	
-	public void init(DeviceVolume deviceVolume) {
-		this.deviceVolume = deviceVolume;
-	}
-
 
 }

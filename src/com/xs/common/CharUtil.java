@@ -124,13 +124,15 @@ public class CharUtil {
 		
 		
 		//byte[] b = CharUtil.hexStringToByte("FF0007EE");
+		String a="0AB3";
+		System.out.println(CharUtil.byte2HexOfString(new byte[] {(byte)a.charAt(1),(byte)a.charAt(2)}));
+		//System.out.println((int)a.charAt(1));
 		
+	//	System.out.println(CharUtil.getCheckSum("410407"));
+	//	System.out.println(CharUtil.hexStringToByte("41")[0]);
 		
-	//	System.out.println(CharUtil.getCheckSum("410470"));
-		//System.out.println(CharUtil.hexStringToByte("41")[0]);
-		
-		byte[] db=new byte[] {0b0,0b1,0b0,0b1,0b0,0b1,0b0,0b1};
-		System.out.println(Integer.parseInt("0.0") );
+//		byte[] db=new byte[] {0b0,0b1,0b0,0b1,0b0,0b1,0b0,0b1};
+//		System.out.println(Integer.parseInt("0.0") );
 		
 		//System.out.println(byte2String(db));
 	//	System.out.println(Integer.toHexString(Integer.parseInt(byte2String(db),2)));
@@ -309,7 +311,16 @@ public class CharUtil {
 		return bytesToAscii(bytes, 0, bytes.length);
 	}
 
-	
+	public static String zeroFill(String param,Integer length) {
+		
+		if(param.length()<length) {
+			param="0"+param;
+			return zeroFill(param,length);
+		}else {
+			return param;
+		}
+		
+	}
 	
 	
 }

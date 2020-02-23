@@ -11,7 +11,7 @@ import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
 
-public abstract class AbstractDeviceBrakRoller {
+public abstract class AbstractDeviceBrakRoller extends AbstractDevice  {
 
 	protected DeviceBrakRoller deviceBrakRoller;
 

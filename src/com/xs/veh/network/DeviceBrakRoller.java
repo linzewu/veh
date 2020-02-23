@@ -432,5 +432,10 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		}
 		return Integer.parseInt(String.valueOf(max));
 	}
+
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceBrakRoller";
+	}
 	
 }

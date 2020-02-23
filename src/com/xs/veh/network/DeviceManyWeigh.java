@@ -212,4 +212,9 @@ public class DeviceManyWeigh extends SimpleRead  {
 		
 	}
 
+	@Override
+	public String getDeviceSpringName() {
+		return "deviceManyWeigh";
+	}
+
 }

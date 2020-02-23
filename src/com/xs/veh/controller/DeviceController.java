@@ -628,6 +628,36 @@ public class DeviceController {
 		}
 		return ResultHandler.toSuccessJSON("启动成功");
 	}
+	
+	
+	@UserOperation(code="saveDevice",name="新增修改设备")
+	@RequestMapping(value = "startDevice", method = RequestMethod.POST)
+	public @ResponseBody Map startDevice(Integer id)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchPortException,
+			PortInUseException, IOException, UnsupportedCommOperationException, TooManyListenersException {
+
+		Device device = this.deviceManager.getDevice(id);
+		String qtxx = device.getQtxx();
+		if (qtxx == null || qtxx.trim().equals("")) {
+			return ResultHandler.toSuccessJSON("设备信息不完整！");
+		}
+		SimpleRead sr = this.getSimpleRead(id);
+		if (sr == null) {
+			ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+			
+			
+			SimpleRead dl = (SimpleRead) context.getBean(device.getDeviceSpringName());
+			dl.setDevice(device);
+			dl.open();
+			servletContext.setAttribute(device.getThredKey(), dl);
+		} else {
+			if (!sr.isOpen()) {
+				sr.open();
+			}
+		}
+		return ResultHandler.toSuccessJSON("启动成功");
+	}
+	
 
 	@UserOperation(code="saveDevice",name="新增修改设备")
 	@RequestMapping(value = "weighTest", method = RequestMethod.POST)
@@ -660,5 +690,7 @@ public class DeviceController {
 		SimpleRead sr = (SimpleRead) servletContext.getAttribute(device.getThredKey());
 		return sr;
 	}
+	
+	
 
 }

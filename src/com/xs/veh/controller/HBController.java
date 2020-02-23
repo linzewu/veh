@@ -18,6 +18,7 @@ import com.xs.annotation.UserOperation;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.HBDeviceConfig;
+import com.xs.veh.entity.HBRoutineCheck;
 import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.HBManager;
 
@@ -57,6 +58,14 @@ public class HBController {
 	}
 	
 	
+	@UserOperation(code="getRoutineCheck",name="日常检查",isMain=false)
+	@RequestMapping(value = "getRoutineCheck", method = RequestMethod.POST)
+	public @ResponseBody List<HBRoutineCheck> getRoutineCheck() {
+		List<HBRoutineCheck>  datas = hbManager.getRoutineCheck();
+		return datas;
+	}
+	
+	
 	@UserOperation(code="saveHBDeviceConfig",name="新增修改环保设备配置")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveHBDeviceConfig(HBDeviceConfig deviceConfig, BindingResult result) {
@@ -82,7 +91,7 @@ public class HBController {
 	            ip = request.getRemoteAddr();  
 	        }  
 	        return ip;  
-	    }  
-
-
+	}
+	 
+	 
 }

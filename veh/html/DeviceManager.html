@@ -4,10 +4,10 @@
 	
 	function jcxGroupFormatter(group){
 		console.log(group)
-		if(group){
+		if(group!=-1){
 			return group+"线";
 		}else{
-			return "未分组";
+			return "无线别";
 		}
 	}
 	
@@ -33,6 +33,9 @@
 		return  comm.getParamNameByValue('deviceType',value);
 	}
 	function lineFormatter(value,row,index){
+		if(value==-1){
+			return "无线别";
+		}
 		return  comm.getParamNameByValue('lineType',value);
 	}
 	
@@ -365,6 +368,12 @@
 		return text;
 	}
 	
+	function getLineTyep(){
+		var lineTypes = comm.getBaseParames('lineType');
+		lineTypes.push({id:-1,value:"无"});
+		return lineTypes;
+	}
+	
 </script>
 
 <div class="easyui-tabs" data-options="fit:true">
@@ -379,7 +388,7 @@
 				<tr>
 					<th data-options="field:'name',width:100">设备名称</th>
 					<th data-options="field:'type',width:100,formatter:deviceFormatter,editor:{type:'combobox',options:{required:true,data:comm.getBaseParames('deviceType'),valueField: 'id',textField: 'value'}}">设备类型</th>
-					<th data-options="field:'jcxxh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{data:comm.getBaseParames('lineType'),valueField: 'id',textField: 'value'}}">线别</th>
+					<th data-options="field:'jcxxh',width:100,formatter:lineFormatter,editor:{type:'combobox',options:{data:getLineTyep(),valueField: 'id',textField: 'value'}}">线别</th>
 					<th data-options="field:'sbcs',width:100">设备厂商</th>
 					<th data-options="field:'sbxh',width:100">设备型号</th>
 				</tr>

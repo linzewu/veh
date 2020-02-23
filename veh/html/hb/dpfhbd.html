@@ -1,52 +1,78 @@
 <div id="dpfhbdLay" class="easyui-layout" style="width:960px;height:560px;">
 		<div style="font-size: 20px; color: red;">力负荷标定</div>
-		<div align="center" style="height: 240px; font-size: 18px; width:100%;">
+		<div align="center" style="height: 200px; font-size: 18px; width:100%;">
 			<table>
 				<tr>
-					<td>力电压值：</td>
-					<td style="width: 30%"><input class="easyui-textbox" style="width:60px;"></td>
-					
+					<td>力测量值：</td>
+					<td><input class="easyui-textbox" style="width:60px;" id="hb_vide_dpfhbd_lclz"></td>
 					
 					<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">零点</span></a>
-					4块砝码的标准值（N）：</td>
+					4块砝码的标准值（N）：</td>					
+					
 				</tr>
 				<tr>
-					<td>力测量值：</td>
-					<td><input class="easyui-textbox" style="width:60px;"></td>
-										
+					<td></td>
+					<td style="width: 30%"></td>
 					<td>
 						<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">满度</span></a>
-						<input class="easyui-textbox" style="width:60px;">
+						<input class="easyui-textbox" style="width:60px;" id="md" value="400">
 					</td>
 				</tr>
+				
 			</table>			
 			<br/>
-			<div id="p" class="easyui-panel" title="说明" style="width:100%;height:130px;padding:10px;font-size: 14px">
+			<div id="p" class="easyui-panel" title="说明" style="width:100%;height:150px;font-size: 14px">
 		        <ul>
 		            <li>1.挂好力臂，挂上拉钩，等力电压值稳定后，点击“零点”。</li>
 		            <li>2.挂上对应的砝码，等力电压值稳定后，点击“满度”。</li>
 		            <li>3.各个校验点相对误差小于等于1%合格。</li>
-		            
 		        </ul>
 		    </div>
 		</div>        
-		<table class="easyui-datagrid" style="height:200px"
-        data-options="fitColumns:true,singleSelect:true,rownumbers:true,">
+		<table class="easyui-datagrid" style="height:260px"
+        data-options="fitColumns:true,singleSelect:true,rownumbers:true,data:initDate()">
 		    <thead>
 		        <tr>
-		            <th data-options="field:'code',width:100">当前电压值</th>
-		            <th data-options="field:'name',width:100">理论力（N）</th>
-		            <th data-options="field:'name1',width:100">实测力（N）</th>
-		            <th data-options="field:'name2',width:100">绝对误差（N）</th>
-		            <th data-options="field:'price',width:100">相对误差（%）</th>
+		            <th data-options="field:'lllz',width:100">理论力（N）</th>
+		            <th data-options="field:'sjlz',width:100">实测力（N）</th>
+		            <th data-options="field:'xdwc',width:100">绝对误差（N）</th>
+		            <th data-options="field:'jdwc',width:100">相对误差（%）</th>
 		        </tr>
 		    </thead>
 		</table>
-		<br/>
 		<div align="center" style="width:100%;">
 	       	<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">校验开始</span></a>&nbsp;&nbsp;
 			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">下一步</span></a>&nbsp;&nbsp;
 			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">导出</span></a>&nbsp;&nbsp;
 			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">退出</span></a>&nbsp;&nbsp;
-		</div><br/>
+		</div>
     </div>
+    <script type="text/javascript">
+    
+    	function initDate(){
+    		var data=[];
+    		for(var i=0;i<9;i++){
+    			data[i]={"lllz":null,sjlz:null,xdwc:null,jdwc:null};
+    		}
+    		return data;
+    	}
+    	
+    	setInterval(function(){
+    		sendMessage(cgjsock,"dqsj");
+    	},500);
+    	
+    	if(cgjsock){
+    		cgjsock.onmessage=function(e){
+        		console.log(e.data);
+        		var json = $.parseJSON(e.data);
+        		if(json.nl!=0){
+        			$("#hb_vide_dpfhbd_lclz").textbox("setValue",json.nl);
+        		}
+        		
+        	}
+    	}
+    	
+    	
+    	
+    
+    </script>

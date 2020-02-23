@@ -19,6 +19,10 @@ import gnu.io.UnsupportedCommOperationException;
 import net.sf.json.JSONObject;
 
 public abstract class SimpleRead implements SerialPortEventListener, Runnable {
+	
+	
+	
+	
 	public enum ProtocolType {
 		/**
 		 * 数据
@@ -145,6 +149,9 @@ public abstract class SimpleRead implements SerialPortEventListener, Runnable {
 
 	public abstract void init() throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 
+	
+	public abstract String getDeviceSpringName();
+	
 	public void sendMessage(String message) throws IOException {
 		Integer dhcf = Integer.parseInt(qtxxObject.get("dhcf").toString());
 		Integer xylx = Integer.parseInt(qtxxObject.get("xylx").toString());

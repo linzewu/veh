@@ -10,7 +10,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.driver.DeviceWeighDriverOfJXZB10;
 
-public abstract class AbstractDeviceWeigh {
+public abstract class AbstractDeviceWeigh extends AbstractDevice {
 	static Logger logger = Logger.getLogger(AbstractDeviceWeigh.class);
 	protected DeviceWeigh deviceWeigh;
 
