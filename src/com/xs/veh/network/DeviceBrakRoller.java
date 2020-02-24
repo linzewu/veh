@@ -334,7 +334,13 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), vehFlow.getJyxm());
 		process.setJssj(new Date());
-		process.setKssj(kssj);
+		
+		if(brakRollerData.getDwsj()!=null) {
+			process.setKssj(brakRollerData.getDwsj());
+		}else {
+			process.setKssj(kssj);
+		}
+		//process.setKssj(kssj);
 		this.checkDataManager.updateProcess(process);
 		this.checkDataManager.saveData(brakRollerData);
 	}

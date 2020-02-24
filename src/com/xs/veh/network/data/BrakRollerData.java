@@ -1,6 +1,7 @@
 package com.xs.veh.network.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -193,8 +194,18 @@ public class BrakRollerData extends BaseDeviceData {
 	@Column
 	private Integer jzyzdlcd;
 	
+	@Column
+	private Date dwsj;
 	
 	
+
+	public Date getDwsj() {
+		return dwsj;
+	}
+
+	public void setDwsj(Date dwsj) {
+		this.dwsj = dwsj;
+	}
 
 	public Integer getJzzzdlcd() {
 		return jzzzdlcd;
