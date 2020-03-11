@@ -7,14 +7,14 @@
 		<div style="color: red; height: 100px; font-size: 40px; line-height:40px; width:100%;">
 			放下举升板，打开变频器电源后点开始<br>
 			<span style="font-size: 25px; color: blue;">还未设置首次损耗</span>
+			<span style="font-size: 25px; color: blue;">机械惯量：<span id="hb_jsglcs_jxgl"></span></span>
 		</div>
         <br/>
         <div align="center" style="width:100%;">
-	       	<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">停车</a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:190,size:'large'"><span style="font-size: 15px">保存为首次损耗</a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">报告</a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">结束</a>
+	       	<a href="#" class="easyui-linkbutton" id="hb_jsglcs_start" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" id="hb_jsglcs_stop" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">停止</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" id="hb_jsglcs_saveFirst" onclick="" data-options="width:190,size:'large'"><span style="font-size: 15px">保存为首次损耗</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton"  onclick="close_hb_win()" data-options="width:90,size:'large'"><span style="font-size: 15px">结束</a>
 		</div><br/>
 		<table class="easyui-datagrid" style="height:200px"
         data-options="fitColumns:true,singleSelect:true,rownumbers:true,">
@@ -28,4 +28,20 @@
 		        </tr>
 		    </thead>
 		</table>
-    </div>
+</div>
+<script type="text/javascript">
+
+$(function(){
+	var device = getDevice(8);
+	if(device){
+		var qtxx = $.parseJSON(device.qtxx);
+		//机械惯量
+		if(qtxx.jxgl){
+			$("#hb_jsglcs_jxgl").html(qtxx.jxgl)
+		}else{
+			$.messager.alert("提示","请先设置机械惯量！")
+			
+		}
+	}
+});
+</script>

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,12 +22,14 @@ import com.xs.veh.entity.HBDeviceConfig;
 import com.xs.veh.entity.HBRoutineCheck;
 import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.HBManager;
+import com.xs.veh.network.data.JSGLData;
 
 @Controller
 @RequestMapping(value = "/hb")
 @Modular(modelCode="hb",modelName="机动车环保检测")
 public class HBController {
 	
+
 	@Autowired
 	private HBManager hbManager;
 	
@@ -69,9 +72,19 @@ public class HBController {
 	@UserOperation(code="saveHBDeviceConfig",name="新增修改环保设备配置")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public @ResponseBody Map saveHBDeviceConfig(HBDeviceConfig deviceConfig, BindingResult result) {
-		deviceConfig = this.hbManager.save(deviceConfig);
+		deviceConfig = this.hbManager.saveHBDeviceConfig(deviceConfig);
 		return ResultHandler.resultHandle(result, deviceConfig, "保存成功");
 	}
+	
+	
+	
+	@UserOperation(code="saveJSGL",name="保存寄生功率")
+	@RequestMapping(value = "saveJSGL", method = RequestMethod.POST)
+	public @ResponseBody Map saveJSGL(@RequestBody List<JSGLData> datas, BindingResult result) {
+		this.hbManager.saveJSGL(datas);
+		return ResultHandler.resultHandle(result, datas, "保存成功");
+	}
+	
 	
 	 public String getIpAddress() {  
 	        String ip = request.getHeader("x-forwarded-for");  
@@ -92,6 +105,9 @@ public class HBController {
 	        }  
 	        return ip;  
 	}
+	 
+	 
+	 
 	 
 	 
 }

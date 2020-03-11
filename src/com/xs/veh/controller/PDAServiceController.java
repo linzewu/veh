@@ -362,7 +362,11 @@ public class PDAServiceController {
 	public @ResponseBody Map upQDZ( Integer deviceId, Integer testVehId)
 			throws InterruptedException, Exception {
 		
+		logger.info("deviceId:"+deviceId);
+		logger.info("testVehId:"+testVehId);
+		
 		TestVeh testVeh = vehManager.getTestVeh(testVehId);
+		logger.info("testVeh:"+testVeh);
 		deviceManager.upQDZ(deviceId, testVeh);
 		testVeh.setYsjc(2);
 		vehManager.saveTestVeh(testVeh);

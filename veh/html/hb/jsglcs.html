@@ -1,0 +1,202 @@
+<div id="kzhxLay" class="easyui-layout" style="width:960px;height:560px;">
+		<div style="font-size: 20px; color: red;">空载滑行（25km/h和40km/h时内阻不得大于2.5KW同时小于首次损耗的200%）</div>
+		<div align="center" style="color: blue; height: 180px; font-size: 60px; width:100%;">
+			<br/>
+			<span id="hb_jsglcs_sd">0</span>&nbsp;km/h
+		</div>
+		<div style="color: red; height: 100px; font-size: 40px; line-height:40px; width:100%;">
+			放下举升板，打开变频器电源后点开始<br>
+			<span style="font-size: 25px; color: blue;">还未设置首次损耗</span>
+			<span style="font-size: 25px; color: blue;">机械惯量：<span id="hb_jsglcs_jxgl"></span></span>
+		</div>
+        <br/>
+        <div align="center" style="width:100%;">
+	       	<a href="#" class="easyui-linkbutton" id="hb_jsglcs_start" onclick="hb_jsglcs_start()" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" id="hb_jsglcs_stop" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">停止</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" id="hb_jsglcs_saveFirst" onclick="" data-options="width:190,size:'large'"><span style="font-size: 15px">保存为首次损耗</a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton"  onclick="close_hb_win()" data-options="width:90,size:'large'"><span style="font-size: 15px">结束</a>
+		</div><br/>
+		<table class="easyui-datagrid" style="height:200px" 
+        data-options="fitColumns:true,singleSelect:true,rownumbers:true" id="hb_jsglcs_datagrid">
+		    <thead>
+		        <tr>
+		            <th data-options="field:'projectName',width:100">项目</th>
+		             <th data-options="field:'kssd',width:100">开始速度</th>
+		            <th data-options="field:'jssd',width:100">结束速度</th>
+		             <th data-options="field:'jsgl',width:100">寄生功率(KW)</th>
+		            <th data-options="field:'sj',width:100">时间(S)</th>
+		            <th data-options="field:'sfhg',width:100,formatter:sfhgFormatter">是否合格</th>
+		        </tr>
+		    </thead> 
+		</table>
+    </div>
+<script type="text/javascript">
+
+
+var jsglcs_data={sd:0,sj:0};
+
+$(function(){
+	var device = getDevice(8);
+	if(device){
+		var qtxx = $.parseJSON(device.qtxx);
+		//机械惯量
+		if(qtxx.jxgl){
+			$("#hb_jsglcs_jxgl").html(qtxx.jxgl);
+		}else{
+			$.messager.alert("提示","请先设置机械惯量！");
+		}
+	}
+	var xcId = setInterval(function(){
+		sendMessage(cgjsock,"dqsj");
+	},500);
+
+	threadArray.push(xcId);
+	
+	if(cgjsock){
+		cgjsock.onmessage=function(e){
+    		var json = $.parseJSON(e.data);
+    		jsglcs_data=json;
+    		if(json){
+    			$("#hb_jsglcs_sd").text(json.sd);
+    		}
+    		
+    	}
+	}
+	
+	$("#hb_jsglcs_datagrid").datagrid({"data":[{
+		projectName:"PLHP 40km/h",
+		kssd:"50km/h",
+		jssd:"30km/h",
+		gl:"",
+		jsgl:""
+	},{
+		projectName:"PLHP 25km/h",
+		kssd:"35km/h",
+		jssd:"15km/h",
+		gl:"",
+		jsgl:""
+	}]})
+	
+});
+
+
+
+function hb_jsglcs_start(){
+	$("#hb_jsglcs_start").linkbutton("disable");
+	var device = getDevice(8);
+	if(device){
+		var qtxx = $.parseJSON(device.qtxx);
+		//机械惯量
+		if(!qtxx.jxgl){
+			$.messager.alert("提示","请先设置机械惯量！");
+			return;
+		}else{
+			sendMessage(cgjsock,"qdbpq");
+			console.log("发送启动电机")
+			waitSpeed_gt(52,function(){
+				console.log("发送停止电机")
+				sendMessage(cgjsock,"tzbpq");
+				
+				waitSpeed_lt(50,function(){
+					console.log("速度下降到50");
+					var rows = $("#hb_jsglcs_datagrid").datagrid("getRows");
+					rows[0].sj1=jsglcs_data.sj;
+					$("#hb_jsglcs_datagrid").datagrid("loadData",rows);
+				});
+				waitSpeed_lt(30,function(){
+					console.log("速度下降到30");
+					var rows = $("#hb_jsglcs_datagrid").datagrid("getRows");
+					rows[0].sj=(jsglcs_data.sj-rows[0].sj1)/1000;
+					var m = (Math.pow(50,2) - Math.pow(30,2))*qtxx.jxgl/(2000*rows[0].sj);
+					rows[0].jsgl=m.toFixed(2);
+					rows[0].xmlx=1;
+					
+					if(rows[0].jsgl>2.5){
+						rows[0].sfhg=2;
+					}else{
+						rows[0].sfhg=1;
+					}
+					$("#hb_jsglcs_datagrid").datagrid("loadData",rows);
+				});
+				
+				
+				waitSpeed_lt(35,function(){
+					console.log("速度下降到35");
+					var rows = $("#hb_jsglcs_datagrid").datagrid("getRows");
+					rows[1].sj1=jsglcs_data.sj;
+					$("#hb_jsglcs_datagrid").datagrid("loadData",rows);
+				});
+				waitSpeed_lt(15,function(){
+					console.log("速度下降到15");
+					var rows = $("#hb_jsglcs_datagrid").datagrid("getRows");
+					rows[1].sj=(jsglcs_data.sj-rows[1].sj1)/1000;
+					var m = (Math.pow(35,2) - Math.pow(15,2))*qtxx.jxgl/(2000*rows[1].sj);
+					rows[1].jsgl=m.toFixed(2);
+					if(rows[1].jsgl>2.5){
+						rows[1].sfhg=2;
+					}else{
+						rows[1].sfhg=1;
+					}
+					$("#hb_jsglcs_datagrid").datagrid("loadData",rows);
+					
+					if(rows[1].sfhg==1&&rows[0].sfhg==1){
+						
+						$.ajax({
+							  headers: {
+						         'Accept': 'application/json',
+						         'Content-Type': 'application/json'
+							  },
+							  type: 'POST',
+							  dataType: "json", //表示返回值类型，不必须
+							  data: JSON.stringify(rows),
+							  url: '/veh/hb/saveJSGL',
+							  success: function(data){
+								  $.messager.alert("提示","寄生功率保存成功！");
+									$("#hb_jsglcs_datagrid").datagrid("loadData",data.data);
+							  }
+						});
+						
+					}else{
+						$.messager.alert("提示","检测结果不合格");
+					}
+					$("#hb_jsglcs_start").linkbutton("enable");
+				});
+			});
+		}
+	}
+}
+
+
+function waitSpeed_gt(speed,callback){
+	setTimeout(function(){
+		if(jsglcs_data.sd<speed){
+			waitSpeed_gt(speed,callback);
+		}else{
+			 callback()
+		}
+	},200);
+}
+
+function waitSpeed_lt(speed,callback){
+	
+	setTimeout(function(){
+		if(jsglcs_data.sd>speed){
+			waitSpeed_lt(speed,callback);
+		}else{
+			 callback()
+		}
+	},200);
+}
+
+function sfhgFormatter(value,row){
+	if(1==value){
+		return "合格";
+	}else if(2==value){
+		return "不合格";
+	}else{
+		return "";
+	}
+}
+
+
+</script>

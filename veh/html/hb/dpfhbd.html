@@ -4,9 +4,9 @@
 			<table>
 				<tr>
 					<td>力测量值：</td>
-					<td><input class="easyui-textbox" style="width:60px;" id="hb_vide_dpfhbd_lclz"></td>
+					<td><input class="easyui-textbox" style="width:60px;" id="hb_vide_dpfhbd_lclz" value="0"></td>
 					
-					<td><a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">零点</span></a>
+					<td><a href="#" class="easyui-linkbutton" onclick="dpfhbd_zero" data-options="width:90"><span style="font-size: 15px">零点</span></a>
 					4块砝码的标准值（N）：</td>					
 					
 				</tr>
@@ -15,7 +15,7 @@
 					<td style="width: 30%"></td>
 					<td>
 						<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90"><span style="font-size: 15px">满度</span></a>
-						<input class="easyui-textbox" style="width:60px;" id="md" value="400">
+						<input class="easyui-textbox" style="width:60px;" id="hb_dpfhbd_md" value="400">
 					</td>
 				</tr>
 				
@@ -29,7 +29,7 @@
 		        </ul>
 		    </div>
 		</div>        
-		<table class="easyui-datagrid" style="height:260px"
+		<table class="easyui-datagrid" style="height:260px" id="hb_dpfhbd_table_check"
         data-options="fitColumns:true,singleSelect:true,rownumbers:true,data:initDate()">
 		    <thead>
 		        <tr>
@@ -41,38 +41,106 @@
 		    </thead>
 		</table>
 		<div align="center" style="width:100%;">
-	       	<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">校验开始</span></a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">下一步</span></a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">导出</span></a>&nbsp;&nbsp;
-			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">退出</span></a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="dpfhbd_check()" data-options="width:90,size:'large'"><span style="font-size: 15px">校验</span></a>&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton" onclick="close_hb_win()" data-options="width:90,size:'large'"><span style="font-size: 15px">退出</span></a>&nbsp;&nbsp;
 		</div>
     </div>
     <script type="text/javascript">
     
+	    
+	    
+	    function getAbs(){
+	    	var md = $("#hb_dpfhbd_md").textbox("getValue");
+	    	return md/4;
+	    }
+	    
+	    function dpfhbd_check(){
+	    	var rows = $("#hb_dpfhbd_table_check").datagrid("getRows");
+	    	$.each(rows,function(i,n){
+	    		if(n.lllz==null){
+	    			if(i==0){
+	    				n.lllz=0;
+	    				n.sjlz=0;
+	    				n.xdwc=0;
+	    				n.jdwc=0;
+	    				$("#hb_dpfhbd_table_check").datagrid("refreshRow",i);
+	    				return false;
+	    			}else if(i<=4){
+	    				var prv=rows[i-1];
+	    				var abs = getAbs();
+	    				n.lllz=prv.lllz+abs;
+	    				n.sjlz=$("#hb_vide_dpfhbd_lclz").textbox("getValue");
+	    				n.xdwc = n.sjlz-n.lllz;
+	    				n.jdwc =  (Math.abs(n.xdwc)/abs)*100;
+	    				$("#hb_dpfhbd_table_check").datagrid("refreshRow",i);
+	    				return false;
+	    			}else if(i>4&&i<=8){
+	    				var prv=rows[i-1];
+	    				var abs = getAbs();
+	    				n.lllz=prv.lllz-abs;
+	    				n.sjlz=$("#hb_vide_dpfhbd_lclz").textbox("getValue");
+	    				n.xdwc = n.sjlz-n.lllz;
+	    				n.jdwc =  (Math.abs(n.xdwc)/abs)*100;
+	    				$("#hb_dpfhbd_table_check").datagrid("refreshRow",i);
+	    				
+	    				if(i==8){
+	    					$.messager.alert("提示！","负荷标定完成"+(getDpfhbdjg()==true?"通过":"不通过"));
+	    				}
+	    				
+	    				return false;
+	    			}
+	    		}else{
+	    			if(i==8){
+	    				$.messager.alert("提示！","负荷标定完成"+(getDpfhbdjg()==true?"通过":"不通过"));
+	    			}
+	    		}
+	    	});
+	    	
+	    }
+	    
+	    function getDpfhbdjg(){
+	    	var rows = $("#hb_dpfhbd_table_check").datagrid("getRows");
+	    	
+	    	var jg=true;
+	    	
+	    	$.each(rows,function(i,n){
+	    		if(n.jdwc>1){
+	    			jg=false;
+	    			return false;
+	    		}
+	    	});
+	    	return jg;
+	    }
+    
     	function initDate(){
     		var data=[];
     		for(var i=0;i<9;i++){
-    			data[i]={"lllz":null,sjlz:null,xdwc:null,jdwc:null};
+    			data[i]={lllz:null,sjlz:null,xdwc:null,jdwc:null};
     		}
     		return data;
     	}
     	
-    	setInterval(function(){
+    	var xcId = setInterval(function(){
     		sendMessage(cgjsock,"dqsj");
     	},500);
+    	
+    	threadArray.push(xcId);
     	
     	if(cgjsock){
     		cgjsock.onmessage=function(e){
         		console.log(e.data);
         		var json = $.parseJSON(e.data);
         		if(json.nl!=0){
+        			json.nl=json.nl-dpfhbd_temp_weight;
         			$("#hb_vide_dpfhbd_lclz").textbox("setValue",json.nl);
         		}
         		
         	}
     	}
-    	
-    	
+    	var dpfhbd_temp_weight=0;
+    	function dpfhbd_zero(){
+    		dpfhbd_temp_weight=$("#hb_vide_dpfhbd_lclz").textbox("getValue");
+    	}
     	
     
     </script>

@@ -11,20 +11,58 @@
 	       	<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">开始</a>&nbsp;&nbsp;
 			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">停车</a>&nbsp;&nbsp;
 			<a href="#" class="easyui-linkbutton" onclick="" data-options="width:90,size:'large'"><span style="font-size: 15px">结束</a>&nbsp;&nbsp;
-			<span style="font-size: 15px; font-weight: bold;">加载功率<input class="easyui-textbox" style="width:40px;">KW      基准质量：907kg</span>
+			<span style="font-size: 15px; font-weight: bold;">加载功率<input class="easyui-numberbox" data-options="min:6,max:13" value="9"  style="width:50px;">&nbsp;KW      机械惯量：<span id="hb_jzhx_jxgl"></span>&nbsp;kg</span>
 		</div><br/>
 		<table class="easyui-datagrid" style="height:200px"
-        data-options="fitColumns:true,singleSelect:true,rownumbers:true,">
+        data-options="fitColumns:true,singleSelect:true,rownumbers:true" id="hb_jzhx_datagrid">
 		    <thead>
 		        <tr>
-		            <th data-options="field:'code',width:100">项目</th>
-		            <th data-options="field:'name',width:100">内阻(KW)</th>
-		            <th data-options="field:'name1',width:100">滑行功率</th>
-		            <th data-options="field:'name2',width:100">滑行时间</th>
-		            <th data-options="field:'price',width:100">理论时间</th>
-		            <th data-options="field:'price1',width:100">误差(%)</th>
-		            <th data-options="field:'price2',width:100">是否合格</th>
+		            <th data-options="field:'projectName',width:100">项目</th>
+		            <th data-options="field:'jsgl',width:100">寄生功率(KW)</th>
+		            <th data-options="field:'jzgl',width:100">加载滑行功率</th>
+		            <th data-options="field:'hxsj',width:100">滑行时间</th>
+		            <th data-options="field:'llsj',width:100">理论时间</th>
+		            <th data-options="field:'wc',width:100">误差(%)</th>
+		            <th data-options="field:'sfhg',width:100">是否合格</th>
 		        </tr>
 		    </thead>
 		</table>
     </div>
+<script type="text/javascript">
+$(function(){
+	var device = getDevice(8);
+	if(device){
+		var qtxx = $.parseJSON(device.qtxx);
+		//机械惯量
+		if(qtxx.jxgl){
+			$("#hb_jzhx_jxgl").html(qtxx.jxgl);
+		}else{
+			$.messager.alert("提示","请先设置机械惯量！");
+		}
+	}
+	
+	$.post("/veh/hb/getJsgl",function(){
+		
+	});
+	
+	$("#hb_jzhx_datagrid").datagrid({
+		data:[{
+			projectName:"CCDT 40km/h",
+			jsgl:"",
+			hxgl:"",
+			lhsj:"",
+			wc:"",
+			sfhg:""
+		},{
+			projectName:"CCDT 25km/h",
+			jsgl:"",
+			hxgl:"",
+			lhsj:"",
+			wc:"",
+			sfhg:""
+		}]
+	})
+	
+});
+
+</script>

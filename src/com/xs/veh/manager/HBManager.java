@@ -1,6 +1,7 @@
 package com.xs.veh.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.xs.veh.entity.HBDeviceConfig;
 import com.xs.veh.entity.HBRoutineCheck;
+import com.xs.veh.network.data.JSGLData;
 
 @Service("hbManager")
 public class HBManager {
@@ -40,12 +42,19 @@ public class HBManager {
 	}
 	
 	
-	public HBDeviceConfig save(HBDeviceConfig hbDeviceConfig) {
+	public HBDeviceConfig saveHBDeviceConfig(HBDeviceConfig hbDeviceConfig) {
 		 this.hibernateTemplate.saveOrUpdate(hbDeviceConfig);
 		 return hbDeviceConfig;
 	}
 	
-	
+	public void saveJSGL(List<JSGLData> datas) {
+		
+		for(JSGLData data:datas) {
+			data.setJcsj(new Date());
+			 this.hibernateTemplate.saveOrUpdate(data);
+		}
+		
+	}
 	
 
 }

@@ -357,9 +357,9 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				case 0x32:
 					logger.info("前进！检测手制动：" );
 					this.getDeviceBrakePad().getDisplay().sendMessage("请踩刹车", DeviceDisplay.XP);
-					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B1");
+					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B1",3000);
 					Thread.sleep(200);
-					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B2");
+					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B2",3000);
 					break;
 				case 0x35:
 					logger.info("前进！检测手制动：" );
@@ -368,7 +368,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				case 0x36:
 					logger.info("前进！检测手制动：" );
 					this.getDeviceBrakePad().getDisplay().sendMessage("请拉手刹", DeviceDisplay.XP);
-					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B0");
+					TakePicture.createNew(this.deviceBrakePad.getVehCheckLogin(), "B0",3000);
 					break;
 				case 0x37:
 					this.getDeviceBrakePad().getDisplay().sendMessage("检测结束", DeviceDisplay.XP);

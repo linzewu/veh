@@ -18,6 +18,7 @@
 <script type="text/javascript"
 	src="/veh/js/easyui/datagrid-groupview.js"></script>
 <script type="text/javascript" src="/veh/js/common.js"></script>
+<script type="text/javascript" src="/veh/js/hbComm.js"></script>
 <script type="text/javascript" src="/veh/js/highcharts/highcharts.js"></script>
 <script type="text/javascript" src="/veh/codebase/webVideoCtrl.js"></script>
 <style type="text/css">
@@ -61,7 +62,7 @@
 	    	<div onclick="open_Page('寄生功率测试LGD','jsglcslgd.html','550px')">寄生功率测试LGD</div>
 	    	<div onclick="open_Page('底盘负荷准确度测试LGD','dpfhzqdcslgd.html','550px')">底盘负荷准确度测试LGD</div>
 	        <div onclick="open_Page('*底盘预热','dpyr.html','550px')">*底盘预热</div>
-	        <div onclick="open_Page('*寄生功率测试','kzhx.html','600px')">*寄生功率测试</div>
+	        <div onclick="open_Page('*寄生功率测试','jsglcs.html','600px')">*寄生功率测试</div>
 	        <div onclick="open_Page('*底盘加载滑行测试','jzhx.html','600px')">*底盘加载滑行测试</div>
 	        <div onclick="open_Page('底盘负荷标定','dpfhbd.html','600px')">底盘负荷标定</div>
 	        
@@ -116,14 +117,22 @@
 <script type="text/javascript">
 var sockMap={};
 var deviceData=null;
-
 var cgjsock=null;
+
+var threadArray=[];
 
 function open_Page(title,page,height){
 	var url ="/veh/html/hb/"+page+"?"+new Date().getTime();
-	$("#dpyr_win").window({"title":title,"height":height});
+	$("#dpyr_win").window({"title":title,"height":height,"onClose":hb_win_close});
 	$("#dpyr_win").window('open');
 	$("#dpyr_win").window('refresh', url);
+}
+
+function hb_win_close(){
+	$.each(threadArray,function(i,n){
+		clearInterval(n);
+	});
+	threadArray=[];
 }
 
 function initDevice(){
@@ -157,8 +166,9 @@ $(function(){
 	initDevice();
 	setTimeout(function(){
 		var cgjDevice=getDevice(8);
+		console.log(cgjDevice)
 		cgjsock=sockMap["deviceId_"+cgjDevice.id];
-	},2500)
+	},1000)
 });
 
 function sendMessage(sock,common,param){
@@ -167,7 +177,6 @@ function sendMessage(sock,common,param){
 	data.message=common;
 	data.param=param;
 	var strData = JSON.stringify(data);
-	console.log(strData);
 	if(sock){
 		sock.send(strData);
 	}
@@ -185,7 +194,9 @@ function getDevice(type){
 	return device;
 }
 
-
+function close_hb_win(){
+	$("#dpyr_win").window("close");
+}
 
 
 </script>
