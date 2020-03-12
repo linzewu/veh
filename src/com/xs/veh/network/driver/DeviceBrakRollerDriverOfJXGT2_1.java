@@ -69,7 +69,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			if(vehFlow.getJyxm().indexOf("L")==0){
 				logger.info("台体举升：" + ttjs);
 				deviceBrakRoller.sendMessage(ttjs);
-				logger.info("台体举升返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
+				logger.info("台体举升返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
 			}
 			
 			if(vehFlow.getJyxm().indexOf("L")==0){
@@ -84,14 +84,14 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			// 开始检测
 			deviceBrakRoller.sendMessage(ksjc);
 			
-			byte[] d1 = getDevData(new byte[4],A);
+			byte[] d1 = getDevData(new byte[4]);
 			
 			logger.info("开始检测命令返回：" + CharUtil.byte2HexOfString(d1));
 			
 			//deviceBrakRoller.getDisplay().sendMessage("开始检测稳定3S", DeviceDisplay.XP);
 			ds("开始检测稳定3S",3,null);
-			byte[] d2 = getDevData(new byte[5],A);
-			byte[] d3 = getDevData(new byte[12],A);
+			byte[] d2 = getDevData(new byte[5]);
+			byte[] d3 = getDevData(new byte[12]);
 			
 			//deviceBrakRoller.getDisplay().sendMessage("阻滞力检测结束", DeviceDisplay.SP);
 			deviceBrakRoller.getDisplay().sendMessage(scMessage, DeviceDisplay.XP);
@@ -99,7 +99,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			TakePicture.createNew(this.deviceBrakRoller.getVehCheckLogin(), vehFlow.getJyxm(), 1000);
 			
 			while(true){
- 				byte[] d4 =  getDevData(new byte[12],A);
+ 				byte[] d4 =  getDevData(new byte[12]);
  				
  				if(d4[2]==0x45&&d4[6]==0x45&&d4[10]==0x45){
  					break;
@@ -116,7 +116,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			logger.info("开始取数据：" + qs);
 			//获取检测结果
 			deviceBrakRoller.sendMessage(qs);
-			byte[] d5 = getDevData(new byte[20],A);
+			byte[] d5 = getDevData(new byte[20]);
 			logger.info("取数结束");
 			Integer zzdl=Integer.parseInt(new String(new byte[]{d5[3],d5[4],d5[5],d5[6]}).trim());
 			Integer yzdl=Integer.parseInt(new String(new byte[]{d5[7],d5[8],d5[9],d5[10]}).trim());
@@ -146,7 +146,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			if(vehFlow.getJyxm().indexOf("L")==0){
 				logger.info("台体下降：" + ttxj);
 				deviceBrakRoller.sendMessage(ttxj);
-				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
+				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
 			}
 		}
 	}
@@ -168,7 +168,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 		deviceBrakRoller.getDisplay().sendMessage("开始称重", DeviceDisplay.SP);
 		while (true) {
 			deviceBrakRoller.sendMessage(kscz);
-			byte[] czdata = getDevData(new byte[20],A);
+			byte[] czdata = getDevData(new byte[20]);
 			logger.info("称重返回：" + CharUtil.byte2HexOfString(czdata));
 			zlh = Integer.parseInt(new String(new byte[] { czdata[11], czdata[12], czdata[13], czdata[14] }).trim());
 			ylh = Integer.parseInt(new String(new byte[] { czdata[15], czdata[16], czdata[17], czdata[18] }).trim());
@@ -218,7 +218,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 		logger.info("举升器下降命令：" +jsqxj);
 		deviceBrakRoller.sendMessage(jsqxj);
 		
-		logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
+		logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
 		
 		Thread.sleep(8000);
 	}
