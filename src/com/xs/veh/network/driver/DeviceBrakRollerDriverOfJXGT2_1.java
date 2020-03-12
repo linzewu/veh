@@ -86,7 +86,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			
 			byte[] d1 = getDevData(new byte[4]);
 			
-			logger.info("开始检测命令返回：" + CharUtil.byte2HexOfString(d1));
+			logger.info("开始检测命令返回：" + CharUtil.byte2HexOfString(d1)); 
 			
 			//deviceBrakRoller.getDisplay().sendMessage("开始检测稳定3S", DeviceDisplay.XP);
 			ds("开始检测稳定3S",3,null);
