@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.alibaba.fastjson.JSONObject;
 import com.xs.common.MyHibernateTemplate;
 import com.xs.veh.entity.DeviceCheckJudegZJ;
 import com.xs.veh.entity.RoadCheck;
@@ -42,6 +41,9 @@ import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
 import com.xs.veh.network.data.SuspensionData;
 import com.xs.veh.network.data.VolumeData;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 @Service
 public class ZHCheckDataManager {
@@ -190,7 +192,7 @@ public class ZHCheckDataManager {
 	
 	public  Map<String, Object> getBData(VehCheckLogin vehCheckLogin,Integer jycs){
 		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate
-				.find("from BrakRollerData where jylsh=?  order by id desc ", vehCheckLogin.getJylsh());
+				.find("from BrakRollerData where jylsh=? and jyxm!='L1' and jyxm!='L2' and jyxm!='L3' and jyxm!='L4' order by id desc ", vehCheckLogin.getJylsh());
 		
 		OtherInfoData otherData=new OtherInfoData();
 		
@@ -320,10 +322,10 @@ public class ZHCheckDataManager {
 				List<Map<String,Object>> sdsList  =  sdsQuery.list();
 				Map<String,Object> sdsMap=null;
 				if(!CollectionUtils.isEmpty(sdsList)) {
-					sdsMap= sdsList.get(sdsList.size()-1);
+					sdsMap= sdsList.get(sdsList.size()-1); 
 				}
 				
-				SQLQuery lgdQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.lgdclsjb where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				SQLQuery lgdQuery = session.createSQLQuery("select CPHM, CLLX, XDSD, HJWD, DQYL, CPYS, EDZS, SJZS, SJGL, XZGL, YDZ1, YDZ2, YDZ3, YDXZ1, YDXZ2, YDXZ3, NOCLZ, NOXZ, SFHG, JCRY, KSSJ, JSSJ, CSSBBH, CZRY, JSYMC, ID, JCRQ, KH, DF, GLXZXS, CO, CO2, BZ, BGJCZMC, BGJCZDZ, BGJCZCMC, BGWQFXYCJ, BGWQFXYXH, BGWQFXYRQ, BGOBDCJ, BGOBDXH, BGDPCJ, BGDPXH, BGYDJCJ, BGYDJXH, BGYDJRQ  from  QCPFWQ2018.dbo.lgdclsjb where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
 				lgdQuery.setParameter(0, c1)
 					.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
 					.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
@@ -401,6 +403,8 @@ public class ZHCheckDataManager {
 				}
 				
 				if(!CollectionUtils.isEmpty(lgdMap)) {
+					
+					logger.info("lgdMap:"+JSONObject.fromObject(lgdMap).toString());
 					Date jcrq = (Date)lgdMap.get("JCRQ");
 					Date jssj = (Date)lgdMap.get("JSSJ");
 					

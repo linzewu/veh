@@ -420,6 +420,15 @@ public class VehManager {
 		jo.put("head", jsonHead);
 		
 		
+		List<TestVeh>  testVehs =(List<TestVeh>) this.hibernateTemplate.find("from TestVeh where jylsh=?", vheLogininfo.getJylsh());
+		
+		if(CollectionUtils.isEmpty(testVehs)) {
+			TestVeh testVeh = testVehs.get(0);
+			testVeh.setYsjc(2);
+			testVeh.setJcwc(2);
+			this.hibernateTemplate.update(testVeh);
+		}
+		
 
 		vheLogininfo.setVehjczt(VehCheckLogin.JCZT_TB);
 		this.hibernateTemplate.update(vheLogininfo);
