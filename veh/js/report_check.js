@@ -6,7 +6,7 @@ function refreshXnjyjld(){
 	$.post("/veh/checkReport/printJyReport",{lsh:baseInfo.jylsh},function(data){
 		if(data.state==1){
 			
-			$("#printTemplet img").attr("src","../cache/report/"+data.data);
+			$("#printTemplet img").attr("src","../cache/report/"+data.data+"?time="+new Date().getTime());
 //			var printObj = {};
 //			printObj.prview = false;
 //			if(params.isView == "true"){
@@ -38,7 +38,7 @@ function refreshXnjybgd(){
 	$.post("/veh/checkReport/printJyBgReport",{lsh:baseInfo.jylsh},function(data){
 		if(data.state==1){
 			
-			$("#printTempletRep img").attr("src","../cache/report/"+data.data);
+			$("#printTempletRep img").attr("src","../cache/report/"+data.data+"?time="+new Date().getTime());
 //			var printObj = {};
 //			printObj.prview = false;
 //			if(params.isView == "true"){
@@ -55,24 +55,13 @@ function refreshXnjybgd(){
 }
 //打印性能检验记录单
 function printXnjybgd(){
-	$.post("/veh/checkReport/printJyBgReport",{lsh:""},function(data){
-		if(data.state==1){
-			
-			$("#printTempletRep img").attr("src","../cache/report/"+data.data);
-			var printObj = {};
-			printObj.prview = false;
-			printObj.template = "printTempletRep";
-//			if(params.isView == "true"){
-//				printObj.prview = true;
-//			}
-			printCYD(printObj);
-		}else{
-			$.messager.alert("提示",data.message,"error");
-		}
-		
-	},"json").complete(function(){
-		$.messager.progress('close');
-	});
+	var printObj = {};
+	printObj.prview = true;
+	printObj.template = "printTempletRep";
+//	if(params.isView == "true"){
+//		printObj.prview = true;
+//	}
+	printCYD(printObj);
 }
 
 function printCYD(option) {

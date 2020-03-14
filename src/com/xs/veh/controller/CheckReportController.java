@@ -146,6 +146,9 @@ public class CheckReportController {
 			//排放性
 			Map<String, Map<String, Object>>  pfxData =  zhCheckDataManager.getPFXData(vehCheckLogin);
 			JSONObject pfxjo =(JSONObject) JSON.toJSON(pfxData);
+			
+			logger.info("pfxjo:"+pfxjo);
+			
 			if(pfxjo!=null) {
 				
 				if(pfxjo.containsKey("sds")) {

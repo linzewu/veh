@@ -1,7 +1,6 @@
 package com.xs.veh.network.driver;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

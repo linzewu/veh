@@ -227,9 +227,11 @@ public class TakePicture implements Runnable {
 						zpzl=getZPZL(jyxm);
 						checkPhoto.setZpzl(zpzl);
 					}
-					
 					checkDataManager.saveCheckPhoto(checkPhoto);
+					
+					
 					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
+					
 					
 				} catch (Exception e) {
 					logger.error("拍照错误：",e);

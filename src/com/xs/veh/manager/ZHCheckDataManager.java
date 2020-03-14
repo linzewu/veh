@@ -883,8 +883,8 @@ public class ZHCheckDataManager {
 				if(pfxData.get("lgd")!=null) {
 					Map<String, Object> lgd = pfxData.get("lgd");
 					
-					Double ydz1 =(Double)lgd.get("YDZ1");
-					Double ydxz1 = (Double)lgd.get("YDXZ1");		
+					Object ydz1 =lgd.get("YDZ1");
+					Object ydxz1 = lgd.get("YDXZ1");		
 					
 					
 					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
@@ -892,35 +892,38 @@ public class ZHCheckDataManager {
 					dcj1.setYqjyxm("加载减速工况100%（m¯1）");
 					dcj1.setYqjyjg(ydz1==null ? "" : ydz1.toString());
 					dcj1.setYqbzxz("≤"+ydxz1);
-					dcj1.setYqjgpd(ydz1<=ydxz1?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					boolean ydz1Flag  = Double.parseDouble(ydz1.toString())<=Double.parseDouble(ydxz1.toString());
+					dcj1.setYqjgpd(ydz1Flag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 					dcj1.setXh(xh);
 					xh++;
 					this.hibernateTemplate.save(dcj1);
 					
 					DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					
-					Double ydz2 =(Double)lgd.get("YDZ2");
-					Double ydxz2 = (Double)lgd.get("YDXZ2");	
+					Object ydz2 =lgd.get("YDZ2");
+					Object ydxz2 = lgd.get("YDXZ2");	
 					
 					dcj2.setXh(xh);
 					dcj2.setYqjyxm("加载减速工况80%（m¯1）");
 					dcj2.setYqjyjg(ydz2==null ? "" : ydz2.toString());
 					dcj2.setYqbzxz("≤"+ydxz2);
-					dcj2.setYqjgpd(ydz2<=ydxz2?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					boolean ydz2Flag  = Double.parseDouble(ydz2.toString())<=Double.parseDouble(ydxz2.toString());
+					dcj2.setYqjgpd(ydz2Flag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 					dcj2.setXh(xh);
 					xh++;
 					this.hibernateTemplate.save(dcj2);
 					
 					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					
-					Double sjgl =(Double)lgd.get("SJGL");
-					Double xzgl = (Double)lgd.get("XZGL");	
+					Object sjgl =lgd.get("SJGL");
+					Object xzgl = lgd.get("XZGL");	
 					
 					dcj3.setXh(xh);
 					dcj3.setYqjyxm("实测最大轮边功率 (kw)");
 					dcj3.setYqjyjg(sjgl==null ? "" : sjgl.toString());
 					dcj3.setYqbzxz("≤"+xzgl);
-					dcj3.setYqjgpd(sjgl<=xzgl?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					boolean yqjgpdFlag  = Double.parseDouble(sjgl.toString())<=Double.parseDouble(xzgl.toString());
+					dcj3.setYqjgpd(yqjgpdFlag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 					dcj3.setXh(xh);
 					xh++;
 					this.hibernateTemplate.save(dcj3);
@@ -1275,8 +1278,8 @@ public class ZHCheckDataManager {
 	private Integer createBrakRollerDateJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap,
 			Integer xh) {
 		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate.find(
-				"from BrakRollerData where jylsh=? and jyxm !='B0' and sjzt=? order by jycs desc",
-				vehCheckLogin.getJylsh(), BrakRollerData.SJZT_ZC);
+				"from BrakRollerData where jylsh=? and jyxm !='B0' and jyxm!='L1' and jyxm!='L2' and jyxm!='L3' and jyxm!='L4' order by jycs desc",
+				vehCheckLogin.getJylsh());
 
 		for (BrakRollerData brd : brds) {
 			if (flagMap.get(brd.getJyxm()) == null) {
@@ -1325,9 +1328,9 @@ public class ZHCheckDataManager {
 					xh++;
 					this.hibernateTemplate.save(dcj4);
 				}
-
+				flagMap.put(brd.getJyxm(), brd);
 			}
-			flagMap.put(brd.getJyxm(), brd);
+			
 		}
 		return xh;
 	}
