@@ -62,8 +62,19 @@ public class VehCheckProcess extends BaseEntity {
 	@Column
 	private Integer voideSate;
 	
+	@Column
+	private Integer jcxdh;
 	
 	
+	
+
+	public Integer getJcxdh() {
+		return jcxdh;
+	}
+
+	public void setJcxdh(Integer jcxdh) {
+		this.jcxdh = jcxdh;
+	}
 
 	public Integer getVoideSate() {
 		return voideSate;

@@ -12,6 +12,7 @@ import javax.validation.Valid;
 
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -214,15 +215,27 @@ public class PDAServiceController {
 	@UserOperation(code="processStart",name="检测过程开始",userOperationEnum=CommonUserOperationEnum.AllLoginUser)
 	@RequestMapping(value = "processStart")
 	public @ResponseBody Map processStart(@RequestParam("jyxm") String jyxm, @RequestParam("jylsh") String jylsh,
-			@RequestParam("jycs") Integer jycs) throws IOException {
+			@RequestParam("jycs") Integer jycs,@RequestParam(value="jcxdh",required=false) Integer jcxdh) throws IOException {
 
 		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(jylsh, jycs, jyxm);
 		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
 
 		//显示屏现在 XX项目 检测中
-		checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
+		
+		if(StringUtils.isEmpty(jcxdh)) {
+			checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
+		}else {
+			checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,jcxdh);
+		}
+		
+		
 		
 		vehCheckProcess.setKssj(new Date());
+		
+		if(!StringUtils.isEmpty(jcxdh)) {
+			vehCheckProcess.setJcxdh(jcxdh);
+		}
+		
 		this.checkDataManager.updateProcess(vehCheckProcess);
 
 		

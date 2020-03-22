@@ -105,7 +105,7 @@ public class VideoController {
 		isRoadTest(list);
 		
 		String jyjgbh=list.get(0).get("JYJGBH").toString();
-		String jcxdh =list.get(0).get("JCXDH").toString();
+		//String jcxdh =list.get(0).get("JCXDH").toString();
 		
 		List<VideoConfig> conifgs = videoManager.getConfig(jyjgbh);
 		
@@ -115,7 +115,7 @@ public class VideoController {
 			String jyxm = (String)item.get("JYXM");
 			if(jyxm!=null){
 				for(VideoConfig vc:conifgs){
-					if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(jcxdh)){
+					if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(item.get("JCXDH").toString())){
 						JSONObject jo = JSONObject.fromObject(vc);
 						Date kssj=(Date)item.get("KSSJ");
 						Date jssj=(Date)item.get("JSSJ");
