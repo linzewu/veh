@@ -3,6 +3,7 @@ package com.xs.veh.network;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
@@ -33,10 +34,18 @@ public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 		}
 	}
 	
-	public byte[] getDevData(byte[] contex) throws InterruptedException {
+	public byte[] getDevData(byte[] contex) throws InterruptedException, TimeoutException {
+		
+		long timeout=2000;
+		long currentTime=0;
+		
 		for (int i = 0; i < contex.length; i++) {
 			while (temp.isEmpty()) {
 				Thread.sleep(50);
+				currentTime=currentTime+50;
+				if(currentTime>timeout) {
+					throw new TimeoutException("读取数据超时！2s");
+				}
 			}
 			contex[i] = temp.remove(0);
 		}
@@ -44,18 +53,35 @@ public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 		return contex;
 	}
 	
-	public byte[] getDevData(byte[] contex, byte beginByte) throws InterruptedException {
+	public byte[] getDevData(byte[] contex, byte beginByte) throws InterruptedException, TimeoutException {
+		
+		long timeout=2000;
+		long currentTime=0;
+		
 		while (temp.isEmpty()) {
 			Thread.sleep(50);
+			currentTime=currentTime+50;
+			if(currentTime>timeout) {
+				throw new TimeoutException("读取数据超时！2s");
+			}
 		}
 		while (temp.isEmpty()||temp.remove(0)!=beginByte) {
 			Thread.sleep(10);
+			currentTime=currentTime+10;
+			if(currentTime>timeout) {
+				throw new TimeoutException("读取数据超时！2s");
+			}
 		}
 		
 		contex[0]=beginByte;
 		for (int i = 1; i < contex.length; i++) {
 			while (temp.isEmpty()) {
 				Thread.sleep(50);
+				currentTime=currentTime+50;
+				if(currentTime>timeout) {
+					throw new TimeoutException("读取数据超时！2s");
+				}
+				
 			}
 			contex[i] = temp.remove(0);
 		}

@@ -31,7 +31,7 @@ import gnu.io.SerialPortEvent;
  */
 @Service("deviceManyWeigh")
 @Scope("prototype")
-public class DeviceManyWeigh extends SimpleRead  {
+public class DeviceManyWeigh extends SimpleRead   {
 	
 	static Logger logger = Logger.getLogger(DeviceManyWeigh.class);
 

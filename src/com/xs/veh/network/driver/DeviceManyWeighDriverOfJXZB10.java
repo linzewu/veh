@@ -95,6 +95,7 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 				
 				
 				deviceManyWeigh.sendMessage(dqsj);
+				logger.info("读取称重数据："+dqsj);
 				byte[] data = this.getDevData(new byte[19],A);
 				logger.info("称重开始："+CharUtil.byte2HexOfString(data));
 				
