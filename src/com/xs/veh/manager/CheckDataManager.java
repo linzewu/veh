@@ -33,6 +33,7 @@ import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.Insurance;
 import com.xs.veh.entity.PlateApplyTable;
 import com.xs.veh.entity.RoadCheck;
+import com.xs.veh.entity.TaskPicture;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
@@ -963,16 +964,16 @@ public class CheckDataManager {
 		}
 		
 		// 光强度总和
-//		if(!StringUtils.isEmpty(zgqjg)) {
-//			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-//			zgq.setYqjyxm(zgqxm);
-//			zgq.setYqjyjg(zgqjg);
-//			zgq.setYqbzxz("≤" + zgqxz);
-//			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
-//			zgq.setXh(xh);
-//			xh++;
-//			this.hibernateTemplate.save(zgq);
-//		}
+		if(!StringUtils.isEmpty(zgqjg)) {
+			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			zgq.setYqjyxm(zgqxm);
+			zgq.setYqjyjg(zgqjg);
+			zgq.setYqbzxz("≤" + zgqxz);
+			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
+			zgq.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(zgq);
+		}
 
 		return xh;
 	}
@@ -1576,6 +1577,10 @@ public class CheckDataManager {
 		}
 	}
 	
-	
+	public void updateTaskPaice(TaskPicture taskPicture) {
+		
+		this.hibernateTemplate.save(taskPicture);
+		
+	}
 	
 }

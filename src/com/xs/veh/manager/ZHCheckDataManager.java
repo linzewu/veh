@@ -1,5 +1,7 @@
 package com.xs.veh.manager;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.xs.common.MyHibernateTemplate;
+import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.DeviceCheckJudegZJ;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.TestResult;
@@ -33,7 +36,6 @@ import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
-import com.xs.veh.network.data.CurbWeightData;
 import com.xs.veh.network.data.LightData;
 import com.xs.veh.network.data.OtherInfoData;
 import com.xs.veh.network.data.ParDataOfAnjian;
@@ -42,7 +44,6 @@ import com.xs.veh.network.data.SpeedData;
 import com.xs.veh.network.data.SuspensionData;
 import com.xs.veh.network.data.VolumeData;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 @Service
@@ -498,6 +499,16 @@ public class ZHCheckDataManager {
 		return "";
 	}
 	
+	public TestResult getTestResultBylsh(String jylsh) {
+		List<TestResult> testResults =  (List<TestResult>) this.hibernateTemplate.find("from TestResult where jylsh=? order by id desc ",jylsh);
+		if(!CollectionUtils.isEmpty(testResults)) {
+			return testResults.get(0);
+		}else {
+			return null;
+		}
+	
+	}
+	
 	
 	/**
 	 * 生成报告单
@@ -513,6 +524,8 @@ public class ZHCheckDataManager {
 	//	List outlines =this.hibernateTemplate.find("from Outline where jylsh=? order by id desc ", vehCheckLogin.getJylsh());
 		
 		List<TestResult> testResults =  (List<TestResult>) this.hibernateTemplate.find("from TestResult where jylsh=? order by id desc ",vehCheckLogin.getJylsh());
+		
+		TestVeh testVeh =getTestVehbyJylsh(vehCheckLogin.getJylsh());
 		
 		OtherInfoData otherInfoData = null;
 		ParDataOfAnjian parDataOfAnjian=null;
@@ -672,9 +685,16 @@ public class ZHCheckDataManager {
 				if("不合格".equals(testResult.getDlx_pd())) {
 					pd=BaseDeviceData.PDJG_BHG.toString();
 				}else if("合格".equals(testResult.getDlx_pd())) {
-					pd=BaseDeviceData.PDJG_HG.toString();
+					if("等级评定".equals(testVeh.getJcxz())) {
+						if("0.82".equals(testResult.getDlx_dbgl())) {
+							pd="一级";
+						}else if("0.75".equals(testResult.getDlx_dbgl())){
+							pd="二级";
+						}
+					}else {
+						pd=BaseDeviceData.PDJG_HG.toString();
+					}
 				}
-				
 				dcj1.setYqjgpd(pd);
 				dcj1.setXh(xh);
 				xh++;
@@ -1280,6 +1300,9 @@ public class ZHCheckDataManager {
 		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate.find(
 				"from BrakRollerData where jylsh=? and jyxm !='B0' and jyxm!='L1' and jyxm!='L2' and jyxm!='L3' and jyxm!='L4' order by jycs desc",
 				vehCheckLogin.getJylsh());
+		
+		
+		TestVeh testVeh =getTestVehbyJylsh(vehCheckLogin.getJylsh());
 
 		for (BrakRollerData brd : brds) {
 			if (flagMap.get(brd.getJyxm()) == null) {
@@ -1296,13 +1319,40 @@ public class ZHCheckDataManager {
 				xh++;
 
 				this.hibernateTemplate.save(dcj1);
+				
+				Float zhzjbphlxz = brd.getZhzjbphlxz(vehCheckLogin,testVeh);
+				
+				Integer djpd = brd.getDjpd(vehCheckLogin);
+				
+				String yqjgpd=null;
+				
+				
+				if(testVeh!=null&&"等级评定".equals(testVeh.getJcxz())) {
+					if(djpd==1) {
+						yqjgpd="一级";
+					}else if(djpd==2) {
+						yqjgpd="二级";
+					}else {
+						yqjgpd ="不合格";
+					}
+				}else {
+					if(djpd==1) {
+						yqjgpd="合格";
+					}else if(djpd==2) {
+						yqjgpd="合格";
+					}else {
+						yqjgpd ="不合格";
+					}
+				}
+				
+				
 
 				DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj2.setXh(xh);
 				dcj2.setYqjyxm(getZW(brd.getZw()) +temp+ "不平衡率(%)");
 				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
-				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString());
-				dcj2.setYqjgpd(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString());
+				dcj2.setYqbzxz(zhzjbphlxz == null ? "" : "≤" + zhzjbphlxz.toString());
+				dcj2.setYqjgpd(yqjgpd);
 				dcj2.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj2);
@@ -1313,6 +1363,8 @@ public class ZHCheckDataManager {
 					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞力");
 					dcj3.setYqjyjg(brd.getZzzl() == null ? "" : brd.getZzzl().toString());
 					dcj3.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
+					brd.setZlzzlPd();
+					
 					dcj3.setYqjgpd(brd.getZlzzlpd() == null ? "" : brd.getZlzzlpd().toString());
 					dcj3.setXh(xh);
 					xh++;
@@ -1323,6 +1375,7 @@ public class ZHCheckDataManager {
 					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞力");
 					dcj4.setYqjyjg(brd.getYzzl() == null ? "" : brd.getZzzl().toString());
 					dcj4.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
+					brd.setYlzzlPd();
 					dcj4.setYqjgpd(brd.getYlzzlpd() == null ? "" : brd.getYlzzlpd().toString());
 					dcj4.setXh(xh);
 					xh++;
@@ -1418,6 +1471,19 @@ public class ZHCheckDataManager {
 	public List<DeviceCheckJudegZJ> getDeviceCheckJudegZJ(String jylsh) {
 		List<DeviceCheckJudegZJ> datas = (List<DeviceCheckJudegZJ>) this.hibernateTemplate.find("from DeviceCheckJudegZJ where jylsh=?", jylsh);
 		return datas;
+	}
+	
+	public InputStream getIamge(String lsh,String zpzl) {
+		
+		String sql="from CheckPhoto where jylsh=? and zpzl=?";
+		List<CheckPhoto> list = (List<CheckPhoto>) hibernateTemplate.find(sql, lsh,zpzl);
+		
+		if(!CollectionUtils.isEmpty(list)) {
+			InputStream sbs = new ByteArrayInputStream(list.get(0).getZp());
+			return sbs;
+		}
+		return null;
+		
 	}
 
 }

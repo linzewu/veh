@@ -46,6 +46,22 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 	@Override
 	public void sysSetting() {
 	}
+	
+	public static void main(String[] age) {
+		byte[] db=new byte[] {0b0,0b0,0b0,0b0,0b0,0b1,0b0,0b1};
+		
+		String strDB = Integer.toHexString(Integer.parseInt(CharUtil.byte2String(db),2));
+		
+		if(strDB.length()<2) {
+			strDB="0"+strDB;
+		}
+		
+		String comm="020503005436"+strDB;
+		
+		comm=comm+ CharUtil.getCheckSum2(comm.substring(2))+"03";
+		
+		logger.info("灯光检测命令："+comm);
+	}
 
 	@Override
 	public List<LightData> startCheck(final VehCheckLogin vehCheckLogin, List<VehFlow> vheFlows)
@@ -129,7 +145,9 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 			}
 			
 			String strDB = Integer.toHexString(Integer.parseInt(CharUtil.byte2String(db),2));
-			 
+			if(strDB.length()<2) {
+				strDB="0"+strDB;
+			}
 			String comm="020503005436"+strDB;
 			
 			comm=comm+ CharUtil.getCheckSum2(comm.substring(2))+"03";

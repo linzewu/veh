@@ -1373,19 +1373,19 @@ var report={
 						
 					});
 					
-					if(n.gx=="Y"){
-						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
-						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+veh.jgpd(n.czpypd)+dgpd_text.substring(2));
-					}
+//					if(n.gx=="Y"){
+//						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
+//						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+veh.jgpd(n.czpypd)+dgpd_text.substring(2));
+//					}
+//					
+//					if(n.gx=="J"){
+//						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
+//						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,2)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
+//					}
 					
-					if(n.gx=="J"){
-						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
-						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,2)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
-					}
-					
-					/*if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
+					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
 						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
-					}*/
+					}
 					$("#report1 tr[name="+tt[0]+"] td[name=dxcs]").text(n.dxcs);
 					
 				}else if(i.indexOf("S1")==0){
@@ -1411,7 +1411,8 @@ var report={
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzbphl]").text(n.kzbphl);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzxczdl]").text(n.kzxczdl);
 					
-					$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.kzzdlpd)+veh.jgpd(n.kzbphlpd));
+					//$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.kzzdlpd)+veh.jgpd(n.kzbphlpd));
+					$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_zlh]").text(n.zlh);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_ylh]").text(n.ylh);
 					$("#report1 tr[name="+tt[1]+"] td[name=dxcs]").text(n.dxcs);
@@ -1425,9 +1426,9 @@ var report={
 						
 						var objpd=$("#report1 tr[name=B"+n.zw+"] td[name=xmpd]");
 						
-						//if(objpd.text()!="X"){
-							objpd.text(veh.jgpd(n.kzzdlpd)+veh.jgpd(n.kzbphlpd));
-						//}
+						if(objpd.text()!="X"){
+							objpd.text(veh.jgpd(n.zpd));
+						}
 						
 						
 					}

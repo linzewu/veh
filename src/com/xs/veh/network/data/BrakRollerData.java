@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
 
@@ -1116,10 +1117,7 @@ public class BrakRollerData extends BaseDeviceData {
 	
 	public void setZlzzlPd() {
 		
-		if(zzzl!=null&&zlh!=null&&zlh!=0) {
-			return;
-		}
-		if(yzzl!=null&&ylh!=null&&ylh!=0) {
+		if(zzzl==null||zlh==null||zlh==0) {
 			return;
 		}
 		
@@ -1134,10 +1132,8 @@ public class BrakRollerData extends BaseDeviceData {
 	
 	public void setYlzzlPd() {
 		
-		if(zzzl!=null&&zlh!=null&&zlh!=0) {
-			return;
-		}
-		if(yzzl!=null&&ylh!=null&&ylh!=0) {
+		
+		if(yzzl==null||ylh==null||ylh==0) {
 			return;
 		}
 		
@@ -1149,6 +1145,120 @@ public class BrakRollerData extends BaseDeviceData {
 		
 	}
 	
+	public Float getZhzjbphlxz(VehCheckLogin vehCheckLogin,TestVeh testVeh) {
+		
+		// 轴荷
+		Integer zh = zlh +ylh;
+		
+		if(this.getZdtlh()!=null&&this.getYdtlh()!=null){
+			zh=this.getZdtlh()+this.getYdtlh();
+		}
+
+		Integer zdl = this.zzdl + this.yzdl;
+
+		Float temp = (float) (zh * 0.98 * 0.6);
+		
+		String qdxs=vehCheckLogin.getQdxs();
+		
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
+		
+		Integer djpd = this.getDjpd(vehCheckLogin);
+		// 等级评定
+		if (testVeh!=null&&"等级评定".equals(testVeh.getJcxz())) {
+			if(djpd==1) {
+				if (zw == 1) {
+					return 20f;
+				} else {
+					if (zdl >= temp) {
+						return 24f;
+					} else {
+						return 8f;
+					}
+				}
+			}else {
+				if (zw == 1) {
+					return 24f;
+				} else {
+					if (zdl >= temp) {
+						return 30f;
+					} else {
+						return 10f;
+					}
+				}
+			}
+		} else {
+			if (zw == 1) {
+				return 24f;
+			} else {
+				if (zdl >= temp) {
+					return 30f;
+				} else {
+					return 10f;
+				}
+			}
+		}
+		
+		 
+		
+	}
 	
+	/**
+	 * 等级评定
+	 * @param vehCheckLogin
+	 * @return
+	 */
+	public Integer getDjpd(VehCheckLogin vehCheckLogin) {
+		
+		// 轴荷
+		Integer zh = zlh +ylh;
+		
+		if(this.getZdtlh()!=null&&this.getYdtlh()!=null){
+			zh=this.getZdtlh()+this.getYdtlh();
+		}
+
+		Integer zdl = this.zzdl + this.yzdl;
+
+		Float temp = (float) (zh * 0.98 * 0.6);
+		
+		String qdxs=vehCheckLogin.getQdxs();
+		
+		Integer zw=this.zw;
+		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
+			zw=1;
+		}
+		
+		Float bphl =  this.getKzbphl();
+		
+		if(zw==1) {
+			if(bphl<=20) {
+				return 1;
+			}else if(bphl<=24) {
+				return 2;
+			}else {
+				return -1;
+			}
+		}else {
+			if (zdl >= temp) {
+				if(bphl<=24) {
+					return 1;
+				}else if(bphl<30) {
+					return 2;
+				}else {
+					return -1;
+				}
+			} else {
+				if(bphl<=8) {
+					return 1;
+				}else if(bphl<=10) {
+					return 2;
+				}else {
+					return -1;
+				}
+			}
+		}
+	}
 
 }

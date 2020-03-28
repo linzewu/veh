@@ -1,6 +1,6 @@
 package com.xs.veh.controller;
 
-import java.util.Date;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +33,7 @@ import com.xs.common.ResultHandler;
 import com.xs.common.Sql2WordUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.DeviceCheckJudegZJ;
+import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.manager.CheckDataManager;
@@ -166,11 +168,28 @@ public class CheckReportController {
 					dataMap.put("pfx2pd", pfxjo.getJSONObject("yd").getString("SFHG").equals("true")?"○":"X");
 				}
 				
-				
 				dataMap.putAll(pfxjo);
 			}
 			
 			dataMap.put("uplinedate", dataMap.get("upLineDate"));
+			
+			InputStream zdgwzp = zhCheckDataManager.getIamge(lsh, "0348");
+			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0321");
+			InputStream dlxjygwzp = zhCheckDataManager.getIamge(lsh, "0999");
+			
+			if(zdgwzp!=null) {
+				dataMap.put("zdgwzp", zdgwzp);
+			}
+			if(dggwzp!=null) {
+				dataMap.put("dggwzp", dggwzp);
+			}
+			if(dlxjygwzp!=null) {
+				dataMap.put("dlxjygwzp", dlxjygwzp);
+			}
+			
+			
+			
+			
 			Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
 			String template = "道路运输车辆性能检验记录单.docx";
 			fileName = "template_performance_record"+lsh+".jpg";
@@ -233,13 +252,15 @@ public class CheckReportController {
 	
 	private String getPD(String pd) {
 		if(pd.equals(BaseDeviceData.PDJG_HG.toString())) {
-			return "○";
+			return "合格";
 		}else if(pd.equals(BaseDeviceData.PDJG_BHG.toString())) {
-			return "X";
+			return "不合格";
 		}else if(pd.equals(BaseDeviceData.PDJG_WJ.toString())) {
 			return "—";
+		}else {
+			return pd;
 		}
-		return "";
+		
 	}
 	
 	
@@ -248,33 +269,65 @@ public class CheckReportController {
 	public @ResponseBody Map printJyBgReport(String lsh) throws Exception {
 		String basePath = "cache/report/";
 		String filePath = request.getSession().getServletContext().getRealPath("/") + basePath;
-				String fileName = "";
-				VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(lsh);
-				TestVeh testVeh = zhCheckDataManager.getTestVehbyJylsh(lsh);
-				JSONObject dataMap =(JSONObject)JSON.toJSON(vehCheckLogin);
-				if(testVeh!=null) {
-					JSONObject testVehMap = (JSONObject)JSON.toJSON(testVeh);
-					dataMap.putAll(testVehMap);
+		String fileName = "";
+		VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(lsh);
+		TestVeh testVeh = zhCheckDataManager.getTestVehbyJylsh(lsh);
+		JSONObject dataMap =(JSONObject)JSON.toJSON(vehCheckLogin);
+		
+		if(testVeh!=null) {
+			JSONObject testVehMap = (JSONObject)JSON.toJSON(testVeh);
+			dataMap.putAll(testVehMap);
+		}
+		zhCheckDataManager.createDeviceCheckJudeg(vehCheckLogin);
+		
+		List<DeviceCheckJudegZJ> reports = zhCheckDataManager.getDeviceCheckJudegZJ(lsh);
+		
+		TestResult testResult = zhCheckDataManager.getTestResultBylsh(lsh);
+		
+		if(testResult!=null) {
+			dataMap.put("hjwd",testResult.getHjwd());
+			dataMap.put("hjsd",testResult.getHjsd());
+			dataMap.put("dqy",testResult.getDqy());
+		}
+		
+		
+		Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
+		
+		List<BaseParams> params = bpsMap.get("csys");
+		
+		if(!CollectionUtils.isEmpty(params)) {
+			String csys =(String) dataMap.get("csys");
+			
+			String newCsys = "";
+			
+			if(!StringUtils.isEmpty(csys)) {
+				for(char c:csys.toCharArray()) {
+					for(BaseParams p: params) {
+						if(p.getParamValue().equals(String.valueOf(c))) {
+							newCsys+=p.getParamName();
+						}
+					}
+					
 				}
-				zhCheckDataManager.createDeviceCheckJudeg(vehCheckLogin);
-				
-				List<DeviceCheckJudegZJ> reports = zhCheckDataManager.getDeviceCheckJudegZJ(lsh);
-				
-				
-				
-				Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
-				String template = "道路运输车辆综合性能检验报告单.docx";
-				fileName = "template_performance_record_bg_"+lsh+".jpg";
-				Document doc = Sql2WordUtil.map2WordUtil(template, dataMap,bpsMap);
-				
-				if(!CollectionUtils.isEmpty(reports)) {
-					JSONArray jsonArray =(JSONArray) JSON.toJSON(reports);
-					Table table = (Table) doc.getChild(NodeType.TABLE, 1, true);
-					prcessTable(table, jsonArray);
-				}
-				doc.save(filePath+"template_performance_record_bg_"+lsh+".doc");
-				Sql2WordUtil.toCase(doc, filePath, fileName);
-				
+			}
+			
+			if(!StringUtils.isEmpty(newCsys)) {
+				dataMap.put("csys",newCsys);
+			}
+		}
+		
+		String template = "道路运输车辆综合性能检验报告单.docx";
+		fileName = "template_performance_record_bg_"+lsh+".jpg";
+		Document doc = Sql2WordUtil.map2WordUtil(template, dataMap,bpsMap);
+		
+		if(!CollectionUtils.isEmpty(reports)) {
+			JSONArray jsonArray =(JSONArray) JSON.toJSON(reports);
+			Table table = (Table) doc.getChild(NodeType.TABLE, 1, true);
+			prcessTable(table, jsonArray);
+		}
+		doc.save(filePath+"template_performance_record_bg_"+lsh+".doc");
+		Sql2WordUtil.toCase(doc, filePath, fileName);
+		
 		
 		return ResultHandler.toMyJSON(Constant.ConstantState.STATE_SUCCESS, "打印道路运输车辆性能检验报告单成功", fileName);
 	}

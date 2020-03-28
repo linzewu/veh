@@ -30,7 +30,7 @@ public class TestVehJob {
 	@Scheduled(fixedDelay = 1000)
 	public void scanTaskPic() throws Exception {
 
-		List<TaskPicture> tps = (List<TaskPicture>) hibernateTemplate.find("from TaskPicture");
+		List<TaskPicture> tps = (List<TaskPicture>) hibernateTemplate.find("from TaskPicture where status='0'");
 		List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("sxtpz");
 
 		for (TaskPicture t : tps) {
@@ -80,12 +80,16 @@ public class TestVehJob {
 					checkPhoto.setStatus(0);
 					checkPhoto.setZp(zp);
 
-					checkPhoto.setZpzl("");
+					checkPhoto.setZpzl("0999");
 					checkDataManager.saveCheckPhoto(checkPhoto);
+					
+					
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
 			}
+			
+			
 		}
 	}
 }
