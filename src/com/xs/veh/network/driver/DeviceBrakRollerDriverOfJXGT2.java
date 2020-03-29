@@ -103,8 +103,8 @@ public class DeviceBrakRollerDriverOfJXGT2 extends AbstractDeviceBrakRoller {
  				if(d4[2]==0x45&&d4[6]==0x45&&d4[10]==0x45){
  					break;
  				}else{
- 					Integer zlzd=Integer.parseInt(new String(new byte[]{d4[3],d4[4],d4[5],d4[6]}));
- 					Integer ylzd=Integer.parseInt(new String(new byte[]{d4[7],d4[8],d4[9],d4[10]}));
+ 					Integer zlzd=Integer.parseInt(new String(new byte[]{d4[3],d4[4],d4[5],d4[6]}).trim());
+ 					Integer ylzd=Integer.parseInt(new String(new byte[]{d4[7],d4[8],d4[9],d4[10]}).trim());
  					brakRollerData.getLeftData().add(zlzd);
  					brakRollerData.getRigthData().add(ylzd);
  				}

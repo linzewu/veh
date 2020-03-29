@@ -261,13 +261,13 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		if (nextVehFlow != null && nexzw==intZw) {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
 				display.sendMessage("检判定结果：O", DeviceDisplay.SP);
-				Thread.sleep(10000);
+				Thread.sleep(5000);
 			} else {
 				display.sendMessage("检判定结果：X", DeviceDisplay.SP);
-				Thread.sleep(10000);
-				display.sendMessage("等待是否复位,20秒", DeviceDisplay.XP);
+				Thread.sleep(5000);
+				display.sendMessage("等待是否复位,10秒", DeviceDisplay.XP);
 //				// 不合格等待15秒
-				Thread.sleep(20000);
+				Thread.sleep(10000);
 			}
 		} else {
 			if (!vehFlow.getJyxm().equals("B0")) {
@@ -276,7 +276,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 				} else {
 					display.sendMessage("检判定结果：X", DeviceDisplay.SP);
 				}
-				Thread.sleep(10000);
+				Thread.sleep(5000);
 			}else{
 				String zczw = vehCheckLogin.getZczw();
 				Integer maxzw = this.getMaxZw(zczw);
@@ -331,18 +331,25 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			}
 			this.display.setDefault();
 		}
+		logger.info("检测结束");
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), vehFlow.getJyxm());
 		process.setJssj(new Date());
+		
+		logger.info("设置开始过程开始时间");
 		
 		if(brakRollerData.getDwsj()!=null) {
 			process.setKssj(brakRollerData.getDwsj());
 		}else {
 			process.setKssj(kssj);
 		}
+		logger.info("设置过程结束时间");
 		//process.setKssj(kssj);
 		this.checkDataManager.updateProcess(process);
+		logger.info("更新过程信息");
 		this.checkDataManager.saveData(brakRollerData);
+		logger.info("保存制动数据！");
+		
 	}
 
 	@Override
