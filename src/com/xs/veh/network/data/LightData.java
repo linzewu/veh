@@ -364,10 +364,10 @@ public class LightData extends BaseDeviceData {
 //				this.czpyxz = "0.6,0.8";
 //			}
 //		}
-		if (this.gx == GX_YGD) {
-			Float f =  (0.8f*this.dg)-this.dg;
-			this.czpyxz = f+",100";
-		}
+//		if (this.gx == GX_YGD) {
+//			Float f =  (0.8f*this.dg)-this.dg;
+//			this.czpyxz = f+",100";
+//		}
 		if (this.gx == GX_JGD) {
 			if(dg>1000) {
 				this.czpyxz ="-350,-50";
