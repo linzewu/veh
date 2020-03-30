@@ -982,16 +982,16 @@ public class CheckDataManager {
 		}
 		
 		// 光强度总和
-//		if(!StringUtils.isEmpty(zgqjg)) {
-//			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-//			zgq.setYqjyxm(zgqxm);
-//			zgq.setYqjyjg(zgqjg);
-//			zgq.setYqbzxz("≤" + zgqxz);
-//			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
-//			zgq.setXh(xh);
-//			xh++;
-//			this.hibernateTemplate.save(zgq);
-//		}
+		if(!StringUtils.isEmpty(zgqjg)) {
+			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+			zgq.setYqjyxm(zgqxm);
+			zgq.setYqjyjg(zgqjg);
+			zgq.setYqbzxz("≤" + zgqxz);
+			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
+			zgq.setXh(xh);
+			xh++;
+			this.hibernateTemplate.save(zgq);
+		}
 
 		return xh;
 	}
