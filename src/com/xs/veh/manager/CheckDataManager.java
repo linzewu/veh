@@ -1579,8 +1579,12 @@ public class CheckDataManager {
 	
 	public void updateTaskPaice(TaskPicture taskPicture) {
 		
-		this.hibernateTemplate.save(taskPicture);
+		this.hibernateTemplate.update(taskPicture);
 		
+	}
+	
+	public void deleteTaskPaice(TaskPicture taskPicture) {
+		this.hibernateTemplate.delete(taskPicture);
 	}
 	
 }

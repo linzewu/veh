@@ -155,8 +155,18 @@ public class TakePicture implements Runnable {
 		}
 		logger.info("新拍照程序，开始，拍照项目："+jyxm);
 		try {
-			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("B1")||jyxm.equals("DC")) {
-				createOther();
+			
+			List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("sxtpz");
+			
+			for(BaseParams parma:params) {
+				String[] paramName =parma.getParamName().split("_");
+				if(paramName[0].equals(jyxm)) {
+					createOther();
+				}
+			}
+			
+			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")) {
+				//createOther();
 			}else {
 				onLineDevice();
 			}

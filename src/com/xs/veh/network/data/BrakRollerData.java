@@ -48,7 +48,7 @@ public class BrakRollerData extends BaseDeviceData {
 	// 右阻滞力
 	@Column
 	private Integer yzzl;
-
+	
 	// 左制动力
 	@Column
 	private Integer zzdl;
@@ -219,8 +219,36 @@ public class BrakRollerData extends BaseDeviceData {
 	@Column
 	private Float yzzlxz;
 	
+	/**
+	 * 左阻滞率
+	 */
+	@Column
+	private Float zzzlf;
+	/**
+	 * 右阻滞率
+	 */
+	@Column
+	private Float yzzlf;
 	
 	
+	
+	
+
+	public Float getZzzlf() {
+		return zzzlf;
+	}
+
+	public void setZzzlf(Float zzzlf) {
+		this.zzzlf = zzzlf;
+	}
+
+	public Float getYzzlf() {
+		return yzzlf;
+	}
+
+	public void setYzzlf(Float yzzlf) {
+		this.yzzlf = yzzlf;
+	}
 
 	public Float getZzzlxz() {
 		return zzzlxz;
@@ -1116,12 +1144,10 @@ public class BrakRollerData extends BaseDeviceData {
 	}
 	
 	public void setZlzzlPd() {
-		
-		if(zzzl==null||zlh==null||zlh==0) {
+		if(zzzlf==null) {
 			return;
 		}
-		
-		if((zzzl)>0.035*zlh+ylh) {
+		if((zzzlf)>0.035) {
 			this.zlzzlpd=PDJG_BHG;
 		}else {
 			this.zlzzlpd=PDJG_HG;
@@ -1258,6 +1284,17 @@ public class BrakRollerData extends BaseDeviceData {
 					return -1;
 				}
 			}
+		}
+	}
+	
+	public Float getZZL(Integer zzl) {
+		
+		if(zlh!=null&&ylh!=null) {
+			Integer zh = zlh+ylh;
+			return zzl/(zh*0.98f)*100;
+			
+		}else {
+			return null;
 		}
 	}
 

@@ -1360,8 +1360,8 @@ public class ZHCheckDataManager {
 				if(brd.getJyxm().indexOf("L")==-1&&!"B0".equals(brd.getJyxm())) {
 					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj3.setXh(xh);
-					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞力");
-					dcj3.setYqjyjg(brd.getZzzl() == null ? "" : brd.getZzzl().toString());
+					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞率");
+					dcj3.setYqjyjg(brd.getZzzlf() == null ? "" : brd.getZzzlf().toString());
 					dcj3.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
 					brd.setZlzzlPd();
 					
@@ -1372,8 +1372,8 @@ public class ZHCheckDataManager {
 					
 					DeviceCheckJudegZJ dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj4.setXh(xh);
-					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞力");
-					dcj4.setYqjyjg(brd.getYzzl() == null ? "" : brd.getZzzl().toString());
+					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞率");
+					dcj4.setYqjyjg(brd.getYzzlf() == null ? "" : brd.getZzzlf().toString());
 					dcj4.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
 					brd.setYlzzlPd();
 					dcj4.setYqjgpd(brd.getYlzzlpd() == null ? "" : brd.getYlzzlpd().toString());

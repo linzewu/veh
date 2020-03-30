@@ -91,6 +91,8 @@ public class CheckReportController {
 				dataMap.putAll(testVehMap);
 			}
 			
+			dataMap.put("qdzs", vehCheckLogin.getQdxs());
+			
 			//灯光
 			Map<String, Object>  dgData = zhCheckDataManager.getHData(lsh, vehCheckLogin.getJycs());
 			Map<String, Object>  zjcheckeData = new HashMap<String, Object>();
@@ -174,7 +176,7 @@ public class CheckReportController {
 			dataMap.put("uplinedate", dataMap.get("upLineDate"));
 			
 			InputStream zdgwzp = zhCheckDataManager.getIamge(lsh, "0348");
-			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0321");
+			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0322");
 			InputStream dlxjygwzp = zhCheckDataManager.getIamge(lsh, "0999");
 			
 			if(zdgwzp!=null) {

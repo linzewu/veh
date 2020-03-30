@@ -105,10 +105,12 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			
 			brakRollerData.setZzzl(zzzl);
 			brakRollerData.setYzzl(yzzl);
+			brakRollerData.setZzzlf(brakRollerData.getZZL(zzzl));
+			brakRollerData.setYzzlf(brakRollerData.getZZL(yzzl));
 			
 			if(!vehFlow.getJyxm().equals("B0")&&vehFlow.getJyxm().indexOf("L")==-1) {
-				brakRollerData.setZzzlxz((brakRollerData.getZlh()+brakRollerData.getYlh())*0.035f);
-				brakRollerData.setYzzlxz((brakRollerData.getZlh()+brakRollerData.getYlh())*0.035f);
+				brakRollerData.setZzzlxz(3.5f);
+				brakRollerData.setYzzlxz(3.5f);
 				brakRollerData.setZlzzlPd();
 				brakRollerData.setYlzzlPd();
 				deviceBrakRoller.getDisplay().sendMessage("阻滞力"+zzzl+"/"+yzzl, DeviceDisplay.SP);

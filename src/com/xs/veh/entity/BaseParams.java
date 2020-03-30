@@ -29,11 +29,11 @@ public class BaseParams {
 
 	@Column(length = 64)
 	private String type;
-	@Column(length = 64)
+	@Column(length = 4000)
 	private String paramName;
 	@Column(length = 64)
 	private String paramValue;
-	@Column(length = 64)
+	@Column(length = 4000)
 	private String memo;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")

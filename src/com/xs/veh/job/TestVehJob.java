@@ -43,7 +43,12 @@ public class TestVehJob {
 				if (paramName.length > 1) {
 					jcxdh = paramName[1];
 				}
-				param = bp;
+				if("EP".equals(pzjyxm)) {
+					param = bp;
+				}else if("S1".equals(pzjyxm)) {
+					param = bp;
+				}
+				
 			}
 
 			if (param != null) {
@@ -79,17 +84,24 @@ public class TestVehJob {
 					checkPhoto.setPssj(new Date());
 					checkPhoto.setStatus(0);
 					checkPhoto.setZp(zp);
-
-					checkPhoto.setZpzl("0999");
-					checkDataManager.saveCheckPhoto(checkPhoto);
 					
+					if("EP".equals(t.getJyxm())) {
+						checkPhoto.setZpzl("0999");
+					}else if("S1".equals(t.getJyxm())) {
+						checkPhoto.setZpzl("0347");
+					}
+
+					this.checkDataManager.saveCheckPhoto(checkPhoto);
+					
+					this.checkDataManager.deleteTaskPaice(t);
+					continue;
 					
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
 			}
-			
-			
+			t.setStatus("1");
+			this.checkDataManager.updateTaskPaice(t);
 		}
 	}
 }
