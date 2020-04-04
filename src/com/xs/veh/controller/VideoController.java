@@ -1,5 +1,7 @@
 package com.xs.veh.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,13 +15,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.enums.CommonUserOperationEnum;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
+import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VideoManager;
+import com.xs.veh.util.FileUtil;
+import com.xs.veh.util.HKVisionUtil;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -32,6 +40,11 @@ public class VideoController {
 	
 	@Resource(name="videoManager")
 	private VideoManager videoManager;
+	
+	@Resource(name="checkDataManager")
+	private CheckDataManager checkDataManager;
+	
+	
 	@Value("${jyjgbh}")
 	private String jyjgbh_sys;
 	
@@ -206,6 +219,34 @@ public class VideoController {
 	public @ResponseBody String  getJyjgmc() {
 		return jyjgmc_sys;
 	}
+	
+	
+	@RequestMapping(value = "uploadVideo", method = RequestMethod.POST)
+	@UserOperation(code="uploadVideo",name="视频上传")
+	public @ResponseBody String  uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,VehCheckProcess vcp) throws IllegalStateException, IOException {
+		
+		VehCheckProcess old = checkDataManager.getVehCheckProces(vcp.getJylsh(), vcp.getJycs(), vcp.getJyxm());
+		if(old!=null) {
+			vcp.setId(old.getId());
+		}
+		
+		
+		FileUtil.createDirectory(HKVisionUtil.getConfigPath()+"\\video\\");
+		
+		String filePath = vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_0.MP4";
+		
+		// 创建文件实例
+		File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath);
+		// 写入文件
+		videoFile.transferTo(file);
+		checkDataManager.updateProcess(vcp);
+		Map<String,Object> map =new HashMap<String,Object>();
+		map.put("status", 1);
+		map.put("message", "上传成功");
+		
+		return JSONObject.fromObject(map).toString();
+	}
+	
 	
 
 }

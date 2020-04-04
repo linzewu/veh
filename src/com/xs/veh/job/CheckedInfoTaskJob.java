@@ -15,7 +15,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -30,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
@@ -104,6 +112,7 @@ public class CheckedInfoTaskJob {
 
 	@Resource(name = "baseParamsManager")
 	private BaseParamsManager baseParamsManager;
+	
 
 	public CheckedInfoTaskJob() {
 		try {
@@ -500,6 +509,13 @@ public class CheckedInfoTaskJob {
 						hkUtil.downLoad(config, hkUtil.convert(kssj), hkUtil.convert(vcp.getJssj()), vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_"+config.getChannel()); 
 						vcp.setVoideSate(1);
 						vehProcessManager.saveVehProcessSync(vcp);
+						
+						BaseParams baseParams = baseParamsManager.getBaseParam("dsfsppt", "1");
+						
+						if(baseParams!=null) {
+							todoServvice(vehCheckLogin, vcp);
+						}
+						
 					}catch (Exception e) {
 						vcp.setVoideSate(2);
 						vehProcessManager.saveVehProcessSync(vcp);
@@ -514,6 +530,85 @@ public class CheckedInfoTaskJob {
 		}
 		
 		
+	}
+	
+	private void toFtp(VehCheckProcess vcp) {
+		
+		
+	}
+	
+	
+	private void todoServvice(VehCheckLogin info,VehCheckProcess vcp) throws AxisFault {
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		ServiceClient serviceClient = new ServiceClient();
+        //创建服务地址WebService的URL,注意不是WSDL的URL
+        String url = "http://172.16.90.18:9081/remoteServerZx/services/zxServer?wsdl";
+        EndpointReference targetEPR = new EndpointReference(url);
+        Options options = serviceClient.getOptions();
+        options.setTo(targetEPR);
+        //确定调用方法（wsdl 命名空间地址 (wsdl文档中的targetNamespace) 和 方法名称 的组合）
+        options.setAction("http://172.16.90.18:9081/remoteServerZx/services/zxServer/writeObjectOut");
+
+        OMFactory fac = OMAbstractFactory.getOMFactory();
+        /*
+         * 指定命名空间，参数：
+         * uri--即为wsdl文档的targetNamespace，命名空间
+         * perfix--可不填
+         */
+        OMNamespace omNs = fac.createOMNamespace("http://172.16.90.18:9081/remoteServerZx/services/zxServer/", "");
+        // 指定方法
+        OMElement method = fac.createOMElement("writeObjectOut", omNs);
+        // 指定方法的参数
+        OMElement xtlb  = fac.createOMElement("xtlb", omNs);
+        xtlb .setText("01");
+        
+        OMElement jkxlh  = fac.createOMElement("jkxlh", omNs);
+        jkxlh .setText("");
+        
+        OMElement jkid  = fac.createOMElement("jkid", omNs);
+        jkid .setText("01A46");
+        
+        
+        OMElement writeXmlDoc  = fac.createOMElement("writeXmlDoc", omNs);
+        
+        Document document = DocumentHelper.createDocument();
+        Element root =  document.addElement("root");
+        Element vehispara = root.addElement("vehispara");
+        
+        vehispara.addElement("jyjgbh").setText(info.getJyjgbh());
+        
+        vehispara.addElement("lsh").setText(info.getJylsh());
+        
+        vehispara.addElement("hpzl").setText(info.getHpzl());
+        
+        vehispara.addElement("hphm").setText(info.getHphm());
+        
+        vehispara.addElement("clsbdh").setText(info.getClsbdh());
+        
+        vehispara.addElement("jylb").setText(info.getJylb());
+        
+        vehispara.addElement("jycs").setText(info.getJycs().toString());
+        
+        vehispara.addElement("jyxm").setText(vcp.getJyxm());
+        
+        vehispara.addElement("xmkssj").setText(sdf.format(vcp.getKssj()));
+
+        vehispara.addElement("xmjssj").setText(sdf.format(vcp.getJssj()));
+        
+        writeXmlDoc.setText(document.asXML()); 
+        
+        method.addChild(xtlb);
+        method.addChild(jkxlh);
+        method.addChild(jkid);
+        method.addChild(writeXmlDoc);
+        method.build();
+        //远程调用web服务
+        OMElement result = serviceClient.sendReceive(method);
+        
+        System.out.println(result);
+
 	}
 
 
