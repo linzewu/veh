@@ -1,7 +1,6 @@
 package com.xs.veh.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.enums.CommonUserOperationEnum;
+import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
+import com.xs.veh.job.CheckedInfoTaskJob;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VideoManager;
 import com.xs.veh.util.FileUtil;
@@ -38,6 +40,8 @@ import net.sf.json.JSONObject;
 @Modular(modelCode="video",modelName="视频配置",isEmpowered=false)
 public class VideoController {
 	
+	private static Logger logger = Logger.getLogger(VideoController.class);
+	
 	@Resource(name="videoManager")
 	private VideoManager videoManager;
 	
@@ -50,6 +54,9 @@ public class VideoController {
 	
 	@Value("${jyjgmc}")
 	private String jyjgmc_sys;
+	
+	@Resource(name="CheckedInfoTaskJob")
+	private CheckedInfoTaskJob cit;
 	
 	@RequestMapping(value = "play")
 	@UserOperation(code="play",name="播放")
@@ -127,30 +134,55 @@ public class VideoController {
 		for(Map item:list){
 			String jyxm = (String)item.get("JYXM");
 			if(jyxm!=null){
-				for(VideoConfig vc:conifgs){
-					if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(item.get("JCXDH").toString())){
-						JSONObject jo = JSONObject.fromObject(vc);
-						Date kssj=(Date)item.get("KSSJ");
-						Date jssj=(Date)item.get("JSSJ");
-						
-						Integer jycs=(Integer)item.get("JYCS");
-						
-						String fzjg=(String)item.get("FZJG");
-						String hphm=(String)item.get("HPHM");
-						if(fzjg!=null){
-							hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+				
+				if(jyxm.equals("F2")||jyxm.equals("F3")||jyxm.equals("F4")) {
+					JSONObject jo =new JSONObject();
+					Date kssj=(Date)item.get("KSSJ");
+					Date jssj=(Date)item.get("JSSJ");
+					
+					Integer jycs=(Integer)item.get("JYCS");
+					
+					String fzjg=(String)item.get("FZJG");
+					String hphm=(String)item.get("HPHM");
+					if(fzjg!=null){
+						hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+					}
+					SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					
+					jo.put("kssj",sd.format(kssj));
+					jo.put("jssj",sd.format(jssj));
+					jo.put("hphm",hphm);
+					jo.put("jyxm", jyxm);
+					jo.put("jycs", jycs.intValue());
+					ja.add(jo);
+				}else {
+					for(VideoConfig vc:conifgs){
+						if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(item.get("JCXDH").toString())){
+							JSONObject jo = JSONObject.fromObject(vc);
+							Date kssj=(Date)item.get("KSSJ");
+							Date jssj=(Date)item.get("JSSJ");
+							
+							Integer jycs=(Integer)item.get("JYCS");
+							
+							String fzjg=(String)item.get("FZJG");
+							String hphm=(String)item.get("HPHM");
+							if(fzjg!=null){
+								hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+							}
+							SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							
+							jo.put("kssj",sd.format(kssj));
+							jo.put("jssj",sd.format(jssj));
+							jo.put("hphm",hphm);
+							jo.put("jyxm", jyxm);
+							jo.put("jycs", jycs.intValue());
+							ja.add(jo);
+							//break;
 						}
-						SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						
-						jo.put("kssj",sd.format(kssj));
-						jo.put("jssj",sd.format(jssj));
-						jo.put("hphm",hphm);
-						jo.put("jyxm", jyxm);
-						jo.put("jycs", jycs.intValue());
-						ja.add(jo);
-						//break;
 					}
 				}
+				
+				
 			}
 		}
 		request.setAttribute("playInfo", ja.toString());
@@ -223,23 +255,38 @@ public class VideoController {
 	
 	@RequestMapping(value = "uploadVideo", method = RequestMethod.POST)
 	@UserOperation(code="uploadVideo",name="视频上传")
-	public @ResponseBody String  uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,VehCheckProcess vcp) throws IllegalStateException, IOException {
+	public @ResponseBody String  uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,VehCheckProcess vcp) throws Exception {
 		
 		VehCheckProcess old = checkDataManager.getVehCheckProces(vcp.getJylsh(), vcp.getJycs(), vcp.getJyxm());
 		if(old!=null) {
-			vcp.setId(old.getId());
+			old.setKssj(vcp.getKssj());
+			old.setJssj(vcp.getJssj());
+			vcp=old;
 		}
 		
 		
 		FileUtil.createDirectory(HKVisionUtil.getConfigPath()+"\\video\\");
 		
-		String filePath = vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_0.MP4";
+		String filePath = vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_0";
 		
 		// 创建文件实例
-		File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath);
+		File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
 		// 写入文件
 		videoFile.transferTo(file);
-		checkDataManager.updateProcess(vcp);
+		
+		try {
+		
+			String ftpPath = cit.toFtp(vcp, filePath);
+			
+			VehCheckLogin  info = checkDataManager.getVehCheckLogin(vcp.getJylsh());
+			
+			cit.todoServvice(info, vcp, ftpPath);
+			
+		}catch (Exception e) {
+			logger.error("视频上传到FTP 异常",e);
+		}
+		
+		checkDataManager.saveOrUpdateProcess(vcp);
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("status", 1);
 		map.put("message", "上传成功");

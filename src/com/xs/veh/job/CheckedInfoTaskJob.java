@@ -1,5 +1,7 @@
 package com.xs.veh.job;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -52,6 +54,7 @@ import com.xs.veh.manager.VehProcessManager;
 import com.xs.veh.manager.VideoManager;
 import com.xs.veh.network.data.Outline;
 import com.xs.veh.util.BeanXMLUtil;
+import com.xs.veh.util.FtpUtil;
 import com.xs.veh.util.HKVisionUtil;
 import com.xs.veh.util.RCAConstant;
 
@@ -513,7 +516,10 @@ public class CheckedInfoTaskJob {
 						BaseParams baseParams = baseParamsManager.getBaseParam("dsfsppt", "1");
 						
 						if(baseParams!=null) {
-							todoServvice(vehCheckLogin, vcp);
+							
+							String ftpPath = toFtp(vcp,vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_"+config.getChannel());
+							
+							todoServvice(vehCheckLogin, vcp,ftpPath);
 						}
 						
 					}catch (Exception e) {
@@ -532,13 +538,53 @@ public class CheckedInfoTaskJob {
 		
 	}
 	
-	private void toFtp(VehCheckProcess vcp) {
+	public String toFtp(VehCheckProcess vcp,String saveFile) throws Exception {
 		
+		List<BaseParams> params  = baseParamsManager.getBaseParamByType("ftp");
+		String localPath = HKVisionUtil.getConfigPath()+"\\video\\"+saveFile+".mp4";
+		File file =new File(localPath);
+		FileInputStream InputStream =new FileInputStream(file);
+		String ftpHost =null;
+		String ftpUserName =null;
+		String ftpPassword = null;
+		Integer ftpPort=null;
 		
+		for(BaseParams param:params) {
+			if(param.getParamName().equals("ftpHost")) {
+				ftpHost=param.getParamValue();
+			}
+			if(param.getParamName().equals("ftpUserName")) {
+				ftpUserName=param.getParamValue();
+			}
+			if(param.getParamName().equals("ftpPassword")) {
+				ftpPassword=param.getParamValue();
+			}
+			if(param.getParamName().equals("ftpPort")) {
+				ftpPort=Integer.parseInt(param.getParamValue());
+			}
+		}
+		
+		Calendar c =Calendar.getInstance();
+		
+		String ftpPath =c.get(Calendar.YEAR)+"/"+(c.get(Calendar.MONTH)+1)+"/"+c.get(Calendar.DAY_OF_MONTH)+vcp.getJylsh();
+		
+		String fileName =saveFile+".mp4";
+		
+		logger.info("ftpHost="+ftpHost);
+		logger.info("ftpUserName="+ftpUserName);
+		logger.info("ftpPassword="+ftpPassword);
+		logger.info("ftpPort="+ftpPort);
+		logger.info("ftpPath="+ftpPath);
+		
+		logger.info("fileName="+fileName);
+		
+		FtpUtil.uploadFile(ftpHost, ftpUserName, ftpPassword, ftpPort, ftpPath, fileName, InputStream);
+		
+		return ftpPath+"/"+fileName;
 	}
 	
 	
-	private void todoServvice(VehCheckLogin info,VehCheckProcess vcp) throws AxisFault {
+	public void todoServvice(VehCheckLogin info,VehCheckProcess vcp,String ftpPath) throws AxisFault {
 		
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -596,6 +642,8 @@ public class CheckedInfoTaskJob {
         vehispara.addElement("xmkssj").setText(sdf.format(vcp.getKssj()));
 
         vehispara.addElement("xmjssj").setText(sdf.format(vcp.getJssj()));
+        
+        vehispara.addElement("splj").setText(ftpPath);
         
         writeXmlDoc.setText(document.asXML()); 
         

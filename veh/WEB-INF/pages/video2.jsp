@@ -105,7 +105,8 @@
 			var li=$("<li> <input  type=\"button\"  value='"+(getjyxm(n.jyxm)+"  "+n.jycs)+"' style=\"width:180px;\" /></li>");
 			$(".check-menu").append(li);
 			//$.parser.parse('.check-menu');
-			var itemId = vlc.playlist.add("http://192.168.51.201:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+n.channel+".mp4");
+			var channel=n.channel==null?"0":n.channel;
+			var itemId = vlc.playlist.add("http://192.168.51.201:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
 			
 			li.find("input").click(function(){
 				vlc.playlist.playItem(itemId);

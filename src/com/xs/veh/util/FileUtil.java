@@ -17,7 +17,7 @@ public class FileUtil {
 	public static void createDirectory(String path) {
 		File pathFile = new File(path);
 		if (!pathFile.exists()) {
-			pathFile.mkdir();
+			pathFile.mkdirs();
 		}
 	}
 

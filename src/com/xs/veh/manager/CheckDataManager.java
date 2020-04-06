@@ -1384,6 +1384,10 @@ public class CheckDataManager {
 	public void updateProcess(VehCheckProcess vehCheckProcess) {
 		this.hibernateTemplate.update(vehCheckProcess);
 	}
+	
+	public void saveOrUpdateProcess(VehCheckProcess vehCheckProcess) {
+		this.hibernateTemplate.saveOrUpdate(vehCheckProcess);
+	}
 
 	public void createCheckEventOnLine(String jylsh, Integer jycs) {
 

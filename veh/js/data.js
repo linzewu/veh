@@ -65,6 +65,18 @@ var jyxm_combox=[{
 	jyxm:'M1',
 	name:'外廓尺寸自动测量'
 },{
+	jyxm:'F2',
+	name:'外观视频'
+},{
+	jyxm:'F3',
+	name:'座椅视频'
+},{
+	jyxm:'F4',
+	name:'座椅固定视频'
+},{
+	jyxm:'F5',
+	name:'安全带视频'
+},{
 	jyxm:'R',
 	name:'路试制动'
 }];
