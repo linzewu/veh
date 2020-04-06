@@ -264,25 +264,20 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="tl"><label>额定转速(r/min)：</label></td >
+		<td class="tl"><label>点燃式额定转速(r/min)：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="edzs" >
 		</td>
-		<td class="tl"><label>额定扭矩(NM)：</label></td >
+		<td class="tl"><label>点燃式额定扭矩(NM)：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednj" >
 		</td>
-		<td class="tl"><label>额定扭矩转速(r/min)：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednjzs" >
-		</td>
-	</tr>
-	<tr>
 		<td class="tl"><label>额定扭矩功率(kw)：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednjgl" >
 		</td>
-		
+	</tr>
+	<tr>
 		<td class="tl"><label>额定油耗：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="edyh" >
@@ -293,6 +288,11 @@
 			<input data-options="editable:false,data:comm.getBaseParames('ltlx'),	valueField: 'id',
 		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="ltlx"  >
 		</td>
+		<td class="tl"><label>轮胎型号：</label></td>
+		<td class="tc">
+			<input   class="easyui-combobox vehInfoInput" class="easyui-textbox vehInfoInput"   name="ltxh"  >
+		</td>
+		
 	</tr>
 	<tr>
 		<td class="tl"><label>货车车身型：</label></td >
@@ -300,35 +300,15 @@
 			<label></label><input data-options="editable:false,data:comm.getBaseParames('hccsxs'),	valueField: 'id',
 		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="hccsxs"  >
 		</td>
-		<td class="tl"><label>动力性评级标准：</label></td >
+		<td class="tl"><label>客车座位(铺)数：</label></td >
 		<td class="tc">
-			<label></label><input data-options="editable:false,data:comm.getBaseParames('dlxpjbz'),	valueField: 'id',
-		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="dlxpjbz"  >
+			<label></label><input   class="easyui-numberbox vehInfoInput"  name="kczws"  >
 		</td>
-		<!-- <td class="tl"><label>车速下限：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-numberbox vehInfoInput"  name="csbxx" >
-		</td> -->
 		<td class="tl"><label>排量(ml)：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="pl" precision=1 >
 		</td>
 	</tr>
-	<!-- <tr>
-		<td class="tl"><label>车速上限：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-numberbox vehInfoInput"  name="csbsx" >
-		</td>
-		<td class="tl"><label>油耗限值：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-numberbox vehInfoInput"  name="yhxz" >
-		</td>
-		
-		<td class="tl"><label>油耗车速：</label></td >
-		<td class="tc">
-			<label></label><input class="easyui-numberbox vehInfoInput"  name="yhcs" >
-		</td>
-	</tr> -->
 	<tr>
 		<td class="tl"><label>轮胎断面宽度(mm)：</label></td >
 		<td class="tc">
@@ -344,6 +324,14 @@
 		<td class="tc" >
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="zxzs" id="zxzs" value="1">
 		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>并装轴数据：</label></td >
+		<td class="tc" colspan="3">
+			<label></label><input   class="easyui-numberbox vehInfoInput"  name="bzzs"  >
+		</td>
+		
 	</tr>
 </table>
 

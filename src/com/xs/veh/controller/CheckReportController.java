@@ -1,6 +1,8 @@
 package com.xs.veh.controller;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +91,30 @@ public class CheckReportController {
 			if(testVeh!=null) {
 				JSONObject testVehMap = (JSONObject)JSON.toJSON(testVeh);
 				dataMap.putAll(testVehMap);
+				
+				if(testVeh.getBzzs()==null||testVeh.getBzzs()==0) {
+					dataMap.put("bzzxs", "无");
+				}else {
+					if(vehCheckLogin.getCllx().indexOf("G")==0||vehCheckLogin.getCllx().indexOf("B")==0) {
+						dataMap.put("bzzxs", "挂+"+testVeh.getBzzs());
+					}
+					
+				}
 			}
+			
+			String zczw = vehCheckLogin.getZczw();
+			if(!StringUtils.isEmpty(zczw)) {
+				String newZczw ="";
+				for(char c:zczw.toCharArray()) {
+					newZczw=c+",";
+				}
+				dataMap.put("zczw",newZczw.substring(0,newZczw.length()-1));
+			}
+			
+			
+			Date date = vehCheckLogin.getUpLineDate();
+			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dataMap.put("upLineDate", sdf.format(date));
 			
 			dataMap.put("qdzs", vehCheckLogin.getQdxs());
 			

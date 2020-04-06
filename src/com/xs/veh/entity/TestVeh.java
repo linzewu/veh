@@ -133,7 +133,40 @@ public class TestVeh extends BaseEntity {
 	private String dlyxzh;
 	
 	
+	//轮胎型号
+	private String ltxh;
 	
+	//客车座位数
+	private Integer kczws;
+	
+	//并装轴数
+	private Integer bzzs;
+	
+	
+
+	public Integer getBzzs() {
+		return bzzs;
+	}
+
+	public void setBzzs(Integer bzzs) {
+		this.bzzs = bzzs;
+	}
+
+	public Integer getKczws() {
+		return kczws;
+	}
+
+	public void setKczws(Integer kczws) {
+		this.kczws = kczws;
+	}
+
+	public String getLtxh() {
+		return ltxh;
+	}
+
+	public void setLtxh(String ltxh) {
+		this.ltxh = ltxh;
+	}
 
 	public String getZjwtr() {
 		return zjwtr;
