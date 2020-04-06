@@ -112,6 +112,7 @@ public class FtpUtil {
         try {
             int reply;
             ftpClient = getFTPClient(ftpHost, ftpUserName, ftpPassword, ftpPort);
+            ftpClient.enterLocalActiveMode();
             reply = ftpClient.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftpClient.disconnect();
@@ -119,7 +120,7 @@ public class FtpUtil {
             }
             ftpClient.setControlEncoding("UTF-8"); // 中文支持
             ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-            ftpClient.enterLocalPassiveMode();
+            //ftpClient.enterLocalPassiveMode();
     		String directory = ftpPath + "/";
             //进入文件夹ftpPath失败，创建目录
             if(!ftpClient.changeWorkingDirectory(directory)) {
