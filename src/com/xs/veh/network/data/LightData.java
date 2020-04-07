@@ -102,6 +102,15 @@ public class LightData extends BaseDeviceData {
 	// 垂直偏移判定
 	@Column
 	private Integer czpypd;
+	
+	// 综合垂直偏移限值 逗号分隔
+	@Column(length = 32)
+	private String zhczpyxz;
+
+	// 综合垂直偏移判定
+	@Column
+	private Integer zhczpypd;
+	
 
 	public Integer getGqpd() {
 		return gqpd;
@@ -131,6 +140,22 @@ public class LightData extends BaseDeviceData {
 		}
 		return czpyxz;
 	}
+	
+	
+	public String getZhCzpyxz(String cllx) {
+		if (this.gx == GX_JGD) {
+			if (cllx.indexOf("K") == 0) {
+				this.zhczpyxz = "0.7,0.9";
+			} else {
+				this.zhczpyxz = "0.6,0.8";
+			}
+		}
+		if (this.gx == GX_YGD) {
+			this.zhczpyxz = "0.8,0.95";
+		}
+		return zhczpyxz;
+	}
+	
 
 	public void setGqxz(Integer gqxz) {
 		this.gqxz = gqxz;
@@ -402,6 +427,45 @@ public class LightData extends BaseDeviceData {
 			this.czpypd = CheckDataManager.PDJG_BHG;
 		}
 	}
+	
+	
+	public void setZhCzpypd(String cllx) {
+
+		/*if (this.czpy == null || this.czpyxz == null) {
+			return;
+		}
+
+		String[] xz = this.getCzpyxz().split(",");
+
+		if (Float.parseFloat(xz[0].trim()) <= this.getCzpy() && Float.parseFloat(xz[1].trim()) >= this.getCzpy()) {
+			this.czpypd = CheckDataManager.PDJG_HG;
+		} else {
+			this.czpypd = CheckDataManager.PDJG_BHG;
+		}*/
+		
+		if (this.czpc == null || this.zhczpyxz == null) {
+			return;
+		}
+
+		String[] xz = this.getZhCzpyxz(cllx).split(",");
+		
+		Integer xz1=Integer.parseInt(xz[0].trim());
+		Integer xz2 = Integer.parseInt(xz[1].trim());
+		
+		String czpcNew=czpc.trim();
+		if(czpcNew.indexOf("+")==0) {
+			czpcNew=czpcNew.substring(1);
+		}
+		Float numCzpc = Float.parseFloat(czpcNew);
+
+		if (xz1 <= numCzpc && xz2 >= numCzpc) {
+			this.zhczpypd = CheckDataManager.PDJG_HG;
+		} else {
+			this.zhczpypd = CheckDataManager.PDJG_BHG;
+		}
+	}
+
+	
 
 	/**
 	 * 总判定结果

@@ -98,8 +98,13 @@ public class CheckReportController {
 					if(vehCheckLogin.getCllx().indexOf("G")==0||vehCheckLogin.getCllx().indexOf("B")==0) {
 						dataMap.put("bzzxs", "挂+"+testVeh.getBzzs());
 					}
-					
 				}
+				
+				Integer qdzkzzl = testVeh.getQdzkzzl();
+				if(qdzkzzl==null||qdzkzzl==0) {
+					dataMap.remove("qdzkzzl");
+				}
+				
 			}
 			
 			String zczw = vehCheckLogin.getZczw();
