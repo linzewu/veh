@@ -167,12 +167,15 @@ public class FtpUtil {
             ftpClient.logout();
             success = true;
         } catch (IOException e) {
+        	log.error("上传视频异常",e);
             throw e;
         } finally {
             if (ftpClient.isConnected()) {
                 try {
                     ftpClient.disconnect();
                 } catch (IOException ioe) {
+                	log.error("disconnect 异常",ioe);
+                	throw ioe;
                 }
             }
         }

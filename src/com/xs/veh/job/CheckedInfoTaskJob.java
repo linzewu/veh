@@ -516,9 +516,8 @@ public class CheckedInfoTaskJob {
 						BaseParams baseParams = baseParamsManager.getBaseParam("dsfsppt", "1");
 						
 						if(baseParams!=null) {
-							
+							logger.info("dsfsppt="+baseParams.getParamValue());
 							String ftpPath = toFtp(vcp,vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_"+config.getChannel());
-							
 							todoServvice(vehCheckLogin, vcp,ftpPath);
 						}
 						
@@ -566,7 +565,7 @@ public class CheckedInfoTaskJob {
 		
 		Calendar c =Calendar.getInstance();
 		
-		String ftpPath =c.get(Calendar.YEAR)+"/"+(c.get(Calendar.MONTH)+1)+"/"+c.get(Calendar.DAY_OF_MONTH)+vcp.getJylsh();
+		String ftpPath =c.get(Calendar.YEAR)+"/"+(c.get(Calendar.MONTH)+1)+"/"+c.get(Calendar.DAY_OF_MONTH)+"/"+vcp.getJylsh();
 		
 		String fileName =saveFile+".mp4";
 		
@@ -584,7 +583,7 @@ public class CheckedInfoTaskJob {
 	}
 	
 	
-	public void todoServvice(VehCheckLogin info,VehCheckProcess vcp,String ftpPath) throws AxisFault {
+	public void todoServvice(VehCheckLogin info,VehCheckProcess vcp,String ftpPath) throws AxisFault, UnsupportedEncodingException {
 		
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -655,7 +654,8 @@ public class CheckedInfoTaskJob {
         //远程调用web服务
         OMElement result = serviceClient.sendReceive(method);
         
-        System.out.println(result);
+        
+        logger.info(URLDecoder.decode(result.toString(),"UTF-8"));
 
 	}
 
