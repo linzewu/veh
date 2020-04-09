@@ -1,5 +1,6 @@
 package com.xs.veh.network.data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1147,7 +1148,7 @@ public class BrakRollerData extends BaseDeviceData {
 		if(zzzlf==null) {
 			return;
 		}
-		if((zzzlf)>0.035) {
+		if((zzzlf)>3.5) {
 			this.zlzzlpd=PDJG_BHG;
 		}else {
 			this.zlzzlpd=PDJG_HG;
@@ -1158,12 +1159,11 @@ public class BrakRollerData extends BaseDeviceData {
 	
 	public void setYlzzlPd() {
 		
-		
 		if(yzzl==null||ylh==null||ylh==0) {
 			return;
 		}
 		
-		if((yzzl)>0.035*ylh+ylh) {
+		if(yzzlf>3.5) {
 			this.ylzzlpd=PDJG_BHG;
 		}else {
 			this.ylzzlpd=PDJG_HG;
@@ -1291,7 +1291,11 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		if(zlh!=null&&ylh!=null) {
 			Integer zh = zlh+ylh;
-			return zzl/(zh*0.98f)*100;
+			
+			BigDecimal b = new BigDecimal(zzl/(zh*0.98f)*100); 
+			float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
+			
+			return f1;
 			
 		}else {
 			return null;

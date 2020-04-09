@@ -107,6 +107,10 @@ public class CheckReportController {
 				
 			}
 			
+			if(vehCheckLogin.getCllx().indexOf("K")==-1) {
+				dataMap.remove("cwkc");
+			}
+			
 			String zczw = vehCheckLogin.getZczw();
 			if(!StringUtils.isEmpty(zczw)) {
 				String newZczw ="";
@@ -203,10 +207,10 @@ public class CheckReportController {
 				dataMap.putAll(pfxjo);
 			}
 			
-			dataMap.put("uplinedate", dataMap.get("upLineDate"));
+			//dataMap.put("uplinedate", dataMap.get("upLineDate"));
 			
-			InputStream zdgwzp = zhCheckDataManager.getIamge(lsh, "0348");
-			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0322");
+			InputStream zdgwzp = zhCheckDataManager.getIamge(lsh, "0322");
+			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0321");
 			InputStream dlxjygwzp = zhCheckDataManager.getIamge(lsh, "0999");
 			
 			if(zdgwzp!=null) {
@@ -305,6 +309,10 @@ public class CheckReportController {
 		VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(lsh);
 		TestVeh testVeh = zhCheckDataManager.getTestVehbyJylsh(lsh);
 		JSONObject dataMap =(JSONObject)JSON.toJSON(vehCheckLogin);
+		
+		Date date = vehCheckLogin.getUpLineDate();
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dataMap.put("upLineDate", sdf.format(date));
 		
 		if(testVeh!=null) {
 			JSONObject testVehMap = (JSONObject)JSON.toJSON(testVeh);

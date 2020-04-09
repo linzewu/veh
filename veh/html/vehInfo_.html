@@ -1,6 +1,18 @@
 
 <table class="basetable" cellspacing="0" cellpadding="0">
 	<tr>
+		<td class="tl"><label>预约号：</label></td >
+		<td class="tc">
+			<input class="easyui-textbox" sid="bookNumber" id="veh_bookNumber" name="bookNumber" prompt='请输入预约号' >
+		</td>
+		<td class="tl"><label>验证码：</label>
+		</td >
+		<td class="tc" colspan="3" >
+			<input class="easyui-textbox vehInfoInput" sid="verifyCode" id="veh_verifyCode" name="verifyCode" " prompt='请输入验证码'  >
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:30px" onclick="getVehInfobyBookNumber()"></a>
+		</td>
+	</tr>
+	<tr>
 		<td class="tl"><label>号牌号码：</label></td >
 		<td class="tc">
 			<input name="sf" required="true" sid="sf" data-options="data:comm.getBaseParames('sf'),valueField: 'id',
@@ -336,3 +348,29 @@
 </table>
 
 <input name="jyxm" id="str_jyxm" type="hidden">
+
+<script type="text/javascript">
+	function getVehInfobyBookNumber(){
+		var bookNumber = $("#veh_bookNumber").textbox("getText");
+		var verifyCode = sf + $("#veh_verifyCode").textbox("getValue");
+
+		if (bookNumber == "" || verifyCode == "") {
+			$.messager.alert("提示", "请输入预约号与验证码！");
+			return false;
+		}
+
+		var param = {
+			"bookNumber" : bookNumber,
+			"verifyCode" : verifyCode
+		}
+		
+		$.post("/veh/veh/getVehInfoBybookNumber",param,function(data){
+			
+			
+			
+		});
+		
+		
+	}
+	
+</script>

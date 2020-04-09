@@ -2,6 +2,7 @@ package com.xs.veh.manager;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -275,6 +276,17 @@ public class ZHCheckDataManager {
 		List<TestResult> dlxList = (List<TestResult>) this.hibernateTemplate.find("from TestResult where jylsh=? order by id desc", vehCheckLogin.getJylsh());
 		Map data=new HashMap<String, Object>();
 		if (dlxList != null && !dlxList.isEmpty()) {
+			if("合格".equals(dlxList.get(0).getDlx_pd())) {
+				dlxList.get(0).setDlx_pd("○");
+			}else if("不合格".equals(dlxList.get(0).getDlx_pd())) {
+				dlxList.get(0).setDlx_pd("X");
+			}
+			
+			if("合格".equals(dlxList.get(0).getYH_PD())) {
+				dlxList.get(0).setYH_PD("○");
+			}else if("不合格".equals(dlxList.get(0).getYH_PD())) {
+				dlxList.get(0).setYH_PD("X");
+			}
 			data.put("dlx", dlxList.get(0));
 		}
 		return data;
@@ -686,9 +698,9 @@ public class ZHCheckDataManager {
 					pd=BaseDeviceData.PDJG_BHG.toString();
 				}else if("合格".equals(testResult.getDlx_pd())) {
 					if("等级评定".equals(testVeh.getJcxz())) {
-						if("0.82".equals(testResult.getDlx_dbgl())) {
+						if("0.82".equals(testResult.getDlx_bzxs())) {
 							pd="一级";
-						}else if("0.75".equals(testResult.getDlx_dbgl())){
+						}else if("0.75".equals(testResult.getDlx_bzxs())){
 							pd="二级";
 						}
 					}else {
@@ -1361,7 +1373,9 @@ public class ZHCheckDataManager {
 					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj3.setXh(xh);
 					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞率");
-					dcj3.setYqjyjg(brd.getZzzlf() == null ? "" : brd.getZzzlf().toString());
+					
+					
+					dcj3.setYqjyjg(brd.getZzzlf() == null ? "" : String.format("%.2f",brd.getZzzlf()));
 					dcj3.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
 					brd.setZlzzlPd();
 					
@@ -1373,7 +1387,7 @@ public class ZHCheckDataManager {
 					DeviceCheckJudegZJ dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj4.setXh(xh);
 					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞率");
-					dcj4.setYqjyjg(brd.getYzzlf() == null ? "" : brd.getZzzlf().toString());
+					dcj4.setYqjyjg(brd.getYzzlf() == null ? "" : String.format("%.2f",brd.getYzzlf()));
 					dcj4.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
 					brd.setYlzzlPd();
 					dcj4.setYqjgpd(brd.getYlzzlpd() == null ? "" : brd.getYlzzlpd().toString());
@@ -1485,5 +1499,6 @@ public class ZHCheckDataManager {
 		return null;
 		
 	}
+	
 
 }

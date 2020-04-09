@@ -200,6 +200,14 @@ public class VehManager {
 
 		return new XMLSerializer().read(document.asXML());
 	}
+	
+	
+	public JSON getVehInfoOf(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
+
+		Document document = this.queryws(RCAConstant.V18C49, param);
+
+		return new XMLSerializer().read(document.asXML());
+	}
 
 	public JSON getVehCheckItem(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
 		Document document = this.queryws(RCAConstant.V18C46, param);

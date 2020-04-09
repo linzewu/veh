@@ -82,6 +82,18 @@ public class VehController {
 		logger.info("获取基本信息返回：="+json);
 		return json.toString();
 	}
+	
+	
+	@UserOperation(code="getVehInfoBybookNumber",name="联网查询机动车信息")
+	@RequestMapping(value = "getVehInfoBybookNumber", method = RequestMethod.POST)
+	public @ResponseBody String getVehInfoBybookNumber(@RequestParam Map param)
+			throws RemoteException, UnsupportedEncodingException, DocumentException {
+		
+		JSON json = vehManager.getVehInfoOfws(param);
+		logger.info("获取基本信息返回：="+json);
+		return json.toString();
+	}
+	
 
 	@UserOperation(code="getVehInfo",name="查询机动车查验项",isMain=false)
 	@RequestMapping(value = "getVehCheckItem", method = RequestMethod.POST)
