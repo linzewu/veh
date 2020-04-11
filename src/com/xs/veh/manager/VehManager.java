@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -18,7 +19,15 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import javax.xml.stream.XMLStreamException;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -194,15 +203,66 @@ public class VehManager {
 		return document;
 	}
 
-	public JSON getVehInfoOfws(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
+	public JSON getVehInfoOfbookNumberz(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
 
-		Document document = this.queryws(RCAConstant.V18C49, param);
-
-		return new XMLSerializer().read(document.asXML());
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		ServiceClient serviceClient = new ServiceClient();
+        //创建服务地址WebService的URL,注意不是WSDL的URL
+        String url = "http://190.204.20.49:8093/pmot/services/TmriOutAccess?wsdl";
+        EndpointReference targetEPR = new EndpointReference(url);
+        Options options = serviceClient.getOptions();
+        options.setTo(targetEPR);
+        //确定调用方法（wsdl 命名空间地址 (wsdl文档中的targetNamespace) 和 方法名称 的组合）
+        options.setAction("http://190.204.20.49:8093/pmot/services/TmriOutAccess/query");
+        OMFactory fac = OMAbstractFactory.getOMFactory();
+        /*
+         * 指定命名空间，参数：
+         * uri--即为wsdl文档的targetNamespace，命名空间
+         * perfix--可不填
+         */
+        OMNamespace omNs = fac.createOMNamespace("http://190.204.20.49:8093/pmot/services/TmriOutAccess", "");
+        // 指定方法
+        OMElement method = fac.createOMElement("query", omNs);
+        // 指定方法的参数
+        OMElement queryXmlDoc  = fac.createOMElement("QueryXmlDoc", omNs);
+        Document document = DocumentHelper.createDocument();
+        Element root =  document.addElement("root");
+        Element head = root.addElement("head");
+        
+        head.addElement("xtlb").setText("18");
+        head.addElement("jkxlh").setText(jkxlh);
+        head.addElement("jkid").setText("JK01");
+        
+        
+        Element queryCondition = root.addElement("QueryCondition");
+        
+        queryCondition.addElement("bookNumber").setText(param.get("bookNumber").toString());
+        queryCondition.addElement("verifyCode").setText(param.get("verifyCode").toString());
+        queryXmlDoc.setText(document.asXML()); 
+        method.addChild(queryXmlDoc);
+        method.build();
+        //远程调用web服务
+        OMElement result = serviceClient.sendReceive(method);
+        
+       // logger.info("result.getText()="+  result.getFirstOMChild().getNextOMSibling());
+        
+        OMElement element = (OMElement) result.getFirstElement();
+        
+        Document dd = DocumentHelper.parseText(element.toString());
+        
+       Element ed =  (Element) dd.getRootElement();
+       
+       String decoStr =URLDecoder.decode(  ed.getStringValue(),"UTF-8");
+        
+        
+        logger.info("decoStr="+decoStr);
+        
+		return  new XMLSerializer().read(decoStr);
 	}
 	
 	
-	public JSON getVehInfoOf(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
+	public JSON getVehInfoOfws(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
 
 		Document document = this.queryws(RCAConstant.V18C49, param);
 

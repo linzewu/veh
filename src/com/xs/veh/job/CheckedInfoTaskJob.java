@@ -1,7 +1,9 @@
 package com.xs.veh.job;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
@@ -15,7 +17,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -28,6 +37,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import com.xs.common.BaseParamsUtil;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.QueryObjectOutResponse;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub.WriteObjectOutResponse;
@@ -385,6 +395,15 @@ public class CheckedInfoTaskJob {
 						System.out.println("delete event id" + e.getId());
 						eventManger.delete(e);
 						logger.info("viewName:" + viewName);
+						List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+						if(!CollectionUtils.isEmpty(paams)) {
+							 String szdsfpt = paams.get(0).getParamValue();
+							 if("true".equals(szdsfpt)) {
+								 Document xml = BeanXMLUtil.map2xml(data, "vehispara");
+								 logger.info("开始写入深圳平台");
+								 writeSZPT(e.getEvent(),xml.asXML());
+							 }
+						}
 					} else {
 						e.setState(2);
 						e.setMessage(message.getText());
@@ -401,6 +420,55 @@ public class CheckedInfoTaskJob {
 			}
 		}
 	}
+	
+	
+	public void writeSZPT(String jkid,String xml) throws UnsupportedEncodingException, AxisFault {
+		try {
+			ServiceClient serviceClient = new ServiceClient();
+	        //创建服务地址WebService的URL,注意不是WSDL的URL
+	        String url = "http://190.205.0.11:6230/IaspecTmriOutAccess.asmx?WSDL";
+	        EndpointReference targetEPR = new EndpointReference(url);
+	        Options options = serviceClient.getOptions();
+	        options.setTo(targetEPR);
+	        //确定调用方法（wsdl 命名空间地址 (wsdl文档中的targetNamespace) 和 方法名称 的组合）
+	        options.setAction("http:http://www.iaspec.cn/writeObjectOut");
+	        OMFactory fac = OMAbstractFactory.getOMFactory();
+	        /*
+	                       * 指定命名空间，参数：
+	         * uri--即为wsdl文档的targetNamespace，命名空间
+	         * perfix--可不填
+	         */
+	        OMNamespace omNs = fac.createOMNamespace("http://www.iaspec.cn", "");
+	        // 指定方法
+	        OMElement method = fac.createOMElement("writeObjectOut", omNs);
+	        
+	        // 指定方法的参数
+	        Document document = DocumentHelper.createDocument();
+	        
+	        Element root =  document.addElement("root");
+	        Element head = root.addElement("head");
+	        
+	        logger.info(jkxlh);
+	        logger.info(jkid);
+	        
+	        head.addElement("xtlb").setText("18");
+	        head.addElement("jkxlh").setText(jkxlh);
+	        head.addElement("jkid").setText(jkid);
+	        root.addElement("WriteXmlDoc").setText(xml);
+	        method.build();
+	        //远程调用web服务
+	        OMElement result = serviceClient.sendReceive(method);
+	        
+	        String decoStr =URLDecoder.decode(result.toString(),"UTF-8");
+	        
+	        logger.info("decoStr="+decoStr);
+		}catch (Exception e) {
+			logger.info("写入深圳第三方平台报错！");
+			throw e;
+		}
+		
+	}
+	
 
 	public void uploadImage(CheckEvents e) {
 
@@ -424,10 +492,10 @@ public class CheckedInfoTaskJob {
 			zpMap.put("pssj", sd.format(photo.getPssj()));
 			zpMap.put("jyxm", photo.getJyxm());
 			zpMap.put("zpzl", photo.getZpzl());
-
+			String imageCode =null;
 			if (photo.getZp() != null) {
 				BASE64Encoder encode = new BASE64Encoder();
-				String imageCode = encode.encode(photo.getZp());
+				imageCode = encode.encode(photo.getZp());
 				zpMap.put("zp", imageCode);
 			}
 
@@ -439,6 +507,40 @@ public class CheckedInfoTaskJob {
 				Element message = head.element("message");
 				if ("1".equals(code.getText())) {
 					eventManger.delete(e);
+					List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+					
+					if(!CollectionUtils.isEmpty(paams)) {
+						 String szdsfpt = paams.get(0).getParamValue();
+						 if("true".equals(szdsfpt)) {
+							 StringBuilder sb=new StringBuilder();
+							 sb.append("^^zpzp^^");
+							 sb.append(photo.getJylsh());
+							 sb.append("^^");
+							 sb.append(jyjgbh);
+							 sb.append("^^");
+							 sb.append(photo.getJcxdh());
+							 sb.append("^^");
+							 sb.append(photo.getJycs());
+							 sb.append("^^");
+							 sb.append(photo.getHphm());
+							 sb.append("^^");
+							 sb.append(photo.getHpzl());
+							 sb.append("^^");
+							 sb.append(photo.getClsbdh());
+							 sb.append("^^");
+							 sb.append(imageCode);
+							 sb.append("^^");
+							 sb.append(photo.getPssj());
+							 sb.append("^^");
+							 sb.append(photo.getJyxm());
+							 sb.append("^^");
+							 sb.append(photo.getZpzl());
+							 sb.append("^^");
+							 sb.append("^^");
+							 logger.info("上传深圳平台图片");
+							 toSzServerSocket(sb.toString());
+						 }
+					}
 				} else {
 					e.setState(2);
 					e.setMessage(message.getText());
@@ -453,6 +555,21 @@ public class CheckedInfoTaskJob {
 			eventManger.update(e);
 		}
 
+	}
+	
+	
+	public void toSzServerSocket(String message) throws IOException {
+		
+		// 要连接的服务端IP地址和端口
+	    String host = "190.203.185.204"; 
+	    int port = 6698;
+	    // 与服务端建立连接
+	    Socket socket = new Socket(host, port);
+	    // 建立连接后获得输出流
+	    OutputStream outputStream = socket.getOutputStream();
+	    socket.getOutputStream().write(message.getBytes("UTF-8"));
+	    outputStream.close();
+	    socket.close();
 	}
 	
 	@Scheduled(fixedDelay = 1000*10)

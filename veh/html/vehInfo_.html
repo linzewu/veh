@@ -352,7 +352,7 @@
 <script type="text/javascript">
 	function getVehInfobyBookNumber(){
 		var bookNumber = $("#veh_bookNumber").textbox("getText");
-		var verifyCode = sf + $("#veh_verifyCode").textbox("getValue");
+		var verifyCode = $("#veh_verifyCode").textbox("getValue");
 
 		if (bookNumber == "" || verifyCode == "") {
 			$.messager.alert("提示", "请输入预约号与验证码！");
@@ -365,9 +365,32 @@
 		}
 		
 		$.post("/veh/veh/getVehInfoBybookNumber",param,function(data){
+			var head = null;
+			var body = null;
+			data = $.parseJSON(data);
+			console.log(data);
+			if ($.isArray(data)) {
+				head = data[0];
+			} else {
+				head = data["head"];
+				body = data["body"].vehispara;
+			}
+			if (head["code"] == 1) {
+				$.messager.progress("close");
+				body['jyrq'] = body['djrq']
+				body['jyyxqz'] = body['yxqz']
+				$("#vehinfo").form("load", body);
+				if(body['zt']!='A'){
+					$.messager.alert("提示","该机动车状态："+comm.getParamNameByValue('jdczt',body['zt']));
+				}
+				
+			}else{
+				$.messager.progress("close");
+				$.messager.alert("警告","无法获取预约信息。")
+			}
 			
-			
-			
+		}).error(function(e){
+			$.messager.alert("服务器响应错误！")
 		});
 		
 		

@@ -65,9 +65,7 @@ public class VideoController {
 						JSONObject jo = JSONObject.fromObject(vc);
 						Date kssj=(Date)item.get("KSSJ");
 						Date jssj=(Date)item.get("JSSJ");
-						
 						Integer jycs=(Integer)item.get("JYCS");
-						
 						String fzjg=(String)item.get("FZJG");
 						String hphm=(String)item.get("HPHM");
 						if(fzjg!=null){
