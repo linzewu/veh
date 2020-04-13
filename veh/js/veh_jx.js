@@ -1358,7 +1358,7 @@ var report={
 					var tt = i.split("_");
 					$.each(n,function(j,k){
 						if(j=="czpc"){
-							k=parseInt(k);
+							k=parseFloat(k);
 							if(k>0){
 								k="+"+k;
 							}
@@ -1533,6 +1533,8 @@ var report={
 					jg="不合格";
 				}else if(n.yqjgpd==0){
 					jg="-";
+				}else if(n.yqjgpd==3){
+					jg="-";
 				}
 				
 				var tr="<tr><td class=l >"+(i+1)+"</td><td>"+n.yqjyxm+"</td><td class=l>"+		
@@ -1579,6 +1581,26 @@ var report={
 			var name = $(n).attr("name").replace("report-baseInfo-","");
 			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 		});
+		
+		$.post("/veh/report/getReport3",{jylsh:baseInfo.jylsh},function(data){
+			$.each(data,function(i,n){
+				
+				var t=n;
+				
+				if(n==1){
+					t="O"
+				}else if(n==2){
+					t="X";
+				}else if(n==null||"null"==n||n==0){
+					t="—";
+				}
+				
+				$("#"+i).text(t);
+				
+			});
+			
+		});
+		
 	},
 	getReport4:function(){
 		var baseInfo = $(this).panel("options").baseInfo;

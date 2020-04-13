@@ -3,10 +3,12 @@ package com.xs.veh.network.driver;
 import org.apache.log4j.Logger;
 
 import com.xs.common.CharUtil;
+import com.xs.veh.entity.BaseEntity;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.network.AbstractDeviceManyWeigh;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceManyWeigh;
+import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.CurbWeightData;
 
 public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
@@ -62,10 +64,39 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 		
 		curbWeightData.setZbzl(qz+hz);
 		
+		String cllx=vehCheckLogin.getCllx();
+		int xzgj=100;
+		String temp1="±3%或±";
+		Float temp2=0.03f;
+		
+		if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z1")==0||cllx.indexOf("Z2")==0||cllx.indexOf("Z5")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
+			xzgj=500;
+		}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0||cllx.indexOf("Z3")==0||cllx.indexOf("Z4")==0){
+			xzgj=100;
+		}else if(cllx.indexOf("N")==0){
+			xzgj=100;
+			temp2=0.05f;
+			temp1="±5%或±";
+		}else if(cllx.indexOf("M")==0){
+			xzgj=10;
+		}
+		Integer cz = vehCheckLogin.getZbzl()-(curbWeightData.getZbzl());
+		
+		Integer pd = Math.abs(cz)<xzgj?BaseDeviceData.PDJG_HG:BaseDeviceData.PDJG_BHG;
+		
+		Integer pd2 = Math.abs(cz*1.0/vehCheckLogin.getZbzl()*1.0)>temp2?BaseDeviceData.PDJG_BHG:BaseDeviceData.PDJG_HG;
+		
+		
+		if(pd==BaseDeviceData.PDJG_HG||pd2==BaseDeviceData.PDJG_HG) {
+			curbWeightData.setZbzlpd(BaseDeviceData.PDJG_HG);
+		}else {
+			curbWeightData.setZbzlpd(BaseDeviceData.PDJG_BHG);
+		}
 
 		return curbWeightData;
 
 	}
+	
 	
 	@Override
 	public Integer startCheckQdz(VehCheckLogin vehCheckLogin) throws Exception, InterruptedException {

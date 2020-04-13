@@ -86,7 +86,7 @@ public class TestResult extends BaseEntity {
 	
 	//YH_PD	油耗判定
 	@Column
-	private String YH_PD;
+	private String yh_pd;
 	
 	//功率比值系数	一级：0.82\其他：0.75
 	@Column
@@ -268,12 +268,14 @@ public class TestResult extends BaseEntity {
 		this.yh_scz = yh_scz;
 	}
 
-	public String getYH_PD() {
-		return YH_PD;
+	
+
+	public String getYh_pd() {
+		return yh_pd;
 	}
 
-	public void setYH_PD(String yH_PD) {
-		YH_PD = yH_PD;
+	public void setYh_pd(String yh_pd) {
+		this.yh_pd = yh_pd;
 	}
 
 	public String getDlx_bzxs() {

@@ -84,6 +84,7 @@ public class VideoController {
 				}
 			}
 		}
+		
 		map.put("playInfo", ja.toString());
 		map.put("jyjgmc", jyjgmc_sys);
 		return map;

@@ -203,20 +203,20 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 					
 					if(message.equals("1")) {
 						this.deviceLight.getDisplay().sendMessage("请开启主远光灯,测量左主远光灯", DeviceDisplay.XP);
-						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H1");
+						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H1",1000);
 					}else if(message.equals("2")) {
 						this.deviceLight.getDisplay().sendMessage("请开启主近光灯,测量左主近光灯", DeviceDisplay.XP);
 					}else if(message.equals("3")) {
 						this.deviceLight.getDisplay().sendMessage("请开启副远光灯,测量左副远光灯", DeviceDisplay.XP);
-						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H2");
+						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H2",1000);
 					}else if(message.equals("4")) {
 						this.deviceLight.getDisplay().sendMessage("请开启主远光灯,测量右主远光灯", DeviceDisplay.XP);
-						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4");
+						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4",5000);
 					}else if(message.equals("5")) {
 						this.deviceLight.getDisplay().sendMessage("请开启主近光灯,测量右主近光灯", DeviceDisplay.XP);
 					}else if(message.equals("6")) {
 						this.deviceLight.getDisplay().sendMessage("请开启副远光灯,测量右副远光灯", DeviceDisplay.XP);
-						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H3");
+						TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H3",1000);
 					}else if(message.equals("7")) {
 						this.deviceLight.getDisplay().sendMessage("左主灯检测完成", DeviceDisplay.XP);
 					}else if(message.equals("8")) {
@@ -252,6 +252,7 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 							data.setCzpc(czpc);
 							data.setGq(gq*100);
 							data.setDg(dg==0?1:dg);
+							data=extend(data);
 							lightDatas.add(data);
 						}
 						if(db[3]==0b1) {
@@ -266,6 +267,7 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 							data.setSppc(sppc);
 							data.setCzpc(czpc);
 							data.setDg(dg==0?1:dg);
+							data=extend(data);
 							lightDatas.add(data);
 						}
 						
@@ -287,6 +289,7 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 						data.setCzpc(czpc);
 						data.setGq(gq*100);
 						data.setDg(dg==0?1:dg);
+						data=extend(data);
 						lightDatas.add(data);
 						
 					}
@@ -310,6 +313,7 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 							data.setCzpc(czpc);
 							data.setGq(gq*100);
 							data.setDg(dg==0?1:dg);
+							data=extend(data);
 							lightDatas.add(data);
 						}
 						if(db[7]==0b1) {
@@ -324,6 +328,7 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 							data.setSppc(sppc);
 							data.setCzpc(czpc);
 							data.setDg(dg==0?1:dg);
+							data=extend(data);
 							lightDatas.add(data);
 						}
 						
@@ -345,6 +350,7 @@ public class DeviceLightDriverOfFL extends AbstractDeviceLight {
 						data.setCzpc(czpc);
 						data.setGq(gq*100);
 						data.setDg(dg==0?1:dg);
+						data=extend(data);
 						lightDatas.add(data);
 						
 					}

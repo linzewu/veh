@@ -123,7 +123,7 @@ public class CheckReportController {
 			
 			Date date = vehCheckLogin.getUpLineDate();
 			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			dataMap.put("upLineDate", sdf.format(date));
+			dataMap.put("uplinedate", sdf.format(date));
 			
 			dataMap.put("qdzs", vehCheckLogin.getQdxs());
 			
@@ -202,6 +202,10 @@ public class CheckReportController {
 				
 				if(pfxjo.containsKey("yd")) {
 					dataMap.put("pfx2pd", pfxjo.getJSONObject("yd").getString("SFHG").equals("true")?"○":"X");
+				}
+				
+				if(pfxjo.containsKey("vm")) {
+					dataMap.put("pfx1pd", pfxjo.getJSONObject("vm").getString("SFHG").equals("1")?"○":"X");
 				}
 				
 				dataMap.putAll(pfxjo);
@@ -312,8 +316,8 @@ public class CheckReportController {
 		
 		Date date = vehCheckLogin.getUpLineDate();
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		dataMap.put("upLineDate", sdf.format(date));
-		
+		dataMap.put("uplinedate", sdf.format(date));
+		  
 		if(testVeh!=null) {
 			JSONObject testVehMap = (JSONObject)JSON.toJSON(testVeh);
 			dataMap.putAll(testVehMap);

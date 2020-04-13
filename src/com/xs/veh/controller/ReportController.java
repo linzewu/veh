@@ -30,6 +30,7 @@ import com.xs.common.ImageChange;
 import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.veh.entity.CheckPhoto;
+import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.Insurance;
 import com.xs.veh.entity.PlateApplyTable;
 import com.xs.veh.entity.RoadCheck;
@@ -94,6 +95,13 @@ public class ReportController {
 	public @ResponseBody Map getReport2(@RequestParam String jylsh) {
 		Map<String, List> data = checkDataManager.getReport2(jylsh);
 		return data;
+	}
+	
+	@UserOperation(code="getReport3",name="外检报告")
+	@RequestMapping(value = "getReport3", method = RequestMethod.POST)
+	public @ResponseBody ExternalCheck getReport3(@RequestParam String jylsh) {
+		return  checkDataManager.getReport3(jylsh);
+		
 	}
 
 	@RequestMapping(value = "test")

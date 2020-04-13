@@ -1,9 +1,7 @@
 package com.xs.veh.job;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.Socket;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
@@ -17,14 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.client.Options;
-import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -33,9 +24,14 @@ import org.dom4j.Element;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import com.xs.common.BaseParamsUtil;
 import com.xs.rca.ws.client.TmriJaxRpcOutNewAccessServiceStub;
@@ -45,16 +41,20 @@ import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
+import com.xs.veh.entity.ExternalCheck;
+import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
+import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.VehProcessManager;
 import com.xs.veh.manager.VideoManager;
 import com.xs.veh.network.data.Outline;
+import com.xs.veh.sz.IaspecTmriOutAccessStub;
 import com.xs.veh.util.BeanXMLUtil;
 import com.xs.veh.util.HKVisionUtil;
 import com.xs.veh.util.RCAConstant;
@@ -116,6 +116,12 @@ public class CheckedInfoTaskJob {
 
 	@Resource(name = "baseParamsManager")
 	private BaseParamsManager baseParamsManager;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Resource(name = "externalCheckManager")
+	private ExternalCheckManager externalCheckManager;
 
 	public CheckedInfoTaskJob() {
 		try {
@@ -286,6 +292,210 @@ public class CheckedInfoTaskJob {
 			}
 		}
 	}
+	
+	@Scheduled(fixedDelay = 5000)
+	private void vehSZPTOutCheck() throws UnsupportedEncodingException, DocumentException, InterruptedException {
+		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+		if(!CollectionUtils.isEmpty(paams)) {
+			 String szdsfpt = paams.get(0).getParamValue();
+			 if("true".equals(szdsfpt)) {
+				 
+				 Map<String,List<VehCheckLogin>>  datas = this.vehManager.getUnOutcheckedInfo();
+				 
+				 List<VehCheckLogin> wjList = datas.get("wjList");
+				 List<VehCheckLogin> dpList = datas.get("dpList");
+				 List<VehCheckLogin> dtpList = datas.get("dtpList");
+				 
+				 if(!CollectionUtils.isEmpty(wjList)) {
+					 for(VehCheckLogin wj: wjList) {
+						String wjData =  getSZPTOutCheck(wj,"F1");
+						if(!StringUtils.isEmpty(wjData)) {
+							ExternalCheck externalCheck=new ExternalCheck();
+							crateExternalCheck(externalCheck, wjData);
+							externalCheckManager.saveExternalCheck(externalCheck);
+						}
+					 }
+				 }
+				 
+				 if(!CollectionUtils.isEmpty(dpList)) {
+					 for(VehCheckLogin dp: dpList) {
+						String dpData =  getSZPTOutCheck(dp,"C1");
+						if(!StringUtils.isEmpty(dpData)) {
+							ExternalCheck externalCheck=new ExternalCheck();
+							crateExternalCheckC1(externalCheck, dpData);;
+							externalCheckManager.saveExternalCheckC1(externalCheck);
+						}
+					 }
+				 }
+				 
+				 if(!CollectionUtils.isEmpty(dpList)) {
+					 for(VehCheckLogin dc: dtpList) {
+						String dtdpData =  getSZPTOutCheck(dc,"DC");
+						if(!StringUtils.isEmpty(dtdpData)) {
+							ExternalCheck externalCheck=new ExternalCheck();
+							crateExternalCheckDC(externalCheck, dtdpData);;
+							externalCheckManager.saveExternalCheckDC(externalCheck);
+						}
+					 }
+				 }
+				 
+			 }
+		}
+	}
+	
+	private void crateExternalCheck(ExternalCheck ec,String xml) throws UnsupportedEncodingException, DocumentException {
+		
+		xml =URLDecoder.decode(xml,"UTF-8");
+		
+		Document doc =  DocumentHelper.parseText(xml);
+		Element root = doc.getRootElement();
+		Element vehispara = root.element("vehispara");
+		
+		ec.setItem1(vehispara.elementText("rhplx"));
+		ec.setItem2(vehispara.elementText("rppxh"));
+		ec.setItem3(vehispara.elementText("rvin"));
+		ec.setItem4(vehispara.elementText("rfdjh"));
+		ec.setItem5(vehispara.elementText("rcsys"));
+		ec.setItem6(vehispara.elementText("rwkcc"));
+		ec.setItem7(vehispara.elementText("rzj"));
+		ec.setItem8(vehispara.elementText("rzbzl"));
+		ec.setItem9(vehispara.elementText("rhdzrs"));
+		ec.setItem10(vehispara.elementText("rhdzll"));
+		ec.setItem11(vehispara.elementText("rlbgd"));
+		ec.setItem12(vehispara.elementText("rhzgbthps"));
+		ec.setItem13(vehispara.elementText("rkcyjck"));
+		ec.setItem14(vehispara.elementText("rkccktd"));
+		ec.setItem15(vehispara.elementText("rhx"));
+		ec.setItem16(vehispara.elementText("rcswg"));
+		ec.setItem17(vehispara.elementText("rwgbs"));
+		ec.setItem18(vehispara.elementText("rwbzm"));
+		ec.setItem19(vehispara.elementText("rlt"));
+		ec.setItem20(vehispara.elementText("rhpaz"));
+		ec.setItem21(vehispara.elementText("rjzgj"));
+		ec.setItem22(vehispara.elementText("rqcaqd"));
+		ec.setItem23(vehispara.elementText("rsjp"));
+		ec.setItem24(vehispara.elementText("rmhq"));
+		ec.setItem25(vehispara.elementText("rxsjly"));
+		ec.setItem26(vehispara.elementText("rcsfgbs"));
+		ec.setItem27(vehispara.elementText("rclwbzb"));
+		ec.setItem28(vehispara.elementText("rchfh"));
+		ec.setItem29(vehispara.elementText("ryjc"));
+		ec.setItem30(vehispara.elementText("rjjx"));
+		ec.setItem31(vehispara.elementText("rxsgn"));
+		ec.setItem32(vehispara.elementText("rfbs"));
+		ec.setItem33(vehispara.elementText("rfzzd"));
+		ec.setItem34(vehispara.elementText("rpszdq"));
+		ec.setItem35(vehispara.elementText("rjjqd"));
+		ec.setItem36(vehispara.elementText("rfdjcmh"));
+		ec.setItem37(vehispara.elementText("rsddd"));
+		ec.setItem38(vehispara.elementText("rfzdtb"));
+		ec.setItem39(vehispara.elementText("rxcbz"));
+		ec.setItem40(vehispara.elementText("rwxhwbz"));
+		ec.setItem41(vehispara.elementText("ztcjrfzzz"));
+		ec.setItem80(vehispara.elementText("rlwcx"));
+		
+		
+		if(!StringUtils.isEmpty(vehispara.elementText("cwkc"))) {
+			ec.setCwkc(Integer.parseInt(vehispara.elementText("cwkc")));
+		}
+		
+		if(!StringUtils.isEmpty(vehispara.elementText("cwkg"))) {
+			ec.setCwkg(Integer.parseInt(vehispara.elementText("cwkg")));
+		}
+		
+		if(!StringUtils.isEmpty(vehispara.elementText("cwkk"))) {
+			ec.setCwkk(Integer.parseInt(vehispara.elementText("cwkk")));
+		}
+		
+		if(!StringUtils.isEmpty(vehispara.elementText("zbzl"))) {
+			ec.setZbzl(Integer.parseInt(vehispara.elementText("zbzl")));
+		}
+		
+		
+		ec.setJylsh(vehispara.elementText("jylsh"));
+		ec.setHphm(vehispara.elementText("hphm"));
+		ec.setHpzl(vehispara.elementText("hpzl"));
+		ec.setJycs(Integer.parseInt(vehispara.elementText("jycs")));
+		ec.setJyjgbh(vehispara.elementText("jyjgbh"));
+		
+		logger.info("wgjcjyy="+vehispara.elementText("wgjcjyy"));
+		
+		ec.setWgjcjyy(vehispara.elementText("wgjcjyy"));
+		ec.setWgjcjyysfzh(vehispara.elementText("wgjcjyysfzh"));
+		
+		
+	}
+	
+	
+	private void crateExternalCheckC1(ExternalCheck ec,String xml) throws UnsupportedEncodingException, DocumentException {
+		
+		xml =URLDecoder.decode(xml,"UTF-8");
+		
+		Document doc =  DocumentHelper.parseText(xml);
+		Element root = doc.getRootElement();
+		Element vehispara = root.element("vehispara");
+		
+		ec.setItem46(vehispara.elementText("rzxxbj"));
+		ec.setItem47(vehispara.elementText("rzxxbj"));
+		ec.setItem48(vehispara.elementText("rzxxbj"));
+		ec.setItem49(vehispara.elementText("rzxxbj"));
+		ec.setItem50(vehispara.elementText("rzxxbj"));
+		ec.setDpjcjyy(vehispara.elementText("dpjcjyy"));
+		ec.setDpjyysfzh(vehispara.elementText("dpjyysfzh"));
+		
+		ec.setJylsh(vehispara.elementText("jylsh"));
+		ec.setHphm(vehispara.elementText("hphm"));
+		ec.setHpzl(vehispara.elementText("hpzl"));
+		ec.setJycs(Integer.parseInt(vehispara.elementText("jycs")));
+		ec.setJyjgbh(vehispara.elementText("jyjgbh"));
+		
+	}
+	
+	private void crateExternalCheckDC(ExternalCheck ec,String xml) throws UnsupportedEncodingException, DocumentException {
+		
+		xml =URLDecoder.decode(xml,"UTF-8");
+		
+		Document doc =  DocumentHelper.parseText(xml);
+		Element root = doc.getRootElement();
+		Element vehispara = root.element("vehispara");
+		
+		ec.setItem42(vehispara.elementText("rzxx"));
+		ec.setItem43(vehispara.elementText("rcdx"));
+		ec.setItem44(vehispara.elementText("rzdx"));
+		ec.setItem45(vehispara.elementText("rybzsq"));
+		ec.setDpdtjyy(vehispara.elementText("dpdtjyy"));
+		ec.setDpdtjyysfzh(vehispara.elementText("dpdtjyysfzh"));
+		
+		ec.setJylsh(vehispara.elementText("jylsh"));
+		ec.setHphm(vehispara.elementText("hphm"));
+		ec.setHpzl(vehispara.elementText("hpzl"));
+		ec.setJycs(Integer.parseInt(vehispara.elementText("jycs")));
+		ec.setJyjgbh(vehispara.elementText("jyjgbh"));
+		
+	}
+	
+	
+	
+	
+	
+	public String getSZPTOutCheck(VehCheckLogin wj,String jyxm) {
+		 HttpHeaders headers = new HttpHeaders();
+		// headers.setContentType(MediaType);
+		 
+		 Document doc = DocumentHelper.createDocument();
+		 Element root = doc.addElement("root");
+		 
+		 root.addElement("jylsh").setText(wj.getJylsh());
+		 root.addElement("jyjgbh").setText(wj.getJyjgbh());
+		 root.addElement("jyxm").setText(jyxm);
+		 root.addElement("jycs").setText(String.valueOf(wj.getJycs()));
+		 //请求体
+		 HttpEntity<String> formEntity = new HttpEntity<>(doc.asXML(), headers);
+		 ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://190.205.0.11:6230/Interface/VehiclePDAQueryCheck.ashx?cmd=pdacheck", formEntity, String.class);                                  
+		 return responseEntity.getBody();
+	}
+	
+	
 
 	@Scheduled(fixedDelay = 1000 * 3600 * 12)
 	public void synTime() throws RemoteException, UnsupportedEncodingException, DocumentException {
@@ -422,46 +632,19 @@ public class CheckedInfoTaskJob {
 	}
 	
 	
-	public void writeSZPT(String jkid,String xml) throws UnsupportedEncodingException, AxisFault {
+	public void writeSZPT(String jkid,String xml) throws Exception {
 		try {
-			ServiceClient serviceClient = new ServiceClient();
-	        //创建服务地址WebService的URL,注意不是WSDL的URL
-	        String url = "http://190.205.0.11:6230/IaspecTmriOutAccess.asmx?WSDL";
-	        EndpointReference targetEPR = new EndpointReference(url);
-	        Options options = serviceClient.getOptions();
-	        options.setTo(targetEPR);
-	        //确定调用方法（wsdl 命名空间地址 (wsdl文档中的targetNamespace) 和 方法名称 的组合）
-	        options.setAction("http:http://www.iaspec.cn/writeObjectOut");
-	        OMFactory fac = OMAbstractFactory.getOMFactory();
-	        /*
-	                       * 指定命名空间，参数：
-	         * uri--即为wsdl文档的targetNamespace，命名空间
-	         * perfix--可不填
-	         */
-	        OMNamespace omNs = fac.createOMNamespace("http://www.iaspec.cn", "");
-	        // 指定方法
-	        OMElement method = fac.createOMElement("writeObjectOut", omNs);
-	        
-	        // 指定方法的参数
-	        Document document = DocumentHelper.createDocument();
-	        
-	        Element root =  document.addElement("root");
-	        Element head = root.addElement("head");
-	        
-	        logger.info(jkxlh);
-	        logger.info(jkid);
-	        
-	        head.addElement("xtlb").setText("18");
-	        head.addElement("jkxlh").setText(jkxlh);
-	        head.addElement("jkid").setText(jkid);
-	        root.addElement("WriteXmlDoc").setText(xml);
-	        method.build();
-	        //远程调用web服务
-	        OMElement result = serviceClient.sendReceive(method);
-	        
-	        String decoStr =URLDecoder.decode(result.toString(),"UTF-8");
-	        
-	        logger.info("decoStr="+decoStr);
+			IaspecTmriOutAccessStub itoa =new IaspecTmriOutAccessStub();
+			IaspecTmriOutAccessStub.WriteObjectOut wout= new IaspecTmriOutAccessStub.WriteObjectOut();
+			wout.setJkid(jkid);
+			wout.setJkxlh(jkxlh);
+			wout.setWriteXmlDoc(xml);
+			wout.setXtlb("18");
+			
+			IaspecTmriOutAccessStub.WriteObjectOutResponse woo = itoa.writeObjectOut(wout);
+			String response = woo.getWriteObjectOutResult();
+			logger.info(response);
+			
 		}catch (Exception e) {
 			logger.info("写入深圳第三方平台报错！");
 			throw e;
@@ -508,38 +691,8 @@ public class CheckedInfoTaskJob {
 				if ("1".equals(code.getText())) {
 					eventManger.delete(e);
 					List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
-					
 					if(!CollectionUtils.isEmpty(paams)) {
-						 String szdsfpt = paams.get(0).getParamValue();
-						 if("true".equals(szdsfpt)) {
-							 StringBuilder sb=new StringBuilder();
-							 sb.append("^^zpzp^^");
-							 sb.append(photo.getJylsh());
-							 sb.append("^^");
-							 sb.append(jyjgbh);
-							 sb.append("^^");
-							 sb.append(photo.getJcxdh());
-							 sb.append("^^");
-							 sb.append(photo.getJycs());
-							 sb.append("^^");
-							 sb.append(photo.getHphm());
-							 sb.append("^^");
-							 sb.append(photo.getHpzl());
-							 sb.append("^^");
-							 sb.append(photo.getClsbdh());
-							 sb.append("^^");
-							 sb.append(imageCode);
-							 sb.append("^^");
-							 sb.append(photo.getPssj());
-							 sb.append("^^");
-							 sb.append(photo.getJyxm());
-							 sb.append("^^");
-							 sb.append(photo.getZpzl());
-							 sb.append("^^");
-							 sb.append("^^");
-							 logger.info("上传深圳平台图片");
-							 toSzServerSocket(sb.toString());
-						 }
+						 
 					}
 				} else {
 					e.setState(2);
@@ -558,19 +711,6 @@ public class CheckedInfoTaskJob {
 	}
 	
 	
-	public void toSzServerSocket(String message) throws IOException {
-		
-		// 要连接的服务端IP地址和端口
-	    String host = "190.203.185.204"; 
-	    int port = 6698;
-	    // 与服务端建立连接
-	    Socket socket = new Socket(host, port);
-	    // 建立连接后获得输出流
-	    OutputStream outputStream = socket.getOutputStream();
-	    socket.getOutputStream().write(message.getBytes("UTF-8"));
-	    outputStream.close();
-	    socket.close();
-	}
 	
 	@Scheduled(fixedDelay = 1000*10)
 	public void timeoutPocess() throws Exception{

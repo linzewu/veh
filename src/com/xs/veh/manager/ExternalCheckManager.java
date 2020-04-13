@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.Message;
 import com.xs.veh.entity.CheckPhoto;
@@ -237,10 +238,17 @@ public class ExternalCheckManager {
 		ec.setCwkg(externalCheck.getCwkg());
 		ec.setCwkk(externalCheck.getCwkk());
 		ec.setZbzl(externalCheck.getZbzl());
-
-		User user = (User) session.getAttribute("user");
-		ec.setWgjcjyy(user.getRealName());
-		ec.setWgjcjyysfzh(user.getIdCard());
+		
+		if(StringUtils.isEmpty(externalCheck.getWgjcjyy())) {
+			User user = (User) session.getAttribute("user");
+			if(user!=null) {
+				ec.setWgjcjyy(user.getRealName());
+				ec.setWgjcjyysfzh(user.getIdCard());
+			}
+		}else {
+			ec.setWgjcjyy(externalCheck.getWgjcjyy());
+			ec.setWgjcjyysfzh(externalCheck.getWgjcjyysfzh());
+		}
 
 		return ec;
 	}
@@ -254,10 +262,17 @@ public class ExternalCheckManager {
 		ec.setItem43(externalCheck.getItem43());
 		ec.setItem44(externalCheck.getItem44());
 		ec.setItem45(externalCheck.getItem45());
-		User user = (User) session.getAttribute("user");
-		ec.setDpdtjyy(user.getRealName());
-		ec.setDpdtjyysfzh(user.getIdCard());
-
+		if(StringUtils.isEmpty(externalCheck.getDpdtjyy())) {
+			User user = (User) session.getAttribute("user");
+			if(user!=null) {
+				ec.setDpdtjyy(user.getRealName());
+				ec.setDpdtjyysfzh(user.getIdCard());
+			}
+		}else {
+			ec.setDpdtjyy(externalCheck.getDpdtjyy());
+			ec.setDpdtjyysfzh(externalCheck.getDpdtjyysfzh());
+		}
+		
 		return ec;
 	}
 
@@ -270,10 +285,19 @@ public class ExternalCheckManager {
 		ec.setItem48(externalCheck.getItem48());
 		ec.setItem49(externalCheck.getItem49());
 		ec.setItem50(externalCheck.getItem50());
-
-		User user = (User) session.getAttribute("user");
-		ec.setDpjcjyy(user.getRealName());
-		ec.setDpjyysfzh(user.getIdCard());
+		
+		
+		if(StringUtils.isEmpty(externalCheck.getDpjcjyy())) {
+			User user = (User) session.getAttribute("user");
+			if(user!=null) {
+				ec.setDpjcjyy(user.getRealName());
+				ec.setDpjyysfzh(user.getIdCard());
+			}
+		}else {
+			ec.setDpjcjyy(externalCheck.getDpjcjyy());
+			ec.setDpjyysfzh(externalCheck.getDpjyysfzh());
+		}
+		
 		return ec;
 	}
 
@@ -296,11 +320,10 @@ public class ExternalCheckManager {
 
 			vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_JYJS);
 			vehCheckLogin.setExternalCheckDate(new Date());
-			User user = (User) session.getAttribute("user");
-			if (user != null) {
-				vehCheckLogin.setWjy(user.getRealName());
-				vehCheckLogin.setWjysfzh(user.getIdCard());
-			}
+			
+			
+			vehCheckLogin.setWjy(externalCheck.getWgjcjyy());
+			vehCheckLogin.setWjysfzh(externalCheck.getWgjcjyysfzh());
 			this.hibernateTemplate.update(vehCheckLogin);
 
 			VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),

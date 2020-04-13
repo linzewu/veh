@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.xs.common.BaseParamsUtil;
 import com.xs.common.MyHibernateTemplate;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckEvents;
@@ -121,6 +122,18 @@ public class CheckDataManager {
 		data.put("rgjyjg", externalCheckJudges);
 
 		return data;
+
+	}
+	
+	public ExternalCheck getReport3(String jylsh) {
+
+		List<ExternalCheck> datas = (List<ExternalCheck>) this.hibernateTemplate.find("from ExternalCheck where jylsh=? order by id desc", jylsh);
+		
+		if(!CollectionUtils.isEmpty(datas)) {
+			return datas.get(0);
+		}
+		
+		return null;
 
 	}
 
@@ -587,6 +600,7 @@ public class CheckDataManager {
 			dcj1.setYqjyxm("整备质量(KG)");
 			dcj1.setYqjyjg(curbWeightData.getZbzl()==null ? "" : curbWeightData.getZbzl().toString());
 			dcj1.setYqbzxz(temp1+xzgj+"KG");
+			
 			dcj1.setYqjgpd(curbWeightData.getZbzlpd().toString());
 			dcj1.setXh(xh);
 			xh++;
@@ -948,9 +962,16 @@ public class CheckDataManager {
 								czpc=String.valueOf(intczpc);
 							}
 						}
+						
+						String czpd = lightData.getCzpypd().toString();
+						
+						if("0".equals(czpd)) {
+							czpd="3";
+						}
+						
 						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : czpc);
 						dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
-						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
+						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : czpd);
 						dcj2.setXh(xh);
 						xh++;
 						this.hibernateTemplate.save(dcj2);
@@ -963,17 +984,25 @@ public class CheckDataManager {
 
 		}
 		
-		// 光强度总和
-		if(!StringUtils.isEmpty(zgqjg)) {
-			DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			zgq.setYqjyxm(zgqxm);
-			zgq.setYqjyjg(zgqjg);
-			zgq.setYqbzxz("≤" + zgqxz);
-			zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
-			zgq.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(zgq);
+		List<BaseParams> gqzhpd =  BaseParamsUtil.getBaseParamsByType("gqzhpd");
+		
+		if(!CollectionUtils.isEmpty(gqzhpd)) {
+			if("true".equals(gqzhpd.get(0).getParamValue())) {
+				// 光强度总和
+				if(!StringUtils.isEmpty(zgqjg)) {
+					DeviceCheckJudeg zgq = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					zgq.setYqjyxm(zgqxm);
+					zgq.setYqjyjg(zgqjg);
+					zgq.setYqbzxz("≤" + zgqxz);
+					zgq.setYqjgpd(Integer.parseInt(zgqjg) > Integer.parseInt(zgqxz) ? "2":"1");
+					zgq.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(zgq);
+				}
+			}
 		}
+		
+	
 
 		return xh;
 	}
@@ -1586,5 +1615,6 @@ public class CheckDataManager {
 	public void deleteTaskPaice(TaskPicture taskPicture) {
 		this.hibernateTemplate.delete(taskPicture);
 	}
+	
 	
 }

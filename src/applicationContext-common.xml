@@ -114,4 +114,79 @@
 		<!-- 线程池所使用的缓冲队列 -->
 		<property name="queueCapacity" value="200" />
 	</bean>
+	
+	
+	<bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">
+    <property name="connectionManager">
+        <bean class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+            <!--整个连接池的并发-->
+            <property name="maxTotal" value="50"/>
+            <!--每个主机的并发-->
+            <property name="defaultMaxPerRoute" value="50"/>
+        </bean>
+    </property>
+    <!--开启重试-->
+    <property name="retryHandler">
+        <bean class="org.apache.http.impl.client.DefaultHttpRequestRetryHandler">
+            <constructor-arg value="2"/>
+            <constructor-arg value="true"/>
+        </bean>
+    </property>
+    <property name="defaultHeaders">
+        <list>
+            <bean class="org.apache.http.message.BasicHeader">
+                <constructor-arg value="Content-Type"/>
+                <constructor-arg value="text/html;charset=UTF-8"/>
+            </bean>
+            <bean class="org.apache.http.message.BasicHeader">
+                <constructor-arg value="Accept-Encoding"/>
+                <constructor-arg value="gzip,deflate"/>
+            </bean>
+            <bean class="org.apache.http.message.BasicHeader">
+                <constructor-arg value="Accept-Language"/>
+                <constructor-arg value="zh-CN"/>
+            </bean>
+        </list>
+    </property>
+</bean>
+
+<bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build"/>
+
+<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+    <property name="messageConverters">
+        <list value-type="org.springframework.http.converter.HttpMessageConverter">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <value>text/html;charset=UTF-8</value>
+                </property>
+            </bean>
+            
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <value>text/plain;charset=UTF-8</value>
+                </property>
+            </bean>
+            
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <value>application/json;charset=UTF-8</value>
+                </property>
+            </bean>
+            <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter"/>
+        </list>
+    </property>
+    <property name="requestFactory">
+        <bean class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+            <constructor-arg ref="httpClient"/>
+            <!--连接时间(毫秒)-->
+            <property name="connectTimeout" value="20000"/>
+            <!--读取时间(毫秒)-->
+            <property name="readTimeout" value="20000"/>
+        </bean>
+    </property>
+</bean>
+	
 </beans>

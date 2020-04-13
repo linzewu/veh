@@ -300,6 +300,13 @@ public class VehController {
 				testVeh.setYsjc(1);
 			}
 			
+			testVeh.setDlxpjbz("0");
+			
+			if(testVeh.getHccsxs()==null) {
+				testVeh.setHccsxs(0);
+			}
+			
+			testVeh.setEdnjzs(0);
 			
 			
 			testVeh.setCsbsx("40");

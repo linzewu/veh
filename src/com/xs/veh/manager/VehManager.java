@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
-import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -1238,6 +1238,22 @@ public class VehManager {
 		List<TestVeh> testVehs = (List<TestVeh>) this.hibernateTemplate.find("from TestVeh where ysjc=0");
 		
 		return testVehs;
+		
+	}
+	
+	public Map<String,List<VehCheckLogin>> getUnOutcheckedInfo(){
+		
+		List<VehCheckLogin> wjList = (List<VehCheckLogin>) this.hibernateTemplate.find("from VehCheckLogin where vehwjzt=? and vehjczt!=?", VehCheckLogin.ZT_WKS,VehCheckLogin.JCZT_TB);
+		List<VehCheckLogin> dpList = (List<VehCheckLogin>) this.hibernateTemplate.find("from VehCheckLogin where vehdpzt=? and vehjczt!=?", VehCheckLogin.ZT_WKS,VehCheckLogin.JCZT_TB);
+		List<VehCheckLogin> dtpList = (List<VehCheckLogin>) this.hibernateTemplate.find("from VehCheckLogin where vehdtdpzt=? and vehjczt!=?", VehCheckLogin.ZT_WKS,VehCheckLogin.JCZT_TB);
+		
+		Map<String,List<VehCheckLogin>> map=new HashMap<String,List<VehCheckLogin>>();
+		
+		map.put("wjList", wjList);
+		map.put("dpList", dpList);
+		map.put("dtpList", dtpList);
+		
+		return map;
 		
 	}
 	

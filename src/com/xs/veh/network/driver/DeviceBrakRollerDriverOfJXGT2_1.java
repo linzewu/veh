@@ -95,7 +95,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			//deviceBrakRoller.getDisplay().sendMessage("阻滞力检测结束", DeviceDisplay.SP);
 			deviceBrakRoller.getDisplay().sendMessage(scMessage, DeviceDisplay.XP);
 			
-			TakePicture.createNew(this.deviceBrakRoller.getVehCheckLogin(), vehFlow.getJyxm(), 1000);
+			TakePicture.createNew(this.deviceBrakRoller.getVehCheckLogin(), vehFlow.getJyxm(), 3000);
 			
 			while(true){
  				byte[] d4 =  getDevData(new byte[12]);

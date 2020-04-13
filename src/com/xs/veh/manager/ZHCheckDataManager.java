@@ -282,10 +282,10 @@ public class ZHCheckDataManager {
 				dlxList.get(0).setDlx_pd("X");
 			}
 			
-			if("合格".equals(dlxList.get(0).getYH_PD())) {
-				dlxList.get(0).setYH_PD("○");
-			}else if("不合格".equals(dlxList.get(0).getYH_PD())) {
-				dlxList.get(0).setYH_PD("X");
+			if("合格".equals(dlxList.get(0).getYh_pd())) {
+				dlxList.get(0).setYh_pd("○");
+			}else if("不合格".equals(dlxList.get(0).getYh_pd())) {
+				dlxList.get(0).setYh_pd("X");
 			}
 			data.put("dlx", dlxList.get(0));
 		}
@@ -360,11 +360,42 @@ public class ZHCheckDataManager {
 					ydMap= ydList.get(ydList.size()-1);
 				}
 				
-				return getData(wtMap, sdsMap, lgdMap, ydMap);
+				
+				SQLQuery vMaxQuery = session.createSQLQuery("select * from  QCPFWQ2018.dbo.vmasclsjb where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				
+				vMaxQuery.setParameter(0, c1)
+				.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
+				.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
+					vMaxQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+					List<Map<String,Object>> vMaxList  =  vMaxQuery.list();
+					Map<String,Object> vMaxMap=null;
+					if(!CollectionUtils.isEmpty(vMaxList)) {
+						vMaxMap= vMaxList.get(vMaxList.size()-1);
+						String hc = (String) vMaxMap.get("HCclz");
+						String no = (String) vMaxMap.get("noclz");
+						vMaxMap.put("hcclz", hc);
+						
+						logger.info("hc="+hc);
+						logger.info("no="+no);
+						
+						if(hc==null&&no==null) {
+							vMaxMap.put("hcno", 0);
+						}else if(hc==null) {
+							vMaxMap.put("hcno", no);
+						}else if(no==null) {
+							vMaxMap.put("hcno", hc);
+						}else {
+							vMaxMap.put("hcno", String.format("%.2f", Float.valueOf(hc)+Float.valueOf(no)));
+						}
+					}
+				
+				
+				
+				return getData(wtMap, sdsMap, lgdMap, ydMap,vMaxMap);
 			}
 			
 			private Map<String,Map<String,Object>> getData(Map<String,Object> wtMap ,Map<String,Object> sdsMap,
-					Map<String,Object> lgdMap,Map<String,Object> ydMap) {
+					Map<String,Object> lgdMap,Map<String,Object> ydMap,Map<String,Object> vMaxMap) {
 				
 				List<Long> list=new ArrayList<Long>();
 				
@@ -462,6 +493,29 @@ public class ZHCheckDataManager {
 					subData.put("yd",ydMap);
 					data.put(String.valueOf(timeKey),subData);
 				}
+				
+				if(!CollectionUtils.isEmpty(vMaxMap)) {
+					Date jcrq = (Date)vMaxMap.get("JCRQ");
+					Date jssj = (Date)vMaxMap.get("JSSJ");
+					
+					Calendar jssjCalendar = Calendar.getInstance();
+					jssjCalendar.setTime(jssj);
+					Calendar jcrqCalendar = Calendar.getInstance();
+					jcrqCalendar.setTime(jcrq);
+					
+					jcrqCalendar.set(Calendar.HOUR_OF_DAY, jssjCalendar.get(Calendar.HOUR_OF_DAY));
+					jcrqCalendar.set(Calendar.MINUTE, jssjCalendar.get(Calendar.MINUTE));
+					jcrqCalendar.set(Calendar.SECOND, jssjCalendar.get(Calendar.SECOND));
+					
+					Long timeKey =jcrqCalendar.getTimeInMillis();
+					
+					
+					list.add(timeKey);
+					Map<String,Map<String,Object>> subData =new HashMap<String, Map<String,Object>>();
+					subData.put("vm",vMaxMap);
+					data.put(String.valueOf(timeKey),subData);
+				}
+				
 				
 				if(!CollectionUtils.isEmpty(list)) {
 					Collections.sort(list);
@@ -712,14 +766,14 @@ public class ZHCheckDataManager {
 				xh++;
 				this.hibernateTemplate.save(dcj1);
 			}
-			logger.info(!testResult.getYH_PD().equals("0"));
-			if(testResult.getYH_PD()!=null&& !testResult.getYH_PD().equals("0")) {
+			logger.info(!testResult.getYh_pd().equals("0"));
+			if(testResult.getYh_pd()!=null&& !testResult.getYh_pd().equals("0")) {
 				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
 				dcj1.setYqjyxm("经济性（L/100 km）");
 				dcj1.setYqjyjg(testResult.getYh_scz()==null ? "" : testResult.getYh_scz().toString());
 				dcj1.setYqbzxz("≤"+testResult.getYh_bzxz());
-				dcj1.setYqjgpd(testResult.getYH_PD().toString());
+				dcj1.setYqjgpd(testResult.getYh_pd().toString());
 				dcj1.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj1);
@@ -961,6 +1015,55 @@ public class ZHCheckDataManager {
 					this.hibernateTemplate.save(dcj3);
 					
 				}
+				
+				
+				if(pfxData.get("vm")!=null) {
+					Map<String, Object> vm = pfxData.get("vm");
+					
+					String co = (String)vm.get("coclz");
+					String hc = (String)vm.get("hcclz");		
+					String no = (String)vm.get("noclz");
+					String HCXz = (String)vm.get("HCXz");
+					String coXz = (String)vm.get("coXz");		
+					String noXz = (String)vm.get("noXz");
+					
+					
+					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj1.setXh(xh);
+					dcj1.setYqjyxm("简易瞬态工况CO(g/km)");
+					dcj1.setYqjyjg(co==null ? "" : co);
+					dcj1.setYqbzxz("≤"+coXz);
+					boolean coFlag  = Double.parseDouble(co)<=Double.parseDouble(coXz);
+					dcj1.setYqjgpd(coFlag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj1.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj1);
+					
+					
+					DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj2.setXh(xh);
+					dcj2.setYqjyxm("简易瞬态工况NO(g/km)");
+					dcj2.setYqjyjg(no==null ? "" : no);
+					dcj2.setYqbzxz("≤"+noXz);
+					boolean noFlag  = Double.parseDouble(no)<=Double.parseDouble(noXz);
+					dcj2.setYqjgpd(noFlag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj2.setXh(xh); 
+					xh++;
+					this.hibernateTemplate.save(dcj2);
+					
+					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj3.setXh(xh);
+					dcj3.setYqjyxm("简易瞬态工况HC(g/km)");
+					dcj3.setYqjyjg(hc==null ? "" : hc);
+					dcj3.setYqbzxz("≤"+HCXz);
+					boolean hcFlag  = Double.parseDouble(hc)<=Double.parseDouble(HCXz);
+					dcj3.setYqjgpd(hcFlag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
+					dcj3.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj3);
+					
+				}
+				
 				
 			}
 			
