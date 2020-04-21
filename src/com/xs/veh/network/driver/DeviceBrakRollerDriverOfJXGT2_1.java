@@ -44,6 +44,10 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 	private String ttjs="4104704B";
 	
 	private String ttxj="4104714A";
+	
+	private String czsd="41045368";
+	
+	private String jcsd="4104506B";
 
 
 	private String scMessage;
@@ -60,10 +64,18 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			this.getTemp().clear();
 			
 			Thread.sleep(1000);
+			
+			int clzs = deviceBrakRoller.getVehCheckLogin().getZs();
+			
 			// 清理数据
 			deviceBrakRoller.clearDate();
 			
 			dw(vehFlow, zw);
+			
+			if(clzs>=3&&vehFlow.getJyxm().indexOf("L")==-1&&!"B0".equals(vehFlow.getJyxm())) {
+				cz();
+			}
+			
 			
 			if(vehFlow.getJyxm().indexOf("L")==0){
 				logger.info("台体举升：" + ttjs);
@@ -159,6 +171,10 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 	 * @throws SystemException
 	 */
 	private void cz() throws InterruptedException, IOException, SystemException {
+		
+		deviceBrakRoller.sendMessage(jcsd);
+		byte[] jcsds = getDevData(new byte[4]);
+		logger.info("称重解锁：" + CharUtil.byte2HexOfString(jcsds));
 
 		// 开始称重命令
 		int i = 0;
@@ -181,7 +197,17 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 		if (zlh + ylh == 0) {
 			throw new SystemException("称重数据异常:" + zlh + " \\ " + ylh);
 		} else {
+			
+			deviceBrakRoller.sendMessage(czsd);
+			byte[] czsds = getDevData(new byte[4]);
+			logger.info("称重锁定：" + CharUtil.byte2HexOfString(czsds));
+			
 			deviceBrakRoller.getDisplay().sendMessage("结束称重", DeviceDisplay.SP);
+			
+			brakRollerData.setJzzlh(brakRollerData.getZlh());
+			
+			brakRollerData.setJzylh(brakRollerData.getYlh());
+			
 			brakRollerData.setZlh(zlh);
 			brakRollerData.setYlh(ylh);
 			Thread.sleep(1000);

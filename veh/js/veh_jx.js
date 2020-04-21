@@ -1252,7 +1252,17 @@ var report={
 		// LODOP.PRINT();
 		LODOP.PREVIEW(); 
 		
-	},	                     
+	},
+	createReportNoView:function (area){
+		var strStyleCSS="<link href='/veh/css/veh.css' type='text/css' rel='stylesheet'>";
+		var LODOP=getLodop();  
+		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+		LODOP.SET_PRINT_STYLE("FontSize",14);
+		LODOP.SET_PRINT_STYLE("Bold",1);
+		LODOP.ADD_PRINT_HTM("8mm",34,"RightMargin:0.9cm","BottomMargin:9mm",strStyleCSS+"<body>"+area.html()+"</body>");
+		LODOP.PRINT();
+		
+	},
 	loadVehCheckInfo:function(index,row){
 		if(row){
 			try {
@@ -1286,6 +1296,7 @@ var report={
 	getReport1:function(panelObj,intjycs){
 		
 		var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+		
 		var jycsarray=[];
 		if(!intjycs){
 			intjycs = baseInfo.jycs;
@@ -1325,6 +1336,7 @@ var report={
 				
 				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 			});
+			$("#report1_jczmc").text(vehComm.jyjgmc);
 			
 			var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
 			var newJyxm="";
@@ -1576,6 +1588,7 @@ var report={
 		});
 		
 	},getReport3:function(){
+		
 		var baseInfo = $(this).panel("options").baseInfo;
 		$("#report3 [name^='report-baseInfo-']").each(function(i,n){
 			var name = $(n).attr("name").replace("report-baseInfo-","");
@@ -1914,7 +1927,7 @@ $(function($){
                 fn.success(data, textStatus);
             }  
         });  
-        return _ajax(_opt);  
+        return _ajax(_opt);
     };  
 });
 
@@ -1936,3 +1949,41 @@ $(document).ajaxStart(function(){
 	}
 });
 */
+
+setInterval(function(){
+	var apr  = $("#autoPrintReport").is(":checked");
+    var ywc=$("input[name=statusArry]:checked").val();
+	if(apr&&ywc==2){
+		$("#checkingVeh").datagrid("reload");
+	}
+},20000);
+
+var prinArray=[];
+function autoPrint(data){
+	$.each(data.rows,function(i,n){
+		if(i<=3&&n.printStatus==0&&n.vehjczt==2){
+			setTimeout(function(){
+				$("#tab-report").tabs("select","仪器设备检验记录");
+				report.loadVehCheckInfo(i,n);
+				setTimeout(function(){
+					report.createReportNoView($('#print_area1'));
+					$("#tab-report").tabs("select","外检报告");
+					//report.loadVehCheckInfo(i,n);
+					setTimeout(function(){
+						report.createReportNoView($('#print_area3'));
+						$("#tab-report").tabs("select","检验报告");
+						setTimeout(function(){
+							report.createReportNoView($('#print_area2'));
+						},1500);
+					},2000);
+					$.post("/veh/veh/updatePrintStatus",{jylsh:n.jylsh})
+				},2000);
+			}, i*4000);
+			
+		}
+	});
+}
+
+
+
+

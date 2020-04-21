@@ -19,6 +19,7 @@ function relogin(){
 	
 	var jyxms = $("#relogin_jyxm input:checked");
 	
+	
 	if(jyxms.length==0){
 		$.messager.alert("提示","请选择复检项目！");
 		return;
@@ -34,6 +35,14 @@ function relogin(){
 	param.jylsh=reportData.jylsh;
 	
 	param.fjjyxm=fjjyxm.substring(0,fjjyxm.length-1);
+	
+	if($("#id_relogin_reloginWeigth_1").is(':checked')){
+		param.reloginWeigth=1;
+	}else{
+		param.reloginWeigth=0;
+	}
+	
+	
 	
 	$.messager.progress();
 	$.post("/veh//veh/relogin",param,function(data){
@@ -63,13 +72,14 @@ function changeItemJyxm(object){
 </script>
 <div>
 
-<ul id="relogin_jyxm">
+<ul id="relogin_jyxm" style="width: 100%;height: 50px;">
 	
 </ul>
 
-<div style="width: 100%;">
+<div style="width: 100%;text-align: center;">
 <a class="easyui-linkbutton" onclick="relogin()" >复检登陆</a>
-
+<input type="checkbox" name="reloginWeigth" id="id_relogin_reloginWeigth_1" value="1">
+<label for="id_relogin_reloginWeigth_1">轮重</label>
 </div>
 </div>
 

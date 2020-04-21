@@ -38,7 +38,6 @@ import com.xs.veh.entity.TaskPicture;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
-import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.SimpleRead;
 import com.xs.veh.network.data.BaseDeviceData;
@@ -104,9 +103,10 @@ public class CheckDataManager {
 	@Autowired
 	private HKVisionUtil hkUtil;
 
-	public void saveData(BaseDeviceData data) {
+	public <T> void saveData(BaseDeviceData data) {
 		this.hibernateTemplate.saveOrUpdate(data);
 	}
+	
 
 	public Map<String, List> getReport2(String jylsh) {
 
@@ -211,7 +211,18 @@ public class CheckDataManager {
 					if(brd.getJyxm().contains("B")){
 						int zdlh=otherData.getZdlh()==null?0:otherData.getZdlh();
 						int zczbzl=otherData.getJczczbzl()==null?0:otherData.getJczczbzl();
-						otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
+						
+						logger.info("vehCheckLogin.getZs()="+vehCheckLogin.getZs());
+						logger.info("vehCheckLogin.getZs()="+vehCheckLogin.getZs());
+						logger.info("brd.getJzzlh()="+brd.getJzzlh());
+						logger.info("brd.getJzylh()="+brd.getJzylh());
+						
+						if(vehCheckLogin.getZs()>=3&&brd.getJzzlh()!=null&&brd.getJzylh()!=null) {
+							logger.info("负荷台称重！");
+							otherData.setJczczbzl(zczbzl+brd.getJzzlh()+brd.getJzylh());
+						}else {
+							otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
+						}
 						otherData.setZdlh(zdlh+brd.getZzdl()+brd.getYzdl());
 					}
 					
@@ -424,11 +435,23 @@ public class CheckDataManager {
 				}
 			}
 		}
+		
+		logger.info("current Session2="+this.hibernateTemplate.getSessionFactory().getCurrentSession());
+		
+		final String tjylsh=jylsh;
 
 		// 计算整车制动力
-		List<BrakRollerData> list = (List<BrakRollerData>) this.hibernateTemplate
-				.find("from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=? and jyxm<>'L1' and jyxm<>'L2' and jyxm<>'L3' and jyxm<>'L4'", jylsh, BrakRollerData.SJZT_ZC);
+//		List<BrakRollerData> list = (List<BrakRollerData>) this.hibernateTemplate
+//				.find("from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=? and jyxm<>'L1' and jyxm<>'L2' and jyxm<>'L3' and jyxm<>'L4'", jylsh, BrakRollerData.SJZT_ZC);
 
+		List<BrakRollerData> list=  this.hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<BrakRollerData>>() {
+			@Override
+			public List<BrakRollerData> doInHibernate(Session session) throws HibernateException {
+				List<BrakRollerData> data = session.createQuery("from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=? and jyxm<>'L1' and jyxm<>'L2' and jyxm<>'L3' and jyxm<>'L4'").setParameter(0, tjylsh).setParameter(1, BrakRollerData.SJZT_ZC).list();
+				return data;
+			}
+		});
+		
 		// 制动力和
 		Integer zdlh = 0;
 		// 整车轮荷
@@ -438,8 +461,15 @@ public class CheckDataManager {
 		boolean isRoller=true;
 		
 		for (BrakRollerData brakRollerData : list) {
+			
+			if(vehCheckLogin.getZs()>=3&&brakRollerData.getJzzlh()!=null&&brakRollerData.getJzylh()!=null) {
+				zclh += brakRollerData.getJzzlh() + brakRollerData.getJzylh();
+			}else {
+				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+			}
+			
 			zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
-			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+
 			
 			if(brakRollerData.getZdtlh()!=null) {
 				isRoller=false;
@@ -447,6 +477,8 @@ public class CheckDataManager {
 			
 		}
 		otherInfoData.setZdlh(zdlh);
+		
+		otherInfoData.setJczczbzl(zclh);
 		if (zclh != 0) {
 			Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			otherInfoData.setZczdl(MathRound1(zczdl));
@@ -1248,7 +1280,16 @@ public class CheckDataManager {
 		// 整车轮荷
 		Integer zclh = 0;
 		for (BrakRollerData brakRollerData : list) {
-			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+			
+			if(vehCheckLogin.getZs()>=3&&brakRollerData.getJzzlh()!=null&&brakRollerData.getJzylh()!=null) {
+				
+				zclh+=brakRollerData.getJzzlh()+brakRollerData.getJzylh();
+				
+			}else {
+				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+			}
+			
+			
 		}
 		return zclh;
 	}

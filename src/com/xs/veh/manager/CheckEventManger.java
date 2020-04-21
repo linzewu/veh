@@ -16,11 +16,13 @@ import org.hibernate.transform.Transformers;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.job.CheckedInfoTaskJob;
+import com.xs.veh.network.data.BaseDeviceData;
 
 @Scope("prototype")
 @Service("checkEventManger")
@@ -116,6 +118,7 @@ public class CheckEventManger {
 		});
 	}
 
+	@Async
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
 			String clsbdh,Integer csbj) {
 
@@ -135,6 +138,7 @@ public class CheckEventManger {
 
 	}
 	
+	@Async
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
 			String clsbdh) {
 
@@ -151,6 +155,11 @@ public class CheckEventManger {
 		this.hibernateTemplate.flush();
 		this.hibernateTemplate.clear();
 
+	}
+	
+	@Async
+	public <T> void saveDataAsync(BaseDeviceData data) {
+		this.hibernateTemplate.saveOrUpdate(data);
 	}
 
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,

@@ -36,6 +36,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
 import com.xs.veh.manager.BaseParamsManager;
+import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VehManager;
 
 import net.sf.json.JSON;
@@ -65,6 +66,7 @@ public class VehController {
 	
 	@Autowired
 	private BaseParamsManager baseParamsManager;
+	
 
 	/**
 	 * 注册时间类型的属性编辑器，将String转化为Date
@@ -92,6 +94,16 @@ public class VehController {
 		JSON json = vehManager.getVehInfoOfbookNumberz(param);
 		logger.info("获取基本信息返回：="+json);
 		return json.toString();
+	}
+	
+	
+	@UserOperation(code="updatePrintStatus",name="自动打印报告")
+	@RequestMapping(value = "updatePrintStatus", method = RequestMethod.POST)
+	public @ResponseBody String updatePrintStatus(String jylsh) {
+		vehManager.updatePrintStatus(jylsh);
+		
+		return "Success";
+		
 	}
 	
 
@@ -153,6 +165,7 @@ public class VehController {
 			vehCheckLogin.setJycs(1);
 			vehCheckLogin.setDlsj(new Date());
 			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_DL);
+			vehCheckLogin.setPrintStatus(0);
 
 			if (jyxm.indexOf("F1") != -1) {
 				vehCheckLogin.setVehwjzt(VehCheckLogin.ZT_WKS);
@@ -226,10 +239,11 @@ public class VehController {
 				processTestVeh(vehCheckLogin,testVeh);
 				//写入综合检测表
 				this.vehManager.saveTestVeh(testVeh);
-			}else if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0) {
-				processTestVehS1(vehCheckLogin,testVeh);
-				this.vehManager.saveTestVeh(testVeh);
 			}
+//			else if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0) {
+//				processTestVehS1(vehCheckLogin,testVeh);
+//				this.vehManager.saveTestVeh(testVeh);
+//			}
 			
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
 			
@@ -435,9 +449,9 @@ public class VehController {
 	
 	@UserOperation(code="relogin",name="复检登陆")
 	@RequestMapping(value = "relogin", method = RequestMethod.POST)
-	public @ResponseBody String relohin(String jylsh, String fjjyxm) {
+	public @ResponseBody String relohin(String jylsh, String fjjyxm,Integer reloginWeigth) {
 		
-		this.vehManager.saveRelogin2(jylsh, fjjyxm);
+		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
 		
 		JSONObject json = new JSONObject();
 		json.put("state", "OK");

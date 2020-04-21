@@ -59,6 +59,7 @@ function getLodop(oOBJECT,oEMBED){
 
 
 	     //============================================================	     
+	     LODOP.SET_LICENSES("上海翔尚信息技术有限公司","E61FDF8932E17DEFD1AFD1E7F683CA26","","");
 	     return LODOP; 
 	} catch(err) {
 	     if (is64IE)	

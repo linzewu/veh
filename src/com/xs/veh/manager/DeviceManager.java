@@ -167,13 +167,13 @@ public class DeviceManager {
 		CurbWeightData cwd = dmw.startCheck(vehCheckLogin);
 		vehManager.saveCurbWeight(cwd);
 		
-		TestVeh testVeh = vehManager.getTestVehWaitBylsh(vehCheckLogin.getJylsh());
-		if(testVeh!=null) {
-			testVeh.setYsjc(1);
-			testVeh.setQdzkzzl(cwd.getHzzl());
+		if(vehCheckLogin.getCheckType()==1) {
+			TestVeh testVeh = vehManager.getTestVehWaitBylsh(vehCheckLogin.getJylsh());
+			if(testVeh!=null) {
+				testVeh.setYsjc(1);
+				testVeh.setQdzkzzl(cwd.getHzzl());
+			}
 		}
-		
-		
 		logger.info("整备质量结束");
 		
 	}

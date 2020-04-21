@@ -22,6 +22,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.OtherInfoData;
 import com.xs.veh.network.data.ParDataOfAnjian;
@@ -48,6 +49,9 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 
 	@Autowired
 	private ServletContext servletContext;
+	
+	@Autowired
+	private CheckEventManger checkEventManger;
 
 	public VehCheckLogin getVehCheckLogin() {
 		return vehCheckLogin;
@@ -277,7 +281,20 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			process.setKssj(startDate);
 			process.setJssj(new Date());
 			this.checkDataManager.updateProcess(process);
+			
+			VehCheckProcess vp =process;
+			
+			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+			Thread.sleep(100);
+			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+			Thread.sleep(100);
+			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+			
 		}
+		
 	}
 	
 	private List<String> notJYXM(List<BrakRollerData> datas) {

@@ -17,6 +17,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.network.data.SpeedData;
 
 import gnu.io.SerialPortEvent;
@@ -42,6 +43,9 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 	
 
 	public VehCheckLogin getVehCheckLogin() {
@@ -172,6 +176,17 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 		
 		this.checkDataManager.saveData(speedData);
 		display.setDefault();
+		
+		VehCheckProcess vp =process;
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(100);
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(100);
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		
 	}
 
 	@Override

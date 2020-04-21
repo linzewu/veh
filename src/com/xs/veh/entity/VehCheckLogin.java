@@ -334,7 +334,34 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column
 	private Integer zxzs;
 	
+	//复检登陆检验称重
+	@Column
+	private Integer reloginWeigth;
 	
+	@Column
+	private Integer printStatus;
+	
+	
+
+	public Integer getPrintStatus() {
+		return printStatus;
+	}
+
+
+	public void setPrintStatus(Integer printStatus) {
+		this.printStatus = printStatus;
+	}
+
+
+	public Integer getReloginWeigth() {
+		return reloginWeigth;
+	}
+
+
+	public void setReloginWeigth(Integer reloginWeigth) {
+		this.reloginWeigth = reloginWeigth;
+	}
+
 
 	public Integer getZxzs() {
 		return zxzs;

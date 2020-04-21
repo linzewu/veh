@@ -19,6 +19,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.network.data.SideslipData;
 
 import gnu.io.SerialPortEvent;
@@ -45,6 +46,9 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 
 	private DeviceSignal signal;
 	
@@ -155,7 +159,9 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	 */
 	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws InterruptedException, IOException{
 		
-		
+		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
+				vehFlow.getJyxm());
+		process.setKssj(new Date());
 		
 		SideslipData sideslipData =check(vehCheckLogin,vehFlow,otherParam,1);
 		
@@ -185,8 +191,24 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 			}
 			this.display.sendMessage("后转向结果：" + jg, DeviceDisplay.XP);
 		}
+		
+		process.setJssj(new Date());
+		this.checkDataManager.updateProcess(process);
+		
 		Thread.sleep(2000);
 		display.setDefault();
+		
+		VehCheckProcess vp=process;
+		
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(100);
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(100);
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		
 	}
 	
 	
@@ -194,14 +216,8 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 	private SideslipData check(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam,Integer zs) throws InterruptedException, IOException{
 		this.vehCheckLogin=vehCheckLogin;
 		
-		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
-				vehFlow.getJyxm());
-		process.setKssj(new Date());
 		
 		SideslipData sideslipData = sd.startCheck(vehFlow,zs);
-		
-		process.setJssj(new Date());
-		this.checkDataManager.updateProcess(process);
 		
 		sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());
 

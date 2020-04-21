@@ -23,6 +23,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.WorkPointManager;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.ParDataOfAnjian;
@@ -71,6 +72,9 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 
 	@Value("${plusLoadFlag}")
 	private boolean plusLoadFlag;
@@ -340,6 +344,18 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		process.setKssj(kssj);
 		this.checkDataManager.updateProcess(process);
 		this.checkDataManager.saveData(brakRollerData);
+		
+		Thread.sleep(200);
+		VehCheckProcess vp =process;
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(100);
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		Thread.sleep(100);
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		
 	}
 
 	@Override

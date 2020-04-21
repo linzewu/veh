@@ -35,7 +35,7 @@ cursor: pointer;
 <div class="easyui-layout" fit="true" >
 	<div data-options="region:'west'" title="检测信息" style="width: 300px;">
 		<table class="easyui-datagrid" id="checkingVeh" 
-			data-options="pagination:true,pageSize:20,onDblClickRow:report.loadVehCheckInfo,toolbar:'#checkingVehTool',border:0,fitColumns:true,singleSelect:true,fit:true,url:'/veh/veh/getVehChecking',queryParams:{statusArry:'0,1'}">
+			data-options="onLoadSuccess:autoPrint,pagination:true,pageSize:20,onDblClickRow:report.loadVehCheckInfo,toolbar:'#checkingVehTool',border:0,fitColumns:true,singleSelect:true,fit:true,url:'/veh/veh/getVehChecking',queryParams:{statusArry:'0,1'}">
 			<thead>
 				<tr>
 					<th data-options="field:'jylsh',width:100">检验流水号</th>
@@ -74,8 +74,13 @@ cursor: pointer;
 <label>号牌种类：</label><input class="easyui-combobox" data-options="data:comm.getBaseParames('hpzl'),valueField: 'id',textField: 'value'"  name="query_report_hpzl">
 <a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:queryReportList" >查询</a>
 </div>
-<div><label>检测状态：</label>&nbsp;&nbsp;<input name="statusArry" onclick="queryReportList()"  type="radio" value="0,1" checked="checked"><label>未完成</label><input type="radio" onclick="queryReportList()" name="statusArry" value="2"><label>已完成</label>
-	<input type="radio" name="statusArry" value="3" onclick="queryReportList()"><label>退办</label>
+<div><label>检测状态：</label>&nbsp;&nbsp;<input name="statusArry" onclick="queryReportList()"  type="radio" value="0,1" checked="checked">
+		<label>未完成</label>
+		<input type="radio" onclick="queryReportList()" name="statusArry" value="2">
+		<label>已完成</label>
+		<input type="radio" name="statusArry" value="3" onclick="queryReportList()"><label>退办</label><br>
+		<input type="checkbox"  id="autoPrintReport">
+		<label for="autoPrintReport">自动出单</label>
 </div>
 </div>
 

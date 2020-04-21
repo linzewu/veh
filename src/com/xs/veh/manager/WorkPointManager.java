@@ -189,6 +189,8 @@ public class WorkPointManager {
 			List<VehFlow> vehFlows,Map<String, Object> otherParam) throws InterruptedException, IOException, SystemException {
 		// VehFlow vehFlow = vehFlows.get(vehFlows.size() - 1);
 		checkDevice.startCheck(vehCheckLogin, vehFlows, otherParam);
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
 		checkAfter(vehCheckLogin, vehFlows);
 		this.hibernateTemplate.flush();
 		this.hibernateTemplate.clear();
@@ -209,7 +211,7 @@ public class WorkPointManager {
 		// 如果队列为空，则检测过程结束
 		if (checkQueue == null) {
 			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
-			checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
+			//checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 		}
 	}
@@ -244,7 +246,7 @@ public class WorkPointManager {
 				logger.info("开始计算其他数据");
 				checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
 				logger.info("其他数据计算结束");
-				checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
+				//checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
 				logger.info("实践数据结束");
 				vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 				logger.info("更新车辆数据结束");
@@ -271,6 +273,8 @@ public class WorkPointManager {
 			Map<String, Object> param) throws IOException, InterruptedException, SystemException {
 		logger.info(vehFlow.getJyxm() + "项目开始检测");
 		checkDevice.startCheck(vehCheckLogin, vehFlow, param);
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
 		// 检测完成，删除队列
 		logger.info("检测结束");
 		checkAfter(vehCheckLogin, checkQueue, vehFlow);

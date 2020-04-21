@@ -112,6 +112,17 @@ public class CharUtil {
 	}
 
 	public static void main(String args[]) {
+		
+		String aa = CharUtil.getCheckSum("410453");
+		
+		String a2 = CharUtil.getCheckSum("410450");
+		
+		
+		
+		System.out.println(aa );
+		
+		System.out.println(a2 );
+		
 		/*
 		 * System.out.println(CharUtil.byte2HexOfString(new byte[] { 0x02, 0x32,
 		 * 0x54, 0x4D, 0x2B }));
