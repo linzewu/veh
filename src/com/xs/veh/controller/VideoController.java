@@ -104,7 +104,7 @@ public class VideoController {
 		isRoadTest(list);
 		
 		String jyjgbh=list.get(0).get("JYJGBH").toString();
-		String jcxdh =list.get(0).get("JCXDH").toString();
+		//String jcxdh =list.get(0).get("JCXDH").toString();
 		
 		List<VideoConfig> conifgs = videoManager.getConfig(jyjgbh);
 		
@@ -113,30 +113,55 @@ public class VideoController {
 		for(Map item:list){
 			String jyxm = (String)item.get("JYXM");
 			if(jyxm!=null){
-				for(VideoConfig vc:conifgs){
-					if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(jcxdh)){
-						JSONObject jo = JSONObject.fromObject(vc);
-						Date kssj=(Date)item.get("KSSJ");
-						Date jssj=(Date)item.get("JSSJ");
-						
-						Integer jycs=(Integer)item.get("JYCS");
-						
-						String fzjg=(String)item.get("FZJG");
-						String hphm=(String)item.get("HPHM");
-						if(fzjg!=null){
-							hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+				
+				if(jyxm.equals("F2")||jyxm.equals("F3")||jyxm.equals("F4")) {
+					JSONObject jo =new JSONObject();
+					Date kssj=(Date)item.get("KSSJ");
+					Date jssj=(Date)item.get("JSSJ");
+					
+					Integer jycs=(Integer)item.get("JYCS");
+					
+					String fzjg=(String)item.get("FZJG");
+					String hphm=(String)item.get("HPHM");
+					if(fzjg!=null){
+						hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+					}
+					SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					
+					jo.put("kssj",sd.format(kssj));
+					jo.put("jssj",sd.format(jssj));
+					jo.put("hphm",hphm);
+					jo.put("jyxm", jyxm);
+					jo.put("jycs", jycs.intValue());
+					ja.add(jo);
+				}else {
+					for(VideoConfig vc:conifgs){
+						if(vc.getJyxm().indexOf(jyxm)!=-1&&vc.getJcxdh().equals(item.get("JCXDH").toString())){
+							JSONObject jo = JSONObject.fromObject(vc);
+							Date kssj=(Date)item.get("KSSJ");
+							Date jssj=(Date)item.get("JSSJ");
+							
+							Integer jycs=(Integer)item.get("JYCS");
+							
+							String fzjg=(String)item.get("FZJG");
+							String hphm=(String)item.get("HPHM");
+							if(fzjg!=null){
+								hphm=fzjg.substring(0, 1)+(String)item.get("HPHM");
+							}
+							SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							
+							jo.put("kssj",sd.format(kssj));
+							jo.put("jssj",sd.format(jssj));
+							jo.put("hphm",hphm);
+							jo.put("jyxm", jyxm);
+							jo.put("jycs", jycs.intValue());
+							ja.add(jo);
+							//break;
 						}
-						SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						
-						jo.put("kssj",sd.format(kssj));
-						jo.put("jssj",sd.format(jssj));
-						jo.put("hphm",hphm);
-						jo.put("jyxm", jyxm);
-						jo.put("jycs", jycs.intValue());
-						ja.add(jo);
-						//break;
 					}
 				}
+				
+				
 			}
 		}
 		request.setAttribute("playInfo", ja.toString());

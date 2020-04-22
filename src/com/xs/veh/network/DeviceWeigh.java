@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +19,13 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.manager.VehProcessManager;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
+import com.xs.veh.network.driver.DeviceWeighDriverOfJXZB10_SZ;
 
 import gnu.io.SerialPortEvent;
 
@@ -54,7 +58,13 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
 	
+	@Autowired
 	private VehManager vehManager;
+	
+	@Autowired
+	private VehProcessManager vehProcessManager;
+	@Autowired
+	private CheckEventManger checkEventManger;
 	
 	private VehCheckLogin vehCheckLogin;
 	
@@ -180,6 +190,20 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		}
 		this.checkDataManager.saveData(brakRollerData);
 		display.setDefault();
+		
+		if(dw instanceof DeviceWeighDriverOfJXZB10_SZ) {
+			
+			String zs = vehFlow.getJyxm().substring(1, 2);
+			
+			if(vehCheckLogin.getJycs()==1&&vehCheckLogin.getJyxm().indexOf("Z1")!=-1) {
+				if(zs.equals("2")) {
+					this.saveZ1(brakRollerData);
+				}
+			}
+			
+			
+		}
+		
 	}
 
 	@Override
@@ -200,6 +224,15 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	
 	public void updateVehCheckProcess(VehCheckProcess vehCheckProcess) {
 		this.checkDataManager.updateProcess(vehCheckProcess);
+	}
+	
+	public void updateZ1VehCheckProcessStart() {
+		VehCheckProcess vp =getZ1Process();
+		vp.setKssj(new Date());
+		this.vehProcessManager.saveVehProcessSync(vp);
+		
+		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
 	}
 	
 	public void saveZ1(BrakRollerData b2) throws InterruptedException {

@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import com.xs.common.CharUtil;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceWeigh;
 import com.xs.veh.network.DeviceDisplay;
@@ -35,7 +36,7 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 	@Override
 	public BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException{
 
-		
+		Date kssj=new Date();
 		
 		deviceWeigh.sendMessage(ql);
 		logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
@@ -50,6 +51,12 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 
 		// 开始新的一次检测
 		createNew();
+		
+		if(this.deviceWeigh.getVehCheckLogin().getJycs()==1&&this.deviceWeigh.getVehCheckLogin().getJyxm().indexOf("Z1")!=-1) {
+			if(zs.equals("1")) {
+				this.deviceWeigh.updateZ1VehCheckProcessStart();
+			}
+		}
 		
 		
 		
@@ -97,11 +104,7 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 		this.display.sendMessage(zs + "轴称重结束", DeviceDisplay.SP);
 		this.display.sendMessage((brakRollerData.getZlh() + brakRollerData.getYlh()) + "KG", DeviceDisplay.XP);
 		
-		if(this.deviceWeigh.getVehCheckLogin().getJycs()==1&&this.deviceWeigh.getVehCheckLogin().getJyxm().indexOf("Z1")!=-1) {
-			if(zs.equals("1")) {
-				this.deviceWeigh.getZ1Process();
-			}
-		}
+		
 
 		return brakRollerData;
 
