@@ -15,9 +15,13 @@ import org.springframework.stereotype.Service;
 
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.VehManager;
+import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.network.data.CurbWeightData;
 
 import gnu.io.SerialPortEvent;
 
@@ -49,6 +53,8 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
+	
+	private VehManager vehManager;
 	
 	private VehCheckLogin vehCheckLogin;
 	
@@ -185,6 +191,66 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	@Override
 	public String getDeviceSpringName() {
 		return "deviceWeigh";
+	}
+	
+	
+	public VehCheckProcess getZ1Process() {
+		return checkDataManager.getVehCheckProces(this.vehCheckLogin.getJylsh(),this.vehCheckLogin.getJycs(), "Z1");
+	}
+	
+	public void updateVehCheckProcess(VehCheckProcess vehCheckProcess) {
+		this.checkDataManager.updateProcess(vehCheckProcess);
+	}
+	
+	public void saveZ1(BrakRollerData b2) throws InterruptedException {
+		
+		BrakRollerData b1 = this.checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin, "B1");
+		
+		CurbWeightData curbWeightData=new CurbWeightData();
+		
+		curbWeightData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), "Z1");
+		
+		Integer qz=b1.getZlh()+b1.getYlh();
+		
+		Integer hz=b2.getZlh()+b2.getYlh();
+		
+		curbWeightData.setQzzl(qz);
+		
+		curbWeightData.setHzzl(hz);
+		
+		curbWeightData.setZbzl((qz+hz)-65);
+		
+		String cllx=vehCheckLogin.getCllx();
+		int xzgj=100;
+		String temp1="±3%或±";
+		Float temp2=0.03f;
+		
+		if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z1")==0||cllx.indexOf("Z2")==0||cllx.indexOf("Z5")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
+			xzgj=500;
+		}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0||cllx.indexOf("Z3")==0||cllx.indexOf("Z4")==0){
+			xzgj=100;
+		}else if(cllx.indexOf("N")==0){
+			xzgj=100;
+			temp2=0.05f;
+			temp1="±5%或±";
+		}else if(cllx.indexOf("M")==0){
+			xzgj=10;
+		}
+		Integer cz = vehCheckLogin.getZbzl()-(curbWeightData.getZbzl());
+		
+		Integer pd = Math.abs(cz)<xzgj?BaseDeviceData.PDJG_HG:BaseDeviceData.PDJG_BHG;
+		
+		Integer pd2 = Math.abs(cz*1.0/vehCheckLogin.getZbzl()*1.0)>temp2?BaseDeviceData.PDJG_BHG:BaseDeviceData.PDJG_HG;
+		
+		
+		if(pd==BaseDeviceData.PDJG_HG||pd2==BaseDeviceData.PDJG_HG) {
+			curbWeightData.setZbzlpd(BaseDeviceData.PDJG_HG);
+		}else {
+			curbWeightData.setZbzlpd(BaseDeviceData.PDJG_BHG);
+		}
+		
+		vehManager.saveCurbWeight(curbWeightData);
+
 	}
 
 }

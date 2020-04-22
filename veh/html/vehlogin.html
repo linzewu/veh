@@ -191,18 +191,21 @@ $(function(){
 	$('#_checkType').combobox({
 	onChange: function(newValue,oldValue){
 		showJyxm(newValue);
-		var requestArray=["zxzs","gl","zjwtr","dlyxzh","zjywlx","jcxz","rlzl","jqfs","jgl","ednj","ednjzs","ednjgl","edyh","ltlx","ltdmkd","kcdj","hccsxs","dlxpjbz"];
+		var requestArray=["zxzs","gl","zjwtr","dlyxzh","zjywlx","jcxz","rlzl","jqfs","jgl","ednj","ednjgl","edyh","ltlx","ltdmkd","kcdj","hccsxs"];
 		if(newValue==1){
 			$.each(requestArray,function(i,n){
-				
-				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
 				console.log(n)
+				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
+				
 				console.log(" $('input[textboxname='+n+']')."+type+"('"+type+"').validatebox('options').required = true; ")
 				//eval(" $('input[textboxname='+n+']')."+type+"({required: true}) ")
 				//eval(" $('input[textboxname='+n+']')."+type+"('"+type+"').validatebox('options').required = true; ")
 				$('input[textboxname='+n+']').textbox('textbox').validatebox('options').required = true;
 				$('input[textboxname='+n+']').textbox('textbox').validatebox('validate');
 			});
+			$("#lab_zhjy").show();
+			$("#tb_zhjy").show();
+			
 		}else{
 			$.each(requestArray,function(i,n){
 				var type = $("input[textboxname="+n+"]").attr("class").split(" ")[0].split("-")[1];
@@ -214,6 +217,8 @@ $(function(){
 				$('input[textboxname='+n+']').textbox('textbox').validatebox('validate');
 				
 			});
+			$("#lab_zhjy").hide();
+			$("#tb_zhjy").hide();
 		}
 	}
 });

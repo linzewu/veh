@@ -35,7 +35,7 @@ public class DeviceWeighDriverOfJxcz extends AbstractDeviceWeigh {
 
 	@Override
 	public BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException{
-
+		
 		String zs = vehFlow.getJyxm().substring(1, 2);
 
 		String hphm = vehFlow.getHphm();

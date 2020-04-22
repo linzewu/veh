@@ -67,6 +67,9 @@ public class VehController {
 	@Autowired
 	private BaseParamsManager baseParamsManager;
 	
+	@Autowired
+	private CheckDataManager checkDataManager;
+	
 
 	/**
 	 * 注册时间类型的属性编辑器，将String转化为Date
@@ -462,8 +465,15 @@ public class VehController {
 	@UserOperation(code="getTestVehBylsh",name="获取综合检测基本信息")
 	@RequestMapping(value = "getTestVehBylsh", method = RequestMethod.POST)
 	public @ResponseBody TestVeh getTestVehBylsh(String jylsh) {
-		TestVeh testVeh = this.vehManager.getTestVehBylsh(jylsh);
-		return testVeh;
+		
+		VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(jylsh);
+		
+		if(vehCheckLogin.getCheckType()==1) {
+			TestVeh testVeh = this.vehManager.getTestVehBylsh(jylsh);
+			return testVeh;
+		}else {
+			return null;
+		}
 	
 	}
 

@@ -746,9 +746,10 @@ public class CheckedInfoTaskJob {
 		for(VehCheckProcess vcp: datas) {
 			
 			VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(jyjgbh, vcp.getJylsh());
+			String jcxdh = vcp.getJcxdh()==null?vehCheckLogin.getJcxdh():String.valueOf(vcp.getJcxdh());
 			
 			for(VideoConfig config: configs) {
-				if(config.getJyxm().indexOf(vcp.getJyxm())!=-1&&config.getJcxdh().equals(vehCheckLogin.getJcxdh())) {
+				if(config.getJyxm().indexOf(vcp.getJyxm())!=-1&&config.getJcxdh().equals(jcxdh)) {
 					try {
 						Date  kssj =vcp.getKssj();
 						if(vcp.getJyxm().equals("H4")&&vcp.getJycs()==1) {

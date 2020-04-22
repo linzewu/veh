@@ -36,7 +36,7 @@ var jyxm_combox=[{
 	name:'驻车制动'
 },{
 	jyxm:'H1',
-	name:'左外灯或二三轮机动车的左灯'
+	name:'左外灯'
 },{
 	jyxm:'H2',
 	name:'左内灯'
@@ -45,7 +45,7 @@ var jyxm_combox=[{
 	name:'右内灯'
 },{
 	jyxm:'H4',
-	name:'右外灯或二三轮机动车的右灯'
+	name:'右外灯'
 },{
 	jyxm:'S1',
 	name:'车速表'
