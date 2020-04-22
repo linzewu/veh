@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -242,7 +243,9 @@ public class PDAServiceController {
 			}else {
 				checkDataManager.displaySendMsg(vehCheckProcess.getHphm(), jyxm,Integer.parseInt(vehCheckLogin.getJcxdh()));
 			}
-			
+			if(!StringUtils.isEmpty(jcxdh)) {
+				vehCheckProcess.setJcxdh(jcxdh);
+			}
 			
 			vehCheckProcess.setKssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
