@@ -97,7 +97,16 @@
 		playInfo=$.parseJSON(playInfo);
 		
 		playInfo = playInfo.sort(function(a,b){
-			return a.jyxm.localeCompare(b.jyxm);
+			if(a.jyxm.localeCompare(b.jyxm)!=0){
+				return a.jyxm.localeCompare(b.jyxm);
+			}else{
+			
+				if(a.jycs>b.jycs){
+					return 1;
+				}else{
+					return -1;
+				}
+			}
 		});
 		
 		$("#info_hphm").val(playInfo[0].hphm);
