@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Scope("prototype")
 @Component("videoConfig")
 @Entity
-@Table(name = "VideoConfig2")
+@Table(name = "VideoConfig")
 @JsonIgnoreProperties(value ={"hibernateLazyInitializer","handler","fieldHandler"})
 public class VideoConfig {
 	

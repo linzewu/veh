@@ -1595,24 +1595,24 @@ var report={
 			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 		});
 		
-		$.post("/veh/report/getReport3",{jylsh:baseInfo.jylsh},function(data){
-			$.each(data,function(i,n){
-				
-				var t=n;
-				
-				if(n==1){
-					t="O"
-				}else if(n==2){
-					t="X";
-				}else if(n==null||"null"==n||n==0){
-					t="—";
-				}
-				
-				$("#"+i).text(t);
+		var r3 = comm.getBaseParames("report3");
+		
+		if(r3.length>0&&r3[0].id==1){
+			$.post("/veh/report/getReport3",{jylsh:baseInfo.jylsh},function(data){
+				$.each(data,function(i,n){
+					var t=n;
+					if(n==1){
+						t="O"
+					}else if(n==2){
+						t="X";
+					}else if(n==null||"null"==n||n==0){
+						t="—";
+					}
+					$("#"+i).text(t);
+				});
 				
 			});
-			
-		});
+		}
 		
 	},
 	getReport4:function(){
@@ -1960,28 +1960,42 @@ setInterval(function(){
 
 var prinArray=[];
 function autoPrint(data){
-	$.each(data.rows,function(i,n){
-		if(i<=3&&n.printStatus==0&&n.vehjczt==2){
-			setTimeout(function(){
-				$("#tab-report").tabs("select","仪器设备检验记录");
-				report.loadVehCheckInfo(i,n);
+	
+	var apr  = $("#autoPrintReport").is(":checked");
+    var ywc=$("input[name=statusArry]:checked").val();
+    
+    var r3 = comm.getBaseParames("report3");
+	
+	
+	
+	if(apr&&ywc==2){
+		$.each(data.rows,function(i,n){
+			if(i<=3&&n.printStatus==0&&n.vehjczt==2){
 				setTimeout(function(){
-					report.createReportNoView($('#print_area1'));
-					$("#tab-report").tabs("select","外检报告");
-					//report.loadVehCheckInfo(i,n);
+					$("#tab-report").tabs("select","仪器设备检验记录");
+					report.loadVehCheckInfo(i,n);
 					setTimeout(function(){
-						report.createReportNoView($('#print_area3'));
+						report.createReportNoView($('#print_area1'));
 						$("#tab-report").tabs("select","检验报告");
+						//report.loadVehCheckInfo(i,n);
 						setTimeout(function(){
 							report.createReportNoView($('#print_area2'));
-						},1500);
+							
+							if(r3.length>0&&r3[0].id==1){
+								$("#tab-report").tabs("select","外检报告");
+								setTimeout(function(){
+									report.createReportNoView($('#print_area3'));
+								},1500);
+							}
+						},2000);
+						$.post("/veh/veh/updatePrintStatus",{jylsh:n.jylsh})
 					},2000);
-					$.post("/veh/veh/updatePrintStatus",{jylsh:n.jylsh})
-				},2000);
-			}, i*4000);
-			
-		}
-	});
+				}, i*4000);
+				
+			}
+		});
+	}
+	
 }
 
 

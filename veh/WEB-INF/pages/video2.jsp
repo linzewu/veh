@@ -130,6 +130,10 @@
 		vlc.video.toggleFullscreen();
 	}
 	
+	function kj(steep){
+		vlc.input.rate=steep;
+	}
+	
 </script>
 </head>
 <body>
@@ -143,8 +147,6 @@
 				<input value="${ param.jylsh}" disabled="disabled" />
 				<label>检测站名称：</label>
 				<input value="" disabled="disabled" id="jyjgbh" />
-				
-				
 				<label>时间推移：</label><input class="easyui-numberbox" style="width: 60px;" value="0" id="tysj">秒
 			</div>
 		</div>
@@ -163,6 +165,7 @@
 				          <param name='autoplay' value='false' />
 				          <param name='loop' value='false' />
 				          <param name='fullscreen' value='true' />
+				          <param name='controls' value='true'>
 				    </object>
 				<![endif]-->
 				<!--[if !IE]><!-->
@@ -170,9 +173,16 @@
 				        <param name='mrl' value='' />
 				        <param name='volume' value='50' />
 				        <param name='autoplay' value='true' />
+				         <param name='controls' value='true'>
 				    </object>
 				<!--<![endif]-->
+				<div style="text-align: center;width: 100%;height: 30px; ">
+					<input value="正常" type="button"  style="margin-left: 20px;margin-top: 5px;" onclick="kj(1)">
+					<input value="快进x2" type="button" style="margin-left: 20px;margin-top: 5px;" onclick="kj(2)">
+					<input value="快进x4" type="button" style="margin-left: 20px;margin-top: 5px;" onclick="kj(4)">
+				</div>
 			</div>
+			
 		</div>
 	</div>
 	
