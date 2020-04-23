@@ -11,6 +11,7 @@ import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceWeigh;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceWeigh;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.SimpleRead.ProtocolType;
 import com.xs.veh.network.data.BrakRollerData;
 
@@ -91,6 +92,18 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 
 			Thread.sleep(1000);
 		}
+		
+		if(this.deviceWeigh.getVehCheckLogin().getJycs()==1&&this.deviceWeigh.getVehCheckLogin().getJyxm().indexOf("Z1")!=-1) {
+			if(zs.equals("1")) {
+				TakePicture.createNew(this.deviceWeigh.getVehCheckLogin(),"Z1",0,"0362");
+			}
+			if(zs.equals("2")) {
+				TakePicture.createNew(this.deviceWeigh.getVehCheckLogin(),"Z1",0,"0363");
+			}
+		}
+		
+		
+		
 		deviceWeigh.sendMessage(sdcz);
 		logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 		

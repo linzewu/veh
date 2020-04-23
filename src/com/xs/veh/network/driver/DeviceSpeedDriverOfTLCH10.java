@@ -59,7 +59,7 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 				this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
 				this.display.sendMessage("速度上线检测", DeviceDisplay.XP);
 				i = 0;
-			}
+			} 
 			if (i >= 6) {
 				break;
 			}
@@ -73,7 +73,7 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 
 		this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
 		this.display.sendMessage("40KM/H 申报", DeviceDisplay.XP);
-
+		TakePicture.createNew(this.deviceSpeed.getVehCheckLogin(),"S1");
 		// 等待测量结束
 		while (true) {
 			Thread.sleep(500);
@@ -82,7 +82,7 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 			String sdbj = new String(new byte[] { data[13] });
 			String dqsd = new String(new byte[] { data[3], data[4], data[5], data[6], data[7] });
 			if (data[0] == 0x41 && data[1] == 0x0f && data[1] == 0x0f && "a".equals(sdbj)) {
-				TakePicture.createNew(this.deviceSpeed.getVehCheckLogin(),"S1");
+				
 				if (Float.valueOf(dqsd) == 0) {
 					String strSd = new String(new byte[] { data[8], data[9], data[10], data[11], data[12] });
 					this.speedData.setSpeed(Float.valueOf(strSd));

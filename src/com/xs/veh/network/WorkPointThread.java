@@ -169,7 +169,7 @@ public class WorkPointThread extends Thread {
 									if(!vehFlow.getJyxm().equals("B0")) {
 										BrakRollerData weightBrakRollerData = checkDataManager.getLastBrakRollerDataOfVehLoginInfo(vehCheckLogin,vehFlow.getJyxm());
 										
-										if(vehCheckLogin.getReloginWeigth()==1) {
+										if(vehCheckLogin.getReloginWeigth()!=null&&vehCheckLogin.getReloginWeigth()==1) {
 											brakRollerData=weightBrakRollerData;
 										}else {
 											brakRollerData =new BrakRollerData();
