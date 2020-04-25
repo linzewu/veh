@@ -199,7 +199,11 @@ public class CheckDataManager {
 						int zczbzl=otherData.getJczczbzl()==null?0:otherData.getJczczbzl();
 						
 						otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
-						otherData.setZdlh(zdlh+brd.getZzdl()+brd.getYzdl());
+						
+						Integer zzdl = brd.getZzdl()==null?0:brd.getZzdl();
+						Integer yzdl= brd.getYzdl()==null?0:brd.getYzdl();
+						
+						otherData.setZdlh(zdlh+zzdl+yzdl);
 					}
 					
 				}
@@ -425,7 +429,17 @@ public class CheckDataManager {
 		boolean isRoller=true;
 		
 		for (BrakRollerData brakRollerData : list) {
-			zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
+			
+			if(vehCheckLogin.getCllx().indexOf("N")!=-1) {
+				
+				Integer zzdl=brakRollerData.getZzdl()==null?0:brakRollerData.getZzdl();
+				Integer yzdl=brakRollerData.getYzdl()==null?0:brakRollerData.getYzdl();
+				zdlh += zzdl + yzdl;
+			}else {
+				zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
+			}
+			
+			
 			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
 			
 			if(brakRollerData.getZdtlh()!=null) {
@@ -518,7 +532,7 @@ public class CheckDataManager {
 			this.hibernateTemplate.save(dcj1);
 		}
 		// 整车制动率判定
-		if (otherInfoData != null) {
+		if (otherInfoData != null&&vehCheckLogin.getCllx().indexOf("N")==-1) {
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setYqjyxm("整车制动率(%)");
 			dcj1.setYqjyjg(otherInfoData.getZczdl() == null ? "" : otherInfoData.getZczdl().toString());
@@ -1004,6 +1018,11 @@ public class CheckDataManager {
 
 		for (BrakRollerData brd : brds) {
 			if (flagMap.get(brd.getJyxm()) == null) {
+				
+				
+				if(vehCheckLogin.getCllx().indexOf("N")!=-1&&brd.getJyxm().equals("B1")) {
+					continue;
+				}
 				
 				String temp = brd.getJyxm().indexOf("L")==0?"加载":"";
 				

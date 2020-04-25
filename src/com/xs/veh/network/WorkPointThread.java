@@ -174,8 +174,6 @@ public class WorkPointThread extends Thread {
 										brakRollerData.setJzzlh(weightBrakRollerData.getJzzlh());
 										brakRollerData.setJzylh(weightBrakRollerData.getJzylh());
 									}
-									
-								
 								}
 								
 								param.put("brakRollerData", brakRollerData);

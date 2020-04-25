@@ -507,7 +507,10 @@ public class VehManager {
 							}
 						}else if(vcl.getJycs()>1&&device.getType()==Device.CZJCSB) {
 							continue;
+						}else if(vcl.getCllx().indexOf("N")>=0&&jyxm.equals("B1")&&device.getType()==Device.ZDJCSB) {
+							continue;
 						} else {
+							
 							VehFlow v = new VehFlow();
 							v.setGw(gwid);
 							v.setHphm(vcl.getHphm());
@@ -520,6 +523,7 @@ public class VehManager {
 							v.setSbsx(j + 1);
 							v.setSbid(deviceId);
 							vehFlows.add(v);
+							
 						}
 					}
 				}

@@ -172,6 +172,9 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 			flag = this.signal.getSignal(s1);
 			Thread.sleep(200);
 		}
+		
+		
+		brakRollerData.setZw(Integer.parseInt(vehFlow.getJyxm().charAt(1)+""));
 		this.checkDataManager.saveData(brakRollerData);
 		display.setDefault();
 	}
@@ -180,6 +183,10 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	public void startCheck(VehCheckLogin vehCheckLogin, List<VehFlow> vehFlows,Map<String,Object> otherParam) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void saveBrakRollerData(BrakRollerData brakRollerData) {
+		this.checkDataManager.saveData(brakRollerData);
 	}
 
 }

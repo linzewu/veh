@@ -490,14 +490,9 @@ public class CheckedInfoTaskJob {
 		List<VideoConfig> configs = videoManager.getConfig(jyjgbh);
 		
 		for(VehCheckProcess vcp: datas) {
-			
 			VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(jyjgbh, vcp.getJylsh());
-			
 			Integer jcxdh =vcp.getJcxdh()==null?Integer.parseInt(vehCheckLogin.getJcxdh()):vcp.getJcxdh();
-			
 			for(VideoConfig config: configs) {
-				
-				
 				if(config.getJyxm().indexOf(vcp.getJyxm())!=-1&&config.getJcxdh().equals(jcxdh.toString())) {
 					try {
 						Date  kssj =vcp.getKssj();
