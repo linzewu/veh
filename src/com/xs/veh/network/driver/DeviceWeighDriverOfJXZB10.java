@@ -40,6 +40,7 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 		if(this.deviceWeigh.getVehCheckLogin().getCllx().indexOf("N")!=-1&&"2".equals(zs)) {
 			
 			BrakRollerData brakRollerData1 = check("1",hphm);
+			brakRollerData1.setBaseDeviceData(this.deviceWeigh.getVehCheckLogin(), this.deviceWeigh.getVehCheckLogin().getJycs(), "B1");
 			brakRollerData1.setZw(1);
 			this.deviceWeigh.saveBrakRollerData(brakRollerData1);
 			Thread.sleep(2000);
