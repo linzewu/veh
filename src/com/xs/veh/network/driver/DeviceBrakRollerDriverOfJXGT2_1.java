@@ -111,7 +111,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			
 			while(true){
  				byte[] d4 =  getDevData(new byte[12]);
- 				
+ 				//logger.info("d4=" + CharUtil.byte2HexOfString(d4));
  				if(d4[2]==0x45&&d4[6]==0x45&&d4[10]==0x45){
  					break;
  				}else{
