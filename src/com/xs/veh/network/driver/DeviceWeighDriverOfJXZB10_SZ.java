@@ -75,10 +75,10 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 				Integer ylh=Integer.parseInt(new String(new byte[]{data[8],data[9],data[10],data[11],data[12]}));
 				
 				this.display.sendMessage(zs + "轴称重已到位", DeviceDisplay.SP);
-//				this.display.sendMessage(zlh+"KG/"+ylh + "KG",
-//						DeviceDisplay.XP);
+				this.display.sendMessage(zlh+"KG/"+ylh + "KG",
+						DeviceDisplay.XP);
 				
-				this.display.sendMessage("倒数："+String.valueOf((5-i)),DeviceDisplay.XP);
+//				this.display.sendMessage("倒数："+String.valueOf((5-i)),DeviceDisplay.XP);
 				i++;
 			} else {
 				this.display.sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
