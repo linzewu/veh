@@ -39,12 +39,12 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 
 		Date kssj=new Date();
 		
-		deviceWeigh.sendMessage(ql);
-		logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		//deviceWeigh.sendMessage(ql);
+		//logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 		
 		//解出锁定
-		deviceWeigh.sendMessage(jcsd);
-		logger.info("解出锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4],A)));
+	//	deviceWeigh.sendMessage(jcsd);
+	//	logger.info("解出锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4],A)));
 		
 		String zs = vehFlow.getJyxm().substring(1, 2);
 
@@ -104,8 +104,8 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 		
 		
 		
-		deviceWeigh.sendMessage(sdcz);
-		logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		//deviceWeigh.sendMessage(sdcz);
+		//logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 		
 		deviceWeigh.sendMessage(dqsj);
 		byte[] data = this.getDevData(new byte[19],A);
