@@ -213,6 +213,13 @@ public class VehInfo extends BaseEntity implements Serializable {
 	
 	@Column(length=4000)
 	private String bmjyy;
+	
+	@Column(length=10)
+	private String sfxny;
+	@Column(length=10)
+	private String xnyzl;
+	@Column(length=4000)
+	private String bz;
 
 	public String getXh() {
 		return xh;
@@ -726,6 +733,30 @@ public class VehInfo extends BaseEntity implements Serializable {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getSfxny() {
+		return sfxny;
+	}
+
+	public void setSfxny(String sfxny) {
+		this.sfxny = sfxny;
+	}
+
+	public String getXnyzl() {
+		return xnyzl;
+	}
+
+	public void setXnyzl(String xnyzl) {
+		this.xnyzl = xnyzl;
+	}
+
+	public String getBz() {
+		return bz;
+	}
+
+	public void setBz(String bz) {
+		this.bz = bz;
 	}
 	
 	
