@@ -23,8 +23,6 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 	
 	private String sdcz="41046754";
 	
-	private String jcsd="4104704B";
-	
 	public static final byte  A= CharUtil.hexStringToByte("41")[0];
 	
 
@@ -33,21 +31,43 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 	}
 	@Override
 	public BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException{
-
 		
 //		deviceWeigh.sendMessage(ql);
 //		logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
-		
-		//解出锁定
-//		deviceWeigh.sendMessage(jcsd);
-//		logger.info("解出锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4],A)));
-		
 		String zs = vehFlow.getJyxm().substring(1, 2);
-
 		String hphm = vehFlow.getHphm();
+	
+		if(this.deviceWeigh.getVehCheckLogin().getCllx().indexOf("N")!=-1&&"2".equals(zs)) {
+			
+			BrakRollerData brakRollerData1 = check("1",hphm);
+			brakRollerData1.setBaseDeviceData(this.deviceWeigh.getVehCheckLogin(), this.deviceWeigh.getVehCheckLogin().getJycs(), "B1");
+			brakRollerData1.setZw(1);
+			this.deviceWeigh.saveBrakRollerData(brakRollerData1);
+			Thread.sleep(2000);
+			this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
+			boolean flag = true;
+			while (flag) {
+				flag = this.signal.getSignal(s1);
+				Thread.sleep(200);
+			}
+			brakRollerData = check(zs,hphm);
+		}else {
+			brakRollerData = check(zs,hphm);
+		}
+		
+
+		return brakRollerData;
+
+	}
+	
+	
+	public BrakRollerData  check(String zs,String hphm) throws IOException, InterruptedException {
+		
 
 		// 开始新的一次检测
 		createNew();
+		
+		BrakRollerData brakRollerData = new BrakRollerData();
 		
 		// 显示屏显示信息
 		this.display.sendMessage(hphm, DeviceDisplay.SP);
@@ -63,25 +83,23 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 				Integer ylh=Integer.parseInt(new String(new byte[]{data[8],data[9],data[10],data[11],data[12]}));
 				
 				this.display.sendMessage(zs + "轴称重已到位", DeviceDisplay.SP);
-//				this.display.sendMessage(zlh+"KG/"+ylh + "KG",
-//						DeviceDisplay.XP);
-				
-				this.display.sendMessage("倒数："+String.valueOf((5-i)),DeviceDisplay.XP);
+				this.display.sendMessage(zlh+"KG/"+ylh + "KG",
+						DeviceDisplay.XP);
 				i++;
 			} else {
-				this.display.sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
+				this.display.sendMessage(hphm, DeviceDisplay.SP);
 				this.display.sendMessage(zs + "轴称重请到位", DeviceDisplay.XP);
 				i = 0;
 			}
 
-			if (i >= 5) {
+			if (i >= 12) {
 				break;
 			}
 
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		}
-//		deviceWeigh.sendMessage(sdcz);
-//		logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		/*deviceWeigh.sendMessage(sdcz);
+		logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));*/
 		
 		deviceWeigh.sendMessage(dqsj);
 		byte[] data = this.getDevData(new byte[19],A);
@@ -92,9 +110,9 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 
 		this.display.sendMessage(zs + "轴称重结束", DeviceDisplay.SP);
 		this.display.sendMessage((brakRollerData.getZlh() + brakRollerData.getYlh()) + "KG", DeviceDisplay.XP);
-
+		
+		
 		return brakRollerData;
-
 	}
 
 	private void createNew() {

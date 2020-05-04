@@ -285,5 +285,9 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		vehManager.saveCurbWeight(curbWeightData);
 
 	}
+	
+	public void saveBrakRollerData(BrakRollerData brakRollerData) {
+		this.checkDataManager.saveData(brakRollerData);
+	}
 
 }
