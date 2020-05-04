@@ -3,6 +3,7 @@ package com.xs.veh.network;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -139,6 +140,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 		Date startDate = new Date();
 		DecimalFormat decimalFormat = new DecimalFormat(".0");
 		List<BrakRollerData> datas = dbp.startCheck(vehFlows);
+		Calendar calendar = Calendar.getInstance();
 		// 驻车结果
 		ParDataOfAnjian parDataOfAnjian = null;
 		OtherInfoData otherInfoData = new OtherInfoData();
@@ -255,8 +257,8 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			display.sendMessage("检判定结果：O", DeviceDisplay.XP);
 		} else {
 			display.sendMessage("检判定结果：X", DeviceDisplay.SP);
-			display.sendMessage("是否复位，等待30S", DeviceDisplay.XP); 
-			Thread.sleep(30 * 1000);
+			display.sendMessage("是否复位，等待20S", DeviceDisplay.XP); 
+			Thread.sleep(20 * 1000);
 		}
 
 		Thread.sleep(2000);
@@ -270,15 +272,22 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 		}
 		
 		
-		
-		 this.checkDataManager.getBrakRollerDataB0(vehCheckLogin);
+		this.checkDataManager.getBrakRollerDataB0(vehCheckLogin);
 		
 		
 		
 		for (VehFlow vehFlow : vehFlows) {
 			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 					vehCheckLogin.getJycs(), vehFlow.getJyxm());
-			process.setKssj(startDate);
+			
+			if(parDataOfAnjian==null) {
+				calendar.set(Calendar.SECOND, -10);
+				process.setKssj(calendar.getTime());
+			}else {
+				calendar.set(Calendar.SECOND, -15);
+				process.setKssj(calendar.getTime());
+			}
+			
 			process.setJssj(new Date());
 			this.checkDataManager.updateProcess(process);
 			

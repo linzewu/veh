@@ -315,6 +315,13 @@ public class LightData extends BaseDeviceData {
 				} else {
 					this.setGqxz(3000);
 				}
+			}else if(cllx.indexOf("H5") == 0 || cllx.indexOf("H5") == 0) {
+				// 四灯
+				if (qzdz.equals("01")||qzdz.equals("02")) {
+					this.setGqxz(8000);
+				} else {
+					this.setGqxz(10000);
+				}
 			}
 			// 其他汽车
 			else {
@@ -352,6 +359,13 @@ public class LightData extends BaseDeviceData {
 					this.setGqxz(3000);
 				} else {
 					this.setGqxz(2500);
+				}
+			}else if(cllx.indexOf("H5") == 0 || cllx.indexOf("H5") == 0) {
+				// 四灯
+				if (qzdz.equals("01")||qzdz.equals("02")) {
+					this.setGqxz(6000);
+				} else {
+					this.setGqxz(8000);
 				}
 			}
 			// 其他汽车

@@ -2,6 +2,7 @@ package com.xs.veh.network.data;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -231,9 +232,18 @@ public class BrakRollerData extends BaseDeviceData {
 	@Column
 	private Float yzzlf;
 	
+	@Transient
+	private Date gckssj;
 	
 	
-	
+
+	public Date getGckssj() {
+		return gckssj;
+	}
+
+	public void setGckssj(Date gckssj) {
+		this.gckssj = gckssj;
+	}
 
 	public Float getZzzlf() {
 		return zzzlf;
