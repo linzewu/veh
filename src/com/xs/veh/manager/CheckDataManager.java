@@ -212,18 +212,17 @@ public class CheckDataManager {
 						int zdlh=otherData.getZdlh()==null?0:otherData.getZdlh();
 						int zczbzl=otherData.getJczczbzl()==null?0:otherData.getJczczbzl();
 						
-						logger.info("vehCheckLogin.getZs()="+vehCheckLogin.getZs());
-						logger.info("vehCheckLogin.getZs()="+vehCheckLogin.getZs());
-						logger.info("brd.getJzzlh()="+brd.getJzzlh());
-						logger.info("brd.getJzylh()="+brd.getJzylh());
-						
 						if(vehCheckLogin.getZs()>=3&&brd.getJzzlh()!=null&&brd.getJzylh()!=null) {
 							logger.info("负荷台称重！");
 							otherData.setJczczbzl(zczbzl+brd.getJzzlh()+brd.getJzylh());
 						}else {
 							otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
 						}
-						otherData.setZdlh(zdlh+brd.getZzdl()+brd.getYzdl());
+						
+						Integer zzdl = brd.getZzdl()==null?0:brd.getZzdl();
+						Integer yzdl= brd.getYzdl()==null?0:brd.getYzdl();
+						
+						otherData.setZdlh(zdlh+zzdl+yzdl);
 					}
 					
 				}
@@ -468,7 +467,9 @@ public class CheckDataManager {
 				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
 			}
 			
-			zdlh += brakRollerData.getZzdl() + brakRollerData.getYzdl();
+			Integer zzdl=brakRollerData.getZzdl()==null?0:brakRollerData.getZzdl();
+			Integer yzdl=brakRollerData.getYzdl()==null?0:brakRollerData.getYzdl();
+			zdlh += zzdl + yzdl;
 
 			
 			if(brakRollerData.getZdtlh()!=null) {
@@ -563,7 +564,7 @@ public class CheckDataManager {
 			this.hibernateTemplate.save(dcj1);
 		}
 		// 整车制动率判定
-		if (otherInfoData != null) {
+		if (otherInfoData != null&&vehCheckLogin.getCllx().indexOf("N")==-1) {
 			DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 			dcj1.setYqjyxm("整车制动率(%)");
 			dcj1.setYqjyjg(otherInfoData.getZczdl() == null ? "" : otherInfoData.getZczdl().toString());
@@ -1047,6 +1048,11 @@ public class CheckDataManager {
 
 		for (BrakRollerData brd : brds) {
 			if (flagMap.get(brd.getJyxm()) == null) {
+				
+				if(vehCheckLogin.getCllx().indexOf("N")!=-1&&brd.getJyxm().equals("B1")) {
+					continue;
+				}
+				
 				
 				String temp = brd.getJyxm().indexOf("L")==0?"加载":"";
 				
