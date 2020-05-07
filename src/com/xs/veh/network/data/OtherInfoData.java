@@ -309,6 +309,11 @@ public class OtherInfoData extends BaseEntity {
 		if(this.zczdlxz==null||this.zczdl==null){
 			return;
 		}
+		String cllx =vehCheckLoginInfo.getCllx();
+		if(cllx.indexOf("N")==0) {
+			this.zczdpd=BaseDeviceData.PDJG_WJ.toString();
+			return;
+		}
 		this.zczdpd=(zczdl>=zczdlxz?BaseDeviceData.PDJG_HG:BaseDeviceData.PDJG_BHG).toString();
 		this.zcpd=zczdpd;
 	}

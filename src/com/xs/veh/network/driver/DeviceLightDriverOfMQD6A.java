@@ -7,9 +7,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
 
+import com.xs.common.BaseParamsUtil;
 import com.xs.common.CharUtil;
 import com.xs.common.exception.SystemException;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceLight;
@@ -20,8 +23,6 @@ import com.xs.veh.network.data.LightData;
 
 import groovy.lang.GroovyObject;
 import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 
@@ -191,26 +192,36 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		dw(vehCheckLogin);
 		this.setKssj(new Date());
 		// 检测是否违规操作
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// 保护
-				int i = 0;
-				try {
-					while (!isGetData && i <= 1000) {
-						if (deviceSignal2.getSignal(s2)) {
-							// 仪器归位
-							isIllegal = true;
-							break;
+		
+		List<BaseParams> bps = BaseParamsUtil.getBaseParamsByType("dgwg");
+		
+		if(!CollectionUtils.isEmpty(bps)) {
+			if("1".equals(bps.get(0).getParamValue())) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// 保护
+						int i = 0;
+						try {
+							while (!isGetData && i <= 1000) {
+								if (deviceSignal2.getSignal(s2)) {
+									// 仪器归位
+									isIllegal = true;
+									break;
+								}
+								Thread.sleep(300);
+								i++;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-						Thread.sleep(300);
-						i++;
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				}).start();
 			}
-		}).start();
+			
+		}
+		
+		
 
 		if (isCheckLeft) {
 			currentPosition = 'L';

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.common.BaseParamsUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.TestVeh;
@@ -38,6 +39,7 @@ import com.xs.veh.entity.VehInfo;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.util.PlayUtil;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -474,6 +476,25 @@ public class VehController {
 		}else {
 			return null;
 		}
+	
+	}
+	
+	
+	@UserOperation(code="playVeh",name="获取综合检测基本信息")
+	@RequestMapping(value = "playVeh", method = RequestMethod.POST)
+	public @ResponseBody void playVeh(String hphm) {
+		
+		List<BaseParams> bps = BaseParamsUtil.getBaseParamsByType("yymb");
+		PlayUtil playUtil=new PlayUtil();
+		if(!CollectionUtils.isEmpty(bps)) {
+			String mb = bps.get(0).getParamValue();
+			String message = mb.replace("hphm", hphm);
+			playUtil.play(message, 2);
+		}else {
+			playUtil.play(hphm+"已制证，请车主到前台领取资料", 2);
+		}
+		
+		
 	
 	}
 

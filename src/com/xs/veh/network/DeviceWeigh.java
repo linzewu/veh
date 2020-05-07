@@ -289,5 +289,12 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	public void saveBrakRollerData(BrakRollerData brakRollerData) {
 		this.checkDataManager.saveData(brakRollerData);
 	}
+	
+	
+	public BrakRollerData getBrakRollerData(String jyxm) {
+		
+		BrakRollerData brakRollerData = this.checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin, jyxm);
+		return brakRollerData;
+	}
 
 }

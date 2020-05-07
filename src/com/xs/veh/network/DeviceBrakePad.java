@@ -257,8 +257,8 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			display.sendMessage("检判定结果：O", DeviceDisplay.XP);
 		} else {
 			display.sendMessage("检判定结果：X", DeviceDisplay.SP);
-			display.sendMessage("是否复位，等待20S", DeviceDisplay.XP); 
-			Thread.sleep(20 * 1000);
+			//display.sendMessage("是否复位，等待20S", DeviceDisplay.XP); 
+			//Thread.sleep(20 * 1000);
 		}
 
 		Thread.sleep(2000);

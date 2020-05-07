@@ -229,20 +229,24 @@
 	</tr>
 	
 	<tr>
+		<td class="tl"><label>排量(ml)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="pl" precision=1 >
+		</td>
 		<td class="tl"><label>机动车状态：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('jdczt'),	valueField: 'id',
 		textField: 'value',editable:false"  name="zt" disabled="disabled">
 		</td>
 		<td class="tl"><label>抵押标记：</label></td>
-		<td class="tc" colspan="3">
+		<td class="tc" >
 			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('dybj'),	valueField: 'id',
 		textField: 'value',editable:false"  name="dybj" disabled="disabled" >
 		</td>
 	</tr>
 </table>
 
-<div class="line_01" d="lab_zhjy"  style="display: none;" >综合检测信息</div>
+<div class="line_01" id="lab_zhjy"  style="display: none;" >综合检测信息</div>
 <table  class="basetable" cellspacing="0" cellpadding="0" id="tb_zhjy"  style="display: none;">
 	<tr>
 		<td class="tl"><label>委托人：</label></td >
@@ -316,9 +320,10 @@
 		<td class="tc">
 			<label></label><input   class="easyui-numberbox vehInfoInput"  name="kczws"  >
 		</td>
-		<td class="tl"><label>排量(ml)：</label></td >
+		
+		<td class="tl"><label>并装轴数据：</label></td >
 		<td class="tc">
-			<label></label><input class="easyui-numberbox vehInfoInput"  name="pl" precision=1 >
+			<label></label><input   class="easyui-numberbox vehInfoInput"  name="bzzs"  >
 		</td>
 	</tr>
 	<tr>
@@ -338,13 +343,6 @@
 		</td>
 	</tr>
 	
-	<tr>
-		<td class="tl"><label>并装轴数据：</label></td >
-		<td class="tc" colspan="3">
-			<label></label><input   class="easyui-numberbox vehInfoInput"  name="bzzs"  >
-		</td>
-		
-	</tr>
 </table>
 
 <input name="jyxm" id="str_jyxm" type="hidden">

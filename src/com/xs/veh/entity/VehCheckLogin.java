@@ -341,7 +341,20 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column
 	private Integer printStatus;
 	
+	@Column(length=6,precision=1)
+	private Float pl;
 	
+	
+
+	public Float getPl() {
+		return pl;
+	}
+
+
+	public void setPl(Float pl) {
+		this.pl = pl;
+	}
+
 
 	public Integer getPrintStatus() {
 		return printStatus;

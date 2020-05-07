@@ -320,6 +320,12 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.10</version>
         </dependency>
+        
+        <dependency> 
+			<groupId>com.hynnet</groupId>
+			<artifactId>jacob</artifactId>
+			<version>1.19</version>
+		</dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>

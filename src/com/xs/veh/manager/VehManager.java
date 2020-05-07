@@ -884,7 +884,7 @@ public class VehManager {
 				.find("from OtherInfoData where jylsh=? and zczdpd=?", jylsh, BaseDeviceData.PDJG_BHG.toString());
 
 		// 整车不合格则全部复检
-		if (otherInfoData != null && !otherInfoData.isEmpty()) {
+		if (otherInfoData != null && !otherInfoData.isEmpty()&&vehCheckLogin.getCllx().indexOf("N")==-1) {
 			logger.info("整车不合格");
 			if (vehCheckLogin.getJyxm().indexOf("B1") >= 0) {
 				fjjyxm += "B1,";

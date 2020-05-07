@@ -1288,9 +1288,7 @@ public class CheckDataManager {
 		for (BrakRollerData brakRollerData : list) {
 			
 			if(vehCheckLogin.getZs()>=3&&brakRollerData.getJzzlh()!=null&&brakRollerData.getJzylh()!=null) {
-				
 				zclh+=brakRollerData.getJzzlh()+brakRollerData.getJzylh();
-				
 			}else {
 				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
 			}

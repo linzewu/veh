@@ -38,11 +38,21 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 		String hphm = vehFlow.getHphm();
 	
 		if(this.deviceWeigh.getVehCheckLogin().getCllx().indexOf("N")!=-1&&"2".equals(zs)) {
+			BrakRollerData old = this.deviceWeigh.getBrakRollerData("B1");
+			if(old==null) {
+				BrakRollerData brakRollerData1 = check("1",hphm);
+				brakRollerData1.setBaseDeviceData(this.deviceWeigh.getVehCheckLogin(), this.deviceWeigh.getVehCheckLogin().getJycs(), "B1");
+				brakRollerData1.setZw(1);
+				this.deviceWeigh.saveBrakRollerData(brakRollerData1);
+			}else {
+				BrakRollerData brakRollerData1 = check("1",hphm);
+				old.setZlh(brakRollerData1.getZlh());
+				old.setYlh(brakRollerData1.getYlh());
+				old.setZw(1);
+				this.deviceWeigh.saveBrakRollerData(old);
+			}
 			
-			BrakRollerData brakRollerData1 = check("1",hphm);
-			brakRollerData1.setBaseDeviceData(this.deviceWeigh.getVehCheckLogin(), this.deviceWeigh.getVehCheckLogin().getJycs(), "B1");
-			brakRollerData1.setZw(1);
-			this.deviceWeigh.saveBrakRollerData(brakRollerData1);
+			
 			Thread.sleep(2000);
 			this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
 			boolean flag = true;

@@ -13,6 +13,19 @@ function queryReportList(){
 	$("#checkingVeh").datagrid("reload",{statusArry:status,hphm:hphm,hpzl:hpzl});
 }
 
+function playVolume(){
+	
+	var row = $("#checkingVeh").datagrid("getSelected");
+	
+	if(row){
+		$.post("/veh/veh/playVeh",{"hphm":row.hphm});
+	}else{
+		$.messager.alert("提示","请选择语言播报车辆!");
+	}
+	
+	
+}
+
 
 </script>
 <style>
@@ -81,6 +94,7 @@ cursor: pointer;
 		<input type="radio" name="statusArry" value="3" onclick="queryReportList()"><label>退办</label><br>
 		<input type="checkbox"  id="autoPrintReport">
 		<label for="autoPrintReport">自动出单</label>
+		<a href="javaScript:void(0)" class="easyui-linkbutton" data-options=" iconCls: 'icon-search',onClick:playVolume" >语言播报</a>
 </div>
 </div>
 
