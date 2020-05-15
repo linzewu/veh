@@ -145,6 +145,7 @@ public class DeviceSpeed extends SimpleRead implements ICheckDevice {
 		SpeedData speedData = sd.startCheck(vehCheckLogin,vehFlow);
 		
 		process.setJssj(new Date());
+		process.setJcxdh(this.getDevice().getJcxxh());
 		this.checkDataManager.updateProcess(process);
 		
 		speedData.setBaseDeviceData(vehCheckLogin, checkDataManager.getDxjccs(vehFlow, speedData),

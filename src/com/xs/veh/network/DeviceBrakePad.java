@@ -289,6 +289,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			}
 			
 			process.setJssj(new Date());
+			process.setJcxdh(this.getDevice().getJcxxh());
 			this.checkDataManager.updateProcess(process);
 			
 			VehCheckProcess vp =process;

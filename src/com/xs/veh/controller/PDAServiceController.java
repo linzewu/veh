@@ -82,8 +82,8 @@ public class PDAServiceController {
 
 	@UserOperation(code="pushVehOnLine",name="引车上线")
 	@RequestMapping(value = "pushVehOnLine")
-	public @ResponseBody Map pushVehOnLine(@RequestParam Integer id) {
-		Message message = this.vehManager.upLine(id);
+	public @ResponseBody Map pushVehOnLine(@RequestParam Integer id,@RequestParam Integer jcxdh) {
+		Message message = this.vehManager.upLine(id,jcxdh);
 		return ResultHandler.toMessage(message);
 	}
 

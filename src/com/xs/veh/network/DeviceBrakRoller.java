@@ -346,6 +346,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			process.setKssj(brakRollerData.getGckssj());
 		}else {
 			process.setKssj(kssj);
+			process.setJcxdh(this.getDevice().getJcxxh());
 		}
 		
 		

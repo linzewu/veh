@@ -493,9 +493,17 @@ public class VehController {
 		}else {
 			playUtil.play(hphm+"已制证，请车主到前台领取资料", 2);
 		}
-		
-		
-	
 	}
+	
+	
+	@UserOperation(code="getBhgJyxm",name="获取不合格检验项目")
+	@RequestMapping(value = "getBhgJyxm", method = RequestMethod.POST)
+	public @ResponseBody String getBhgJyxm(String jylsh) {
+		return this.vehManager.getFjxm(jylsh);
+	}
+	
+	
+	
+
 
 }

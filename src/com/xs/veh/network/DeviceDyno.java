@@ -117,6 +117,7 @@ public class DeviceDyno extends SimpleRead implements ICheckDevice,IHBCommon {
 		//DynoData dynoData = ds.startCheck(vehCheckLogin, vehFlow);
 		
 		process.setJssj(new Date());
+		process.setJcxdh(this.getDevice().getJcxxh());
 		this.checkDataManager.updateProcess(process);
 		
 		//sideslipData.setBaseDeviceData(vehCheckLogin, 1, vehFlow.getJyxm());

@@ -234,6 +234,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 					vehFlow.getJyxm());
 			process.setKssj(kssj);
 			process.setJssj(new Date());
+			process.setJcxdh(this.getDevice().getJcxxh());
 			this.checkDataManager.updateProcess(process);
 			logger.info("过程数据更新成功！");
 			

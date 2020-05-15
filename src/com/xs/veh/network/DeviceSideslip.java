@@ -193,6 +193,7 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		}
 		
 		process.setJssj(new Date());
+		process.setJcxdh(this.getDevice().getJcxxh());
 		this.checkDataManager.updateProcess(process);
 		
 		Thread.sleep(2000);

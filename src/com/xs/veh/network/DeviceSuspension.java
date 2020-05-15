@@ -114,7 +114,7 @@ public class DeviceSuspension extends SimpleRead implements ICheckDevice {
 		
 		
 		process.setJssj(new Date());
-		
+		process.setJcxdh(this.getDevice().getJcxxh());
 		
 
 		Thread.sleep(2000);
