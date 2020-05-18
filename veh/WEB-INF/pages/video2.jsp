@@ -115,7 +115,11 @@
 			$(".check-menu").append(li);
 			//$.parser.parse('.check-menu');
 			var channel=n.channel==null?"0":n.channel;
-			var itemId = vlc.playlist.add("http://192.168.1.23:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
+			var itemId ;
+			
+			itemId = vlc.playlist.add("http://127.0.0.1:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
+			
+			
 			li.find("input").click(function(){
 				vlc.playlist.playItem(itemId);
 			});

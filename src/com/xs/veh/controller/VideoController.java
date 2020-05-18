@@ -1,6 +1,8 @@
 package com.xs.veh.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.job.CheckedInfoTaskJob;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VideoManager;
+import com.xs.veh.util.ConvertVideo;
 import com.xs.veh.util.FileUtil;
 import com.xs.veh.util.HKVisionUtil;
 
@@ -273,6 +276,12 @@ public class VideoController {
 		File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
 		// 写入文件
 		videoFile.transferTo(file);
+		
+//		boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
+//		
+//		if(vFlag) {
+//			ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
+//		}
 		
 		try {
 		
