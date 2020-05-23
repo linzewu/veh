@@ -1151,6 +1151,11 @@ var statisticalReport = {
 			"title" : "人员工作量统计表",
 			href : "/veh/html/statistics/workEstimate.html",
 			target : "#reportContex"
+		},{
+			"icon" : "/veh/images/workuser.png",
+			"title" : "人员工作量统计表2",
+			href : "/veh/html/statistics/workEstimate2.html",
+			target : "#reportContex"
 		}],
 		initEvents : function() {
 				comm.createMume("businessStatistics", statisticalReport.menus1, "Y");

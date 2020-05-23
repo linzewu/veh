@@ -44,6 +44,26 @@ public class StatisticManager {
 		
 	}
 	
+	
+	/**
+	 * 工作量统计
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public List<Map<String,Object>> findgzl2(String begin,String end,String sqlId){
+		Session session = this.hibernateTemplate.getSessionFactory().getCurrentSession();
+		String queryString = session.getNamedQuery(sqlId).getQueryString();
+		System.out.println(queryString);
+		SQLQuery query =session.createSQLQuery(queryString);
+	
+		query.setParameter("beginDate", begin);
+		query.setParameter("endDate", end);
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		return query.list();
+		
+	}
+	
 	public List<Map<String,Object>> findcllxheghz11(String begin,String end,String sqlId,String condition,String cllx){
 		Session session = this.hibernateTemplate.getSessionFactory().getCurrentSession();
 		//Query query = session.getNamedQuery(sqlId);

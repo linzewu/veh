@@ -10,6 +10,7 @@ import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.BaseParamsUtil;
 import com.xs.common.Message;
@@ -672,6 +674,30 @@ public class VehManager {
 				.find("from VehCheckLogin where vehsxzt = ? and vehjczt!=?", zt, VehCheckLogin.JCZT_TB);
 		return vheCheckLogins;
 	}
+	
+	public List<VehCheckLogin> getVehChecked(String hphm) {
+		DetachedCriteria detachedCrit = DetachedCriteria.forClass(VehCheckLogin.class);
+		
+		String sql ="from VehCheckLogin where vehjczt=?";
+		
+		List values = new ArrayList();
+		values.add(VehCheckLogin.JCZT_JYJS);
+		
+		if (!StringUtils.isEmpty(hphm)) {
+			sql += " and hphm=?";
+			values.add(hphm);
+		} else {
+			sql += " and dlsj>=? ";
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.MONTH, -1);
+			values.add(c.getTime());
+		}
+		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
+				.find(sql, values.toArray());
+		return vheCheckLogins;
+	}
+	
+	
 
 	public Message upLine(Integer id,Integer jcxdh) {
 
@@ -845,7 +871,7 @@ public class VehManager {
 						&& (CollectionUtils.isEmpty(bps) || "true".equals(bps.get(0).getParamValue()))) {
 					repeatLogin(vehCheckLogin);
 				} else {
-					vehCheckLogin.setFjjyxm("");
+					vehCheckLogin.setFjjyxm(getFjjyxm(vehCheckLogin));
 					vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
 					vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_JYJS);
 				}
@@ -1042,6 +1068,101 @@ public class VehManager {
 		logger.info("复检项目：" + fjjyxm);
 		return vehCheckLogin;
 
+	}
+	
+	
+	public String getFjjyxm(VehCheckLogin vehCheckLogin) {
+		
+		String jylsh = vehCheckLogin.getJylsh();
+		String fjjyxm = "";
+		List<OtherInfoData> otherInfoData = (List<OtherInfoData>) this.hibernateTemplate
+				.find("from OtherInfoData where jylsh=? and zczdpd=?", jylsh, BaseDeviceData.PDJG_BHG.toString());
+
+		// 整车不合格则全部复检
+		if (otherInfoData != null && !otherInfoData.isEmpty() && vehCheckLogin.getCllx().indexOf("N") == -1) {
+			logger.info("整车不合格");
+			if (vehCheckLogin.getJyxm().indexOf("B1") >= 0) {
+				fjjyxm += "B1,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B2") >= 0) {
+				fjjyxm += "B2,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B3") >= 0) {
+				fjjyxm += "B3,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B4") >= 0) {
+				fjjyxm += "B4,";
+			}
+			if (vehCheckLogin.getJyxm().indexOf("B5") >= 0) {
+				fjjyxm += "B5,";
+			}
+
+		} else {
+			// 制动复检
+			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
+					"from BrakRollerData where jylsh=? and sjzt=? and jyxm<>'B0' and zpd=?", jylsh,
+					BaseDeviceData.SJZT_ZC, BaseDeviceData.PDJG_BHG);
+			for (BrakRollerData brakRollerData : brakRollerDatas) {
+				logger.info(brakRollerData.getJyxm() + "不合格");
+				fjjyxm += brakRollerData.getJyxm() + ",";
+			}
+		}
+
+		// 灯光复检
+		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
+				"from LightData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (lightDatas != null && !lightDatas.isEmpty()) {
+
+			Set<String> dgjyxmSet = new HashSet<String>();
+
+			for (LightData ld : lightDatas) {
+				dgjyxmSet.add(ld.getJyxm());
+			}
+
+			for (String s : dgjyxmSet) {
+				fjjyxm += s + ",";
+			}
+
+		}
+
+		// 速度复检
+		List<SpeedData> speedDatas = (List<SpeedData>) this.hibernateTemplate.find(
+				"from SpeedData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (speedDatas != null && !speedDatas.isEmpty()) {
+			fjjyxm += "S1,";
+		}
+
+
+		// 侧滑复检
+		List<SideslipData> sideslipDatas = (List<SideslipData>) this.hibernateTemplate.find(
+				"from SideslipData where jylsh=? and sjzt=?  and zpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (sideslipDatas != null && !sideslipDatas.isEmpty()) {
+			fjjyxm += "A1,";
+		}
+
+
+		// 驻车复检
+		List<ParDataOfAnjian> parDataOfAnjian = (List<ParDataOfAnjian>) this.hibernateTemplate.find(
+				"from ParDataOfAnjian where jylsh=? and sjzt=?  and tczdpd=?", jylsh, BaseDeviceData.SJZT_ZC,
+				BaseDeviceData.PDJG_BHG);
+		if (parDataOfAnjian != null && !parDataOfAnjian.isEmpty()) {
+			fjjyxm += "B0,";
+		}
+
+		List<Outline> outlines = (List<Outline>) this.hibernateTemplate
+				.find("from Outline where jylsh=? order by id desc", jylsh);
+
+		if (outlines != null && !outlines.isEmpty()) {
+			Outline outline = outlines.get(0);
+			if (outline.getClwkccpd() == BaseDeviceData.PDJG_BHG) {
+				fjjyxm += "M1,";
+			}
+		}
+		
+		return fjjyxm;
 	}
 
 	public void saveRelogin2(String jylsh, String fjjyxm, Integer reloginWeigth) {

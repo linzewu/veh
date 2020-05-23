@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +23,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.common.BaseParamsUtil;
 import com.xs.common.Message;
 import com.xs.common.ResultHandler;
 import com.xs.enums.CommonUserOperationEnum;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.ExternalCheck;
@@ -43,6 +47,8 @@ import com.xs.veh.manager.VehManager;
 import com.xs.veh.network.DeviceManyWeigh;
 import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.CurbWeightData;
+
+import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping(value = "/pda")
@@ -68,6 +74,7 @@ public class PDAServiceController {
 	
 	@Autowired
 	private ServletContext servletContext;
+	
 	
 	
 	@RequestMapping(value = "getCheckList")
@@ -393,6 +400,73 @@ public class PDAServiceController {
 		return ResultHandler.toSuccessJSON("成功！");
 	}
 	
+	
+	
+	@RequestMapping(value = "getCheckedList")
+	@UserOperation(code="getCheckedList",name="查询已完成列表")
+	public @ResponseBody String getCheckedList(HttpServletRequest request, @RequestParam(required=false) Integer hphm)
+			throws JsonProcessingException {
+		List<VehCheckLogin> data = vehManager.getVehCheckLoginOfSXZT(VehCheckLogin.JCZT_JYJS);
+		ObjectMapper om = new ObjectMapper();
+		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(data));
+		return jsonp;
+	}
+	
+	
+	@UserOperation(code="relogin",name="复检引车")
+	@RequestMapping(value = "relogin", method = RequestMethod.POST)
+	public @ResponseBody String relohin(@RequestParam String jylsh,@RequestParam Integer id,
+			@RequestParam String fjjyxm,@RequestParam Integer jcxdh,@RequestParam Integer reloginWeigth) {
+		
+		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
+		
+		pushVehOnLine(id,jcxdh);
+		
+		JSONObject json = new JSONObject();
+		json.put("state", "OK");
+		return json.toString();
+	
+	}
+	
+	
+	@UserOperation(code="getLines",name="获取检测线")
+	@RequestMapping(value = "getLines", method = RequestMethod.POST)
+	public @ResponseBody String getLines() {
+		List<Device> devices = this.deviceManager.getDevices();
+		net.sf.json.JSONArray ja=new net.sf.json.JSONArray();
+		for(Device d: devices) {
+			if(d.getType()==Device.ZDJCSB) {
+				JSONObject json = new JSONObject();
+				json.put("jcxdh", d.getJcxxh());
+				json.put("type", 0);
+				json.put("jzFlag", false);
+				List<BaseParams> jzxh = BaseParamsUtil.getBaseParamsByType("jzxh");
+				if(!CollectionUtils.isEmpty(jzxh)) {
+					if(jzxh.get(0).getParamValue().indexOf(d.getJcxxh().toString())!=-1) {
+						json.put("jzFlag", true);
+					}
+				}
+				ja.add(json);
+			}
+			
+			if(d.getType()==Device.ZDPBSB) {
+				JSONObject json = new JSONObject();
+				json.put("jcxdh", d.getJcxxh());
+				json.put("type", 1);
+				json.put("jzFlag", false);
+				List<BaseParams> jzxh = BaseParamsUtil.getBaseParamsByType("jzxh");
+				if(!CollectionUtils.isEmpty(jzxh)) {
+					if(jzxh.get(0).getParamValue().indexOf(d.getJcxxh().toString())!=-1) {
+						json.put("jzFlag", true);
+					}
+				}
+				
+				ja.add(json);
+			}
+		}
+		return ja.toString();
+	
+	}
 	
 
 }

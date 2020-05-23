@@ -108,6 +108,16 @@ public class StatisticController {
 		return data;
 	}
 	
+	@UserOperation(code="getRygzltj2",name="人员工作量统计2")
+	@RequestMapping(value = "getRygzltj2", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> getRygzltj2(@RequestParam String begin,@RequestParam String end){
+		Map<String,Object> data =new HashMap<String,Object>();
+		List<Map<String,Object>> dataList = statisticManager.findgzl2(begin, end,"findgzl2");
+		data.put("rows", dataList);
+		data.put("total", dataList.size());
+		return data;
+	}
+	
 	
 	public void footCount(Map<String,Object> datas,String[] columns,String[] avgColumns) {
 		
