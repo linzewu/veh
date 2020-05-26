@@ -36,12 +36,14 @@ import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
+import com.xs.veh.entity.VehInfoTemp;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.util.PlayUtil;
 
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Controller
@@ -87,6 +89,30 @@ public class VehController {
 			throws RemoteException, UnsupportedEncodingException, DocumentException {
 		JSON json = vehManager.getVehInfoOfws(param);
 		logger.info("获取基本信息返回：="+json);
+		
+		if(json instanceof JSONObject) {
+			JSONObject jo =(JSONObject)json;
+			JSONObject head= jo.getJSONObject("head");
+			
+			if(head.getInt("code")==1) {
+				JSONArray body= jo.getJSONArray("body");
+				JSONObject info = body.getJSONObject(0);
+				String clsbdh = info.getString("clsbdh");
+				VehInfoTemp vit = this.vehManager.getVehInfoTemp(clsbdh);
+				if(vit==null) {
+					vit=new VehInfoTemp();
+				}
+				vit.setClsbdh(clsbdh);
+				vit.setHphm(info.getString("hphm"));
+				vit.setHpzl(info.getString("hpzl"));
+				vit.setVehInfo(json.toString());
+				vit.setStatus(0);
+				vehManager.saveVehInfoTemp(vit);
+				
+			}
+			
+		}
+		
 		return json.toString();
 	}
 	
@@ -480,7 +506,7 @@ public class VehController {
 	}
 	
 	
-	@UserOperation(code="playVeh",name="获取综合检测基本信息")
+	@UserOperation(code="playVeh",name="播放信息")
 	@RequestMapping(value = "playVeh", method = RequestMethod.POST)
 	public @ResponseBody void playVeh(String hphm) {
 		

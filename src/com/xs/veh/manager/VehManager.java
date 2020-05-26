@@ -66,6 +66,7 @@ import com.xs.veh.entity.VehCheckLog;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.entity.VehInfoTemp;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
@@ -1321,6 +1322,27 @@ public class VehManager {
 		});
 		
 	}
+	
+	
+	
+	public VehInfoTemp getVehInfoTemp(String clsbdh) {
+		
+		List<VehInfoTemp> datas = (List<VehInfoTemp>) this.hibernateTemplate.find("from VehInfoTemp where clsbdh=?", clsbdh);
+		
+		if(!CollectionUtils.isEmpty(datas)) {
+			return datas.get(0);
+		}else {
+			return null;
+		}
+		
+	}
+	
+	
+	public void saveVehInfoTemp(VehInfoTemp vehInfoTemp) {
+		this.hibernateTemplate.saveOrUpdate(vehInfoTemp);
+	}
+	
+	
 	
 	
 	
