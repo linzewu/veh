@@ -6,10 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>动车检测视频监控系统</title>
-
-
 <script type="text/javascript" src="/veh/js/easyui/jquery.min.js"></script>
-<script type="text/javascript" src="/veh/js/data.js"></script>
 <script src="/veh/codebase/webVideoCtrl.js"></script>
 
 <style type="text/css">
@@ -58,6 +55,100 @@
 	padding-top: 20px;
 }
 </style>
+<script type="text/javascript">
+var jcxdh_combox=[{
+	jcxdh:'3209000044',
+	name:'滨海县明迪服务有限公司'
+}];
+
+
+var jyxm_combox=[{
+	jyxm:'F1',
+	name:'车辆外观检验'
+},{
+	jyxm:'C1',
+	name:'底盘检验'
+},{
+	jyxm:'DC',
+	name:'底盘动态检验'
+},{
+	jyxm:'B1',
+	name:'一轴制动'
+},{
+	jyxm:'B2',
+	name:'二轴制动'
+},{
+	jyxm:'B3',
+	name:'三轴制动'
+},{
+	jyxm:'B4',
+	name:'四轴制动'
+},{
+	jyxm:'B5',
+	name:'五轴制动'
+},{
+	jyxm:'B6',
+	name:'六轴制动'
+},{
+	jyxm:'B0',
+	name:'驻车制动'
+},{
+	jyxm:'H1',
+	name:'左外灯'
+},{
+	jyxm:'H2',
+	name:'左内灯'
+},{
+	jyxm:'H3',
+	name:'右内灯'
+},{
+	jyxm:'H4',
+	name:'右外灯'
+},{
+	jyxm:'S1',
+	name:'车速表'
+},{
+	jyxm:'A1',
+	name:'侧滑'
+},{
+	jyxm:'R1',
+	name:'路试制动'
+},{
+	jyxm:'R2',
+	name:'路试坡道驻车'
+},{
+	jyxm:'R3',
+	name:'路试车速表'
+},{
+	jyxm:'M1',
+	name:'外廓尺寸自动测量'
+},{
+	jyxm:'R',
+	name:'路试制动'
+}];
+
+function getjyxm(jyxm){
+	var name="";
+	$.each(jyxm_combox,function(i,n){
+		if(n.jyxm==jyxm){
+			name=n.name;
+		}
+	})
+	return name;
+}
+
+
+function getjczmc(jcxdh){
+	var name="";
+	$.each(jcxdh_combox,function(i,n){
+		if(n.jcxdh==jcxdh){
+			name=n.name;
+		}
+	})
+	return name;
+}
+
+</script>
 <script type="text/javascript">
 
 	var playInfo='${playInfo}';
