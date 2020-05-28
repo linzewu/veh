@@ -1447,7 +1447,6 @@ var report={
 							objpd.text(veh.jgpd(n.zpd));
 						}
 						
-						
 					}
 					
 					if(tt[1]=="B0"){
