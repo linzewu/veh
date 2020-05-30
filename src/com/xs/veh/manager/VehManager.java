@@ -266,8 +266,31 @@ public class VehManager {
 	public JSON getVehInfoOfws(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
 
 		Document document = this.queryws(RCAConstant.V18C49, param);
-
-		return new XMLSerializer().read(document.asXML());
+		String xml=document.asXML();
+		JSON json = new XMLSerializer().read(xml);
+		
+		if(json instanceof JSONObject) {
+			JSONObject jo =(JSONObject)json;
+			JSONObject head= jo.getJSONObject("head");
+			
+			if(head.getInt("code")==1) {
+				JSONArray body= jo.getJSONArray("body");
+				JSONObject info = body.getJSONObject(0);
+				String clsbdh = info.getString("clsbdh");
+				VehInfoTemp vit = getVehInfoTemp(clsbdh);
+				if(vit==null) {
+					vit=new VehInfoTemp();
+				}
+				vit.setClsbdh(clsbdh);
+				vit.setHphm(param.get("hphm").toString());
+				vit.setHpzl(info.getString("hpzl"));
+				vit.setVehInfo(xml);
+				vit.setStatus(0);
+				saveVehInfoTemp(vit);
+				
+			}
+		}
+		return json;
 	}
 
 	public JSON getVehCheckItem(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
