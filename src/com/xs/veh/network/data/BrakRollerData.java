@@ -883,6 +883,12 @@ public class BrakRollerData extends BaseDeviceData {
 			this.kzzdlxz = 60;
 			return;
 		}
+		
+		// 其他汽车
+		if (zw > 1 && zbzl < 3500) {
+			this.kzzdlxz = 20;
+			return;
+		}
 
 		// 其他汽车
 		if (zw > 1 ) {

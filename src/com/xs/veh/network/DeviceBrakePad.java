@@ -280,13 +280,15 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 					vehCheckLogin.getJycs(), vehFlow.getJyxm());
 			
-			if(parDataOfAnjian==null) {
-				calendar.set(Calendar.SECOND, -10);
-				process.setKssj(calendar.getTime());
-			}else {
-				calendar.set(Calendar.SECOND, -15);
-				process.setKssj(calendar.getTime());
-			}
+//			if(parDataOfAnjian==null) {
+//				calendar.set(Calendar.SECOND, -10);
+//				process.setKssj(calendar.getTime());
+//			}else {
+//				calendar.set(Calendar.SECOND, -15);
+//				process.setKssj(calendar.getTime());
+//			}
+			
+			process.setKssj(startDate);
 			
 			process.setJssj(new Date());
 			process.setJcxdh(this.getDevice().getJcxxh());

@@ -684,14 +684,20 @@ public class VehManager {
 		values.add(VehCheckLogin.JCZT_JYJS);
 		
 		if (!StringUtils.isEmpty(hphm)) {
-			sql += " and hphm=?";
-			values.add(hphm);
+			sql += " and hphm like ?";
+			values.add("%"+hphm+"%");
+			Calendar c = Calendar.getInstance();
+			sql += " and dlsj>=?";
+			c.add(Calendar.YEAR, -1);
+			values.add(c.getTime());
+			
 		} else {
 			sql += " and dlsj>=? ";
 			Calendar c = Calendar.getInstance();
-			c.add(Calendar.MONTH, -1);
+			c.add(Calendar.DAY_OF_MONTH, -3);
 			values.add(c.getTime());
 		}
+		sql+=" order by id desc";
 		List<VehCheckLogin> vheCheckLogins = (List<VehCheckLogin>) this.hibernateTemplate
 				.find(sql, values.toArray());
 		return vheCheckLogins;

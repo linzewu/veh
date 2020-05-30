@@ -404,9 +404,9 @@ public class PDAServiceController {
 	
 	@RequestMapping(value = "getCheckedList")
 	@UserOperation(code="getCheckedList",name="查询已完成列表")
-	public @ResponseBody String getCheckedList(HttpServletRequest request, @RequestParam(required=false) Integer hphm)
+	public @ResponseBody String getCheckedList(HttpServletRequest request, @RequestParam(required=false) String hphm)
 			throws JsonProcessingException {
-		List<VehCheckLogin> data = vehManager.getVehCheckLoginOfSXZT(VehCheckLogin.JCZT_JYJS);
+		List<VehCheckLogin> data = vehManager.getVehChecked(hphm);
 		ObjectMapper om = new ObjectMapper();
 		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(data));
 		return jsonp;
@@ -419,15 +419,15 @@ public class PDAServiceController {
 			@RequestParam String fjjyxm,@RequestParam Integer jcxdh,@RequestParam Integer reloginWeigth) {
 		
 		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
-		
-		pushVehOnLine(id,jcxdh);
-		
+		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		if(vehCheckLogin.getVehsxzt()==VehCheckLogin.ZT_WKS) {
+			pushVehOnLine(id,jcxdh);
+		}
 		JSONObject json = new JSONObject();
 		json.put("state", "OK");
 		return json.toString();
 	
 	}
-	
 	
 	@UserOperation(code="getLines",name="获取检测线")
 	@RequestMapping(value = "getLines", method = RequestMethod.POST)
