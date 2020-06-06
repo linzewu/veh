@@ -10,6 +10,12 @@
 			<td style="text-align: left;"><input value="" class="easyui-textbox" name="gddh" id="sqbid_gddh"  /></td>
 		</tr>
 		<tr>
+			<td style="width: 15%;text-align: right;">代理人：</td>
+			<td style="text-align: left;"><input value="" class="easyui-textbox" name="dlr" id="sqbid_dlr" /></td>
+			<td style="width: 15%;text-align: right;">代理人电话：</td>
+			<td style="text-align: left;"><input value="" class="easyui-textbox" name="dlrdh" id="sqbid_dlrdh"  /></td>
+		</tr>
+		<tr>
 			<td style="width: 15%;text-align: right;">邮政编码：</td>
 			<td style="text-align: left;" colspan="3"><input value="" class="easyui-textbox" name="yzbm" style="width: 400px;" id="sqbid_yzbm" /></td>
 		</tr>
@@ -66,9 +72,9 @@
   <tr class="plateSize">
   	<td colspan="2">代<br/>理<br/>人</td>
   	<td colspan="2">姓名/名称</td>
-  	<td></td>
+  	<td id="sqb_dlr"></td>
   	<td>手机号码</td>
-  	<td colspan="2"></td>
+  	<td colspan="2" id="sqb_dlrdh"></td>
   </tr>
   <tr>
     <th class="tg-yw41" colspan="8" style="text-align: center; font-size: 25px;">申 请 业 务 事 项</th>
@@ -177,6 +183,9 @@ $.post("/veh/report/getPlateApplyTable",{"jylsh":jylsh},function(data){
 		$("#sqbid_yzbm").textbox("setValue",data.yzbm);
 		$("#sqbid_yjdz").textbox("setValue",data.yjdz);
 		
+		$("#sqbid_dlr").textbox("setValue",data.dlr);
+		$("#sqbid_dlrdh").textbox("setValue",data.dlrdh);
+		
 		if(data.sqlx==1){
 			$("#checkType_0").prop("checked",false);
 			$("#checkType_1").prop("checked",true);
@@ -200,6 +209,9 @@ function saveSQB(){
 	var sjhm = $(".plateApply input[name=sjhm]").val();
 	var gddh = $(".plateApply input[name=gddh]").val();
 	
+	var dlr = $(".plateApply input[name=dlr]").val();
+	var dlrdh = $(".plateApply input[name=dlrdh]").val();
+	
 	var param={};
 	param.yzbm=yzbm;
 	param.yjdz=yjdz;
@@ -208,6 +220,9 @@ function saveSQB(){
 	param.id=id;
 	param.sjhm=sjhm;
 	param.gddh=gddh;
+	
+	param.dlr=dlr;
+	param.dlrdh=dlrdh;
 	
 	console.log(param);
 	
@@ -226,7 +241,10 @@ function setDate(data){
 	$("#sqb_gddh").text(data.gddh);
 	$("#sqb_yzbm").text(data.yzbm);
 	$("#sqb_yjdz").text(data.yjdz);
-	console.log(data.sqlx==1)
+	
+	$("#sqb_dlr").text(data.dlr);
+	$("#sqb_dlrdh").text(data.dlrdh);
+	
 	if(data.sqlx==1){
 		$("input[name=sqb_sqlx_0]").prop("checked",false);
 		$("input[name=sqb_sqlx_1]").prop("checked",true);

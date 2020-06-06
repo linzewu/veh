@@ -31,9 +31,29 @@ public class PlateApplyTable extends BaseEntity {
 	@Column
 	private String gddh;
 	
+	@Column
+	private String dlr;
+	
+	@Column(length=100)
+	private String dlrdh;
 	
 	
-	
+
+	public String getDlr() {
+		return dlr;
+	}
+
+	public void setDlr(String dlr) {
+		this.dlr = dlr;
+	}
+
+	public String getDlrdh() {
+		return dlrdh;
+	}
+
+	public void setDlrdh(String dlrdh) {
+		this.dlrdh = dlrdh;
+	}
 
 	public String getSjhm() {
 		return sjhm;
