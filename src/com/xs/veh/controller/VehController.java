@@ -1,6 +1,8 @@
 package com.xs.veh.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,13 +13,25 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +41,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
+import com.xs.rca.ws.client.OutServerServiceStub;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
@@ -36,6 +51,7 @@ import com.xs.veh.manager.VehManager;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
 
 @Controller
 @RequestMapping(value = "/veh")
@@ -43,6 +59,7 @@ import net.sf.json.JSONObject;
 public class VehController {
 	
 	static Log logger = LogFactory.getLog( VehController.class);
+	
 
 	@Value("${jyjgbh}")
 	private String jyjgbh;
@@ -52,6 +69,9 @@ public class VehController {
 
 	@Value("${cs}")
 	private String cs;
+	
+	@Value("${jkxlh}")
+	private String jkxlh;
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
@@ -191,6 +211,10 @@ public class VehController {
 				CheckLog checkLog = vehManager.getLoginCheckLog(vehCheckLogin.getJylsh());
 				if(checkLog!=null){
 					json.put("checkLog", checkLog);
+					if("1".equals(checkLog.getCode())) {
+						upLoadBk(vehCheckLogin);
+					}
+					
 					break;
 				}
 			}
@@ -243,5 +267,205 @@ public class VehController {
 		return json.toString();
 	
 	}
+	
+	
+
+//	@UserOperation(code="getVehSjr",name="获取机动车送检人")
+//	@RequestMapping(value = "getVehSjr", method = RequestMethod.POST)
+//	public @ResponseBody String getVehSjr(@RequestParam String hphm,
+//			@RequestParam String hpzl,
+//			@RequestParam String sjdw,
+//			@RequestParam String sfzmhm,
+//			@RequestParam String jclb,
+//			@RequestParam String syxz
+//			) throws AxisFault, UnsupportedEncodingException, DocumentException {
+//		
+//		ServiceClient serviceClient = new ServiceClient();
+//        //创建服务地址WebService的URL,注意不是WSDL的URL
+//        String url = "http://172.16.90.18:9081/remoteServerZx/services/zxServer?wsdl";
+//        EndpointReference targetEPR = new EndpointReference(url);
+//        Options options = serviceClient.getOptions();
+//        options.setTo(targetEPR);
+//        //确定调用方法（wsdl 命名空间地址 (wsdl文档中的targetNamespace) 和 方法名称 的组合）
+//        options.setAction("http://172.16.90.18:9081/remoteServerZx/services/zxServer/queryObjectOut");
+//
+//        OMFactory fac = OMAbstractFactory.getOMFactory();
+//        /*
+//         * 指定命名空间，参数：
+//         * uri--即为wsdl文档的targetNamespace，命名空间
+//         * perfix--可不填
+//         */
+//        OMNamespace omNs = fac.createOMNamespace("http://172.16.90.18:9081/remoteServerZx/services/zxServer/", "");
+//        // 指定方法
+//        OMElement method = fac.createOMElement("queryObjectOut", omNs);
+//        // 指定方法的参数
+//        OMElement xtlb  = fac.createOMElement("xtlb", omNs);
+//        xtlb.setText("01");
+//        OMElement jkxlh  = fac.createOMElement("jkxlh", omNs);
+//        jkxlh.setText("123");
+//        OMElement jkid  = fac.createOMElement("jkid", omNs);
+//        jkid.setText("01C04");
+//        
+//        
+//        OMElement queryXmlDoc  = fac.createOMElement("queryXmlDoc", omNs);
+//        
+//        Document document = DocumentHelper.createDocument();
+//        Element root =  document.addElement("root");
+//        Element queryCondition = root.addElement("queryCondition");
+//        
+//        logger.info("hpzl=" + hpzl);
+//        logger.info("hphm=" + hphm);
+//        logger.info("sjdw=" + sjdw);
+//        logger.info("sfzmhm=" + sfzmhm);
+//        logger.info("jclb=" + jclb);
+//        logger.info("syxz=" + syxz);
+//        
+//        queryCondition.addElement("hpzl").setText(hpzl);
+//        queryCondition.addElement("hphm").setText(hphm);
+//        queryCondition.addElement("sjdw").setText(sjdw);
+//        queryCondition.addElement("sfzmhm").setText(sfzmhm);
+//        
+//        queryCondition.addElement("jclb").setText(jclb);
+//        queryCondition.addElement("syxz").setText(syxz);
+//        
+//        logger.info("param:="+URLEncoder.encode(document.asXML(),"UTF-8"));
+//        
+//        queryXmlDoc.setText(URLEncoder.encode(document.asXML(),"UTF-8")); 
+//        
+//        method.addChild(xtlb);
+//        method.addChild(jkxlh);
+//        method.addChild(jkid);
+//        method.addChild(queryXmlDoc);
+//        method.build();
+//        //远程调用web服务
+//        OMElement result = serviceClient.sendReceive(method);
+//        
+//        logger.info("布控平台返回="+result.toString());
+//        
+//        result =  result.getFirstElement();
+//        
+//        String text = URLDecoder.decode(result.toString(),"UTF-8");
+//        logger.info("布控平台返回="+text);
+//        return  new XMLSerializer().read(text).toString();
+//        
+//	}
+	
+	
+	private void upLoadBk(VehCheckLogin vehCheckLogin) throws UnsupportedEncodingException, RemoteException {
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		ServiceClient serviceClient = new ServiceClient();
+        //创建服务地址WebService的URL,注意不是WSDL的URL
+        String url = "http://172.16.90.18:9081/remoteServerZx/services/zxServer?wsdl";
+        EndpointReference targetEPR = new EndpointReference(url);
+        Options options = serviceClient.getOptions();
+        options.setTo(targetEPR);
+        //确定调用方法（wsdl 命名空间地址 (wsdl文档中的targetNamespace) 和 方法名称 的组合）
+        options.setAction("http://172.16.90.18:9081/remoteServerZx/services/zxServer/writeObjectOut");
+
+        OMFactory fac = OMAbstractFactory.getOMFactory();
+        /*
+         * 指定命名空间，参数：
+         * uri--即为wsdl文档的targetNamespace，命名空间
+         * perfix--可不填
+         */
+        OMNamespace omNs = fac.createOMNamespace("http://172.16.90.18:9081/remoteServerZx/services/zxServer/", "");
+        // 指定方法
+        OMElement method = fac.createOMElement("writeObjectOut", omNs);
+        // 指定方法的参数
+        OMElement xtlb  = fac.createOMElement("xtlb", omNs);
+        xtlb.setText("01");
+        
+        OMElement jkxlh  = fac.createOMElement("jkxlh", omNs);
+        jkxlh.setText("");
+        
+        OMElement jkid  = fac.createOMElement("jkid", omNs);
+        jkid.setText("01A33");
+        
+        
+        OMElement writeXmlDoc  = fac.createOMElement("writeXmlDoc", omNs);
+        
+        Document document = DocumentHelper.createDocument();
+        Element root =  document.addElement("root");
+        Element vehispara = root.addElement("vehispara");
+		
+	     vehispara.addElement("hpzl").setText(vehCheckLogin.getHpzl());
+	     vehispara.addElement("hphm").setText(vehCheckLogin.getHphm());
+	     vehispara.addElement("dlrmc").setText(vehCheckLogin.getVehsjr());
+	     vehispara.addElement("dlrsfzh").setText(vehCheckLogin.getVehsjrsfzmhm());
+	     vehispara.addElement("jclb").setText(vehCheckLogin.getJylb());
+	     vehispara.addElement("jyjgbh").setText(jyjgbh);
+	     vehispara.addElement("clsbdh").setText(vehCheckLogin.getClsbdh());
+	     vehispara.addElement("jyrq").setText(sdf.format(vehCheckLogin.getDlsj()));
+	     vehispara.addElement("syr").setText(vehCheckLogin.getSyr());
+	     logger.info("参数="+document.asXML());
+	     writeXmlDoc.setText(document.asXML()); 
+        method.addChild(xtlb);
+        method.addChild(jkxlh);
+        method.addChild(jkid);
+        method.addChild(writeXmlDoc);
+        method.build();
+        //远程调用web服务
+        OMElement result = serviceClient.sendReceive(method);
+        
+        logger.info(URLDecoder.decode(result.toString(),"UTF-8"));
+	}
+	
+	@UserOperation(code="getVehSjr",name="获取机动车送检人")
+	@RequestMapping(value = "getVehSjr", method = RequestMethod.POST)
+	public @ResponseBody String getVehSjr(@RequestParam String hphm,
+			@RequestParam String hpzl,
+			@RequestParam String sjdw,
+			@RequestParam String sfzmhm,
+			@RequestParam String jclb,
+			@RequestParam String syxz
+			) throws UnsupportedEncodingException, DocumentException, RemoteException {
+		
+		
+		OutServerServiceStub stub =new OutServerServiceStub();
+		OutServerServiceStub.QueryObjectOut queryObjectOut=new OutServerServiceStub.QueryObjectOut();
+		queryObjectOut.setJkid("01C04");
+		queryObjectOut.setXtlb("01");
+		queryObjectOut.setJkxlh("");
+        Document document = DocumentHelper.createDocument();
+        
+	      Element root =  document.addElement("root");
+	      Element queryCondition = root.addElement("QueryCondition");
+	      logger.info("hpzl=" + hpzl);
+	      logger.info("hphm=" + hphm);
+	      logger.info("sjdw=" + sjdw);
+	      logger.info("sfzmhm=" + sfzmhm);
+	      logger.info("jclb=" + jclb);
+	      logger.info("syxz=" + syxz);
+	      queryCondition.addElement("hpzl").setText(hpzl);
+	      queryCondition.addElement("hphm").setText(hphm);
+	      queryCondition.addElement("sjdw").setText(sjdw);
+	      queryCondition.addElement("sfzmhm").setText(sfzmhm);
+	      
+	     queryCondition.addElement("jclb").setText(jclb);
+	     queryCondition.addElement("syxz").setText(syxz);
+        
+        logger.info("hpzl=" + hpzl);
+        logger.info("hphm=" + hphm);
+        logger.info("sjdw=" + sjdw);
+        logger.info("sfzmhm=" + sfzmhm);
+        logger.info("jclb=" + jclb);
+        logger.info("syxz=" + syxz);
+        logger.info("param:="+URLEncoder.encode(document.asXML(),"UTF-8"));
+        queryObjectOut.setQueryXmlDoc(URLEncoder.encode(document.asXML(),"UTF-8"));
+        OutServerServiceStub.QueryObjectOutResponse res = stub.queryObjectOut(queryObjectOut);
+        String xml =  res.getQueryObjectOutReturn();
+        logger.info("布控平台返回xml="+xml);
+        if(!StringUtils.isEmpty(xml)) {
+        	  String text = URLDecoder.decode(xml,"UTF-8");
+              logger.info("布控平台返回="+text);
+              return  new XMLSerializer().read(text).toString();
+        }else {
+        	return "";
+        }
+      
+        
+	}
+	
 
 }

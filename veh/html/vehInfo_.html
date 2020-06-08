@@ -5,7 +5,7 @@
 		<td class="tc">
 			<input name="sf" required="true" sid="sf" data-options="data:comm.getBaseParames('sf'),valueField: 'id',
 		textField: 'value'"  class="easyui-combobox" style="width: 40px;">&nbsp;&nbsp;
-			<input class="easyui-textbox" sid="hphm" style="width: 60px;" name="hphm" required="true" data-options="onChange:veh.uphphm,validType:'length[5,6]'">
+			<input class="easyui-textbox" sid="hphm" style="width: 60px;" name="hphm" required="true" data-options="onChange:veh.uphphm,validType:'length[5,8]'">
 		</td>
 		<td class="tl"><label>号牌种类：</label>
 		</td>
@@ -27,7 +27,7 @@
 		<td class="tl"><label>检验类别：</label></td >
 		<td class="tc">
 			<input id="jylb" name="jylb"   prompt='请选择检验类别' data-options="editable:false,data:comm.getBaseParames('jylb'),	valueField: 'id',
-		textField: 'value'"  class="easyui-combobox vehInfoInput"  required="true" value="01">
+		textField: 'value'"  class="easyui-combobox vehInfoInput" sid="jylb"  required="true" value="01">
 		</td>
 		<td class="tl"><label>车辆所属类别：</label>
 		</td>
@@ -95,7 +95,7 @@
 		<td class="tl"><label>使用性质：</label></td >
 		<td class="tc">
 			<label></label><input  data-options="editable:false,data:comm.getBaseParames('syxz'),	valueField: 'id',
-		textField: 'value'" class="easyui-combobox vehInfoInput" prompt='请选择使用性质' name="syxz" " required="true">
+		textField: 'value'" class="easyui-combobox vehInfoInput" prompt='请选择使用性质' name="syxz" sid ="syxz" required="true">
 		</td>
 	</tr>
 	<tr>
@@ -111,6 +111,18 @@
 		<td class="tc">
 			<input  name="qdxs" data-options="editable:false,data:comm.getBaseParames('qdxs'),	valueField: 'id',
 		textField: 'value'" class="easyui-combobox vehInfoInput" required="true" >
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>送检人身份证：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput" prompt='请输入送检人'  sid="vehsjrsfzmhm" data-options="editable:false" required="true"  name="vehsjrsfzmhm">
+		</td>
+		<td class="tl"><label>送检人：</label></td>
+		<td class="tc" colspan="3">
+			<label></label><input class="easyui-textbox vehInfoInput" prompt='请输入送检人身份证号'  sid ="vehsjr" data-options="editable:false" required="true"  name="vehsjr"  >
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:60px" onclick="querySjr()" >查询</a>
 		</td>
 	</tr>
 </table>
@@ -228,6 +240,58 @@
 		textField: 'value',editable:false"  name="dybj" disabled="disabled" >
 		</td>
 	</tr>
+
 	
 </table>
 <input name="jyxm" id="str_jyxm" type="hidden">
+<script type="text/javascript">
+
+function querySjr(){
+	
+	$.post("../../remotecheck/api/api_rzbdhq.zz?rzbdsbbh=B3101384",{},function(data){
+		
+		if(data){
+			$("input[sid=vehsjr]").textbox("setValue",data.name);
+			$("input[sid=vehsjrsfzmhm]").textbox("setValue",data.idNumber);
+		}
+		
+		var hpzl = $("input[sid=hpzl]").combobox("getValue");
+		var sf = $("input[sid=sf]").combobox("getText");
+		var hphm = $("input[sid=hphm]").textbox("getValue");
+		var sjdw = $("input[sid=vehsjr]").textbox("getValue");
+		var sfzmhm = $("input[sid=vehsjrsfzmhm]").textbox("getValue");
+		var jclb = $("input[sid=jylb]").combobox("getValue");
+		var syxz = $("input[sid=syxz]").combobox("getValue");
+		
+		if(hpzl==""){
+			$.messager.alert("提示","号牌种类不能为空！");
+			return;
+		}else if(hphm==""){
+			$.messager.alert("提示","号牌号码不能为空！");
+			return;
+		}else if(sjdw==""){
+			$.messager.alert("提示","送检人不能为空！");
+			return;
+		}else if(sfzmhm==""){
+			$.messager.alert("提示","送检人身份证不能为空！");
+			return;
+		}else if(jclb==""){
+			$.messager.alert("提示","检测类别不能为空！");
+			return;
+		}else if(syxz==""){
+			$.messager.alert("提示","使用性质不能为空！");
+			return;
+		}
+		$.post("../veh/getVehSjr",{"hpzl":hpzl,"hphm":sf+hphm,"sjdw":sjdw,"sfzmhm":sfzmhm,"jclb":jclb,"syxz":syxz},function(data2){
+			
+			$.messager.alert("提示",data2);
+			
+		});
+		
+	},"json");
+
+	
+	
+}
+
+</script>
