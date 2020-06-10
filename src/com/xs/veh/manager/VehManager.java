@@ -895,18 +895,6 @@ public class VehManager {
 							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
 							vehCheckLogin.getVehcsbj());
 				} else {
-					
-					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C62", null,
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
-							vehCheckLogin.getVehcsbj());
-					
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
 					if (vehCheckLogin.getVehcsbj() == 0
 							&& (CollectionUtils.isEmpty(bps) || "true".equals(bps.get(0).getParamValue()))) {
 						try {
@@ -928,7 +916,6 @@ public class VehManager {
 								vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
 								vehCheckLogin.getVehcsbj());
 					}
-					
 					
 				}
 

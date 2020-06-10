@@ -1,5 +1,6 @@
 package com.xs.veh.controller;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,17 +10,26 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.enums.CommonUserOperationEnum;
+import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
+import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VideoManager;
+import com.xs.veh.util.FileUtil;
+import com.xs.veh.util.HKVisionUtil;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -30,6 +40,8 @@ import net.sf.json.JSONObject;
 @Modular(modelCode="video",modelName="视频配置",isEmpowered=false)
 public class VideoController {
 	
+	private static Logger logger = Logger.getLogger(VideoController.class);
+	
 	@Resource(name="videoManager")
 	private VideoManager videoManager;
 	@Value("${jyjgbh}")
@@ -37,6 +49,9 @@ public class VideoController {
 	
 	@Value("${jyjgmc}")
 	private String jyjgmc_sys;
+	
+	@Autowired
+	private CheckDataManager checkDataManager;
 	
 	@RequestMapping(value = "play")
 	@UserOperation(code="play",name="播放")
@@ -229,6 +244,44 @@ public class VideoController {
 	@UserOperation(code="getJyjgmc",name="获取检测站名称")
 	public @ResponseBody String  getJyjgmc() {
 		return jyjgmc_sys;
+	}
+	
+	
+	@RequestMapping(value = "uploadVideo", method = RequestMethod.POST)
+	@UserOperation(code="uploadVideo",name="视频上传")
+	public @ResponseBody String  uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,VehCheckProcess vcp) throws Exception {
+		
+		VehCheckProcess old = checkDataManager.getVehCheckProces(vcp.getJylsh(), vcp.getJycs(), vcp.getJyxm());
+		if(old!=null) {
+			old.setKssj(vcp.getKssj());
+			old.setJssj(vcp.getJssj());
+			vcp=old;
+		}
+		
+		
+		FileUtil.createDirectory(HKVisionUtil.getConfigPath()+"\\video\\");
+		
+		String filePath = vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_0";
+		
+		// 创建文件实例
+		File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
+		// 写入文件
+		videoFile.transferTo(file);
+		
+//		boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
+//		
+//		if(vFlag) {
+//			ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
+//		}
+		
+		
+		
+		checkDataManager.saveOrUpdateProcess(vcp);
+		Map<String,Object> map =new HashMap<String,Object>();
+		map.put("status", 1);
+		map.put("message", "上传成功");
+		
+		return JSONObject.fromObject(map).toString();
 	}
 	
 
