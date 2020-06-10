@@ -450,9 +450,9 @@
 	
 	<sql-query name="findgzl2">
 		<![CDATA[
-		select wjy as ry,COUNT(1) as cc,'外检员' as type from TM_VehCheckLogin where wjy  is not null and createTime between :beginDate and :endDate  group by wjy 
-		union all select dpjyy as ry,COUNT(1) as cc,'底盘检测员' as type from TM_VehCheckLogin where dpjyy  is not null and createTime between :beginDate and :endDate  group by dpjyy 
-		union all select dtjyy as ry,COUNT(1) as cc,'动态检验员' as type from TM_VehCheckLogin where dtjyy  is not null and createTime between :beginDate and :endDate  group by dtjyy 
+		select wjy as ry,COUNT(1) as cc,'外检员' as type from v_gzl where wjy  is not null and createTime between :beginDate and :endDate  group by wjy 
+		union all select dpjyy as ry,COUNT(1) as cc,'底盘检测员' as type from v_gzl where dpjyy  is not null and createTime between :beginDate and :endDate  group by dpjyy 
+		union all select dtjyy as ry,COUNT(1) as cc,'动态检验员' as type from v_gzl where dtjyy  is not null and createTime between :beginDate and :endDate  group by dtjyy 
 		union all select ycy as ry,COUNT(1) as cc,'引车员' as type from TM_VehCheckLogin where ycy  is not null and ycy!='' and createTime between :beginDate and :endDate  group by ycy 
 		union all select dly as ry,COUNT(1) as cc,'登陆员' as type from TM_VehCheckLogin where dly  is not null and ycy!='' and createTime between :beginDate and :endDate  group by dly
 	]]>  
