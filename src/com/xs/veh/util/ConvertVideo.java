@@ -71,6 +71,7 @@ public class ConvertVideo {
 			videoProcess.waitFor();
 			return true;
 		} catch (Exception e) {
+			log.error("视频转换异常",e);
 			throw e;
 		}
 	}

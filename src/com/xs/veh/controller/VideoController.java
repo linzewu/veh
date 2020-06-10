@@ -23,11 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.enums.CommonUserOperationEnum;
-import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VideoManager;
+import com.xs.veh.util.ConvertVideo;
 import com.xs.veh.util.FileUtil;
 import com.xs.veh.util.HKVisionUtil;
 
@@ -268,12 +268,12 @@ public class VideoController {
 			File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
 			// 写入文件
 			videoFile.transferTo(file);
-			
-	//		boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
-	//		
-	//		if(vFlag) {
-	//			ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
-	//		}
+			logger.info("uploadVideo:2");
+			boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
+			logger.info("uploadVideo:3="+vFlag);
+			if(vFlag) {
+				ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
+			}
 			checkDataManager.saveOrUpdateProcess(vcp);
 			Map<String,Object> map =new HashMap<String,Object>();
 			map.put("status", 1);
