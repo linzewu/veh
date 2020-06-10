@@ -1408,6 +1408,10 @@ public class CheckDataManager {
 		this.hibernateTemplate.delete(cp);
 
 	}
+	
+	public void saveOrUpdateProcess(VehCheckProcess vehCheckProcess) {
+		this.hibernateTemplate.saveOrUpdate(vehCheckProcess); 
+	}
 
 	public VehCheckProcess getVehCheckProces(String jylsh, Integer jycs, String jyxm) {
 		List<VehCheckProcess> data = (List<VehCheckProcess>) this.hibernateTemplate

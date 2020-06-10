@@ -251,37 +251,40 @@ public class VideoController {
 	@UserOperation(code="uploadVideo",name="视频上传")
 	public @ResponseBody String  uploadVideo(@RequestParam("videoFile") MultipartFile videoFile,VehCheckProcess vcp) throws Exception {
 		
-		VehCheckProcess old = checkDataManager.getVehCheckProces(vcp.getJylsh(), vcp.getJycs(), vcp.getJyxm());
-		if(old!=null) {
-			old.setKssj(vcp.getKssj());
-			old.setJssj(vcp.getJssj());
-			vcp=old;
+		try {
+			logger.info("uploadVideo:开始");
+			
+			VehCheckProcess old = checkDataManager.getVehCheckProces(vcp.getJylsh(), vcp.getJycs(), vcp.getJyxm());
+			if(old!=null) {
+				old.setKssj(vcp.getKssj());
+				old.setJssj(vcp.getJssj());
+				vcp=old;
+			}
+			FileUtil.createDirectory(HKVisionUtil.getConfigPath()+"\\video\\");
+			
+			String filePath = vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_0";
+			
+			// 创建文件实例
+			File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
+			// 写入文件
+			videoFile.transferTo(file);
+			
+	//		boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
+	//		
+	//		if(vFlag) {
+	//			ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
+	//		}
+			checkDataManager.saveOrUpdateProcess(vcp);
+			Map<String,Object> map =new HashMap<String,Object>();
+			map.put("status", 1);
+			map.put("message", "上传成功");
+			logger.info("uploadVideo:结束");
+			return JSONObject.fromObject(map).toString();
+		}catch (Exception e) {
+			logger.error("上传视频异常",e);
+			throw e;
 		}
 		
-		
-		FileUtil.createDirectory(HKVisionUtil.getConfigPath()+"\\video\\");
-		
-		String filePath = vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_0";
-		
-		// 创建文件实例
-		File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
-		// 写入文件
-		videoFile.transferTo(file);
-		
-//		boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
-//		
-//		if(vFlag) {
-//			ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
-//		}
-		
-		
-		
-		checkDataManager.saveOrUpdateProcess(vcp);
-		Map<String,Object> map =new HashMap<String,Object>();
-		map.put("status", 1);
-		map.put("message", "上传成功");
-		
-		return JSONObject.fromObject(map).toString();
 	}
 	
 
