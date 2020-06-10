@@ -268,11 +268,11 @@ public class VideoController {
 			File file = new File(HKVisionUtil.getConfigPath()+"\\video\\", filePath+".mp4");
 			// 写入文件
 			videoFile.transferTo(file);
-			logger.info("uploadVideo:2");
 			boolean vFlag = ConvertVideo.processMp4(HKVisionUtil.getConfigPath()+"\\video\\"+filePath+".mp4", filePath+".mp4");
-			logger.info("uploadVideo:3="+vFlag);
 			if(vFlag) {
 				ConvertVideo.copy(ConvertVideo.outputPath+filePath+".mp4", HKVisionUtil.getConfigPath()+"\\video\\");
+				File tempFile = new File(ConvertVideo.outputPath, filePath+".mp4");
+				tempFile.delete();
 			}
 			checkDataManager.saveOrUpdateProcess(vcp);
 			Map<String,Object> map =new HashMap<String,Object>();
