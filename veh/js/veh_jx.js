@@ -1,4 +1,249 @@
+function loadCLHGZ(barArray, strbarcode) {
+	var dataInfo = {};
+	dataInfo["hgzbh"] = barArray[2];
+	dataInfo["ccrq"] = barArray[3];
 
+	dataInfo["zzcmc"] = barArray[4];
+
+	var clpps = barArray[7].split("/");
+	if (clpps.length > 1) {
+		dataInfo["clpp1"] = clpps[0];
+		dataInfo["clpp2"] = clpps[1];
+	} else {
+		dataInfo["clpp1"] = clpps[0];
+	}
+	dataInfo["clxh"] = barArray[8];
+	
+	dataInfo["zzg"] = "156";
+
+	dataInfo["clsbdh"] = barArray[13];
+	dataInfo["fdjh"] = barArray[15];
+	dataInfo["fdjxh"] = barArray[16];
+
+	dataInfo["rlzl"] = barArray[17];
+	dataInfo["pl"] = barArray[19];
+	dataInfo["gl"] = barArray[20];
+	dataInfo["zxxs"] = barArray[21];
+
+	var qljs = barArray[22].split("/");
+
+	dataInfo["qlj"] = qljs[0];
+
+	// 计算后轮距 29是轴数
+	var hlj = getHlj(barArray[23], barArray[29]);
+
+	dataInfo["hlj"] = hlj;
+
+	dataInfo["lts"] = barArray[24];
+	dataInfo["ltgg"] = barArray[25];
+	dataInfo['hbdbqk'] = barArray[18];
+	dataInfo['dpid'] = barArray[11];
+
+	var zxzs = 1;
+	if (qljs.length > 0) {
+		zxzs = qljs.length;
+	}
+
+	var gbthps = "";
+	if (barArray[6] == "挂车") {
+		gbthps = getGbthps("-/" + barArray[26], 1);
+	} else {
+		gbthps = getGbthps(barArray[26], zxzs);
+	}
+
+	dataInfo["gbthps"] = gbthps;
+	var zj = getZj(barArray[27]);
+	dataInfo["zj"] = zj;
+
+	dataInfo["zs"] = barArray[29];
+	dataInfo["cwkc"] = barArray[30];
+	dataInfo["cwkk"] = barArray[31];
+
+	dataInfo["cwkg"] = barArray[32];
+	dataInfo["hxnbcd"] = barArray[33];
+	dataInfo["hxnbkd"] = barArray[34];
+	dataInfo["hxnbgd"] = barArray[35];
+	dataInfo["zzl"] = barArray[36];
+
+	dataInfo["hdzzl"] = barArray[37];
+	dataInfo["zbzl"] = barArray[38];
+	dataInfo["zqyzl"] = barArray[40];
+
+	var hdzks = barArray[41].split("/");
+	dataInfo["hdzk"] = hdzks[0];
+
+	var qpzks = barArray[43].split("+");
+
+	dataInfo["qpzk"] = qpzks[0];
+	dataInfo['hdzk']=qpzks[0];
+	if (qpzks.length > 1) {
+		dataInfo["hpzk"] = qpzks[1];
+		dataInfo['hdzk']=qpzks[0]+qpzks[1];
+	}
+	dataInfo["bz"] = barArray[50];
+	$("#vehinfo").form("load", dataInfo);
+	
+}
+
+function setSFZXX(barArray) {
+	$("#syrs").text(barArray[1]);
+	$("#sfzs").text( barArray[6]);
+	$("#syr").val(barArray[1]);
+	$("#sfz").val( barArray[6]);
+	$("#dz").val(barArray[5]);
+}
+
+function getHlj(m_SourceValue, m_zs) {
+	// 是否为数字
+	var newgbthps;
+	var i_lj = 0;
+
+	if (m_SourceValue.length == 0) {
+		return "";
+	}
+	var i_zs = parseInt(m_zs);
+	if (m_SourceValue.indexOf("/") > 0) {
+		var paraArray = m_SourceValue.split("/"); // 根据","分割成字符串数组
+		if (i_zs == 3) {
+			i_lj = parseInt(paraArray[0]);
+		} else {
+			i_lj = parseInt(paraArray[paraArray.length - 2]);
+		}
+	} else {
+		if (m_SourceValue.indexOf("+") > 0) {
+			var paraArray = m_SourceValue.split("+"); // 根据","分割成字符串数组
+			var i;
+			for (i = 0; i < paraArray.length; i++) {
+				if (!isNaN(paraArray[i])) {
+					// 如为数字，直接判断
+					i_lj += parseInt(paraArray[i]);
+				}
+			}
+		} else {
+			i_lj = parseInt(m_SourceValue);
+		}
+	}
+	return i_lj;
+}
+
+function getGbthps(m_SourceValue, m_zxzs) {
+
+	// 是否为数字
+	var newgbthps;
+	var i_gbthps = 0;
+	if (m_SourceValue.length == 0) {
+		return "";
+	}
+	// m_SourceValue="-/"+m_SourceValue;
+	var paraArray = m_SourceValue.split(","); // 根据","分割成字符串数组
+	var i;
+	var j;
+	var k
+	for (i = 0; i < paraArray.length; i++) {
+		if (!isNaN(paraArray[i])) {
+			// 如为数字，直接判断
+			i_gbthps = parseInt(paraArray[i]);
+		} else {
+			i_gbthps = 0;
+			if (paraArray[i].indexOf("/") > -1) {
+
+				for (k = 0; k < m_zxzs; k++) {
+					paraArray[i] = paraArray[i].substr(paraArray[i]
+							.indexOf("/") + 1)
+				}
+				paraArray[i] += "/";
+
+				while (paraArray[i].indexOf("/") > -1) {
+					newgbthps = paraArray[i].substring(0, paraArray[i]
+							.indexOf("/"));
+					if (!isNaN(newgbthps)) {
+						i_gbthps += parseInt(newgbthps);
+					} else {
+						if (newgbthps.indexOf("+") > 0) {
+							var valueSplit = newgbthps.split("+");
+							for (j = 0; j < valueSplit.length; j++) {
+								// 为了应对钢板弹簧片数形式为‘-/8+-’的情况，所以增加valueSplit[j]是否为数字的判断
+								if (!isNaN(valueSplit[j])) {
+									i_gbthps += parseInt(valueSplit[j]);
+								}
+							}
+							// i_gbthps = i_gbthps+(parseInt(valueSplit[0]) +
+							// parseInt(valueSplit[1]));
+						}
+					}
+					paraArray[i] = paraArray[i].substr(paraArray[i]
+							.indexOf("/") + 1);
+				}
+			} else {
+				if (paraArray[i].indexOf("+") > 0) {
+					var valueSplit = paraArray[i].split("+");
+					for (j = 0; j < valueSplit.length; j++) {
+						if (!isNaN(valueSplit[j])) {
+							i_gbthps += parseInt(valueSplit[j]);
+						}
+					}
+					// i_gbthps=parseInt(valueSplit[0]) +
+					// parseInt(valueSplit[1]);
+				}
+			}
+		}
+	}
+	if (i_gbthps == 0) {
+		return "";
+	} else {
+		return i_gbthps;
+	}
+}
+
+function getZj(m_SourceValue) {
+
+	// 是否为数字
+	var newgbthps;
+	var i_zj = 0;
+	if (m_SourceValue.length == 0) {
+		i_zj = 0;
+	}
+	var paraArray = m_SourceValue.split("+"); // 根据","分割成字符串数组
+	var i;
+	for (i = 0; i < paraArray.length; i++) {
+		if (!isNaN(paraArray[i])) {
+			// 如为数字，直接判断
+			i_zj += parseInt(paraArray[i]);
+		}
+	}
+	return i_zj;
+}
+
+function readQrLabel() {
+		
+		var barcodetemp = "";
+		try{
+			var strbarcode = vehPrinter.GetQrText();
+			if (strbarcode == "") {
+				return 0;
+			}
+			if (strbarcode == "-1") {
+				$.messager.alert("提示", "条码信息有误!");
+				return 0;
+			}
+			
+			var barArray = strbarcode.split("|");
+		
+			var strBarCodeType = barArray[0];
+			if (strBarCodeType.split("_")[0] == "ZCCCHGZ") {
+				loadCLHGZ(barArray, strbarcode);
+				return;
+			}
+		
+			if (strBarCodeType == "SFZXX_2.0") {
+				setSFZXX(barArray);
+				return;
+			}
+		}catch (e) {
+			//alert(e);
+			return ;
+		}
+}
 
 var userInfo = $.ajax({
 	url : "/veh/user/getCurrentUser",
@@ -36,6 +281,14 @@ $(function(){
 	if(userInfo.pwOverdue=="Y"){
 		$('#win_password').window('open');
 	}
+	
+	//启动扫描二维码功能
+	window.setInterval(function(){
+		if(vehPrinter){
+			readQrLabel();
+		}
+	},200);
+	
 });
 
 document
@@ -1463,8 +1716,11 @@ var report={
 				}else if(i.indexOf("other")==0){
 					$("#report1 tr[name=ZC] td[name=other_jczczbzl]").text(n.jczczbzl);
 					$("#report1 tr[name=ZC] td[name=other_zdlh]").text(n.zdlh);
-					
-					$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl);
+					if(n.zczdl){
+						$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl.toFixed(1));
+					}else{
+						$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl);
+					}
 					$("#report1 tr[name=ZC] td[name=zczdpd]").text(veh.jgpd(n.zczdpd));
 					$("#report1 tr[name=ZC] td[name=dxcs]").text(intjycs);
 					
@@ -1645,7 +1901,7 @@ var report={
 			index++;
 			$.each(datas.ch,function(i,data){
 				 if(data.strData!=null&&data.strData!=""){
-					 report.processReport4CH(baseInfo, data,"chqx",i+index,"侧滑数据","m/km");
+					 report.processReport4CH(baseInfo, data,"chqx"+i,i+index,"侧滑数据"+data.jycs,"m/km");
 				 }
 				 
 			 });
@@ -1788,13 +2044,18 @@ var report={
 		
 		var report4Table="<table id='report4Table"+ckey+"' class='reportTable4'><thead><tr><td colspan='8'><h4>侧滑过程数据</h4></td></tr><tr><td>序号</td><td>侧滑值</td><td>序号</td><td>侧滑值</td></tr></thead><tbody>";
 		var size=ldata.length;
-		size=size%2==1?(size-1):size;
+		//size=size%2==1?(size-1):size;
 		for(var i=0;i<size;i++){
 			report4Table+="<tr><td>"+(i+1)+"</td>"+
 			"<td>"+ldata[i]+"</td>";
 			i++;
-			report4Table+="<td>"+(i+1)+"</td>"+
-			"<td>"+ldata[i]+"</td></tr>";
+			if(ldata[i]){
+			    report4Table+="<td>"+(i+1)+"</td>"+
+			    "<td>"+ldata[i]+"</td></tr>";
+			}else{
+			    report4Table+="<td>"+(i+1)+"</td>"+
+			    "<td></td></tr>";
+			}
 		}
 		report4Table+="</tbody></table>";
 		return report4Table;

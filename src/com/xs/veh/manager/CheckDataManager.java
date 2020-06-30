@@ -1207,14 +1207,14 @@ public class CheckDataManager {
 		List<SideslipData> sides = (List<SideslipData>) this.hibernateTemplate
 				.find("from SideslipData  where jylsh=? order by id desc", jylsh);
 		
-		if(sides!=null&&!sides.isEmpty()){
-			Integer jycs = sides.get(0).getJycs();
-			for(SideslipData side:sides){
-				if(side.getJycs()!=jycs){
-					sides.remove(side);
-				}
-			}
-		}
+//		if(sides!=null&&!sides.isEmpty()){
+//			Integer jycs = sides.get(0).getJycs();
+//			for(SideslipData side:sides){
+//				if(side.getJycs()!=jycs){
+//					sides.remove(side);
+//				}
+//			}
+//		}
 
 		JSONObject jo = new JSONObject();
 
