@@ -1017,6 +1017,19 @@ public class VehManager {
 			}
 		}
 		
+		//增加整备质量复检
+		List<CurbWeightData> curbWeightDatas =(List<CurbWeightData>) this.hibernateTemplate.find("from CurbWeightData where jylsh=? order by id desc", jylsh);
+		if(!CollectionUtils.isEmpty(curbWeightDatas)) {
+			CurbWeightData curbWeightData = curbWeightDatas.get(0);
+			if(curbWeightData.getZbzlpd()==BaseDeviceData.PDJG_BHG) {
+				fjjyxm += "Z1,";
+				curbWeightData.setSjzt(ParDataOfAnjian.SJZT_FJ);
+				this.hibernateTemplate.save(curbWeightData);	
+				vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_WKS);
+			}
+		}
+		
+		
 		
 		if (!fjjyxm.trim().equals("")) {
 			fjjyxm = fjjyxm.substring(0, fjjyxm.length() - 1);

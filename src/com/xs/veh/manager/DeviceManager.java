@@ -23,6 +23,7 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceManyWeigh;
+import com.xs.veh.network.DeviceWeigh;
 import com.xs.veh.network.data.CurbWeightData;
 
 @Service("deviceManager")
@@ -177,6 +178,22 @@ public class DeviceManager {
 		logger.info("整备质量结束");
 		
 	}
+	
+	@Async
+	public void upSZZ1(Integer deviceId,Integer vehCheckLoginId) throws InterruptedException, Exception {
+		
+		logger.info("整备质量开始");
+		Device device=new Device();
+		device.setId(deviceId);
+		DeviceWeigh dmw = (DeviceWeigh)servletContext.getAttribute(device.getThredKey());
+		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
+		CurbWeightData cwd = dmw.startCheckSZ(vehCheckLogin);
+		vehManager.saveCurbWeight(cwd);
+		logger.info("整备质量结束");
+		
+	}
+	
+	
 	
 	@Async
 	public void upQDZ(Integer deviceId,TestVeh testVeh) throws InterruptedException, Exception {

@@ -1362,7 +1362,7 @@ var report={
 				newJyxm+="R";
 			}
 			
-			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
+		//	$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
 			
 			$.each(data,function(i,n){
 				// 处理灯光

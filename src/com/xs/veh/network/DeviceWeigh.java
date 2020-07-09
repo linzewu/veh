@@ -163,6 +163,21 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		}
 		dw.init(this);
 	}
+	
+	
+	public CurbWeightData startCheckSZ(VehCheckLogin vehCheckLogin) throws Exception, InterruptedException {
+		
+		logger.info("整备质量检测开始");
+		this.vehCheckLogin=vehCheckLogin;
+		DeviceWeighDriverOfJXZB10_SZ newdw=(DeviceWeighDriverOfJXZB10_SZ)dw;
+		CurbWeightData curbWeightData = newdw.startCheckSZ(vehCheckLogin);
+		Thread.sleep(2000);
+		this.display.sendMessage("检测完毕向前行驶", DeviceDisplay.XP);
+		Thread.sleep(2000);
+		display.setDefault();
+		
+		return curbWeightData;
+	}
 
 	/**
 	 * 称重
@@ -177,6 +192,8 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		this.vehCheckLogin=vehCheckLogin;
 		
 		BrakRollerData brakRollerData = dw.startCheck(vehFlow);
+		
+		
 
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
 
@@ -296,5 +313,18 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		BrakRollerData brakRollerData = this.checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin, jyxm);
 		return brakRollerData;
 	}
+	
+	public void setDw(Integer zw) {
+		DeviceWeighDriverOfJXZB10_SZ newdw=(DeviceWeighDriverOfJXZB10_SZ)dw;
+		if(zw==0) {
+			newdw.qzdw=true;
+		}
+		if(zw==1) {
+			newdw.hzdw=true;
+		}
+		
+	}
+	
+	
 
 }

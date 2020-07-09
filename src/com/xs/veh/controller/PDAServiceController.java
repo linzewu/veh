@@ -40,7 +40,7 @@ import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
-import com.xs.veh.network.DeviceManyWeigh;
+import com.xs.veh.network.DeviceWeigh;
 import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.CurbWeightData;
 
@@ -330,7 +330,8 @@ public class PDAServiceController {
 	@UserOperation(code="getZ1Device",name="查询多轴称重台列表")
 	public @ResponseBody String getZ1Device(HttpServletRequest request)
 			throws JsonProcessingException {
-		List<Device> devices = deviceManager.getDevicesByteType(Device.DZCZT);
+		//List<Device> devices = deviceManager.getDevicesByteType(Device.DZCZT);
+		List<Device> devices = deviceManager.getDevicesByteType(Device.CZJCSB);
 		ObjectMapper om = new ObjectMapper();
 		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(devices));
 		return jsonp;
@@ -342,7 +343,8 @@ public class PDAServiceController {
 	public @ResponseBody Map upZ1( Integer deviceId, Integer vehCheckLoginId)
 			throws InterruptedException, Exception {
 		
-		deviceManager.upZ1(deviceId, vehCheckLoginId);
+		//deviceManager.upZ1(deviceId, vehCheckLoginId);
+		deviceManager.upSZZ1(deviceId, vehCheckLoginId);
 		deviceManager.updateZ1State(vehCheckLoginId);
 		
 		return ResultHandler.toSuccessJSON("发车成功！");
@@ -386,8 +388,8 @@ public class PDAServiceController {
 		
 		Device device=new Device();
 		device.setId(deviceId);
-		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
-		
+		//DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());
+		DeviceWeigh dmw = (DeviceWeigh)servletContext.getAttribute(device.getThredKey());
 		//前轴到位
 		dmw.setDw(zw);
 		return ResultHandler.toSuccessJSON("成功！");
