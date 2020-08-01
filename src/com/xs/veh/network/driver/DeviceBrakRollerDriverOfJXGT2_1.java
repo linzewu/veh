@@ -152,10 +152,12 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			if (nextVehFlow == null || (!nextVehFlow.getJyxm().equals("B0"))
 					|| (nextVehFlow.getJyxm().equals("B0") && vehFlow.getJyxm().equals("B0"))) {
 				this.deviceBrakRoller.sendMessage(jsqss);
-				Thread.sleep(500);
+				logger.info("举升器上升：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
+				Thread.sleep(2000); 
 			}
 			
 			if(vehFlow.getJyxm().indexOf("L")==0){
+				Thread.sleep(500);
 				logger.info("台体下降：" + ttxj);
 				deviceBrakRoller.sendMessage(ttxj);
 				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));

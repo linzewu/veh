@@ -178,16 +178,9 @@ public class WorkPointThread extends Thread {
 											brakRollerData.setJzzlh(weightBrakRollerData.getJzzlh());
 											brakRollerData.setJzylh(weightBrakRollerData.getJzylh());
 										}
-										
-										
-
 									}
-									
-								
 								}
-								
 								param.put("brakRollerData", brakRollerData);
-								
 								if(vehFlow.getJyxm().equals("B0")){
 									List<BrakRollerData> brakRollerB0Datas = checkDataManager.getBrakRollerDataB0(vehCheckLogin);
 									param.put("B0", brakRollerB0Datas);

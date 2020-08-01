@@ -17,12 +17,8 @@ public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 
 	protected DeviceDisplay display;
 	
-	
 	protected boolean qzdw=false;
 	protected boolean hzdw=false;
-	
-	
-	
 	
 	public abstract CurbWeightData startCheck(VehCheckLogin vc) throws Exception, InterruptedException;
 	
@@ -72,7 +68,6 @@ public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 				throw new TimeoutException("读取数据超时！2s");
 			}
 		}
-		
 		contex[0]=beginByte;
 		for (int i = 1; i < contex.length; i++) {
 			while (temp.isEmpty()) {
@@ -81,11 +76,9 @@ public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 				if(currentTime>timeout) {
 					throw new TimeoutException("读取数据超时！2s");
 				}
-				
 			}
 			contex[i] = temp.remove(0);
 		}
-
 		return contex;
 	}
 	

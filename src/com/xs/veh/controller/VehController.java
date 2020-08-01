@@ -245,10 +245,11 @@ public class VehController {
 				//写入综合检测表
 				this.vehManager.saveTestVeh(testVeh);
 			}
-//			else if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0) {
-//				processTestVehS1(vehCheckLogin,testVeh);
-//				this.vehManager.saveTestVeh(testVeh);
-//			}
+			
+			if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0&&vehCheckLogin.getZs()>=3) {
+				processTestVehS1(vehCheckLogin,testVeh);
+				this.vehManager.saveTestVeh(testVeh);
+			}
 			
 			JSONObject json = this.vehManager.vehLogin(vehCheckLogin);
 			
@@ -485,13 +486,18 @@ public class VehController {
 	public @ResponseBody void playVeh(String hphm) {
 		
 		List<BaseParams> bps = BaseParamsUtil.getBaseParamsByType("yymb");
+		char[] cc = hphm.toCharArray();
+		String newHphm="";
+		for(char c:cc) {
+			newHphm+=c+" ";
+		}
 		PlayUtil playUtil=new PlayUtil();
 		if(!CollectionUtils.isEmpty(bps)) {
 			String mb = bps.get(0).getParamValue();
-			String message = mb.replace("hphm", hphm);
-			playUtil.play(message, 2);
+			String message = mb.replace("hphm", newHphm);
+			playUtil.play(message, 2); 
 		}else {
-			playUtil.play(hphm+"已制证，请车主到前台领取资料", 2);
+			playUtil.play(newHphm+"已制证，请车主到前台领取资料", 2);
 		}
 	}
 	

@@ -44,6 +44,9 @@ public class DeviceManager {
 	
 	@Autowired
 	private VehManager vehManager;
+	
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 
 
 	public Integer getMaxLine() {
@@ -159,7 +162,6 @@ public class DeviceManager {
 	public void upZ1(Integer deviceId,Integer vehCheckLoginId) throws InterruptedException, Exception {
 		
 		logger.info("整备质量开始");
-		
 		Device device=new Device();
 		device.setId(deviceId);
 		DeviceManyWeigh dmw = (DeviceManyWeigh)servletContext.getAttribute(device.getThredKey());

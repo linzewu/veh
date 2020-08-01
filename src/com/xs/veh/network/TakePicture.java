@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
@@ -40,7 +41,16 @@ public class TakePicture implements Runnable {
 	
 	private String zpzl;
 	
+	private Map custom;
 	
+
+	public Map getCustom() {
+		return custom;
+	}
+
+	public void setCustom(Map custom) {
+		this.custom = custom;
+	}
 
 	public String getZpzl() {
 		return zpzl;
@@ -105,6 +115,20 @@ public class TakePicture implements Runnable {
 		Thread t = new Thread(tp);
 		t.start();
 	}
+	
+	
+	public static void custom(VehCheckLogin vehCheckLogin, String jyxm, Integer yc, String zpzl,Map custom) {
+		TakePicture tp = new TakePicture(vehCheckLogin.getJylsh(), vehCheckLogin.getJcxdh(), vehCheckLogin.getJycs(),
+				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(), jyxm, 0, zpzl);
+		tp.setYc(yc);
+		tp.setVehCheckLogin(vehCheckLogin);
+		tp.setJyxm(jyxm);
+		tp.setZpzl(zpzl);
+		tp.setCustom(custom);
+		Thread t = new Thread(tp);
+		t.start();
+	}
+	
 
 	private TakePicture(String jylsh, String jcxdh, Integer jycs, String hphm, String hpzl, String clsbdh, String jyxm,
 			Integer jyzt) {
@@ -150,6 +174,76 @@ public class TakePicture implements Runnable {
 //			}
 //		}
 //	}
+	
+	private void createCustom() {
+		
+		logger.info("进入线上抓拍程序");
+		
+		MyHibernateTemplate hibernateTemplate = (MyHibernateTemplate) SpringUtil.getBean("hibernateTemplate");
+		
+		CheckDataManager checkDataManager =(CheckDataManager)SpringUtil.getBean("checkDataManager");
+		
+		CheckEventManger checkEventManger =(CheckEventManger)SpringUtil.getBean("checkEventManger");
+		
+		logger.info("参数lsh:"+vehCheckLogin.getJylsh());
+		logger.info("参数jycs:"+ vehCheckLogin.getJycs());
+		logger.info("参数jyxm:"+jyxm);
+		
+		HKVisionUtil hk=new HKVisionUtil();
+		FileInputStream fis=null;
+		
+		try {
+			
+			String sxtip = (String) custom.get("sxtip");
+			String sxtdk = (String) custom.get("sxtdk");
+			String sxtzh = (String) custom.get("sxtzh");
+			String sxtmm = (String) custom.get("sxtmm");
+			
+			String file = hk.taskPicture(sxtzh, sxtmm, sxtip, Integer.parseInt(sxtdk),vehCheckLogin.getJylsh()+"_"+vehCheckLogin.getJycs()+"_"+jyxm);
+			logger.info("拍照成功保存文件路径file：="+sxtmm);
+			fis =new FileInputStream(file);
+			
+			byte[] zp=new byte[fis.available()];
+			
+			fis.read(zp);
+			
+			CheckPhoto checkPhoto =new CheckPhoto();
+			
+			checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
+			checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
+			checkPhoto.setHphm(vehCheckLogin.getHphm());
+			checkPhoto.setHpzl(vehCheckLogin.getHpzl());
+			checkPhoto.setJycs(vehCheckLogin.getJycs());
+			checkPhoto.setJyjgbh(vehCheckLogin.getJyjgbh());
+			checkPhoto.setJylsh(vehCheckLogin.getJylsh());
+			checkPhoto.setJyxm(jyxm);
+			checkPhoto.setPssj(new Date());
+			checkPhoto.setStatus(0);
+			checkPhoto.setZp(zp);
+			
+			if(zpzl!=null) {
+				checkPhoto.setZpzl(zpzl);
+			}else {
+				zpzl=getZPZL(jyxm);
+				checkPhoto.setZpzl(zpzl);
+			}
+			
+			checkDataManager.saveCheckPhoto(checkPhoto);
+			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(fis!=null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	public void run() {
 		try {
@@ -158,6 +252,12 @@ public class TakePicture implements Runnable {
 			e1.printStackTrace();
 		}
 		logger.info("新拍照程序，开始，拍照项目："+jyxm);
+		
+		if(custom!=null) {
+			createCustom();
+			return;
+		}
+		
 		try {
 			
 			List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("sxtpz");
@@ -354,8 +454,6 @@ public class TakePicture implements Runnable {
 						 
 						try {
 							String file = hk.taskPicture(sxtzh, sxtmm, sxtip, Integer.parseInt(sxtdk),vehCheckLogin.getJylsh()+"_"+vehCheckLogin.getJycs()+"_"+jyxm);
-							
-							
 							logger.info("拍照成功保存文件路径file：="+sxtmm);
 							fis =new FileInputStream(file);
 							
@@ -405,10 +503,11 @@ public class TakePicture implements Runnable {
 
 			}
 		}
-		
-		
-
 	}
+	
+	
+	
+	
 	
 	public void toSzServerSocket(String message) throws IOException {
 		

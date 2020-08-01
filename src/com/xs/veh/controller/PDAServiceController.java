@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -74,6 +75,9 @@ public class PDAServiceController {
 	
 	@Autowired
 	private ServletContext servletContext;
+	
+	@Resource(name = "hibernateTemplate")
+	private HibernateTemplate hibernateTemplate;
 	
 	
 	
@@ -348,6 +352,13 @@ public class PDAServiceController {
 	@UserOperation(code="upZ1",name="整备质量发车")
 	public @ResponseBody Map upZ1( Integer deviceId, Integer vehCheckLoginId)
 			throws InterruptedException, Exception {
+		Date kssj=new Date();
+		VehCheckLogin vehCheckLogin =hibernateTemplate.load(VehCheckLogin.class, vehCheckLoginId);
+		VehCheckProcess vehCheckProcess = checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "Z1");
+		vehCheckProcess.setKssj(kssj);
+		this.checkDataManager.updateProcess(vehCheckProcess);
+		checkEventManger.createEvent(vehCheckLogin.getJylsh(),  vehCheckLogin.getJycs(), "18C55", vehCheckProcess.getJyxm(), vehCheckProcess.getHphm(),
+				vehCheckProcess.getHpzl(), vehCheckProcess.getClsbdh(),vehCheckLogin.getVehcsbj());
 		
 		deviceManager.upZ1(deviceId, vehCheckLoginId);
 		deviceManager.updateZ1State(vehCheckLoginId);

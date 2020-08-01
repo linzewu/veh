@@ -2,7 +2,7 @@
 <form method="post" id="curbWeightForm" >
 <table style="margin: 0 auto;padding-top: 50px;width: 600px;" >
 <tr>
-	<td colspan="4" style="text-align: center; font-size: 24px;">整备质量录入<br><br></td>
+	<td colspan="4" style="text-align: center; font-size: 24px;">整备质量<br><br></td>
 </tr>
 
 <tr>
@@ -11,13 +11,13 @@
 </tr>
 <tr>
 	<td>出厂整备质量：</td><td><span id="commit_zbzl" ></span>KG</td>
-	<td>检测整备质量：</td><td><input class="easyui-numberbox" data-options="onChange:zbzlchange" name="zbzl" id="zbzl" required="true" max="99999999" min="1">KG</td>
+	<td>检测整备质量：</td><td><input class="easyui-numberbox" data-options="onChange:zbzlchange" name="zbzl" id="zbzl" required="true" max="99999999" min="1" disabled="disabled">KG</td>
 	
 </tr>
 <tr>
 <td>整备质量判定：</td>
-<td colspan="3"><label for="zbzlpd_hg">合格</label><input type="radio" name="zbzlpd" id="zbzlpd_hg" value="1" readonly="readonly" >
-	<label for="zbzlpd_bhg">不合格</label><input type="radio" name="zbzlpd" id="zbzlpd_bhg" value="2"  readonly="readonly">
+<td colspan="3"><label for="zbzlpd_hg">合格</label><input type="radio" name="zbzlpd" id="zbzlpd_hg" value="1" readonly="readonly"  disabled="disabled">
+	<label for="zbzlpd_bhg">不合格</label><input type="radio" name="zbzlpd" id="zbzlpd_bhg" value="2"  readonly="readonly" disabled="disabled">
 	</td>
 </tr>
 <tr>
@@ -29,14 +29,109 @@
 		<input name="hphm" type="hidden">
 		<input name="clsbdh" type="hidden">
 		<input name="id" type="hidden">
-		<a href="#" class="easyui-linkbutton c6" data-options="onClick:startCurbWeight" id="btn_startCurbWeight">开始检测整备质量</a>
-		<a href="#" class="easyui-linkbutton c6" data-options="onClick:curbWeightForm" id="btn_curbWeightForm">保&nbsp;&nbsp;&nbsp;&nbsp;存</a>
+		<!-- <a href="#" class="easyui-linkbutton c6" data-options="onClick:startCurbWeight" id="btn_startCurbWeight">开始检测整备质量</a>
+		<a href="#" class="easyui-linkbutton c6" data-options="onClick:curbWeightForm" id="btn_curbWeightForm">保&nbsp;&nbsp;&nbsp;&nbsp;存</a> -->
+		
+		<a href="#" class="easyui-linkbutton c6" data-options="onClick:printCurbWeight" id="a_printCurbWeight">打&nbsp;&nbsp;&nbsp;&nbsp;印</a>
 	</td>
 </tr>
 </table>
 </form>
-<script type="text/javascript">
 
+<div id="curbReportTemp" style="display: none;">
+	<TABLE cellSpacing=0 cellPadding=0 border=0   style="width: 725px;">
+		<TBODY>
+				<tr colSpan=5>
+					<td >
+						<img alt="" src="/veh/images/cma.jpg" style="width: 61px;height: 44px;float: left;">
+					</td>
+					<td colspan="4" style="text-align: center;">
+						<h2>机动车整备质量检验报告</h2>
+					</td>
+					<td style="text-align: right; font-size: 12px;width: 150px;">
+						证书编号：XK苏20150321
+					</td>
+				</tr>
+		</TBODY>
+	</TABLE>
+	<TABLE cellSpacing=0 cellPadding=0 border=1   style="width: 725px;height: 250px;">
+		<TBODY>
+			<TR>
+				<TD colSpan=6>一、基本信息</TD>
+			</TR>
+			<TR>
+				<TD class=l width="15%">检验流水号</TD>
+				<TD class=r width="18%" name="report-baseInfo-jylsh"></TD>
+				<TD class=l width="15%">检测机构名称</TD>
+				<td colspan="3" >
+					盐城市长庆机动车检测服务有限公司
+				</td>
+			</TR>
+			<tr>
+				<TD class=l width="15%">引&nbsp;&nbsp;车&nbsp;&nbsp;员</TD>
+				<TD class=r width="19%" name="report-baseInfo-ycy"></TD>
+				<TD class=l width="15%">检&nbsp;验&nbsp;日&nbsp;期</TD>
+				<TD class=r  name="report-baseInfo-upLineDate"></TD>
+				<TD class=l  width="15%" >所&nbsp;&nbsp;有&nbsp;&nbsp;人</TD>
+				<TD class=r  name="report-baseInfo-syr" ></TD>
+			</tr>
+			<TR>
+				<TD class=l>号牌号码</TD>
+				<TD class=r name="report-baseInfo-hphm"></TD>
+				<TD class=l>号&nbsp;牌&nbsp;种&nbsp;类</TD>
+				<TD class=r name="report-baseInfo-hpzl"></TD>
+				<TD class=l>车&nbsp;辆&nbsp;类&nbsp;型</TD>
+				<TD class=r name="report-baseInfo-cllx"></TD>
+			</TR>
+			<TR>
+				<TD class=l>车辆识别代号</TD>
+				<TD class=r name="report-baseInfo-clsbdh"></TD>
+				<TD class=l>发&nbsp;动&nbsp;机&nbsp;号</TD>
+				<TD class=r colSpan=3 name="report-baseInfo-fdjh"></TD>
+			</TR>
+			<TR>
+				<TD class=l>初次登记日期</TD>
+				<TD class=r name="report-baseInfo-ccdjrq"></TD>
+				<TD class=l>出厂年月</TD>
+				<TD class=r name="report-baseInfo-ccrq"></TD>
+				<TD class=l>燃&nbsp;料&nbsp;种&nbsp;类</TD>
+				<TD class=r name="report-baseInfo-rlzl"></TD>
+			</TR>
+			<TR>
+				<TD colSpan=6>二、检验结论</TD>
+			</TR>
+			<TR>
+				<TD class=l>整备质量</TD>
+				<TD class=r name="" id="report-cw-zbzl"></TD>
+				<TD class=l width="15%">检&nbsp;&nbsp;验&nbsp;&nbsp;员</TD>
+				<TD class=r  name="report-baseInfo-ycy" colspan="3"></TD>
+			</TR>
+			<TR>
+				<TD colSpan=6>盐城市经济开发区长江路22号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				   联系电话：0515-88323355 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				   单位名称（盖章）：</TD>
+			</TR>
+		</TBODY>
+	</TABLE>
+	
+</div>
+
+<div  id="curbWeightPrintArae" style="display: none;">
+	
+
+</div>
+
+<script type="text/javascript">
+function printCurbWeight(){
+	
+	var temp =$("#curbReportTemp").html();
+	
+	$("#curbWeightPrintArae").html(temp+"<br/><br/><br/><br/><br/>"+temp);
+	
+	report.createReport($("#curbWeightPrintArae"));
+	
+	
+}
 
 function zbzlchange(value){
 	var cz =value-reportData.zbzl;
@@ -71,6 +166,9 @@ $("#commit_zbzl").text(reportData.zbzl);
 		
 		$.post("/veh/pda/getCurbWeight",{jylsh:reportData.jylsh},function(data){
 			 $("#curbWeightForm").form("load",data);
+			 
+			 $("#report-cw-zbzl").text(data.zbzl+"kg");
+			 
 		},"json");
 		
 		$.post("/veh/report/getProcess?jylsh="+reportData.jylsh,function(data){
@@ -91,6 +189,16 @@ $("#commit_zbzl").text(reportData.zbzl);
 				
 			});
 		},"json");
+		
+		var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+		
+		$("#curbReportTemp [name^='report-baseInfo-']").each(function(i,n){
+			var name = $(n).attr("name").replace("report-baseInfo-","");
+			
+			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
+		});
+		
+		
 		
 	});
 

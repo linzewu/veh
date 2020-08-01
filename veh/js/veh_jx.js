@@ -1556,6 +1556,9 @@ var report={
 		var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
 		
 		var jycsarray=[];
+		
+		var zcdxcs=1;
+		
 		if(!intjycs){
 			intjycs = baseInfo.jycs;
 		}
@@ -1620,6 +1623,10 @@ var report={
 				newJyxm+="R";
 			}
 			
+			if(jyxm.indexOf("Z")>=0){
+				newJyxm+="Z";
+			}
+			
 			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
 			
 			$.each(data,function(i,n){
@@ -1639,7 +1646,15 @@ var report={
 						if(j=="czpy"&&n["czpypd"]==2){
 							k+="x";
 						}
-						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
+						var cllx = baseInfo.cllx;
+						var syxz= baseInfo.syxz;
+						if(j=="czpy"&&((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz=="A")){
+							
+						}else{
+							$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
+						}
+						
+						
 						
 					});
 					
@@ -1683,9 +1698,16 @@ var report={
 					
 					//$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.kzzdlpd)+veh.jgpd(n.kzbphlpd));
 					$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_zlh]").text(n.zlh);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_ylh]").text(n.ylh);
+					
+					
 					$("#report1 tr[name="+tt[1]+"] td[name=dxcs]").text(n.dxcs);
+					
+					if(n.dxcs>zcdxcs){
+						zcdxcs=n.dxcs;
+					}
 					
 					var jzzh=n.jzzlh+n.jzylh;
 					
@@ -1712,7 +1734,7 @@ var report={
 					}else{
 						$("#report1 span[name=zd_dtzlh_"+tt[1]+"]").text(0);
 						$("#report1 span[name=zd_dtylh_"+tt[1]+"]").text(0);
-					}
+					} 
 				}else if(i.indexOf("other")==0){
 					$("#report1 tr[name=ZC] td[name=other_jczczbzl]").text(n.jczczbzl);
 					$("#report1 tr[name=ZC] td[name=other_zdlh]").text(n.zdlh);
@@ -1722,7 +1744,7 @@ var report={
 						$("#report1 tr[name=ZC] td[name=other_zczdl]").text(n.zczdl);
 					}
 					$("#report1 tr[name=ZC] td[name=zczdpd]").text(veh.jgpd(n.zczdpd));
-					$("#report1 tr[name=ZC] td[name=dxcs]").text(intjycs);
+					$("#report1 tr[name=ZC] td[name=dxcs]").text(zcdxcs);
 					
 				}else if(i.indexOf("par")==0){
 					$("#report1 tr[name=par] td[name=par_tczclh]").text(n.tczclh);
@@ -1794,20 +1816,55 @@ var report={
 			var jyjl="合格";
 			
 			$.each(yqsbjyjg,function(i,n){
+				
+				
+				
 				if(n.yqjgpd==2){
 					jyjl="不合格";
 				}
 				
 				var jg="-";
-				if(n.yqjgpd==1){
-					jg="合格";
-				}else if(n.yqjgpd==2){
-					jg="不合格";
-				}else if(n.yqjgpd==0){
-					jg="-";
-				}else if(n.yqjgpd==3){
-					jg="-";
+				
+				var tempPD=n.yqjgpd;
+				
+				if(n.yqjgpd.indexOf("/")>0){
+					var jg1 = "-";
+					var jg2 ="-";
+					var tArray =n.yqjgpd.split("/");
+					if(tArray[0]==1){
+						jg1="合格";
+					}else if(tArray[0]==2){
+						jg1="不合格";
+					}else if(tArray[0]==0){
+						jg1="-";
+					}else if(tArray[0]==3){
+						jg1="-";
+					}
+					if(tArray[1]==1){
+						jg2="合格";
+					}else if(tArray[1]==2){
+						jg2="不合格";
+					}else if(tArray[1]==0){
+						jg2="-";
+					}else if(tArray[1]==3){
+						jg2="-";
+					}
+					
+					jg=jg1+"/"+jg2;
+					
+				}else{
+					if(tempPD==1){
+						jg="合格";
+					}else if(tempPD==2){
+						jg="不合格";
+					}else if(tempPD==0){
+						jg="-";
+					}else if(tempPD==3){
+						jg="-";
+					}
 				}
+				
+				
 				
 				var tr="<tr><td class=l >"+(i+1)+"</td><td>"+n.yqjyxm+"</td><td class=l>"+		
 						n.yqjyjg+"</td><td class=l>"+n.yqbzxz+"</td><td class=l>"+jg+"</td><td class=l>"+

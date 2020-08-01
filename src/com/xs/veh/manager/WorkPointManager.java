@@ -251,7 +251,6 @@ public class WorkPointManager {
 				vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 				logger.info("更新车辆数据结束");
 			}catch (Exception e) {
-				
 				logger.error("计算报告出错",e);
 			}
 			

@@ -523,6 +523,12 @@ public class VehManager {
 
 		JSONArray flowJsons = JSONArray.fromObject(flow.getFlow());
 		List<VehFlow> vehFlows = new ArrayList<VehFlow>();
+		
+		List<BaseParams> baseParams =  baseParamsManager.getBaseParamByType("sdwz");
+		boolean sdFlag =false;
+		if(!CollectionUtils.isEmpty(baseParams)) {
+			sdFlag= baseParams.get(0).getParamValue().equals("true");
+		}
 
 		String allJyxm = vcl.getJyxm();
 
@@ -597,6 +603,8 @@ public class VehManager {
 							}
 						} else if (vcl.getJycs() > 1 && device.getType() == Device.CZJCSB
 								&& vcl.getReloginWeigth() != 1) {
+							continue;
+						}else if(sdFlag&&vcl.getZs()>=3&&device.getType() == Device.SDJCSB) {
 							continue;
 						} else {
 							VehFlow v = new VehFlow();
@@ -1043,6 +1051,18 @@ public class VehManager {
 				vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_JCZ);
 			}
 		}
+		List<CurbWeightData> owds =(List<CurbWeightData>)this.hibernateTemplate.find("from CurbWeightData where jylsh=? order by id desc", jylsh);
+		if (owds != null && !owds.isEmpty()) {
+			CurbWeightData cwd = owds.get(0);
+			if(cwd.getZbzlpd()== BaseDeviceData.PDJG_BHG) {
+				fjjyxm += "Z1,";
+				cwd.setSjzt(CurbWeightData.SJZT_FJ);
+				this.hibernateTemplate.save(cwd);
+				vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_JCZ);
+			}
+		}
+		
+		
 
 		if (!fjjyxm.trim().equals("")) {
 			fjjyxm = fjjyxm.substring(0, fjjyxm.length() - 1);

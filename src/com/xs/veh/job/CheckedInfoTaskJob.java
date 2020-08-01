@@ -743,6 +743,10 @@ public class CheckedInfoTaskJob {
 		
 		List<VideoConfig> configs = videoManager.getConfig(jyjgbh);
 		
+		if(CollectionUtils.isEmpty(configs)) {
+			return;
+		}
+		
 		for(VehCheckProcess vcp: datas) {
 			
 			VehCheckLogin vehCheckLogin = vehManager.getVehCheckLoginByJylsh(jyjgbh, vcp.getJylsh());
