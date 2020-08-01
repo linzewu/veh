@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>混凝土搅拌车罐体计算器</title>
+
+<style type="text/css">
+
+ body {
+             padding: 0;
+             margin: 0 auto;
+       }
+
+.tl{
+	width: 220px;
+	text-align: right;
+}
+
+table{
+	width: 420px;
+	margin: 0px auto;
+	border: 1px black solid;
+	
+}
+ #footer {
+                height: 40px;
+                line-height: 40px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                text-align: center;
+                background: #333;
+                color: #fff;
+                font-family: Arial;
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+
+
+</style>
+
+</head>
+<body>
+<h1 style="text-align: center;">混凝土搅拌车罐体计算器</h1>
+<table>
+	<tr>
+		<td  class="tl"><label>C1 罐体最前端处周长：</label></td>
+		<td class="tr"><input value="" id="C1"></td>
+	</tr>
+	<tr>
+		<td class="tl"><label>C2 罐体中间处周长：</label></td>
+		<td class="tr"><input value="" id="C2"></td>
+	</tr>
+	<tr>
+		<td class="tl"><label>C3 罐体最后端处周长：</label></td>
+		<td class="tr"><input value="" id="C3"></td>
+	</tr>
+	<tr>
+		<td class="tl"><label>L1 罐体前段圆台母线长：</label></td>
+		<td class="tr"><input value="" id="L1"></td>
+	</tr>
+	<tr>
+		<td class="tl"><label>L2 罐体中段圆柱母线长：</label></td>
+		<td class="tr"><input value="" id="L2"></td>
+	</tr>
+	<tr>
+		<td class="tl"><label>L3 罐体后段圆台母线长：</label></td>
+		<td class="tr"><input value="" id="L3"></td>
+	</tr>
+	<tr>
+		<td colspan="2" style="text-align: center;">
+			<input value="计   算" type="button" onclick="js()"  style="width: 80px;">
+		</td>
+	</tr>
+</table>
+<h3 style="text-align: center;">计算结果</h3>
+<table>
+	<tr>
+		<td class="tl">最大直径D2:</td>
+		<td id="td_r1"></td>
+	</tr>
+	<tr>
+		<td class="tl">罐体长度L:</td>
+		<td id="td_r2"></td>
+	</tr>
+	<tr>
+		<td class="tl">罐体容量V:</td>
+		<td id="td_r3" ></td>
+	</tr>
+</table>
+<div id="footer">Copyright © 2014 - 2020 上海翔尚信息技术有限公司</div>
+</body>
+<script type="text/javascript">
+
+function js(){
+	var c1,c2,c3,l1,l2,l3;
+	c1=document.getElementById("C1").value;
+	c2=document.getElementById("C2").value;
+	c3=document.getElementById("C3").value;
+	l1=document.getElementById("L1").value;
+	l2=document.getElementById("L2").value;
+	l3=document.getElementById("L3").value;
+	var r1=c2/Math.PI;
+	
+	document.getElementById("td_r1").innerHTML=r1.toFixed(2);
+	
+	var r2 = Math.sqrt(Math.pow(l1,2)-Math.pow((c2-c1)/2*Math.PI,2)) + Number(l2) + Math.sqrt(Math.pow(l3,2)-Math.pow((c2-c3)/2*Math.PI,2));
+	
+	document.getElementById("td_r2").innerHTML=r2.toFixed(2);
+	
+	var r3 = ( (Math.pow(c1,2)+Math.pow(c2,2)+c1*c2)* Math.sqrt(Math.pow(l1,2) - Math.pow((c2-c1)/2*Math.PI,2) )
+			+(Math.pow(c2,2)+Math.pow(c3,2)+c2*c3)* Math.sqrt(Math.pow(l3,2) - Math.pow((c2-c3)/2*Math.PI,2) ) )/ 12*Math.PI
+			+ l2*Math.pow(c2,2)/4*Math.PI;
+	document.getElementById("td_r3").innerHTML=r3.toFixed(2);
+}
+
+
+</script>
+
+</html>
