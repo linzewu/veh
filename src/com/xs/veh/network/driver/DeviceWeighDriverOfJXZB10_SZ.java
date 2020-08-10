@@ -52,6 +52,9 @@ public class DeviceWeighDriverOfJXZB10_SZ extends AbstractDeviceWeigh {
 
 		// 开始新的一次检测
 		createNew();
+		logger.info("整备质量要求  ："+this.deviceWeigh.getVehCheckLogin().getJycs());
+		logger.info("检验项目="+deviceWeigh.getVehCheckLogin().getJyxm().indexOf("Z1"));
+		
 		
 		if(this.deviceWeigh.getVehCheckLogin().getJycs()==1&&this.deviceWeigh.getVehCheckLogin().getJyxm().indexOf("Z1")!=-1) {
 			if(zs.equals("1")) {

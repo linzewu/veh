@@ -1648,29 +1648,29 @@ var report={
 						}
 						var cllx = baseInfo.cllx;
 						var syxz= baseInfo.syxz;
-						if(j=="czpy"&&((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz=="A")){
-							
-						}else{
-							$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
-						}
-						
+//						if(j=="czpy"&&((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0) && syxz=="A")){
+//							
+//						}else{
+//							$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
+//						}
+						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
 						
 						
 					});
 					
-//					if(n.gx=="Y"){
-//						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
-//						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+veh.jgpd(n.czpypd)+dgpd_text.substring(2));
-//					}
-//					
-//					if(n.gx=="J"){
-//						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
-//						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,2)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
-//					}
-					
-					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
-						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+					if(n.gx=="Y"){
+						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+veh.jgpd(n.czpypd)+dgpd_text.substring(2));
 					}
+					
+					if(n.gx=="J"){
+						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,2)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
+					}
+					
+//					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
+//						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
+//					}
 					$("#report1 tr[name="+tt[0]+"] td[name=dxcs]").text(n.dxcs);
 					
 				}else if(i.indexOf("S1")==0){

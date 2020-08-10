@@ -1,1 +1,103 @@
-<?xml version="1.0" encoding="GBK"?><root><vehispara><jylsh>44030020041201649</jylsh><jyjgbh>4403000112</jyjgbh><jcxdh>1</jcxdh><jycs>1</jycs><jyxm>F1</jyxm><hpzl>02</hpzl><hphm>%E7%B2%A4135TEST08</hphm><clsbdh>123</clsbdh><wgjcjyy>%E6%9D%A8%E9%B8%BF%E8%81%AA</wgjcjyy><wgjcjyysfzh>441827200102097919</wgjcjyysfzh><rhplx>1</rhplx><rppxh>1</rppxh><rvin>1</rvin><rfdjh>1</rfdjh><rcsys>1</rcsys><rwkcc>0</rwkcc><rzj>0</rzj><rzbzl>0</rzbzl><rhdzrs>1</rhdzrs><rhdzll>0</rhdzll><rlbgd>0</rlbgd><rhzgbthps>0</rhzgbthps><rkcyjck>0</rkcyjck><rkccktd>0</rkccktd><rhx>0</rhx><rcswg>1</rcswg><rwgbs>1</rwgbs><rwbzm>1</rwbzm><rlt>1</rlt><rhpaz>1</rhpaz><rjzgj>1</rjzgj><rqcaqd>1</rqcaqd><rsjp>1</rsjp><rmhq>0</rmhq><rxsjly>0</rxsjly><rcsfgbs>0</rcsfgbs><rclwbzb>0</rclwbzb><rchfh>0</rchfh><ryjc>0</ryjc><rjjx>0</rjjx><rxsgn>0</rxsgn><rfbs>0</rfbs><rfzzd>0</rfzzd><rpszdq>0</rpszdq><rjjqd>0</rjjqd><rfdjcmh>0</rfdjcmh><rsddd>0</rsddd><rfzdtb>0</rfzdtb><rxcbz>0</rxcbz><rwxhwbz>0</rwxhwbz><rlwcx>1</rlwcx><ztcjrfzzz>0</ztcjrfzzz><cwkc></cwkc><cwkk></cwkk><cwkg></cwkg><zbzl></zbzl><syr></syr><sjhm></sjhm><lxdz></lxdz><yzbm></yzbm><jyyjy></jyyjy></vehispara></root>
+<?xml version="1.0" encoding="GBK"?>
+<root>
+	<vehispara>
+		<jyjl>合格</jyjl>
+		<rgjyjgs>
+			<rgjyjg>
+				<xh>1</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>车辆唯一性检测</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>2</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>车辆特征参数检查</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>3</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>车辆外观检查</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>4</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>安全装置检查</rgjyxm>
+			</rgjyjg>
+			<rgjyjg>
+				<xh>5</xh>
+				<rgjybz />
+				<rgjgpd>1</rgjgpd>
+				<rgjysm />
+				<rgjyxm>联网查询</rgjyxm>
+			</rgjyjg>
+		</rgjyjgs>
+		<jcxdh>1</jcxdh>
+		<hpzl>02</hpzl>
+		<clsbdh>LSVCT6A46EN141249</clsbdh>
+		<jycs>1</jycs>
+		<jyjgbh>3209000066</jyjgbh>
+		<yqsbjyjgs>
+			<yqsbjyjg>
+				<xh>1</xh>
+				<yqjyxm>一轴:制动率(%)/不平衡率(%)</yqjyxm>
+				<yqjyjg>97.8/16.9</yqjyjg>
+				<yqbzxz>≥60.0/≤24.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1/1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>2</xh>
+				<yqjyxm>二轴:制动率(%)/不平衡率(%)</yqjyxm>
+				<yqjyjg>73.0/14.7</yqjyjg>
+				<yqbzxz>≥20.0/≤30.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1/1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>3</xh>
+				<yqjyxm>整车制动率(%)</yqjyxm>
+				<yqjyjg>87.5</yqjyjg>
+				<yqbzxz>≥60.0</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>4</xh>
+				<yqjyxm>右外灯远光发光强度(cd)</yqjyxm>
+				<yqjyjg>25600</yqjyjg>
+				<yqbzxz>≥15000</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>5</xh>
+				<yqjyxm>左外灯远光发光强度(cd)</yqjyxm>
+				<yqjyjg>61500</yqjyjg>
+				<yqbzxz>≥15000</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+			<yqsbjyjg>
+				<xh>6</xh>
+				<yqjyxm>左右外灯远光发光强度总和(cd)</yqjyxm>
+				<yqjyjg>87100</yqjyjg>
+				<yqbzxz>≤430000</yqbzxz>
+				<yqjybz />
+				<yqjgpd>1</yqjgpd>
+			</yqsbjyjg>
+		</yqsbjyjgs>
+		<jybgbz></jybgbz>
+		<jybgjy></jybgjy>
+		<jylsh>32090020080606001</jylsh>
+		<hphm>苏EQ21U6</hphm>
+		<pzrxm>武伟</pzrxm>
+	</vehispara>
+</root>

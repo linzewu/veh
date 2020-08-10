@@ -74,7 +74,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 			dw(vehFlow, zw);
 			
 			if(clzs>=3&&vehFlow.getJyxm().indexOf("L")==-1&&!"B0".equals(vehFlow.getJyxm())) {
-				cz();
+				//cz();
 			}
 			
 			

@@ -1055,26 +1055,38 @@ public class CheckDataManager {
 				
 				String temp = brd.getJyxm().indexOf("L")==0?"加载":"";
 				
+//				DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+//				dcj1.setXh(xh);
+//				dcj1.setYqjyxm(getZW(brd.getZw()) +temp+":"+ "制动率(%)/不平衡率(%)");
+//				dcj1.setYqjyjg((brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString())+"/"+(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString()));
+//				dcj1.setYqbzxz((brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString()+".0")+"/"+(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString()));
+//				dcj1.setYqjgpd((brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString())+"/"+(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString()));
+//				dcj1.setXh(xh);
+//				xh++;
+//				
+//				this.hibernateTemplate.save(dcj1);
+				
 				DeviceCheckJudeg dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
-				dcj1.setYqjyxm(getZW(brd.getZw()) +temp+":"+ "制动率(%)/不平衡率(%)");
-				dcj1.setYqjyjg((brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString())+"/"+(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString()));
-				dcj1.setYqbzxz((brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString()+".0")+"/"+(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString()));
-				dcj1.setYqjgpd((brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString())+"/"+(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString()));
+				dcj1.setYqjyxm(getZW(brd.getZw()) +temp+":"+ "制动率(%)");
+				dcj1.setYqjyjg((brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString()));
+				dcj1.setYqbzxz((brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString()+".0"));
+				dcj1.setYqjgpd((brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString()));
 				dcj1.setXh(xh);
 				xh++;
 				
 				this.hibernateTemplate.save(dcj1);
-//
-//				DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-//				dcj2.setXh(xh);
-//				dcj2.setYqjyxm(getZW(brd.getZw()) +temp+ "不平衡率(%)");
-//				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
-//				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString());
-//				dcj2.setYqjgpd(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString());
-//				dcj2.setXh(xh);
-//				xh++;
-//				this.hibernateTemplate.save(dcj2);
+				
+
+				DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj2.setXh(xh);
+				dcj2.setYqjyxm(getZW(brd.getZw()) +temp+ "不平衡率(%)");
+				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
+				dcj2.setYqbzxz(brd.getBphlxz() == null ? "" : "≤" + brd.getBphlxz().toString());
+				dcj2.setYqjgpd(brd.getKzbphlpd() == null ? "" : brd.getKzbphlpd().toString());
+				dcj2.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj2);
 
 			/*	if (brd.getJzzzdl() != null) {
 					DeviceCheckJudeg dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
