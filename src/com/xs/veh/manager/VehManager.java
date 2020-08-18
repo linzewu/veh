@@ -69,6 +69,7 @@ import com.xs.veh.entity.VehCheckLog;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehFlow;
+import com.xs.veh.entity.VehInfoTemp;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
@@ -263,9 +264,52 @@ public class VehManager {
 	public JSON getVehInfoOfws(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
 
 		Document document = this.queryws(RCAConstant.V18C49, param);
+		
+		String xml=document.asXML();
+		JSON json = new XMLSerializer().read(xml);
+		
+		if(json instanceof JSONObject) {
+			JSONObject jo =(JSONObject)json;
+			JSONObject head= jo.getJSONObject("head");
+			
+			if(head.getInt("code")==1) {
+				JSONArray body= jo.getJSONArray("body");
+				JSONObject info = body.getJSONObject(0);
+				String clsbdh = info.getString("clsbdh");
+				VehInfoTemp vit = getVehInfoTemp(clsbdh);
+				if(vit==null) {
+					vit=new VehInfoTemp();
+				}
+				vit.setClsbdh(clsbdh);
+				vit.setHphm(param.get("hphm").toString());
+				vit.setHpzl(info.getString("hpzl"));
+				vit.setVehInfo(xml);
+				vit.setStatus(0);
+				saveVehInfoTemp(vit);
+				
+			}
+		}
+		
 
-		return new XMLSerializer().read(document.asXML());
+		return json;
 	}
+
+	public VehInfoTemp getVehInfoTemp(String clsbdh) {
+		
+		List<VehInfoTemp> datas = (List<VehInfoTemp>) this.hibernateTemplate.find("from VehInfoTemp where clsbdh=?", clsbdh);
+		
+		if(!CollectionUtils.isEmpty(datas)) {
+			return datas.get(0);
+		}else {
+			return null;
+		}
+		
+	}
+	
+	public void saveVehInfoTemp(VehInfoTemp vehInfoTemp) {
+		this.hibernateTemplate.saveOrUpdate(vehInfoTemp);
+	}
+	
 
 	public JSON getVehCheckItem(Map param) throws RemoteException, UnsupportedEncodingException, DocumentException {
 		Document document = this.queryws(RCAConstant.V18C46, param);
