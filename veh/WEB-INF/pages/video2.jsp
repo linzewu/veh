@@ -89,13 +89,14 @@
 
 		var name = getjczmc('${param.jyjgbh}');
 		$("#jyjgbh").val(name);
-
+		alert($.trim(playInfo))
 		if($.trim(playInfo)==""){
 			LogMessage("无法获取车辆播放信息");
 			return;
 		}
+		alert(4)
 		playInfo=$.parseJSON(playInfo);
-		
+		alert(1)
 		playInfo = playInfo.sort(function(a,b){
 			if(a.jyxm.localeCompare(b.jyxm)!=0){
 				return a.jyxm.localeCompare(b.jyxm);
@@ -108,7 +109,7 @@
 				}
 			}
 		});
-		
+		alert(2)
 		$("#info_hphm").val(playInfo[0].hphm);
 		$.each(playInfo,function(i,n){
 			var li=$("<li> <input  type=\"button\"  value='"+(getjyxm(n.jyxm)+"  "+n.jycs)+"' style=\"width:180px;\" /></li>");
@@ -177,6 +178,8 @@
 				          <param name='loop' value='false' />
 				          <param name='fullscreen' value='true' />
 				          <param name='controls' value='true'>
+				          <param name='vout' value='direct2d'>
+				          
 				    </object>
 				<![endif]-->
 				<!--[if !IE]><!-->
@@ -185,6 +188,7 @@
 				        <param name='volume' value='50' />
 				        <param name='autoplay' value='true' />
 				         <param name='controls' value='true'>
+				        <param name='vout' value='direct2d'>
 				    </object>
 				<!--<![endif]-->
 				<div style="text-align: center;width: 100%;height: 30px; ">

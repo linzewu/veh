@@ -264,7 +264,7 @@ public class PDAServiceController {
 			
 	
 			if (vehCheckProcess.getJyxm().equals("C1")) {
-				TakePicture.createNew(vehCheckLogin, "C1", 5000);
+				TakePicture.createNew(vehCheckLogin, "C1", 5000,jcxdh);
 			}
 			
 			if (vehCheckProcess.getJyxm().equals("DC")) {

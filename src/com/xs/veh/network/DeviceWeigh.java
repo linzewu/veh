@@ -69,6 +69,16 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	private VehCheckLogin vehCheckLogin;
 	
 	
+	
+	
+
+	public CheckEventManger getCheckEventManger() {
+		return checkEventManger;
+	}
+
+	public void setCheckEventManger(CheckEventManger checkEventManger) {
+		this.checkEventManger = checkEventManger;
+	}
 
 	public VehCheckLogin getVehCheckLogin() {
 		return vehCheckLogin;
@@ -199,6 +209,7 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 				if(zs.equals("2")) {
 					this.saveZ1(brakRollerData);
 				}
+				
 			}
 			
 			
@@ -239,13 +250,19 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		
 		BrakRollerData b1 = this.checkDataManager.getBrakRollerDataOfVehLoginInfo(vehCheckLogin, "B1");
 		
+		String cllx=vehCheckLogin.getCllx();
+		
 		CurbWeightData curbWeightData=new CurbWeightData();
 		
 		curbWeightData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), "Z1");
 		
-		Integer qz=b1.getZlh()+b1.getYlh();
+		Integer qz=null;
+		Integer hz=null;
 		
-		Integer hz=b2.getZlh()+b2.getYlh();
+		qz=b1.getZlh()+b1.getYlh();
+		 hz=b2.getZlh()+b2.getYlh();
+	
+		 
 		
 		curbWeightData.setQzzl(qz);
 		
@@ -253,7 +270,7 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		
 		curbWeightData.setZbzl((qz+hz)-65);
 		
-		String cllx=vehCheckLogin.getCllx();
+		
 		int xzgj=100;
 		String temp1="±3%或±";
 		Float temp2=0.03f;

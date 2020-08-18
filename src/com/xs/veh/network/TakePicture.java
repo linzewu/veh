@@ -43,7 +43,8 @@ public class TakePicture implements Runnable {
 	
 	private Map custom;
 	
-
+	private String jcxdh;
+	
 	public Map getCustom() {
 		return custom;
 	}
@@ -104,6 +105,18 @@ public class TakePicture implements Runnable {
 		t.start();
 
 	}
+	
+	public static void createNew(VehCheckLogin vehCheckLogin, String jyxm, Integer yc,Integer jcxdh) {
+		TakePicture tp = new TakePicture(vehCheckLogin.getJylsh(),jcxdh==null?vehCheckLogin.getJcxdh(): jcxdh.toString(), vehCheckLogin.getJycs(),
+				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(), jyxm, 0);
+		tp.setYc(yc);
+		tp.setVehCheckLogin(vehCheckLogin);
+		tp.setJyxm(jyxm);
+		Thread t = new Thread(tp);
+		t.start();
+
+	}
+	
 
 	public static void createNew(VehCheckLogin vehCheckLogin, String jyxm, Integer yc, String zpzl) {
 		TakePicture tp = new TakePicture(vehCheckLogin.getJylsh(), vehCheckLogin.getJcxdh(), vehCheckLogin.getJycs(),
@@ -134,6 +147,8 @@ public class TakePicture implements Runnable {
 			Integer jyzt) {
 		ml = jylsh + "," + jcxdh + "," + jycs + "," + hphm + "," + hpzl + "," + clsbdh + "," + jyxm + "," + jyzt
 				+ ",by1,by2";
+		
+		this.jcxdh=jcxdh;
 		logger.info("拍照命令=" + ml);
 	}
 
@@ -141,6 +156,7 @@ public class TakePicture implements Runnable {
 			Integer jyzt, String zpzl) {
 		ml = jylsh + "," + jcxdh + "," + jycs + "," + hphm + "," + hpzl + "," + clsbdh + "," + jyxm + "," + jyzt + ","
 				+ zpzl + ",by2";
+		this.jcxdh=jcxdh;
 		logger.info("拍照命令=" + ml);
 	}
 
@@ -272,7 +288,7 @@ public class TakePicture implements Runnable {
 			//南昌前轴照片
 			//||jyxm.equals("B1")
 			
-			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")) {
+			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")||jyxm.equals("B1")) {
 				//createOther();
 			}else {
 				onLineDevice();
@@ -302,7 +318,7 @@ public class TakePicture implements Runnable {
 			}
 			
 			
-			if(pzjyxm.equals(jyxm)&&jcxdh.equals(vehCheckLogin.getJcxdh())&&(StringUtils.isEmpty(param.getMemo())||zpzl.equals(param.getMemo()))) {
+			if(pzjyxm.equals(jyxm)&&jcxdh.equals(this.jcxdh)&&(StringUtils.isEmpty(param.getMemo())||zpzl.equals(param.getMemo()))) {
 				String value = param.getParamValue();
 				
 				JSONObject jo=JSONObject.fromObject(value);
@@ -460,9 +476,7 @@ public class TakePicture implements Runnable {
 							byte[] zp=new byte[fis.available()];
 							
 							fis.read(zp);
-							
 							CheckPhoto checkPhoto =new CheckPhoto();
-							
 							checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
 							checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
 							checkPhoto.setHphm(vehCheckLogin.getHphm());
@@ -562,6 +576,18 @@ public class TakePicture implements Runnable {
 			break;
 		case "C1":
 			zpzl="0323";
+			break;
+		case "L1":
+			zpzl="0356";
+			break;
+		case "L2":
+			zpzl="0357";
+			break;
+		case "L3":
+			zpzl="0358";
+			break;
+		case "L4":
+			zpzl="0359";
 			break;
 		default:
 			zpzl=null;

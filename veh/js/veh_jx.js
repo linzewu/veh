@@ -1627,7 +1627,7 @@ var report={
 				newJyxm+="Z";
 			}
 			
-			$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
+		//	$("#report1 [name^='report-baseInfo-jyxm']").text(newJyxm);
 			
 			$.each(data,function(i,n){
 				// 处理灯光
@@ -1693,7 +1693,7 @@ var report={
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdl]").text(n.yzdl+starts[1]);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_zzdlcd]").text(n.zzdlcd);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdlcd]").text(n.yzdlcd);
-					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzbphl]").text(n.kzbphl);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzbphl]").text(n.kzbphl==null?n.kzbphl:n.kzbphl.toFixed(1));
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzxczdl]").text(n.kzxczdl);
 					
 					//$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.kzzdlpd)+veh.jgpd(n.kzbphlpd));
