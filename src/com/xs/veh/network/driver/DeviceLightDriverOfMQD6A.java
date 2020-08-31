@@ -514,6 +514,9 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		deviceLight.getDisplay().sendMessage(messageArray[1], DeviceDisplay.XP);
 
 		deviceLight.sendMessage(currentPosition == 'L' ? tCzd : tCyd);
+		
+		logger.info("发送："+tCzd);
+		
 		while (true) {
 
 			if (this.isError) {

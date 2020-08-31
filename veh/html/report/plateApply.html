@@ -145,7 +145,7 @@
   	<td rowspan="3" style="padding:20px 5px 20px 5px">检验合格标志</td>
   	<td colspan="2"><input type="checkbox"  checked="checked">申请</td>
   	<td colspan="5">
-  		<input type="checkbox" name="sqb_sqlx_0" checked="checked">在登记地车辆管理所申请
+  		<input type="checkbox" name="sqb_sqlx_0" >在登记地车辆管理所申请
   		<input type="checkbox" name="sqb_sqlx_1">在登记地以外车辆管理所申请
   	</td>
   </tr>
@@ -248,9 +248,15 @@ function setDate(data){
 	if(data.sqlx==1){
 		$("input[name=sqb_sqlx_0]").prop("checked",false);
 		$("input[name=sqb_sqlx_1]").prop("checked",true);
+		
+		$("input[name=sqb_sqlx_0]").removeAttr("checked");
+		$("input[name=sqb_sqlx_1]").attr("checked","checked");
 	}else{
 		$("input[name=sqb_sqlx_0]").prop("checked",true);
 		$("input[name=sqb_sqlx_1]").prop("checked",false);
+		
+		$("input[name=sqb_sqlx_0]").attr("checked","checked");
+		$("input[name=sqb_sqlx_1]").removeAttr("checked");
 	}
 	
 	var datas = reportData.dlsj.split("-")

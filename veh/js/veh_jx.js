@@ -562,6 +562,8 @@ var veh = {
 		var hphm = sf + $("input[sid=hphm]").textbox("getValue");
 		var hpzl = $("input[sid=hpzl]").combobox("getValue");
 		var clsbdh = $("input[sid=clsbdh]").textbox("getValue");
+		
+		var jylb = $("#jylb").combobox("getValue");
 
 		if (sf == "" || hphm == "" || hpzl == "" || clsbdh == "") {
 			$.messager.alert("提示", "获取车辆基本信息必须输入号牌号码、号牌种类、车辆识别代号后4位");
@@ -571,7 +573,8 @@ var veh = {
 		var param = {
 			"hphm" : hphm,
 			"hpzl" : hpzl,
-			"clsbdh" : clsbdh
+			"clsbdh" : clsbdh,
+			"jylb":jylb
 		}
 
 		$.messager.progress({

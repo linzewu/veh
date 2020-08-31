@@ -288,7 +288,7 @@ public class TakePicture implements Runnable {
 			//南昌前轴照片
 			//||jyxm.equals("B1")
 			
-			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")||jyxm.equals("B1")) {
+			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")) {
 				//createOther();
 			}else {
 				onLineDevice();

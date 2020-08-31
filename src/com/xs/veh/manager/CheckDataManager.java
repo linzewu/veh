@@ -939,8 +939,7 @@ public class CheckDataManager {
 	}
 	
 	public static void main(String[] age) {
-		Integer i =new Integer(1);
-		int j=1;
+		System.out.println(MathRound1((float)(223*0.1/(1006*0.1*0.98)*100)));
 	}
 
 	private Integer createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, Integer xh) {
@@ -984,7 +983,7 @@ public class CheckDataManager {
 					//if(lightData.getGx() == LightData.GX_JGD) {
 						DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 						dcj2.setYqjyxm(
-								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)量");
+								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移量(mm/10m)");
 						
 						String czpc = lightData.getCzpc().toString().trim();
 						if(isInteger(czpc)) {

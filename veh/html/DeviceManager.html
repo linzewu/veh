@@ -354,19 +354,7 @@
 		});
 	}
 	
-	function deviceFormatter(value,rows){
-		
-		var rows = $("#deviceManager").datagrid("getRows");
-		var text = value;
-		$.each(rows,function(i,n){
-			if(value==n.id){
-				text=n.name;
-				return;
-			}
-		});
-		
-		return text;
-	}
+
 	
 	function getLineTyep(){
 		var lineTypes = comm.getBaseParames('lineType');
