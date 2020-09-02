@@ -2109,7 +2109,7 @@ var report={
 			report4Table+="<tr><td>"+(i+1)+"</td>"+
 			"<td>"+ldata[i]+"</td>";
 			i++;
-			if(ldata[i]){
+			if(ldata[i]!=null){
 			    report4Table+="<td>"+(i+1)+"</td>"+
 			    "<td>"+ldata[i]+"</td></tr>";
 			}else{
