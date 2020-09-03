@@ -1034,8 +1034,11 @@ public class VehManager {
 		if (!fjjyxm.trim().equals("")) {
 			fjjyxm = fjjyxm.substring(0, fjjyxm.length() - 1);
 			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
-			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
-
+			
+			if(!fjjyxm.equals("Z1")) {
+				vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
+			}
+			
 			vehCheckLogin.setJycs(vehCheckLogin.getJycs() + 1);
 			vehCheckLogin.setFjjyxm(fjjyxm);
 
@@ -1093,6 +1096,10 @@ public class VehManager {
 		
 		if(fjjyxm.indexOf("R")>-1) {
 			vehCheckLogin.setVehlszt(VehCheckLogin.ZT_WKS);
+		}
+		
+		if (fjjyxm.indexOf("Z") > -1) {
+			vehCheckLogin.setVehzbzlzt(VehCheckLogin.ZT_WKS);
 		}
 		
 		
