@@ -1112,7 +1112,7 @@ public class VehManager {
 			fjjyxm = fjjyxm.substring(0, fjjyxm.length() - 1);
 			vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
 			
-			if(!fjjyxm.equals("Z1,")) {
+			if(!fjjyxm.equals("Z1")) {
 				vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
 			}
 
