@@ -67,9 +67,8 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			deviceBrakRoller.clearDate();
 			
 			dw(vehFlow, zw);
-			
-			if( this.deviceBrakRoller.getVehCheckLogin().getCheckType()==1
-					&&vehFlow.getJyxm().indexOf("B")==0&&!vehFlow.getJyxm().equals("B0")) {
+			int clzs = deviceBrakRoller.getVehCheckLogin().getZs();
+			if(clzs>=3&&vehFlow.getJyxm().indexOf("L")==-1&&!"B0".equals(vehFlow.getJyxm())) {
 				fhcz();
 			}
 			
@@ -240,6 +239,8 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 		} else {
 			deviceBrakRoller.getDisplay().sendMessage("结束称重", DeviceDisplay.SP);
 			brakRollerData.setZjzh(zlh + ylh );
+			brakRollerData.setJzzlh(zlh);
+			brakRollerData.setJzylh(ylh);
 			Thread.sleep(1000);
 		}
 	}

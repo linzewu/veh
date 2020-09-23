@@ -12,7 +12,6 @@
 <tr>
 	<td>出厂整备质量：</td><td><span id="commit_zbzl" ></span>KG</td>
 	<td>检测整备质量：</td><td><input class="easyui-numberbox" data-options="onChange:zbzlchange" name="zbzl" id="zbzl" required="true" max="99999999" min="1" >KG</td>
-	
 </tr>
 <tr>
 <td>整备质量判定：</td>
@@ -29,14 +28,87 @@
 		<input name="hphm" type="hidden">
 		<input name="clsbdh" type="hidden">
 		<input name="id" type="hidden">
-		<a href="#" class="easyui-linkbutton c6" data-options="onClick:startCurbWeight" id="btn_startCurbWeight">开始检测整备质量</a>
-		<a href="#" class="easyui-linkbutton c6" data-options="onClick:curbWeightForm" id="btn_curbWeightForm">保&nbsp;&nbsp;&nbsp;&nbsp;存</a> 
+		<!-- <a href="#" class="easyui-linkbutton c6" data-options="onClick:startCurbWeight" id="btn_startCurbWeight">开始检测整备质量</a>
+		<a href="#" class="easyui-linkbutton c6" data-options="onClick:curbWeightForm" id="btn_curbWeightForm">保&nbsp;&nbsp;&nbsp;&nbsp;存</a>  -->
 		
-		<!-- <a href="#" class="easyui-linkbutton c6" data-options="onClick:printCurbWeight" id="a_printCurbWeight">打&nbsp;&nbsp;&nbsp;&nbsp;印</a> -->
+		<a href="#" class="easyui-linkbutton c6" data-options="onClick:printCurbWeight" id="a_printCurbWeight">打&nbsp;&nbsp;&nbsp;&nbsp;印</a> 
 	</td>
 </tr>
 </table>
 </form>
+
+<div id="curbReportTemp2" >
+	<div style="width: 725px;margin: 0 auto;" >
+		<h1 style="text-align: center;">机动车整备质量检验报告</h1>
+	</div>
+	<div style="width: 725px;margin: 0 auto;padding-top: 10px;" >
+		<div style="width: 400px;display:block;float: left;"><label>检验机构名称：</label><span >郴州市宏顺机动车检测有限公司</span></div>
+	</div>
+	<div style="width: 725px;margin: 0 auto;padding-top: 20px;">
+		<div style="width: 400px;display:block;float: left;"><label>检验流水号：</label><span name="report-baseInfo-jylsh"></span></div>
+		<div style="width: 200px;display:block;float: left;"><label>检验日期：</label><span name="report-baseInfo-upLineDate"></span></div>
+		<div style="width: 100px;display:block;float: left;"><label>检验次数：</label><span name="report-baseInfo-jycs"></span></div>
+	</div>
+	<TABLE cellSpacing=0 cellPadding=0 border=0   style="width: 725px;margin: 0 auto;border-left: 1px solid;border-top: 1px solid;">
+		<TBODY>
+			<tr>
+				<td colspan="6" style="border-right: 1px solid;border-bottom: 1px solid;"><h3>车辆信息</h3></td>
+			</tr>
+			<tr>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;" >号牌号码：</td>
+				<td style="width: 140px;border-right: 1px solid;border-bottom: 1px solid;text-align: center;" name="report-baseInfo-hphm"></td>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">车主单位:</td>
+				<td colspan="3" style="border-right: 1px solid;border-bottom: 1px solid;text-align: center;" name="report-baseInfo-syr"></td>
+			</tr>
+			<tr>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">车辆类型：</td>
+				<td style="width: 140px;border-right: 1px solid;border-bottom: 1px solid;text-align: center;" name="report-baseInfo-cllx"></td>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">车辆识别代号:</td>
+				<td colspan="3" style="border-right: 1px solid;border-bottom: 1px solid;text-align: center;" name="report-baseInfo-clsbdh"></td>
+			</tr>
+			<tr>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">数据项目</td>
+				<td style="width: 140px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">车辆标准质量(kg)</td>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">测量数据(kg)</td>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">差值(kg)</td>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">限制标准</td>
+				<td style="width: 80px;text-align: center;border-right: 1px solid;border-bottom: 1px solid;">结果判定</td>
+			</tr>
+			<tr>
+				<td style="width: 80px;border-right: 1px solid;border-bottom: 1px solid;text-align: center;"></td>
+				<td style="width: 140px;border-right: 1px solid;border-bottom: 1px solid;text-align: center;" name="report-baseInfo-zbzl"></td>
+				<td style="width: 80px;border-right: 1px solid;border-bottom: 1px solid;text-align: center;" id="report-cw-zbzl"></td>
+				<td style="border-right: 1px solid;border-bottom: 1px solid;text-align: center;" id="report-cw-zbzlzc"></td>
+				<td style="border-right: 1px solid;border-bottom: 1px solid;text-align: center;" >±3%或500KG</td>
+				<td style="border-right: 1px solid;border-bottom: 1px solid;text-align: center;" id="report-cw-zbzlpd"></td>
+			</tr>
+		</TBODY>
+	</TABLE>
+	<TABLE cellSpacing=0 cellPadding=0 border=0   style="width: 725px;margin: 0 auto;border-left: 1px solid;">
+		<tbody>
+			<tr>
+				<td colspan="2" style="padding-top: 10px;font-size: 14px;border-right: 1px solid;border-bottom: 1px solid;">检测照片</td>
+			</tr>
+			<tr>
+				<td style="width: 360px;height:180px;border-right: 1px solid;border-bottom: 1px solid;">
+					<img alt="" src="" style="width: 360px;height:180px;">
+				</td>
+				<td style="width: 360px;height:180px;border-right: 1px solid;border-bottom: 1px solid;">
+					<img alt="" src="" style="width: 360px;height:180px;">
+				</td>
+			</tr>
+		</tbody>
+	</TABLE>
+	<TABLE cellSpacing=0 cellPadding=0 border=0   style="width: 725px;margin: 0 auto;border-left: 1px solid;">
+		<tbody>
+			<tr>
+				<td style="border-right: 1px solid;border-bottom: 1px solid;">检验员：</td>
+				<td style="border-right: 1px solid;border-bottom: 1px solid;">授权签字人：</td>
+				<td style="border-right: 1px solid;border-bottom: 1px solid;">检验结论：</td>
+			</tr>
+		</tbody>
+	</TABLE>
+</div>
 
 <div id="curbReportTemp" style="display: none;">
 	<TABLE cellSpacing=0 cellPadding=0 border=0   style="width: 725px;">
@@ -63,8 +135,7 @@
 				<TD class=l width="15%">检验流水号</TD>
 				<TD class=r width="18%" name="report-baseInfo-jylsh"></TD>
 				<TD class=l width="15%">检测机构名称</TD>
-				<td colspan="3" >
-					盐城市长庆机动车检测服务有限公司
+				<td colspan="3" id="curbTitle" >
 				</td>
 			</TR>
 			<tr>
@@ -124,9 +195,9 @@
 <script type="text/javascript">
 function printCurbWeight(){
 	
-	var temp =$("#curbReportTemp").html();
+	var temp =$("#curbReportTemp2").html();
 	
-	$("#curbWeightPrintArae").html(temp+"<br/><br/><br/><br/><br/>"+temp);
+	$("#curbWeightPrintArae").html(temp);
 	
 	report.createReport($("#curbWeightPrintArae"));
 	
@@ -164,11 +235,14 @@ $("#commit_zbzl").text(reportData.zbzl);
 
 	$(function(){
 		
+		var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+		
+		$("#curbTitle").text(vehComm.jyjgmc);
 		$.post("/veh/pda/getCurbWeight",{jylsh:reportData.jylsh},function(data){
 			 $("#curbWeightForm").form("load",data);
-			 
-			 $("#report-cw-zbzl").text(data.zbzl+"kg");
-			 
+			 $("#report-cw-zbzl").text(data.zbzl);
+			 $("#report-cw-zbzlzc").text(Math.abs(data.zbzl-baseInfo.zbzl));
+			 $("#report-cw-zbzlpd").text(data.zbzlpd==null?"":data.zbzlpd);
 		},"json");
 		
 		$.post("/veh/report/getProcess?jylsh="+reportData.jylsh,function(data){
@@ -190,9 +264,9 @@ $("#commit_zbzl").text(reportData.zbzl);
 			});
 		},"json");
 		
-		var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+	
 		
-		$("#curbReportTemp [name^='report-baseInfo-']").each(function(i,n){
+		$("#curbReportTemp2 [name^='report-baseInfo-']").each(function(i,n){
 			var name = $(n).attr("name").replace("report-baseInfo-","");
 			
 			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));

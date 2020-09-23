@@ -243,11 +243,17 @@ public class VehController {
 			if(vehCheckLogin.getCheckType()==1) {
 				processTestVeh(vehCheckLogin,testVeh);
 				//写入综合检测表
+				if(testVeh.getQlj()==null) {
+					testVeh.setQlj(0);
+				}
 				this.vehManager.saveTestVeh(testVeh);
 			}
 			
 			if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0&&vehCheckLogin.getZs()>=3) {
 				processTestVehS1(vehCheckLogin,testVeh);
+				if(testVeh.getQlj()==null) {
+					testVeh.setQlj(0);
+				}
 				this.vehManager.saveTestVeh(testVeh);
 			}
 			

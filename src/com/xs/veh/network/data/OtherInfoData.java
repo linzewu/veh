@@ -251,7 +251,7 @@ public class OtherInfoData extends BaseEntity {
 		if(jczczbzl==null||jczczbzl==0){
 			return;
 		}
-		this.zczdl = CheckDataManager.MathRound((float) (zdlh/(jczczbzl*0.98))*100);
+		this.zczdl = CheckDataManager.MathRound1((float) (zdlh/(jczczbzl*0.98))*100);
 	}
 
 	public void setZczdpd(String zczdpd) {

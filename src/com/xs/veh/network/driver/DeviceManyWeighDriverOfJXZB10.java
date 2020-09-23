@@ -123,42 +123,45 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 			while (true) {
 //				deviceManyWeigh.sendMessage(dqgd);
 //				byte[] singData = this.getDevData(new byte[12],A);
-				
-				
-				deviceManyWeigh.sendMessage(dqsj);
-				logger.info("读取称重数据："+dqsj);
-				byte[] data = this.getDevData(new byte[19],A);
-				logger.info("称重开始："+CharUtil.byte2HexOfString(data));
-				
-				Integer zlh=Integer.parseInt(new String(new byte[]{data[3],data[4],data[5],data[6],data[7]}));
-				Integer ylh=Integer.parseInt(new String(new byte[]{data[8],data[9],data[10],data[11],data[12]}));
-				
-				boolean dw =false;
-				
-				if("前".equals(zw)) {
-					dw=qzdw;
+				try {
+					deviceManyWeigh.sendMessage(dqsj);
+					logger.info("读取称重数据："+dqsj);
+					
+					byte[] data = this.getDevData(new byte[19],A);
+					
+					
+					logger.info("称重开始："+CharUtil.byte2HexOfString(data));
+					
+					Integer zlh=Integer.parseInt(new String(new byte[]{data[3],data[4],data[5],data[6],data[7]}));
+					Integer ylh=Integer.parseInt(new String(new byte[]{data[8],data[9],data[10],data[11],data[12]}));
+					
+					boolean dw =false;
+					
+					if("前".equals(zw)) {
+						dw=qzdw;
+					}
+					
+					if("后".equals(zw)||"驱动".equals(zw)) {
+						dw=hzdw;
+					}
+					if (dw) {
+						this.display.sendMessage( zw+"轴称重已到位", DeviceDisplay.SP);
+						this.display.sendMessage(zlh+"KG/"+ylh + "KG",
+								DeviceDisplay.XP);
+						i++;
+					} else {
+						this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
+						this.display.sendMessage(zw+"轴称重请到位", DeviceDisplay.XP);
+						i = 0;
+					}
+					if (i >= 12) {
+						break;
+					}
+					Thread.sleep(500);
+				}catch (Exception e) {
+					logger.error("称重异常！",e);
+					this.getTemp().clear();
 				}
-				
-				if("后".equals(zw)||"驱动".equals(zw)) {
-					dw=hzdw;
-				}
-				
-				if (dw) {
-					this.display.sendMessage( zw+"轴称重已到位", DeviceDisplay.SP);
-					this.display.sendMessage(zlh+"KG/"+ylh + "KG",
-							DeviceDisplay.XP);
-					i++;
-				} else {
-					this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
-					this.display.sendMessage(zw+"轴称重请到位", DeviceDisplay.XP);
-					i = 0;
-				}
-
-				if (i >= 12) {
-					break;
-				}
-
-				Thread.sleep(500);
 			}
 			
 			deviceManyWeigh.sendMessage(sdcz);

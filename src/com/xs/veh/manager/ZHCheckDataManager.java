@@ -118,6 +118,7 @@ public class ZHCheckDataManager {
 			speedData.setSdpd();
 			speedData.setZpd();
 			
+			
 			VehCheckLogin cvl = vehManager.getVehCheckLoginByJylsh(jyjgbh, testResultMap.get("jylsh").toString());
 			if(cvl!=null) {
 				speedData.setBaseDeviceData(cvl, 1, "S1");
@@ -170,7 +171,7 @@ public class ZHCheckDataManager {
 	public  Map<String, Object> getAData(String jylsh,Integer jycs){
 		
 		List<SideslipData> sids = (List<SideslipData>) this.hibernateTemplate
-				.find("from SideslipData where jylsh=? and sjzt=? order by id desc", jylsh, SideslipData.SJZT_ZC);
+				.find("from SideslipData where jylsh=? order by id desc", jylsh);
 		Map aMap=new HashMap<String, Object>();
 		if (sids != null && !sids.isEmpty()) {
 			SideslipData sideslipData = sids.get(0);

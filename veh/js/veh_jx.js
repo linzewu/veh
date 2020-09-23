@@ -1534,7 +1534,15 @@ var report={
 			if(row.cllx.indexOf("N")>=0){
 				$("#report1").panel({"href":"/veh/html/report/tricycleReport1.html","onLoad":report.getReport1,baseInfo:row});
 			}else{
-				$("#report1").panel({"href":"/veh/html/report/report1_jx.html","onLoad":report.getReport1,baseInfo:row});
+				var reportArray= comm.getBaseParames("report_url");
+				var report1_url="report1_jx.html";
+				
+				$.each(reportArray,function(i,n){
+					if(n.value=="report1"){
+						report1_url=n.id;
+					}
+				});
+				$("#report1").panel({"href":"/veh/html/report/"+report1_url,"onLoad":report.getReport1,baseInfo:row});
 			}
 			//
 			$("#report2").panel({"href":"/veh/html/report/report2.html","onLoad":report.getReport2,baseInfo:row});
@@ -1600,6 +1608,46 @@ var report={
 				
 				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 			});
+			
+			var zczw = $("#report [name=report-baseInfo-zczw]").text();
+			if(zczw){
+				
+				var newStr="";
+				 var zczwarray = zczw.split("");
+				 $.each(zczwarray,function(i,n){
+					
+					switch (n) {
+					case "1":
+						 alert(n)
+						newStr+="+一轴"
+						break;
+					case "2":
+						newStr+="+二轴"
+						break;
+					case "3":
+						newStr+="+三轴"
+						break;
+					case "4":
+						newStr+="+四轴"
+						break;
+					case "5":
+						newStr+="+五轴"
+						break;
+					case "6":
+						newStr+="+六轴"
+						break;
+					default:
+						break;
+					}
+				 });
+				 if(newStr){
+					 newStr = newStr.substring(1);
+				 }
+				 $("#report [name=report-baseInfo-zczw]").text(newStr);
+			}
+			
+			
+			
 			$("#report1_jczmc").text(vehComm.jyjgmc);
 			
 			var jyxm = $("#report1 [name^='report-baseInfo-jyxm']").text();
@@ -1656,6 +1704,7 @@ var report={
 //						}else{
 //							$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
 //						}
+						
 						$("#report1 tr[name="+tt[0]+"] td[name="+tt[1].toLowerCase()+"_"+j+"]").text(k==null?"":k);
 						
 						
@@ -1663,12 +1712,12 @@ var report={
 					
 					if(n.gx=="Y"){
 						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
-						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+veh.jgpd(n.czpypd)+dgpd_text.substring(2));
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(veh.jgpd(n.gqpd)+dgpd_text.substring(1));
 					}
 					
 					if(n.gx=="J"){
 						var  dgpd_text = $("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text();
-						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,2)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
+						$("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text(dgpd_text.substring(0,1)+veh.jgpd(n.czpypd==null?"0":n.czpypd));
 					}
 					
 //					if($("#report1 tr[name="+tt[0]+"] td[name=xmpd]").text()!="X"){
@@ -1690,14 +1739,22 @@ var report={
 					$("#report1 tr[name="+tt[1]+"] td[name=zz_rightData]").text(n.rightData);
 				}else if(i.indexOf("ZD")==0){
 					var tt = i.split("_");
+					
+//					var letStart =  n.leftDataStr.split(",").length>=400?"":"*";
+//					var rigStart =  n.rigthDataStr.split(",").length>=400?"":"*";
+					
 					var bsStr=report.getBsStr(n.jszt);
 					var starts=bsStr.split(",");
-					$("#report1 tr[name="+tt[1]+"] td[name=zd_zzdl]").text(n.zzdl+starts[0]);
-					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdl]").text(n.yzdl+starts[1]);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_zzdl]").text(n.zzdl);
+					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdl]").text(n.yzdl);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_zzdlcd]").text(n.zzdlcd);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_yzdlcd]").text(n.yzdlcd);
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzbphl]").text(n.kzbphl==null?n.kzbphl:n.kzbphl.toFixed(1));
 					$("#report1 tr[name="+tt[1]+"] td[name=zd_kzxczdl]").text(n.kzxczdl);
+					
+					if(n.kzxczdl>=100){
+						$("#report1 tr[name="+tt[1]+"] td[name=zd_kzxczdl]").css("color","red");
+					}
 					
 					//$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.kzzdlpd)+veh.jgpd(n.kzbphlpd));
 					$("#report1 tr[name="+tt[1]+"] td[name=xmpd]").text(veh.jgpd(n.zpd));
@@ -1718,14 +1775,25 @@ var report={
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_jzzh]").text(n.zlh+n.ylh);
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_jzzzdl]").text(n.kzxczdl);
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_jzbphl]").text(n.kzbphl);
-						
 						var objpd=$("#report1 tr[name=B"+n.zw+"] td[name=xmpd]");
-						
 						if(objpd.text()!="X"){
 							objpd.text(veh.jgpd(n.zpd));
 						}
 						
+						$("#report1 td[name=L"+n.zw+"_zzdl]").text(n.zzdl);
+						$("#report1 td[name=L"+n.zw+"_yzdl]").text(n.zzdl);
+						$("#report1 td[name=L"+n.zw+"_zzdlcd]").text(n.zzdlcd);
+						$("#report1 td[name=L"+n.zw+"_yzdlcd]").text(n.yzdlcd);
 					}
+					
+					if(n.jzzlh){
+						$("#report1 td[name=L"+n.zw+"] span[name=left]").text(n.jzzlh);
+					}
+					if(n.jzylh){
+						$("#report1 td[name=L"+n.zw+"] span[name=rigth]").text(n.jzylh);
+					}
+					
+					
 					
 					if(tt[1]=="B0"){
 						$("#report1 tr[name=B"+n.zw+"] td[name=zd_b"+n.zw+"_zczdl]").text((Number(n.zzdl)+Number(n.yzdl)))

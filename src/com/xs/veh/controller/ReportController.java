@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,8 +15,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,10 +42,17 @@ import com.xs.veh.entity.PlateApplyTable;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
+import com.xs.veh.entity.VehInfoTemp;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.RoadCheackManager;
+import com.xs.veh.manager.VehManager;
 import com.xs.veh.util.HKVisionUtil;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.util.JSONUtils;
+import net.sf.json.xml.XMLSerializer;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -47,6 +60,8 @@ import sun.misc.BASE64Encoder;
 @RequestMapping(value = "/report")
 @Modular(modelCode="Report",modelName="检验报告查询")
 public class ReportController {
+	
+	private static Logger logger = Logger.getLogger(ReportController.class);
 
 	@Resource(name = "roadCheackManager")
 	private RoadCheackManager roadCheackManager;
@@ -56,6 +71,9 @@ public class ReportController {
 
 	@Resource(name = "checkDataManager")
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name = "vehManager")
+	private VehManager vehManager;
 
 	@UserOperation(code="getReport1",name="仪器设备检验报告")
 	@RequestMapping(value = "getReport1", method = RequestMethod.POST)
@@ -310,5 +328,69 @@ public class ReportController {
 		info.put("message", "视频状态重置成功！");
 		return info;
 	}
+	
+	
+	@UserOperation(code="getJQX",name="获取交强险信息")
+	@RequestMapping(value = "getJQX", method = RequestMethod.POST)
+	public @ResponseBody Map getJQX(@RequestParam String jylsh) throws RemoteException, UnsupportedEncodingException, DocumentException{
+		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		
+		Map<String,Object> param =new HashMap<String,Object>();
+		
+		param.put("hphm", vehCheckLogin.getHphm());
+		param.put("hpzl", vehCheckLogin.getHpzl());
+		param.put("clsbdh", vehCheckLogin.getClsbdh());
+		
+		Map info=new HashMap();
+		Document dcoument = vehManager.queryws("18C23", param);
+		
+		String xml=dcoument.asXML();
+		
+		logger.info(xml);
+		
+		JSON json = new XMLSerializer().read(xml);
+		
+		if(json instanceof JSONObject) {
+			JSONObject jo =(JSONObject)json;
+			JSONObject head= jo.getJSONObject("head");
+			
+			if(head.getInt("code")==1) {
+				JSONArray body= jo.getJSONArray("body");
+				
+				if(JSONUtils.isObject(body.get(0))) {
+					JSONObject data = body.getJSONObject(0);
+					info.put("state","1");
+					info.put("data",data);
+					
+					Insurance insurance = checkDataManager.getInsurance(jylsh);
+					
+					if(insurance==null) {
+						insurance=new  Insurance();
+					} 
+					insurance.setJyjgbh(vehCheckLogin.getJyjgbh());
+					insurance.setBxgs(data.getString("bxgs"));
+					insurance.setBxpzh(data.getString("bxdh"));
+					insurance.setClsbdh(vehCheckLogin.getClsbdh());
+					insurance.setHphm(vehCheckLogin.getHphm());
+					insurance.setHpzl(vehCheckLogin.getHpzl());
+					insurance.setSxrq(data.getString("sxrq"));
+					insurance.setZzrq(data.getString("zzrq"));
+					insurance.setJylsh(jylsh);
+					checkDataManager.saveOrUpdateInsurance(insurance);
+					
+				}else {
+					Object data = body.get(0);
+					info.put("state","2");
+					info.put("data",data);
+				}
+				
+			}
+		}
+		
+		
+		
+		return info;
+	}
+	
 
 }

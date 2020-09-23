@@ -195,9 +195,9 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 			data.setCzpyxz(vehCheckLogin);
 			data.setCzpypd();
 			
-			if(!czpypdFlag){
-				data.setCzpypd(LightData.PDJG_WJ);
-			}
+//			if(!czpypdFlag){
+//				data.setCzpypd(LightData.PDJG_WJ);
+//			}
 			
 			data.setZpd();
 			if (data.getZpd() == CheckDataManager.PDJG_BHG) {

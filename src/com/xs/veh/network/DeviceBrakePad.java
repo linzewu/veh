@@ -296,14 +296,18 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			
 			VehCheckProcess vp =process;
 			
-			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
-					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(100);
-			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
-					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(100);
-			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
-					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+			if(!vehFlow.getJyxm().equals("B0")) {
+				checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+						vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(100);
+				checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+						vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(100);
+				checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+						vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+			}
+			
+			
 			
 		}
 		

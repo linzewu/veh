@@ -296,12 +296,92 @@ function imageUpload(){
 	})
 }
 
+function checkeJQX(){
+	$.post("/veh/report/getJQX",{jylsh:reportData.jylsh},function(data){
+		if(data.state==1){
+			$.each(data.data,function(i,n){
+				if(i!="@id"){
+					$("#jqx_"+i).text(n);
+				}
+			});
+			$("#win_jqx").window("open");
+		}else{
+			$.messager.alert("提示","已向综合应用平台发送查询请求，请确认信息无误后，等待5-10秒再试！ 对未查询交强险或车船税电子信息的,请告知车主提交凭证！")
+		}
+	});
+}
+
+function queryJDCZT(){
+	
+	var sor_clsbdh=reportData.clsbdh.substring(reportData.clsbdh.length-6,reportData.clsbdh.length);
+	
+	var param = {
+			"hphm" : reportData.hphm,
+			"hpzl" : reportData.hpzl,
+			"clsbdh" : sor_clsbdh,
+			"jylb":reportData.jylb
+		}
+	$.post("/veh/veh/getVehInfo",param,function(data){
+		data = $.parseJSON(data);
+		console.log(data);
+		var head = null;
+		var body = null;
+		if ($.isArray(data)) {
+			head = data[0];
+		} else {
+			head = data["head"];
+			body = data["body"]
+		}
+		if (head["code"] == 1) {
+			$.messager.alert("提示","该机动车状态："+comm.getParamNameByValue('jdczt',body[0]['zt']));
+		} else {
+			$.messager.alert("提示",head["message"])
+		}
+	});
+}
+
+
 </script>
 <style>
 	.showItem{
 		color: red;
 	}
 </style>
+
+
+<div id="win_jqx" class="easyui-window" title="交强险信息" 
+		style="width:650px;height:400px" data-options="modal:true,maximizable:false,minimizable:false,collapsible:false,closed:true">
+	<table class="basetable" style="width:600px;min-width: 600px; margin-left: 10px; margin-top: 10px;" cellspacing="0" cellpadding="0" >
+		<tr>
+			<td class="tl">保险单号：</td>
+			<td class="tc" id="jqx_bxdh"></td>
+			<td class="tl">保险公司代号：</td>
+			<td class="tc" id="jqx_bxgsdm"></td>
+		</tr>
+		<tr>
+			<td class="tl">保险公司名称：</td>
+			<td class="tc" id="jqx_bxgs"></td>
+			<td class="tl">被保人：</td>
+			<td class="tc" id="jqx_bbxr"></td>
+		</tr>
+		<tr>
+			<td class="tl">身份证号码：</td>
+			<td class="tc" id="jqx_bbxrsfzmhm"></td>
+			<td class="tl">投保状态：</td>
+			<td class="tc" id="jqx_jqxtbzt"></td>
+		</tr>
+		<tr>
+			<td class="tl">生效日期：</td>
+			<td class="tc" id="jqx_sxrq"></td>
+			<td class="tl">终止日期：</td>
+			<td class="tc" id="jqx_zzrq"></td>
+		</tr>
+		<tr>
+			<td class="tl">车船税纳税情况：</td>
+			<td class="tc" colspan="3" id="jqx_ccsnsqk"></td>
+		</tr>
+	</table>
+</div>
 
 <div class="easyui-layout" data-options="fit:true">
 	 <div data-options="region:'center'" data-options="border:0" >
@@ -371,6 +451,18 @@ function imageUpload(){
     			</tr>
     			<tr>
     				<td><label>号牌种类：</label></td><td id="img_hpzl" style="text-align: left;"></td>
+    			</tr>
+    			<tr>
+    				<td><label>交强险信息：</label></td>
+    				<td id="img_jqx" style="text-align: left;">
+    					<a href="#" class="easyui-linkbutton c6" data-options="onClick:checkeJQX">核查</a>
+    				</td>
+    			</tr>
+    			<tr>
+    				<td><label>机动车状态：</label></td>
+    				<td id="img_jqx" style="text-align: left;">
+    					<a href="#" class="easyui-linkbutton c6" data-options="onClick:queryJDCZT">刷新</a>
+    				</td>
     			</tr>
     		</table>
     	</div>

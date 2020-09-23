@@ -179,7 +179,7 @@ public class CheckDataManager {
 		}
 
 		List<SideslipData> sids = (List<SideslipData>) this.hibernateTemplate
-				.find("from SideslipData where jylsh=? and sjzt=? order by id desc", jylsh, SideslipData.SJZT_ZC);
+				.find("from SideslipData where jylsh=?  order by id desc", jylsh);
 		if (sids != null && !sids.isEmpty()) {
 			SideslipData sideslipData = sids.get(0);
 			int sideslipJycs=sideslipData.getJycs();
@@ -212,13 +212,13 @@ public class CheckDataManager {
 						int zdlh=otherData.getZdlh()==null?0:otherData.getZdlh();
 						int zczbzl=otherData.getJczczbzl()==null?0:otherData.getJczczbzl();
 						
-						if(vehCheckLogin.getZs()>=3&&brd.getJzzlh()!=null&&brd.getJzylh()!=null) {
-							logger.info("负荷台称重！");
-							otherData.setJczczbzl(zczbzl+brd.getJzzlh()+brd.getJzylh());
-						}else {
-							otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
-						}
-						
+//						if(vehCheckLogin.getZs()>=3&&brd.getJzzlh()!=null&&brd.getJzylh()!=null) {
+//							logger.info("负荷台称重！");
+//							otherData.setJczczbzl(zczbzl+brd.getJzzlh()+brd.getJzylh());
+//						}else {
+//							otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
+//						}
+						otherData.setJczczbzl(zczbzl+brd.getZlh()+brd.getYlh());
 						Integer zzdl = brd.getZzdl()==null?0:brd.getZzdl();
 						Integer yzdl= brd.getYzdl()==null?0:brd.getYzdl();
 						
@@ -460,13 +460,7 @@ public class CheckDataManager {
 		boolean isRoller=true;
 		
 		for (BrakRollerData brakRollerData : list) {
-			
-			if(vehCheckLogin.getZs()>=3&&brakRollerData.getJzzlh()!=null&&brakRollerData.getJzylh()!=null) {
-				zclh += brakRollerData.getJzzlh() + brakRollerData.getJzylh();
-			}else {
-				zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
-			}
-			
+			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
 			Integer zzdl=brakRollerData.getZzdl()==null?0:brakRollerData.getZzdl();
 			Integer yzdl=brakRollerData.getYzdl()==null?0:brakRollerData.getYzdl();
 			zdlh += zzdl + yzdl;
@@ -491,6 +485,19 @@ public class CheckDataManager {
 			parDataOfAnjian.setTczdxz(vehCheckLogin,isRoller);
 			parDataOfAnjian.setTczdpd();
 			this.hibernateTemplate.save(parDataOfAnjian);
+			try {
+				checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C55", "B0", vehCheckLogin.getHphm(), vehCheckLogin.getHpzl()
+						,vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(100);
+				checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C81", "B0", vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(),
+						vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(100);
+				checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C58", "B0", vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(),
+						vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		otherInfoData.setZczdlxz();
 		otherInfoData.setZczdlpd();
@@ -827,7 +834,7 @@ public class CheckDataManager {
 				setDeviceCheckJudeg(deviceCheckJudegLscsd, vehCheckLogin);
 				deviceCheckJudegLscsd.setYqjyxm("制动初速度（km/h）");
 				deviceCheckJudegLscsd.setYqjyjg(roadCheck.getZdcsd().toString());
-				deviceCheckJudegLscsd.setYqjgpd("0");
+				deviceCheckJudegLscsd.setYqjgpd(roadCheck.getLscsdpd().toString());
 				deviceCheckJudegLscsd.setYqbzxz("≥" + roadCheck.getLscsdxz().toString());
 				deviceCheckJudegLscsd.setXh(xh.intValue());
 				deviceCheckJudegLscsd.setBz1("R");
@@ -882,7 +889,7 @@ public class CheckDataManager {
 					// 行车空载制动距离
 					DeviceCheckJudeg deviceCheckJudegKzmfdd = new DeviceCheckJudeg();
 					setDeviceCheckJudeg(deviceCheckJudegKzmfdd, vehCheckLogin);
-					deviceCheckJudegKzmfdd.setYqjyxm("空载MFFDD(ms/<sup>2</sup>)");
+					deviceCheckJudegKzmfdd.setYqjyxm("空载MFFDD(m/s<sup>2</sup>)");
 					deviceCheckJudegKzmfdd.setYqjyjg(roadCheck.getXckzmfdd().toString());
 					deviceCheckJudegKzmfdd.setYqjgpd(roadCheck.getLskzmfddpd().toString());
 					deviceCheckJudegKzmfdd.setYqbzxz("≥" + roadCheck.getLskzmfddxz());
@@ -1511,6 +1518,11 @@ public class CheckDataManager {
 				insurance.getHpzl(), insurance.getClsbdh(),vehCheckLogin.getVehcsbj());
 		checkEventManger.createEvent(insurance.getJylsh(), null, "18C64", null, insurance.getHphm(),
 				insurance.getHpzl(), insurance.getClsbdh(),vehCheckLogin.getVehcsbj());
+	}
+	
+	public void saveOrUpdateInsurance(Insurance insurance) {
+
+		this.hibernateTemplate.saveOrUpdate(insurance);
 	}
 
 	public Insurance getInsurance(String jylsh) {

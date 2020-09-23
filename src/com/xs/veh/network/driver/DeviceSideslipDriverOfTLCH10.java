@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.xs.common.CharUtil;
 import com.xs.veh.entity.VehFlow;
@@ -92,6 +93,11 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 				byte[] data = this.getDevData(new byte[10]);
 				String strData=new String(new byte[]{data[3],data[4],data[5],data[6],data[7],data[8]}).trim();
 				logger.info("侧滑："+strData);
+				
+				if(StringUtils.isEmpty(strData)) {
+					strData="0";
+				}
+				
 				float  sideslip=Float.parseFloat(strData);
 				if(data[2]==0x7a){
 					TakePicture.createNew(this.deviceSideslip.getVehCheckLogin(),"A1");

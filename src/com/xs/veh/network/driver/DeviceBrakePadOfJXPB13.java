@@ -190,7 +190,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				
 				zcsj[currntIndex] = data[i];
 				currntIndex++;
-				logger.info("currntIndex: " + currntIndex);
+				//logger.info("currntIndex: " + currntIndex);
 				if (currntIndex == zcsj.length) {
 					setZCData(zcsj);
 				}
@@ -204,7 +204,7 @@ public class DeviceBrakePadOfJXPB13 extends AbstractDeviceBrakePad {
 				}
 				qxsj[currntIndex] = data[i];
 				currntIndex++;
-				logger.info("currntIndex: " + currntIndex);
+			//	logger.info("currntIndex: " + currntIndex);
 				if (currntIndex == qxsj.length) {
 					processQX(qxsj, currentComm);
 					break;
