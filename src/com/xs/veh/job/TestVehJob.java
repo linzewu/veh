@@ -4,7 +4,10 @@ import java.io.FileInputStream;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,6 +29,9 @@ public class TestVehJob {
 
 	@Autowired
 	private CheckDataManager checkDataManager;
+	
+	@Resource(name="qkdJdbcTemplate")
+	private JdbcTemplate jdbcTemplate;
 
 	@Scheduled(fixedDelay = 1000)
 	public void scanTaskPic() throws Exception {
@@ -35,24 +41,29 @@ public class TestVehJob {
 
 		for (TaskPicture t : tps) {
 
+			VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(t.getJylsh());
+			
 			BaseParams param = null;
 			for (BaseParams bp : params) {
 				String[] paramName = bp.getParamName().split("_");
 				String pzjyxm = paramName[0];
 				String jcxdh = "1";
-				if (paramName.length > 1) {
+				
+				if(paramName.length>1) {
 					jcxdh = paramName[1];
 				}
-				if("EP".equals(pzjyxm)) {
-					param = bp;
-				}else if("S1".equals(pzjyxm)) {
-					param = bp;
-				}
 				
+				if(t.getJyxm().equals(pzjyxm)&&jcxdh.equals(vehCheckLogin.getJcxdh())) {
+					param = bp;
+					break;
+				}else if(t.getJyxm().equals(pzjyxm)&&jcxdh.equals(vehCheckLogin.getJcxdh())) {
+					param = bp;
+					break;
+				}
 			}
 
 			if (param != null) {
-				VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(t.getJylsh());
+				
 
 				String value = param.getParamValue();
 
@@ -103,5 +114,12 @@ public class TestVehJob {
 			t.setStatus("1");
 			this.checkDataManager.updateTaskPaice(t);
 		}
+	}
+	
+	//@Scheduled(fixedDelay = 1000*10)
+	public void t1() {
+		Integer o = jdbcTemplate.queryForObject("select count(*) from CarRemoteExchange", Integer.class);
+		
+		System.out.println(o);
 	}
 }

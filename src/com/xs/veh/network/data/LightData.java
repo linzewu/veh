@@ -398,11 +398,14 @@ public class LightData extends BaseDeviceData {
 			this.czpyxz = "0.8,0.95";
 		}*/
 		
-		if(dg>1000) {
-			this.czpyxz ="-350,-50";
-		}else {
-			this.czpyxz ="-350,-100";
+		if (this.gx == GX_JGD) {
+			if(dg>1000) {
+				this.czpyxz ="-350,-50";
+			}else {
+				this.czpyxz ="-350,-100";
+			}
 		}
+		
 		
 	}
 

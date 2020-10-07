@@ -1,0 +1,88 @@
+
+
+<script type="text/javascript">
+
+var reportData;
+
+var checkItem="";
+
+$(function(){
+	reportData = $("#checkingVeh").datagrid("getSelected");
+	$("#grid_outLineWaitList").datagrid({
+		title:'外廓尺寸测量',
+		toolbar: [{
+			iconCls: 'icon-undo',
+			text:'引车上线（过程开始）',
+			handler: function(){
+				if(reportData.vehwkzt==0){
+					 $.post("/veh/extend/upQkdOutLine",{jylsh:reportData.jylsh},function(data){
+						 $.messager.alert("提示",data.message);
+						 $("#grid_outLineWaitList").datagrid("reload");
+						 reportData.vehwkzt=1;
+						 $("#checkingVeh").datagrid("reload");
+					}) 
+				}else{
+					$.messager.alert("提示","该车无外廓尺寸项目！");
+				}
+			}
+		},{
+			iconCls: 'icon-cut',
+			text:'拍照入',
+			handler: function(){
+				if(reportData.vehwkzt==1){
+					 $.post("/veh/extend/qkdOutlinePicture",{jylsh:reportData.jylsh,zpzl:"0360"},function(data){
+						 $.messager.alert("提示",data.message);
+					}) 
+				}else{
+					$.messager.alert("提示","该车无外廓尺寸项目！");
+				}
+			}
+		},{
+			iconCls: 'icon-cut',
+			text:'拍照出',
+			handler: function(){
+				if(reportData.vehwkzt==1){
+					 $.post("/veh/extend/upQkdOutLine",{jylsh:reportData.jylsh,zpzl:"0361"},function(data){
+						 $.messager.alert("提示",data.message);
+					}) 
+				}else{
+					$.messager.alert("提示","该车无外廓尺寸项目！");
+				}
+			}
+		},{
+			iconCls: 'icon-undo',
+			text:'过程结束（上传平台）',
+			handler: function(){
+				if(reportData.vehwkzt==1){
+					 $.post("/veh/extend/saveQkdOutLine",{jylsh:reportData.jylsh},function(data){
+						 $.messager.alert("提示",data.message);
+						 reportData.vehwkzt=2;
+						 $("#checkingVeh").datagrid("reload");
+					}) 
+				}else{
+					$.messager.alert("提示","该车无外廓尺寸项目！");
+				}
+			}
+		}],
+		url:'/veh/extend/getQkdOutLineWaitList?jylsh='+reportData.jylsh,
+	    columns:[[
+	        {field:'VehicleSN',title:'检验流水号',width:160},
+	        {field:'CarNumber',title:'号牌号码',width:100},
+	        {field:'PlateCode',title:'号牌种类',width:100},
+	        {field:'TestTimes',title:'检验次数',width:100},
+	        {field:'StateCode',title:'状态代码',width:100},
+	        {field:'LengthRealValue',title:'外廓长',width:100},
+	        {field:'WidthRealValue',title:'外廓宽',width:100},
+	        {field:'HeightRealValue',title:'外廓高',width:100},
+	        {field:'ErrorCodeSerial',title:'错误代码',width:100}
+	    ]]
+	});
+});
+
+</script>
+
+<table id="grid_outLineWaitList" style="height: 200px;">
+   
+</table>
+
+

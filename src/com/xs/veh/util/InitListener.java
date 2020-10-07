@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.aspose.words.License;
+import com.sun.jna.Native;
 import com.xs.common.InitServerCommonUtil;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.Device;
@@ -40,6 +41,7 @@ import com.xs.veh.network.DeviceSuspension;
 import com.xs.veh.network.DeviceVolume;
 import com.xs.veh.network.DeviceWeigh;
 import com.xs.veh.network.SimpleRead;
+import com.xs.veh.network.driver.LED192;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -178,14 +180,17 @@ public class InitListener implements ServletContextListener {
 			// 初始化显示屏
 			else if (device.getType() == Device.XSP) {
 				DeviceDisplay dd = (DeviceDisplay) wac.getBean("deviceDisplay");
-
-				System.out.println(device.getCom());
-
 				try {
 					dd.setDevice(device);
-					dd.open();
-					dd.setDefault();
-
+					
+					List<BaseParams> ddls = baseParamsManager.getBaseParamByType("xspddl");
+					
+					if(ddls.isEmpty()) {
+						dd.open();
+						dd.setDefault();
+					}else {
+						
+					}
 				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchPortException
 						| PortInUseException | IOException | UnsupportedCommOperationException
 						| TooManyListenersException e) {

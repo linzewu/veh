@@ -305,7 +305,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 				Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 				
 				display.sendMessage(parDataOfAnjian.getZczczdl()+"/"+CheckDataManager.MathRound1(tczdl), DeviceDisplay.SP);
-				
+				logger.info("驻车最大轴位："+maxzw  + "当前轴位："+brakRollerData.getZw() +"   "+(maxzw==brakRollerData.getZw()));
 				if(maxzw==brakRollerData.getZw()){
 					parDataOfAnjian.setTczclh(zclh);
 					parDataOfAnjian.setTczdl(CheckDataManager.MathRound1(tczdl));
@@ -359,12 +359,12 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		if(!vehFlow.getJyxm().equals("B0")) {
 			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C55", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
 					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(100);
-			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+			checkEventManger.createEvent(500,vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
 					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(100);
-			checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
+			checkEventManger.createEvent(800,vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
 					vp.getClsbdh(),vehCheckLogin.getVehcsbj());
+		}else {
+			logger.info("B0驻车过程不发送数据。");
 		}
 		
 	}

@@ -139,6 +139,16 @@ public class CheckEventManger {
 	}
 	
 	@Async
+	public void createEvent(Integer later,String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
+			String clsbdh,Integer csbj) throws InterruptedException {
+		
+		Thread.sleep(later);
+
+		createEvent(jylsh, jycs, event, jyxm, hphm, hpzl, clsbdh,csbj);
+
+	}
+	
+	@Async
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
 			String clsbdh) {
 

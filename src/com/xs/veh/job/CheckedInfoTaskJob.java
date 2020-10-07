@@ -42,6 +42,7 @@ import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
+import com.xs.veh.entity.TaskPicture;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -53,6 +54,7 @@ import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.VehProcessManager;
 import com.xs.veh.manager.VideoManager;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.Outline;
 import com.xs.veh.sz.IaspecTmriOutAccessStub;
 import com.xs.veh.util.BeanXMLUtil;
@@ -548,6 +550,7 @@ public class CheckedInfoTaskJob {
 //			return;
 //		}
 		List<CheckEvents> list = (List<CheckEvents>) eventManger.getEvents();
+		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
 		for (CheckEvents e : list) {
 			Thread.sleep(1000);
 			try {
@@ -559,6 +562,49 @@ public class CheckedInfoTaskJob {
 					uploadImage(e);
 					continue;
 				}
+				if(!CollectionUtils.isEmpty(paams)
+						&&"true".equals(paams.get(0).getParamValue())
+						&&"M1".equals(e.getJyxm())) {
+					
+					 SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(e.getJylsh());
+					 StringBuilder sb=new StringBuilder();
+					 sb.append("^^zpzp^^");
+					 sb.append(vehCheckLogin.getJylsh());
+					 sb.append("^^");
+					 sb.append(vehCheckLogin.getJyjgbh());
+					 sb.append("^^");
+					 sb.append(vehCheckLogin.getJcxdh());
+					 sb.append("^^");
+					 sb.append(vehCheckLogin.getJycs());
+					 sb.append("^^");
+					 sb.append(vehCheckLogin.getHphm());
+					 sb.append("^^");
+					 sb.append(vehCheckLogin.getHpzl());
+					 sb.append("^^");
+					 sb.append(vehCheckLogin.getClsbdh());
+					 sb.append("^^");
+					 sb.append("^^");
+					 sb.append(sdf.format(new Date()));
+					 sb.append("^^");
+					 sb.append("M1");
+					 sb.append("^^");
+					if(RCAConstant.V18C55.equals(e.getEvent())) {
+						 sb.append("0360");
+					}else if(RCAConstant.V18C58.equals(e.getEvent())) {
+						 sb.append("0361");
+					}
+					 sb.append("^^");
+					 logger.info("拍照指令="+sb.toString());
+					 try {
+						TakePicture.toSzServerSocket(sb.toString());
+					} catch (IOException e2) {
+						logger.error("深圳平台拍照指令异常",e2);
+					}
+					
+				}
+
+				
 				if ((RCAConstant.V18C53.equals(e.getEvent()) || RCAConstant.V18C80.equals(e.getEvent())
 						|| RCAConstant.V18C81.equals(e.getEvent()) || RCAConstant.V18C64.equals(e.getEvent()))
 						&& checkItem != null && !"".equals(checkItem)) {
@@ -605,7 +651,6 @@ public class CheckedInfoTaskJob {
 						System.out.println("delete event id" + e.getId());
 						eventManger.delete(e);
 						logger.info("viewName:" + viewName);
-						List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
 						if(!CollectionUtils.isEmpty(paams)) {
 							 String szdsfpt = paams.get(0).getParamValue();
 							 if("true".equals(szdsfpt)) {
@@ -658,6 +703,12 @@ public class CheckedInfoTaskJob {
 		String zpzl = e.getZpzl();
 
 		CheckPhoto photo = checkDataManager.getCheckPhoto(e.getJylsh(), zpzl, e.getJycs());
+		
+		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+		if(!CollectionUtils.isEmpty(paams)&&"true".equals(paams.get(0).getParamValue())) {
+			eventManger.delete(e);
+			return;
+		}
 
 		if (photo != null) {
 
@@ -690,10 +741,7 @@ public class CheckedInfoTaskJob {
 				Element message = head.element("message");
 				if ("1".equals(code.getText())) {
 					eventManger.delete(e);
-					List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
-					if(!CollectionUtils.isEmpty(paams)) {
-						 
-					}
+					
 				} else {
 					e.setState(2);
 					e.setMessage(message.getText());
@@ -783,7 +831,7 @@ public class CheckedInfoTaskJob {
 		
 	}
 
-
+	
 
 
 }

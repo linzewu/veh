@@ -38,6 +38,7 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.ExtendManage;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.util.PlayUtil;
 
@@ -71,6 +72,8 @@ public class VehController {
 	
 	@Autowired
 	private CheckDataManager checkDataManager;
+	@Autowired
+	private ExtendManage et;
 	
 
 	/**
@@ -267,7 +270,7 @@ public class VehController {
 					break;
 				}
 			}
-			
+			et.vehLoginAfter(vehCheckLogin);
 			return json.toString();
 		} else {
 			JSONObject head = new JSONObject();

@@ -123,6 +123,8 @@ public class WorkPointThread extends Thread {
 			logger.info("vehFlows:" + vehFlows.size());
 
 			for (VehFlow vehFlow : vehFlows) {
+				
+				logger.info("vehFlow:" + vehFlow.getJyxm()  + " vehFlow sbid = "+vehFlow.getSbid());
 
 				if (vehFlow.getSbid() == -1) {
 					// 底盘检测
@@ -139,7 +141,6 @@ public class WorkPointThread extends Thread {
 						cc.add(vehFlow);
 						if (cc.size() == dgcount) {
 							workPointManager.check(checkDevice, vehCheckLogin, checkQueue, cc,null);
-
 						}
 					} else if (device.getType() == Device.ZDPBSB) {
 						// 平板检测

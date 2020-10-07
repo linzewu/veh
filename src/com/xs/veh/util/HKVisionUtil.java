@@ -171,7 +171,7 @@ public class HKVisionUtil {
 		try {
 			log.info("视频地址："+getConfigPath());
 			FileUtil.createDirectory(getConfigPath()+"\\video\\");
-			NativeLong lChannel =new NativeLong(vc.getChannel()+32);
+			NativeLong lChannel =new NativeLong(vc.getChannel());
 			// 指定下载的文件
 			NativeLong tRet = hCNetSDK.NET_DVR_GetFileByTime(lUserID, lChannel, lpStartTime, lpStopTime, getConfigPath()+"\\video\\"+saveFile+".mp4");
 			int tError = hCNetSDK.NET_DVR_GetLastError();

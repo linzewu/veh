@@ -193,72 +193,111 @@ public class TakePicture implements Runnable {
 	
 	private void createCustom() {
 		
-		logger.info("进入线上抓拍程序");
-		
-		MyHibernateTemplate hibernateTemplate = (MyHibernateTemplate) SpringUtil.getBean("hibernateTemplate");
-		
-		CheckDataManager checkDataManager =(CheckDataManager)SpringUtil.getBean("checkDataManager");
-		
-		CheckEventManger checkEventManger =(CheckEventManger)SpringUtil.getBean("checkEventManger");
-		
-		logger.info("参数lsh:"+vehCheckLogin.getJylsh());
-		logger.info("参数jycs:"+ vehCheckLogin.getJycs());
-		logger.info("参数jyxm:"+jyxm);
-		
-		HKVisionUtil hk=new HKVisionUtil();
-		FileInputStream fis=null;
-		
-		try {
-			
-			String sxtip = (String) custom.get("sxtip");
-			String sxtdk = (String) custom.get("sxtdk");
-			String sxtzh = (String) custom.get("sxtzh");
-			String sxtmm = (String) custom.get("sxtmm");
-			
-			String file = hk.taskPicture(sxtzh, sxtmm, sxtip, Integer.parseInt(sxtdk),vehCheckLogin.getJylsh()+"_"+vehCheckLogin.getJycs()+"_"+jyxm);
-			logger.info("拍照成功保存文件路径file：="+sxtmm);
-			fis =new FileInputStream(file);
-			
-			byte[] zp=new byte[fis.available()];
-			
-			fis.read(zp);
-			
-			CheckPhoto checkPhoto =new CheckPhoto();
-			
-			checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
-			checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
-			checkPhoto.setHphm(vehCheckLogin.getHphm());
-			checkPhoto.setHpzl(vehCheckLogin.getHpzl());
-			checkPhoto.setJycs(vehCheckLogin.getJycs());
-			checkPhoto.setJyjgbh(vehCheckLogin.getJyjgbh());
-			checkPhoto.setJylsh(vehCheckLogin.getJylsh());
-			checkPhoto.setJyxm(jyxm);
-			checkPhoto.setPssj(new Date());
-			checkPhoto.setStatus(0);
-			checkPhoto.setZp(zp);
-			
-			if(zpzl!=null) {
-				checkPhoto.setZpzl(zpzl);
-			}else {
-				zpzl=getZPZL(jyxm);
-				checkPhoto.setZpzl(zpzl);
+		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+		String szdsfpt = paams.get(0).getParamValue();
+		if(!CollectionUtils.isEmpty(paams)&&"true".equals(szdsfpt)) {
+			 SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			 if(zpzl==null) {
+				 zpzl=getZPZL(jyxm);
+			 }
+			 StringBuilder sb=new StringBuilder();
+			 sb.append("^^zpzp^^");
+			 sb.append(vehCheckLogin.getJylsh());
+			 sb.append("^^");
+			 sb.append(vehCheckLogin.getJyjgbh());
+			 sb.append("^^");
+			 sb.append(vehCheckLogin.getJcxdh());
+			 sb.append("^^");
+			 sb.append(vehCheckLogin.getJycs());
+			 sb.append("^^");
+			 sb.append(vehCheckLogin.getHphm());
+			 sb.append("^^");
+			 sb.append(vehCheckLogin.getHpzl());
+			 sb.append("^^");
+			 sb.append(vehCheckLogin.getClsbdh());
+			 sb.append("^^");
+			 sb.append("^^");
+			 sb.append(sdf.format(new Date()));
+			 sb.append("^^");
+			 sb.append(jyxm);
+			 sb.append("^^");
+			 sb.append(zpzl);
+			 sb.append("^^");
+			 logger.info("拍照指令="+sb.toString());
+			 try {
+				toSzServerSocket(sb.toString());
+			} catch (IOException e) {
+				logger.info("深圳平台拍照指令异常");
 			}
+		}else {
+			logger.info("进入线上抓拍程序");
 			
-			checkDataManager.saveCheckPhoto(checkPhoto);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
+			MyHibernateTemplate hibernateTemplate = (MyHibernateTemplate) SpringUtil.getBean("hibernateTemplate");
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			if(fis!=null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			CheckDataManager checkDataManager =(CheckDataManager)SpringUtil.getBean("checkDataManager");
+			
+			CheckEventManger checkEventManger =(CheckEventManger)SpringUtil.getBean("checkEventManger");
+			
+			logger.info("参数lsh:"+vehCheckLogin.getJylsh());
+			logger.info("参数jycs:"+ vehCheckLogin.getJycs());
+			logger.info("参数jyxm:"+jyxm);
+			
+			HKVisionUtil hk=new HKVisionUtil();
+			FileInputStream fis=null;
+			
+			try {
+				
+				String sxtip = (String) custom.get("sxtip");
+				String sxtdk = (String) custom.get("sxtdk");
+				String sxtzh = (String) custom.get("sxtzh");
+				String sxtmm = (String) custom.get("sxtmm");
+				
+				String file = hk.taskPicture(sxtzh, sxtmm, sxtip, Integer.parseInt(sxtdk),vehCheckLogin.getJylsh()+"_"+vehCheckLogin.getJycs()+"_"+jyxm);
+				logger.info("拍照成功保存文件路径file：="+sxtmm);
+				fis =new FileInputStream(file);
+				
+				byte[] zp=new byte[fis.available()];
+				
+				fis.read(zp);
+				
+				CheckPhoto checkPhoto =new CheckPhoto();
+				
+				checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
+				checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
+				checkPhoto.setHphm(vehCheckLogin.getHphm());
+				checkPhoto.setHpzl(vehCheckLogin.getHpzl());
+				checkPhoto.setJycs(vehCheckLogin.getJycs());
+				checkPhoto.setJyjgbh(vehCheckLogin.getJyjgbh());
+				checkPhoto.setJylsh(vehCheckLogin.getJylsh());
+				checkPhoto.setJyxm(jyxm);
+				checkPhoto.setPssj(new Date());
+				checkPhoto.setStatus(0);
+				checkPhoto.setZp(zp);
+				
+				if(zpzl!=null) {
+					checkPhoto.setZpzl(zpzl);
+				}else {
+					zpzl=getZPZL(jyxm);
+					checkPhoto.setZpzl(zpzl);
+				}
+				
+				checkDataManager.saveCheckPhoto(checkPhoto);
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				if(fis!=null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
+	
 	}
 
 	public void run() {
@@ -277,7 +316,6 @@ public class TakePicture implements Runnable {
 		try {
 			
 			List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("sxtpz");
-			
 			for(BaseParams parma:params) {
 				String[] paramName =parma.getParamName().split("_");
 				if(paramName[0].equals(jyxm)) {
@@ -287,8 +325,7 @@ public class TakePicture implements Runnable {
 			
 			//南昌前轴照片
 			//||jyxm.equals("B1")
-			
-			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")) {
+			if(jyxm.equals("C1")||jyxm.equals("R1")||jyxm.equals("R2")||jyxm.equals("DC")||jyxm.equals("M1")) {
 				//createOther();
 			}else {
 				onLineDevice();
@@ -320,7 +357,6 @@ public class TakePicture implements Runnable {
 			
 			if(pzjyxm.equals(jyxm)&&jcxdh.equals(this.jcxdh)&&(StringUtils.isEmpty(param.getMemo())||zpzl.equals(param.getMemo()))) {
 				String value = param.getParamValue();
-				
 				JSONObject jo=JSONObject.fromObject(value);
 				
 				String sxtip = (String) jo.get("sxtip");
@@ -361,11 +397,7 @@ public class TakePicture implements Runnable {
 						checkPhoto.setZpzl(zpzl);
 					}
 					checkDataManager.saveCheckPhoto(checkPhoto);
-					
-					
 					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
-					
-					
 				} catch (Exception e) {
 					logger.error("拍照错误：",e);
 				}finally {
@@ -523,10 +555,20 @@ public class TakePicture implements Runnable {
 	
 	
 	
-	public void toSzServerSocket(String message) throws IOException {
+	public static void toSzServerSocket(String message) throws IOException {
+		
+		
+		List<BaseParams> datas =  BaseParamsUtil.getBaseParamsByType("zpdz_sz");
+		
+		 String host = "190.203.185.204"; 
+		if(!CollectionUtils.isEmpty(datas)) {
+			 host = datas.get(0).getParamValue();
+		}
+		
+		
 		
 		// 要连接的服务端IP地址和端口
-	    String host = "190.203.185.204"; 
+	     
 	    int port = 6698;
 	    // 与服务端建立连接
 	    Socket socket = new Socket(host, port);

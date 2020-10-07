@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -192,7 +193,10 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 			this.display.sendMessage("后转向结果：" + jg, DeviceDisplay.XP);
 		}
 		
-		process.setJssj(new Date());
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND)+5);
+		process.setJssj(calendar.getTime());
+		
 		process.setJcxdh(this.getDevice().getJcxxh());
 		this.checkDataManager.updateProcess(process);
 		

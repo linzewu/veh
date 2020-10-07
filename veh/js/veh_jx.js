@@ -1560,6 +1560,8 @@ var report={
 			$("#plateApply").panel({"href":"/veh/html/report/plateApply.html","onLoad":report.getPlateApply,baseInfo:row});
 			$("#relogin").panel({"href":"/veh/html/report/relogin.html","onLoad":report.getPlateApply,baseInfo:row});
 			
+			$("#outLine").panel({"href":"/veh/html/report/outline.html",baseInfo:row});
+			
 		}
 	},
 	getReport1:function(panelObj,intjycs){
@@ -1608,6 +1610,18 @@ var report={
 				
 				$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 			});
+			
+			var jyxmTemp = $("#report1 [name=report-baseInfo-jyxm]").text();
+			var newJyxm="";
+			
+			$.each(jyxmTemp.split(","),function(i,n){
+				if(n=="EP"||n=="OC"||n=="PF"||n=="VL"||n=="XJ"){
+					
+				}else{
+					newJyxm =  newJyxm+"," + n;
+				}
+			});
+			 $("#report1 [name=report-baseInfo-jyxm]").text(newJyxm.substring(1));
 			
 			var zczw = $("#report [name=report-baseInfo-zczw]").text();
 			if(zczw){

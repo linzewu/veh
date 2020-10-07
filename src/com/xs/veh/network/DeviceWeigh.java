@@ -185,9 +185,8 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws IOException, InterruptedException {
 		
 		this.vehCheckLogin=vehCheckLogin;
-		
+		dw.getTemp().clear();
 		BrakRollerData brakRollerData = dw.startCheck(vehFlow);
-
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
 
 		Thread.sleep(2000);

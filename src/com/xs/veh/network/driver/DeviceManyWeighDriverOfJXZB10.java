@@ -1,5 +1,8 @@
 package com.xs.veh.network.driver;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 import com.xs.common.CharUtil;
@@ -8,8 +11,11 @@ import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.network.AbstractDeviceManyWeigh;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceManyWeigh;
+import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.CurbWeightData;
+
+import net.sf.json.JSONObject;
 
 public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 	
@@ -163,6 +169,39 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 					this.getTemp().clear();
 				}
 			}
+			
+			String qtxx = this.deviceManyWeigh.getDevice().getQtxx();
+			
+			JSONObject qtxxjo = JSONObject.fromObject(qtxx);
+			
+			String sxtip = (String) qtxxjo.get("sxtip");
+			String sxtdk = (String) qtxxjo.get("sxtdk");
+			String sxtzh = (String) qtxxjo.get("sxtzh");
+			String sxtmm = (String) qtxxjo.get("sxtmm");
+			
+			Map param1 =new HashMap();
+			Map param2 =new HashMap();
+			
+			String[] ips =sxtip.split(",");
+			param1.put("sxtip",ips[0]);
+			param1.put("sxtdk",sxtdk);
+			param1.put("sxtzh",sxtzh);
+			param1.put("sxtmm",sxtmm);
+			
+			param2.put("sxtip",ips[1]);
+			param2.put("sxtdk",sxtdk);
+			param2.put("sxtzh",sxtzh);
+			param2.put("sxtmm",sxtmm);
+			
+			if("前".equals(zw)) {
+				TakePicture.custom(vehCheckLogin, "Z1", 0, "0362",param1);
+			}else if("后".equals(zw)) {
+				TakePicture.custom(vehCheckLogin, "Z1", 0, "0363",param2);
+			}
+			
+			
+			
+			
 			
 			deviceManyWeigh.sendMessage(sdcz);
 			logger.info("称重结果锁定："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
