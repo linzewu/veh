@@ -38,19 +38,25 @@ public class ExtendManage {
 	
 	public void upQkdOutLine(VehCheckLogin vehCheckLogin) {
 		String jyxm = vehCheckLogin.getJyxm();
+		String hphm=vehCheckLogin.getHphm();
+		String hpzl=vehCheckLogin.getHpzl();
+		String jyms ="1";
+		if(hpzl.equals("15")) {
+			hpzl="01";
+		}
 		// 外廓尺寸测量
 		if (jyxm.indexOf("M") != -1) {
 			String sql="insert into CarRemoteExchange(CarNumber,PlateCode,VehicleSN,TestTimes,VinCode,CarOwner,"
 					+ "ProduceDate,RegDate,RatedSpeed,TotalMass,NudeMass,RollerNumber,DetailTypeCode,FuelTypeCode,"
 					+ "BusinessCode,TestKindCode,ImporterName,LengthRatedValue,WidthRatedValue,HeightRatedValue,"
 					+ "WheelBaseRatedValue,NeedTestFence,TestModeCode,TestItemCode)"
-					+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,1,'C')";
-			int i = qkdJdbcTemplate.update(sql, vehCheckLogin.getHphm(),vehCheckLogin.getHpzl(),vehCheckLogin.getJylsh(),
+					+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,'C')";
+			int i = qkdJdbcTemplate.update(sql, hphm,hpzl,vehCheckLogin.getJylsh(),
 					vehCheckLogin.getJycs(),vehCheckLogin.getClsbdh(),vehCheckLogin.getSyr(),vehCheckLogin.getCcrq(),
 					vehCheckLogin.getCcdjrq(),150,vehCheckLogin.getZzl(),vehCheckLogin.getZbzl(),vehCheckLogin.getZs(),
 					vehCheckLogin.getCllx(),vehCheckLogin.getRlzl(),vehCheckLogin.getSyxz(),vehCheckLogin.getJylb(),
 					vehCheckLogin.getDly(),vehCheckLogin.getCwkc(),vehCheckLogin.getCwkk(),vehCheckLogin.getCwkg(),
-					vehCheckLogin.getZj());
+					vehCheckLogin.getZj(),jyms);
 		}
 		vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_JCZ);
 		hibernateTemplate.update(vehCheckLogin);

@@ -75,7 +75,7 @@
 		</td>
 		<td class="tl"><label>整备质量：</label>
 		</td>
-			<td class="tc"><input  name="zbzl" prompt='请输入整备质量'  class="easyui-numberbox vehInfoInput"  required="true">
+			<td class="tc"><input  name="zbzl" sid="zbzl" prompt='请输入整备质量'  class="easyui-numberbox vehInfoInput"  required="true">
 		</td>
 	</tr>
 	
@@ -341,6 +341,49 @@
 		<td class="tc" >
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="zxzs" id="zxzs" value="1">
 		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>牵引车的号牌号码：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="qychphm" id="qychphm">
+		</td>
+		<td class="tl"><label>发动机(电动机)型号：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="fdjxh" id="fdjxh">
+		</td>
+		<td class="tl"><label>排放核准值：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="pfhzz" id="pfhzz">
+		</td>		
+	</tr>
+	<tr>
+		<td class="tl"><label>并装轴形式：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="bzzxs" id="bzzxs">
+		</td>
+		<td class="tl"><label>车厢栏板高度(mm)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="cxlbgd" id="cxlbgd">
+		</td>
+		<td class="tl"><label>车牌颜色：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('cpys'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="cpys"  >
+		</td>
+		
+	</tr>
+	<tr>
+		<td class="tl"><label>综检车辆用途：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput"  name="zjclyt" id="zjclyt">
+		</td>
+		<td class="tl"><label>驱动轴空载质量：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="qdzkzzl" id="qdzkzzl">
+		</td>
+		<td class="tc" colspan="2">			
+		</td>		
 	</tr>
 	
 </table>

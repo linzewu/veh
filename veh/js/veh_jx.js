@@ -276,7 +276,6 @@ if(userInfo.state==600){
 }
 
 $(function(){
-	console.log(userInfo.pwOverdue)
 	//if(userInfo.userState==0||userInfo.userState==null||userInfo.pwOverdue=="Y"){
 	if(userInfo.pwOverdue=="Y"){
 		$('#win_password').window('open');
@@ -421,7 +420,6 @@ var veh = {
 				 if(str_jyxm.length>0){
 					 str_jyxm=str_jyxm.substring(1, str_jyxm.length);
 				 }
-				 console.log(str_jyxm);
 				// $("#str_jyxm").val(str_jyxm);
 				 
 				 var param=$("#vehinfo").serializeJson();
@@ -429,7 +427,6 @@ var veh = {
 				 param['jcxdh']=jcxdh;
 				 param['jyxm']=str_jyxm;
 				 param['ycysfzh']=$("#_ycy").combobox("getText");
-				 console.log(param)
 				 $.post("/veh/veh/vehLogin",param,function(data){
 					 	data=$.parseJSON(data);
 						var head = null;
@@ -457,7 +454,6 @@ var veh = {
 						}
 					},"json").error(function(msg){
 						$.messager.progress("close");
-						console.log(msg);
 						if(msg.status==500){
 							$.messager.alert("错误","服务器响应错误！","error");
 							return;
@@ -492,17 +488,14 @@ var veh = {
 				 if(str_jyxm.length>0){
 					 str_jyxm=str_jyxm.substring(1, str_jyxm.length);
 				 }
-				 console.log(str_jyxm);
 				 // $("#str_jyxm").val(str_jyxm);
 				var param=$("#vehinfo").serializeJson();
 				param['hphm'] = param['sf']+param['hphm'];
 				param['jyxm']=str_jyxm;
-				console.log(param);
 				$.post("/veh/veh/vehLogin",param,function(data){
 					data=$.parseJSON(data);
 					var head = null;
 					var body = null;
-					console.log(data);
 					if ($.isArray(data)) {
 						head = data[0];
 					} else {
@@ -519,7 +512,6 @@ var veh = {
 					}
 				},"json").error(function(msg){
 					$.messager.progress("close");
-					console.log(msg);
 					if(msg.status==500){
 						$.messager.alert("错误","服务器响应错误！","error");
 						return;
@@ -592,7 +584,6 @@ var veh = {
 			var body = null;
 			data = $.parseJSON(data);
 
-			console.log(data);
 			if ($.isArray(data)) {
 				head = data[0];
 			} else {
@@ -603,8 +594,14 @@ var veh = {
 			if (head["code"] == 1) {
 				$.messager.progress("close");
 				body[0]['jyrq'] = body['djrq']
-				body[0]['jyyxqz'] = body['yxqz']
-				$("#vehinfo").form("load", body[0]);
+				body[0]['jyyxqz'] = body['yxqz'];
+				try{
+					$("#vehinfo").form("load", body[0]);
+				}catch (e) {
+					$("input[sid=clsbdh]").textbox("setValue",body[0].clsbdh);
+					$("input[sid=zbzl]").numberbox("setValue",body[0].clsbdh);
+				}
+				
 				if(body[0]['zt']!='A'){
 					$.messager.alert("提示","该机动车状态："+comm.getParamNameByValue('jdczt',body[0]['zt']));
 				}
@@ -753,7 +750,6 @@ var veh = {
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
 							true);
 				} else {
-					console.log(i);
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
 							false);
 					/*$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
@@ -1031,7 +1027,6 @@ var comm = {
 	createMume : function(id, data, showPage) {
 		var ul = $("#" + id);
 		ul.empty();
-		console.log(showPage)
 		$.each(data,function(i,n){
 			
 			var li = $("<li><a id='_menu"+i+"' href=\"javascript:void(0)\"><img></a></li>");
@@ -1119,7 +1114,6 @@ var gridUtil = {
 				
 				var rows=$(grid).datagrid("getRows");
 				
-				console.log(rows[g.editIndex])
 				
 				$.post(options["url"]+"/save",rows[g.editIndex],function(rd){
 					$.messager.progress("close");
@@ -1130,8 +1124,6 @@ var gridUtil = {
 							callback.call();
 						}
 					}else{
-						console.log("错误信息：")
-						console.log(rd)
 						var errors="";
 						$.each(rd.errors,function(i,n){
 							errors+=(i+1)+"、"+n.defaultMessage+"<br>";
@@ -2239,7 +2231,6 @@ function checkbit(data,errors){
 		try{
 			temp=$.parseJSON(data);
 		}catch (e) {
-			console.log("返回非JSON对象");
 		}
 	}else{
 		temp=data;
@@ -2302,7 +2293,6 @@ $(function($){
             				temp=$.parseJSON(data);
                          }
             		}catch (e) {
-            			console.log("返回非JSON对象");
         			}
             	}else if(typeof(data) == "object"&&!$.isArray(data)){
             		temp=data;

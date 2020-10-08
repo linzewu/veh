@@ -42,7 +42,7 @@ $(function(){
 			text:'拍照出',
 			handler: function(){
 				if(reportData.vehwkzt==1){
-					 $.post("/veh/extend/upQkdOutLine",{jylsh:reportData.jylsh,zpzl:"0361"},function(data){
+					 $.post("/veh/extend/qkdOutlinePicture",{jylsh:reportData.jylsh,zpzl:"0361"},function(data){
 						 $.messager.alert("提示",data.message);
 					}) 
 				}else{

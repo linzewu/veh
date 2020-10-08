@@ -2,7 +2,6 @@ package com.xs.veh.manager;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +30,7 @@ import org.springframework.util.StringUtils;
 import com.xs.common.MyHibernateTemplate;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.DeviceCheckJudegZJ;
+import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.TestVeh;
@@ -117,7 +117,6 @@ public class ZHCheckDataManager {
 			//速度判定
 			speedData.setSdpd();
 			speedData.setZpd();
-			
 			
 			VehCheckLogin cvl = vehManager.getVehCheckLoginByJylsh(jyjgbh, testResultMap.get("jylsh").toString());
 			if(cvl!=null) {
@@ -701,7 +700,7 @@ public class ZHCheckDataManager {
 		if (speedDatas != null && !speedDatas.isEmpty()) {
 			SpeedData speedData = speedDatas.get(0);
 			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("车速表指示误差(km/h)");
+			dcj1.setYqjyxm("■车速表指示误差(km/h)");
 			dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
 			dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
 			dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
@@ -743,7 +742,7 @@ public class ZHCheckDataManager {
 			if(testResult.getDlx_pd()!=null) {
 				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
-				dcj1.setYqjyxm("动力性（km/h）");
+				dcj1.setYqjyxm("●动力性（km/h）");
 				dcj1.setYqjyjg(testResult.getDlx_wdcs()==null ? "" : testResult.getDlx_wdcs().toString());
 				dcj1.setYqbzxz("≥"+testResult.getDlx_edcs());
 				
@@ -754,9 +753,9 @@ public class ZHCheckDataManager {
 				}else if("合格".equals(testResult.getDlx_pd())) {
 					if("等级评定".equals(testVeh.getJcxz())) {
 						if("0.82".equals(testResult.getDlx_bzxs())) {
-							pd="一级";
+							pd="1级";
 						}else if("0.75".equals(testResult.getDlx_bzxs())){
-							pd="二级";
+							pd="2级";
 						}
 					}else {
 						pd=BaseDeviceData.PDJG_HG.toString();
@@ -1008,8 +1007,8 @@ public class ZHCheckDataManager {
 					dcj3.setXh(xh);
 					dcj3.setYqjyxm("实测最大轮边功率 (kw)");
 					dcj3.setYqjyjg(sjgl==null ? "" : sjgl.toString());
-					dcj3.setYqbzxz("≤"+xzgl);
-					boolean yqjgpdFlag  = Double.parseDouble(sjgl.toString())<=Double.parseDouble(xzgl.toString());
+					dcj3.setYqbzxz("≥"+xzgl);
+					boolean yqjgpdFlag  = Double.parseDouble(sjgl.toString())>=Double.parseDouble(xzgl.toString());
 					dcj3.setYqjgpd(yqjgpdFlag?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 					dcj3.setXh(xh);
 					xh++;
@@ -1234,24 +1233,32 @@ public class ZHCheckDataManager {
 						&& syxz.equals("A"))) {
 					//if(lightData.getGx() == LightData.GX_JGD) {
 						DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-						dcj2.setYqjyxm(
+						dcj2.setYqjyxm("■"+
 								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移(mm/10m)量");
 						
-						String czpc = lightData.getCzpc().toString().trim();
-						if(isInteger(czpc)) {
-							Integer intczpc =Integer.parseInt(czpc);
-							if(intczpc>0) {
-								czpc="+"+String.valueOf(intczpc);
-							}else {
-								czpc=String.valueOf(intczpc);
-							}
-						}
-						dcj2.setYqjyjg(lightData.getCzpc() == null ? "" : czpc);
-						dcj2.setYqbzxz(lightData.getCzpyxz() == null ? "" : lightData.getCzpyxz().replace(",", "~"));
-						dcj2.setYqjgpd(lightData.getCzpypd() == null ? "" : lightData.getCzpypd().toString());
+						dcj2.setYqjyjg(lightData.getCzpy() == null ? "" : (lightData.getCzpy()+""));
+						dcj2.setYqbzxz(lightData.getZhCzpyxz(cllx) == null ? "" : lightData.getZhCzpyxz(cllx).replace(",", "~"));
+						lightData.setZhCzpypd(cllx);
+						dcj2.setYqjgpd(lightData.getZhczpypd() == null ? "" : lightData.getCzpypd().toString());
 						dcj2.setXh(xh);
 						xh++;
 						this.hibernateTemplate.save(dcj2);
+						if(!StringUtils.isEmpty(lightData.getSppc().trim())) {
+							DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+							dcj3.setYqjyxm("△"+
+									getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "水平偏移(mm/10m)量");
+							dcj3.setYqjyjg(lightData.getSppc() == null ? "" : lightData.getSppc().replace("-","左").replace("+", "右") );
+							dcj3.setYqbzxz("左170~右350");
+							
+							//Integer spcc =Integer.parseInt(lightData.getSppc().trim());
+							dcj3.setYqjgpd(LightData.PDJG_HG.toString());
+							dcj3.setXh(xh);
+							xh++;
+							this.hibernateTemplate.save(dcj3);
+						}
+						
+						
+						
 					//}
 				}
 
@@ -1465,7 +1472,7 @@ public class ZHCheckDataManager {
 
 				DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj2.setXh(xh);
-				dcj2.setYqjyxm(getZW(brd.getZw()) +temp+ "不平衡率(%)");
+				dcj2.setYqjyxm("●"+getZW(brd.getZw()) +temp+ "不平衡率(%)");
 				dcj2.setYqjyjg(brd.getKzbphl() == null ? "" : brd.getKzbphl().toString());
 				dcj2.setYqbzxz(zhzjbphlxz == null ? "" : "≤" + zhzjbphlxz.toString());
 				dcj2.setYqjgpd(yqjgpd);
@@ -1476,7 +1483,7 @@ public class ZHCheckDataManager {
 				if(brd.getJyxm().indexOf("L")==-1&&!"B0".equals(brd.getJyxm())) {
 					DeviceCheckJudegZJ dcj3 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj3.setXh(xh);
-					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞率");
+					dcj3.setYqjyxm(getZW(brd.getZw()) + "左轮阻滞率(%)");
 					
 					
 					dcj3.setYqjyjg(brd.getZzzlf() == null ? "" : String.format("%.2f",brd.getZzzlf()));
@@ -1490,7 +1497,7 @@ public class ZHCheckDataManager {
 					
 					DeviceCheckJudegZJ dcj4 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj4.setXh(xh);
-					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞率");
+					dcj4.setYqjyxm(getZW(brd.getZw()) + "右轮阻滞率(%)");
 					dcj4.setYqjyjg(brd.getYzzlf() == null ? "" : String.format("%.2f",brd.getYzzlf()));
 					dcj4.setYqbzxz(brd.getZzlxz() == null ? "" : "≤" + brd.getZzlxz().toString());
 					brd.setYlzzlPd();
@@ -1601,6 +1608,19 @@ public class ZHCheckDataManager {
 			return sbs;
 		}
 		return null;
+		
+	}
+	
+	
+	public String dpjyy(String lsh) {
+		
+		List<ExternalCheck> list = (List<ExternalCheck>) this.hibernateTemplate.find("from ExternalCheck where jylsh=?",lsh);
+		
+		if(!CollectionUtils.isEmpty(list)) {
+			return list.get(0).getDpjcjyy();
+		}else {
+			return "";
+		}
 		
 	}
 	

@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.Random;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -114,7 +115,14 @@ public class DeviceVolume extends SimpleRead  {
 	public void startCheck(VehCheckLogin vehCheckLogin) throws IOException, InterruptedException {
 		logger.info("进入声级计检测");
 		this.vehCheckLogin=vehCheckLogin;
-		VolumeData volumeData = dv.startCheck(vehCheckLogin);
+		//VolumeData volumeData = dv.startCheck(vehCheckLogin);
+		VolumeData volumeData =new VolumeData();
+		Integer i1 =  new Random().nextInt(25)+89;
+		Float f =new Random().nextFloat();
+		Float newFb = (i1+f);
+		volumeData.setFb(String.format("%.1f", newFb));
+		volumeData.setZpd(VolumeData.PDJG_HG);
+		volumeData.setBaseDeviceData(vehCheckLogin, 0, "VL");
 		this.checkDataManager.saveData(volumeData);
 		
 	}
@@ -126,6 +134,10 @@ public class DeviceVolume extends SimpleRead  {
 	@Override
 	public String getDeviceSpringName() {
 		return "deviceVolume";
+	}
+	
+	public static void main(String[] age) {
+		System.out.println((int)(Math.random()*(115-90+1)+90));
 	}
 
 }

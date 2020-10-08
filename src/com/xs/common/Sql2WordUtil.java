@@ -5,6 +5,7 @@ import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +22,10 @@ import com.aspose.words.NodeCollection;
 import com.aspose.words.NodeType;
 import com.aspose.words.SaveFormat;
 import com.aspose.words.Shape;
-import com.aspose.words.Table;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.network.data.BaseDeviceData;
 
-import net.sf.json.JSONArray;
+import sun.security.jca.GetInstance.Instance;
 
 public class Sql2WordUtil {
 	
@@ -236,7 +236,16 @@ public class Sql2WordUtil {
 	}
 
 	public static String getStringDate(Date date,int type){
-		return type==0?new SimpleDateFormat("yyyy年MM月dd日").format(date):new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+		
+		if(type==0) {
+			return new SimpleDateFormat("yyyy年MM月dd日").format(date);
+		}else if(type==2) {
+			return new SimpleDateFormat("yyyy-MM-dd").format(date);
+		}else {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+		}
+		
+		
 	}
 	
 	public static String translateMapValue(Map<String,Object> map,String key){
@@ -258,7 +267,21 @@ public class Sql2WordUtil {
 			if(lastKey.indexOf("PSSJ")==0){
 				return getStringDate((Date) obj,1);
 			}
-			return getStringDate((Date) obj,0);
+			
+			Calendar cd = Calendar.getInstance();
+			cd.setTime((Date) obj);
+			
+			int s=cd.get(Calendar.SECOND);
+			int h=cd.get(Calendar.HOUR_OF_DAY);
+			int m =cd.get(Calendar.MINUTE);
+			
+			if(s==0&&h==0&&m==0) {
+				return getStringDate((Date) obj,2);
+			}else {
+				return getStringDate((Date) obj,1);
+			}
+			
+			
 		}
 		if(obj instanceof Character){
 			return ((Character)obj).toString();

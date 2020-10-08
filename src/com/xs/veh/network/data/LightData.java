@@ -111,6 +111,23 @@ public class LightData extends BaseDeviceData {
 	@Column
 	private Integer zhczpypd;
 	
+	
+
+	public String getZhczpyxz() {
+		return zhczpyxz;
+	}
+
+	public void setZhczpyxz(String zhczpyxz) {
+		this.zhczpyxz = zhczpyxz;
+	}
+
+	public Integer getZhczpypd() {
+		return zhczpypd;
+	}
+
+	public void setZhczpypd(Integer zhczpypd) {
+		this.zhczpypd = zhczpypd;
+	}
 
 	public Integer getGqpd() {
 		return gqpd;
@@ -408,6 +425,8 @@ public class LightData extends BaseDeviceData {
 		
 		
 	}
+	
+	
 
 	public void setCzpypd() {
 
@@ -448,38 +467,19 @@ public class LightData extends BaseDeviceData {
 	
 	public void setZhCzpypd(String cllx) {
 
-		/*if (this.czpy == null || this.czpyxz == null) {
+		if (this.czpc == null || this.zhczpyxz == null) {
 			return;
 		}
 
 		String[] xz = this.getCzpyxz().split(",");
 
 		if (Float.parseFloat(xz[0].trim()) <= this.getCzpy() && Float.parseFloat(xz[1].trim()) >= this.getCzpy()) {
-			this.czpypd = CheckDataManager.PDJG_HG;
-		} else {
-			this.czpypd = CheckDataManager.PDJG_BHG;
-		}*/
-		
-		if (this.czpc == null || this.zhczpyxz == null) {
-			return;
-		}
-
-		String[] xz = this.getZhCzpyxz(cllx).split(",");
-		
-		Integer xz1=Integer.parseInt(xz[0].trim());
-		Integer xz2 = Integer.parseInt(xz[1].trim());
-		
-		String czpcNew=czpc.trim();
-		if(czpcNew.indexOf("+")==0) {
-			czpcNew=czpcNew.substring(1);
-		}
-		Float numCzpc = Float.parseFloat(czpcNew);
-
-		if (xz1 <= numCzpc && xz2 >= numCzpc) {
 			this.zhczpypd = CheckDataManager.PDJG_HG;
 		} else {
 			this.zhczpypd = CheckDataManager.PDJG_BHG;
 		}
+		
+	
 	}
 
 	

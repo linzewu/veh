@@ -6,11 +6,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -42,6 +44,8 @@ import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.ZHCheckDataManager;
 import com.xs.veh.network.data.BaseDeviceData;
+import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.util.JFreeChartUtil;
 
 
 @Controller
@@ -217,6 +221,8 @@ public class CheckReportController {
 			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0321");
 			InputStream dlxjygwzp = zhCheckDataManager.getIamge(lsh, "0999");
 			
+			
+			
 			if(zdgwzp!=null) {
 				dataMap.put("zdgwzp", zdgwzp);
 			}
@@ -227,7 +233,7 @@ public class CheckReportController {
 				dataMap.put("dlxjygwzp", dlxjygwzp);
 			}
 			
-			
+			createLineImage(bData);
 			
 			
 			Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
@@ -240,12 +246,59 @@ public class CheckReportController {
 			
 			doc.save(filePath+"template_performance_record"+lsh+".doc");
 			Sql2WordUtil.toCase(doc, filePath, fileName);
-			
-			
 		
 		return ResultHandler.toMyJSON(Constant.ConstantState.STATE_SUCCESS, "打印道路运输车辆性能检验记录单成功", fileName);
 	}
 	
+	
+	private void createLineImage(Map<String, Object>  bData) {
+		
+		if(bData!=null) {
+			
+			Set<String> keys = bData.keySet();
+			
+			for(String key:keys) {
+				
+				if(key.equalsIgnoreCase("B1")||key.equalsIgnoreCase("B2")
+						||key.equalsIgnoreCase("B3")||key.equalsIgnoreCase("B4")) {
+					
+					BrakRollerData bd = (BrakRollerData) bData.get(key);
+					
+					String lstr= bd.getJzLeftDataStr();
+					String rstr = bd.getRigthDataStr();
+					
+					DefaultCategoryDataset ds = new DefaultCategoryDataset();
+					
+					if(!StringUtils.isEmpty(lstr)) {
+						String[] strs = lstr.trim().split(",");
+						int i=0;
+						for(String p:strs) {
+							if(!StringUtils.isEmpty(p)) {
+								ds.addValue(Integer.parseInt(p), "左轮" , String.valueOf(i));
+								i=i+10;
+							}
+						}
+					}
+					
+					if(!StringUtils.isEmpty(rstr)) {
+						String[] strs = rstr.trim().split(",");
+						int i=0;
+						for(String p:strs) {
+							if(!StringUtils.isEmpty(p)) {
+								ds.addValue(Integer.parseInt(p), "右轮" , String.valueOf(i));
+								i=i+10;
+							}
+						}
+					}
+					String filePath = "d:/qx_"+bd.getJylsh()+"_"+bd.getJyxm()+".jpg";
+					JFreeChartUtil.createLineChart(ds, filePath);
+				}
+				
+			}
+			
+		}
+		
+	}
 	
 	public  void prcessTable(Table table,JSONArray jo) throws Exception {
 		
@@ -314,6 +367,12 @@ public class CheckReportController {
 		TestVeh testVeh = zhCheckDataManager.getTestVehbyJylsh(lsh);
 		JSONObject dataMap =(JSONObject)JSON.toJSON(vehCheckLogin);
 		
+		String dpjyy = zhCheckDataManager.dpjyy(lsh);
+		
+		if(!StringUtils.isEmpty(dpjyy)) {
+			dataMap.put("dpjyy", dpjyy);
+		}
+		
 		Date date = vehCheckLogin.getUpLineDate();
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		dataMap.put("uplinedate", sdf.format(date));
@@ -334,16 +393,11 @@ public class CheckReportController {
 			dataMap.put("dqy",testResult.getDqy());
 		}
 		
-		
 		Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
-		
 		List<BaseParams> params = bpsMap.get("csys");
-		
 		if(!CollectionUtils.isEmpty(params)) {
 			String csys =(String) dataMap.get("csys");
-			
 			String newCsys = "";
-			
 			if(!StringUtils.isEmpty(csys)) {
 				for(char c:csys.toCharArray()) {
 					for(BaseParams p: params) {
@@ -351,10 +405,8 @@ public class CheckReportController {
 							newCsys+=p.getParamName();
 						}
 					}
-					
 				}
 			}
-			
 			if(!StringUtils.isEmpty(newCsys)) {
 				dataMap.put("csys",newCsys);
 			}

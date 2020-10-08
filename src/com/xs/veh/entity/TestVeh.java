@@ -140,6 +140,28 @@ public class TestVeh extends BaseEntity {
 	private Integer bzzs;
 	
 	
+	//////
+	//牵引车的号牌号码
+	private String qychphm;
+	
+	//发动机(电动机)型号
+	private String fdjxh;
+	
+	//排放核准值
+	private Integer pfhzz;
+	
+	//并装轴形式
+	private String bzzxs;
+	
+	//车厢栏板高度(mm)
+	private Integer cxlbgd;
+	
+	//车牌颜色
+	private String cpys;
+	
+	//综检车辆用途
+	private String zjclyt;
+	
 
 	public Integer getBzzs() {
 		return bzzs;
@@ -496,6 +518,62 @@ public class TestVeh extends BaseEntity {
 	}
 	
 	
+	public String getQychphm() {
+		return qychphm;
+	}
+
+	public void setQychphm(String qychphm) {
+		this.qychphm = qychphm;
+	}
+
+	public String getFdjxh() {
+		return fdjxh;
+	}
+
+	public void setFdjxh(String fdjxh) {
+		this.fdjxh = fdjxh;
+	}
+
+	public Integer getPfhzz() {
+		return pfhzz;
+	}
+
+	public void setPfhzz(Integer pfhzz) {
+		this.pfhzz = pfhzz;
+	}
+
+	public String getBzzxs() {
+		return bzzxs;
+	}
+
+	public void setBzzxs(String bzzxs) {
+		this.bzzxs = bzzxs;
+	}
+
+	public Integer getCxlbgd() {
+		return cxlbgd;
+	}
+
+	public void setCxlbgd(Integer cxlbgd) {
+		this.cxlbgd = cxlbgd;
+	}
+
+	public String getCpys() {
+		return cpys;
+	}
+
+	public void setCpys(String cpys) {
+		this.cpys = cpys;
+	}
+
+	public String getZjclyt() {
+		return zjclyt;
+	}
+
+	public void setZjclyt(String zjclyt) {
+		this.zjclyt = zjclyt;
+	}
+
 	public String setYHxz() {
 		
 		String yhxz="-";

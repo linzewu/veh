@@ -1179,7 +1179,7 @@ public class BrakRollerData extends BaseDeviceData {
 	
 	public void setYlzzlPd() {
 		
-		if(yzzl==null||ylh==null||ylh==0) {
+		if(yzzl==null||ylh==null||ylh==0||yzzlf==null) {
 			return;
 		}
 		

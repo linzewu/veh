@@ -99,6 +99,9 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			byte[] d2 = getDevData(new byte[5],A);
 			byte[] d3 = getDevData(new byte[12],A);
 			
+			logger.info("d2="+new String(d2));
+			logger.info("d3="+new String(d3));
+			
 			Integer zzzl=Integer.parseInt(new String(new byte[]{d3[3],d3[4],d3[5],d3[6]}).trim());
 			Integer yzzl=Integer.parseInt(new String(new byte[]{d3[7],d3[8],d3[9],d3[10]}).trim());
 			

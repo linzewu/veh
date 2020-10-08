@@ -164,8 +164,6 @@ public class VehController {
 			throws RemoteException, UnsupportedEncodingException, DocumentException, InterruptedException {
 
 		if (!vehManager.isLoged(vehCheckLogin)) {
-			
-			
 			String jylsh = this.vehManager.getJylsh();
 			String jyxm = vehCheckLogin.getJyxm();
 			vehCheckLogin.setJylsh(jylsh.trim());
@@ -323,7 +321,7 @@ public class VehController {
 			
 			testVeh.setQdzkzzl(0);
 			//柴油车 必须先做驱动轴称重
-			if(testVeh.getRlzl().equals("B")) {
+			if(testVeh.getRlzl().equals("B")&&testVeh.getQdzkzzl()==null) {
 				testVeh.setYsjc(0);
 			}else {
 				testVeh.setYsjc(1);
