@@ -36,6 +36,7 @@ import com.xs.common.Constant;
 import com.xs.common.ResultHandler;
 import com.xs.common.Sql2WordUtil;
 import com.xs.veh.entity.BaseParams;
+import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.DeviceCheckJudegZJ;
 import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.TestVeh;
@@ -45,6 +46,7 @@ import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.ZHCheckDataManager;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
+import com.xs.veh.util.HKVisionUtil;
 import com.xs.veh.util.JFreeChartUtil;
 
 
@@ -111,9 +113,9 @@ public class CheckReportController {
 				
 			}
 			
-			if(vehCheckLogin.getCllx().indexOf("K")==-1) {
-				dataMap.remove("cwkc");
-			}
+//			if(vehCheckLogin.getCllx().indexOf("K")==-1) {
+//				dataMap.remove("cwkc");
+//			}
 			
 			String zczw = vehCheckLogin.getZczw();
 			if(!StringUtils.isEmpty(zczw)) {
@@ -233,7 +235,14 @@ public class CheckReportController {
 				dataMap.put("dlxjygwzp", dlxjygwzp);
 			}
 			
-			createLineImage(bData);
+			String dpjyy = zhCheckDataManager.dpjyy(lsh);
+			
+			if(!StringUtils.isEmpty(dpjyy)) {
+				dataMap.put("dpjyy", dpjyy);
+			}
+			
+			
+			createLineImage(bData, dataMap);
 			
 			
 			Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
@@ -251,7 +260,7 @@ public class CheckReportController {
 	}
 	
 	
-	private void createLineImage(Map<String, Object>  bData) {
+	private void createLineImage(Map<String, Object>  bData,JSONObject dataMap) {
 		
 		if(bData!=null) {
 			
@@ -264,7 +273,7 @@ public class CheckReportController {
 					
 					BrakRollerData bd = (BrakRollerData) bData.get(key);
 					
-					String lstr= bd.getJzLeftDataStr();
+					String lstr= bd.getLeftDataStr();
 					String rstr = bd.getRigthDataStr();
 					
 					DefaultCategoryDataset ds = new DefaultCategoryDataset();
@@ -290,10 +299,11 @@ public class CheckReportController {
 							}
 						}
 					}
-					String filePath = "d:/qx_"+bd.getJylsh()+"_"+bd.getJyxm()+".jpg";
-					JFreeChartUtil.createLineChart(ds, filePath);
+					String filePath =HKVisionUtil.getConfigPath()+ "\\qx_"+bd.getJylsh()+"_"+bd.getJyxm()+".jpg";
+					InputStream in = JFreeChartUtil.createLineChart(ds, filePath);
+					
+					dataMap.put("qx_"+bd.getJyxm().toLowerCase(), in);
 				}
-				
 			}
 			
 		}
@@ -345,9 +355,9 @@ public class CheckReportController {
 	
 	private String getPD(String pd) {
 		if(pd.equals(BaseDeviceData.PDJG_HG.toString())) {
-			return "合格";
+			return "⚪";
 		}else if(pd.equals(BaseDeviceData.PDJG_BHG.toString())) {
-			return "不合格";
+			return "X";
 		}else if(pd.equals(BaseDeviceData.PDJG_WJ.toString())) {
 			return "—";
 		}else {

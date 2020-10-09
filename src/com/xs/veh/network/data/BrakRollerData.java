@@ -1131,9 +1131,9 @@ public class BrakRollerData extends BaseDeviceData {
 			zh=this.getZdtlh()+this.getYdtlh();
 		}
 		
-		if(this.zjzh!=null) {
-			zh=zjzh;
-		}
+//		if(this.zjzh!=null) {
+//			zh=zjzh;
+//		}
 		
 		Integer zdl = this.getZzdl() + this.getYzdl();
 		Float xczdl = (float) (zdl * 1.0 /(zh * 0.98)) * 100;

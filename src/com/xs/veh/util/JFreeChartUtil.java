@@ -3,6 +3,8 @@ package com.xs.veh.util;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -16,6 +18,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleInsets;
+
+import com.xs.veh.entity.CheckPhoto;
 
 public class JFreeChartUtil {
 	public static void main(String[] args) {
@@ -46,7 +50,7 @@ public class JFreeChartUtil {
         createLineChart(ds,filePath);
    }
     
-   public static void createLineChart(DefaultCategoryDataset ds, String filePath) {
+   public static InputStream createLineChart(DefaultCategoryDataset ds, String filePath) {
 	   
         try {
             JFreeChart chart = ChartFactory.createLineChart("", "", "", ds, PlotOrientation.VERTICAL,false, true, true);
@@ -60,7 +64,7 @@ public class JFreeChartUtil {
             Font titleFont = new Font("宋体", Font.BOLD, 12); // 图片标题
             CategoryPlot categoryPlot = chart.getCategoryPlot();
             categoryPlot.getDomainAxis().setLabelFont(xfont);
-            categoryPlot.getDomainAxis().setLabelFont(xfont);
+            
             categoryPlot.getRangeAxis().setLabelFont(yfont);
             chart.getTitle().setFont(titleFont);
             categoryPlot.setBackgroundPaint(Color.WHITE);
@@ -92,6 +96,9 @@ public class JFreeChartUtil {
             categoryAxis.setLabelFont(labelFont);
             // 横轴上的 Lable 45度倾斜
             categoryAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_90);
+            
+            categoryAxis.setVisible(false);
+            
             // 设置距离图片左端距离
             categoryAxis.setLowerMargin(0.0);
             // 设置距离图片右端距离
@@ -106,11 +113,16 @@ public class JFreeChartUtil {
             lineandshaperenderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
             lineandshaperenderer.setBaseItemLabelsVisible(false);
             
+            File file=new File(filePath);
             
-            ChartUtilities.saveChartAsJPEG(new File(filePath), chart, 1207, 500);
+            ChartUtilities.saveChartAsJPEG(file, chart, 600, 300);
+            
+            return new FileInputStream(file);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
+		return null;
     }
 
 }

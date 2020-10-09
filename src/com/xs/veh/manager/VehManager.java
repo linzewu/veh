@@ -445,6 +445,25 @@ public class VehManager {
 			}
 		});
 	}
+	
+	public String getBgdbh() {
+		return this.hibernateTemplate.execute(new HibernateCallback<String>() {
+			@Override
+			public String doInHibernate(Session session) throws HibernateException {
+				return session.doReturningWork(new ReturningWork<String>() {
+					@Override
+					public String execute(Connection connection) throws SQLException {
+						CallableStatement cstmt = connection.prepareCall("{CALL Sequences(?,?,?)}");
+						cstmt.setString(1, "bgdbh");
+						cstmt.setString(2, "1");
+						cstmt.registerOutParameter(3, Types.VARCHAR);
+						cstmt.executeUpdate();
+						return cstmt.getString(3);
+					}
+				});
+			}
+		});
+	}
 
 	/**
 	 * 通过检验流水查询检验项目

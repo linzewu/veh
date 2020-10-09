@@ -3,6 +3,7 @@ package com.xs.veh.controller;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -242,6 +243,18 @@ public class VehController {
 			
 			//如果是综合检测
 			if(vehCheckLogin.getCheckType()==1) {
+				
+				String seq = this.vehManager.getBgdbh().trim();
+				
+				String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+				String cs = null;
+				if(vehCheckLogin.getJycs()<10) {
+					cs="0"+vehCheckLogin.getJycs();
+				}else {
+					cs=vehCheckLogin.getJycs()+"";
+				}
+				String bgdbh="321303"+year.substring(2,4)+seq+cs;
+				testVeh.setBgdbh(bgdbh);
 				processTestVeh(vehCheckLogin,testVeh);
 				//写入综合检测表
 				if(testVeh.getQlj()==null) {

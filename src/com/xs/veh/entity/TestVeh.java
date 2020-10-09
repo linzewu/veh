@@ -162,6 +162,18 @@ public class TestVeh extends BaseEntity {
 	//综检车辆用途
 	private String zjclyt;
 	
+	//报告单编号
+	private String bgdbh;
+	
+	
+
+	public String getBgdbh() {
+		return bgdbh;
+	}
+
+	public void setBgdbh(String bgdbh) {
+		this.bgdbh = bgdbh;
+	}
 
 	public Integer getBzzs() {
 		return bzzs;

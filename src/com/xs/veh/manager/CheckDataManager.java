@@ -1687,5 +1687,19 @@ public class CheckDataManager {
 		this.hibernateTemplate.delete(taskPicture);
 	}
 	
+	public void deleteIamge(final String jylsh,final String zpzl) {
+		
+		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException {
+				return session.createQuery("delete CheckPhoto  where jylsh=? and zpzl=? ").setParameter(0, jylsh)
+						.setParameter(1, zpzl).executeUpdate();
+				
+			}
+		});
+		
+	}
+	
+	
 	
 }
