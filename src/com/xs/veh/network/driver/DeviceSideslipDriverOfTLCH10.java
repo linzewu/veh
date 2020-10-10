@@ -90,19 +90,27 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 		try {
 			// 等待测量结束
 			while (true) {
-				byte[] data = this.getDevData(new byte[10]);
-				String strData=new String(new byte[]{data[3],data[4],data[5],data[6],data[7],data[8]}).trim();
-				logger.info("侧滑："+strData);
 				
-				if(StringUtils.isEmpty(strData)) {
-					strData="0";
+				byte[] data = null;
+				float  sideslip=0;
+				
+				try {
+					data = this.getDevData(new byte[10],A);
+					String strData=new String(new byte[]{data[3],data[4],data[5],data[6],data[7],data[8]}).trim();
+					logger.info("侧滑："+strData);
+					if(StringUtils.isEmpty(strData)) {
+						strData="0";
+					}
+					sideslip=Float.parseFloat(strData);
+				}catch (Exception e) {
+					this.getTemp().clear();
+					logger.error("数据异常，跳过！");
+					continue;
 				}
 				
-				float  sideslip=Float.parseFloat(strData);
 				if(data[2]==0x7a){
 					TakePicture.createNew(this.deviceSideslip.getVehCheckLogin(),"A1");
 					this.sideslipData.setSideslip(sideslip);
-					
 					this.display.sendMessage(hphm, DeviceDisplay.SP);
 					this.display.sendMessage("侧滑:"+this.sideslipData.getSideslip(), DeviceDisplay.XP);
 					return sideslipData;

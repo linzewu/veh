@@ -60,12 +60,9 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			String zw = getZW(intZw);
 			this.getTemp().clear();
 			
-			
-			
 			Thread.sleep(1000);
 			// 清理数据
 			deviceBrakRoller.clearDate();
-			
 			dw(vehFlow, zw);
 			int clzs = deviceBrakRoller.getVehCheckLogin().getZs();
 			if(clzs>=3&&vehFlow.getJyxm().indexOf("L")==-1&&!"B0".equals(vehFlow.getJyxm())) {

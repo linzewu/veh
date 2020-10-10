@@ -57,6 +57,7 @@ public class CheckEventManger {
 			}
 		});
 	}
+	
 
 	public Integer saveLog(CheckLog rz) {
 		Integer sid = (Integer) this.hibernateTemplate.save(rz);

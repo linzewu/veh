@@ -623,126 +623,94 @@ public class ZHCheckDataManager {
 				return res;
 			}
 		});
-
-		// 路试数据
-		xh = createRoadCheckJudeg(vehCheckLogin, xh);
-
-		// 制动数据判定
-		xh = createBrakRollerDateJudeg(vehCheckLogin, flagMap, xh);
-
-		// 驻车制动率判定
-		if (parDataOfAnjian != null) {
-			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("驻车制动率(%)");
-			dcj1.setYqjyjg(parDataOfAnjian.getTczdl() == null ? "" : parDataOfAnjian.getTczdl().toString());
-			dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : "≥" + parDataOfAnjian.getTczdxz());
-			dcj1.setYqjgpd(parDataOfAnjian.getTczdpd() == null ? "" : parDataOfAnjian.getTczdpd().toString());
-			dcj1.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(dcj1);
-		}
-		// 整车制动率判定
-		if (otherInfoData != null) {
-			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("整车制动率(%)");
-			dcj1.setYqjyjg(otherInfoData.getZczdl() == null ? "" : otherInfoData.getZczdl().toString());
-			dcj1.setYqbzxz(otherInfoData.getZczdlxz() == null ? "" : "≥" + otherInfoData.getZczdlxz());
-			dcj1.setYqjgpd(otherInfoData.getZcpd() == null ? "" : otherInfoData.getZcpd().toString());
-			dcj1.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(dcj1);
-		}
-		// 灯光数据判定
-		xh = createLightDataJudeg(vehCheckLogin, flagMap, xh);
-
-		// 侧滑报告判定
-//		List<SideslipData> sideslipDatas = (List<SideslipData>) this.hibernateTemplate.find(
-//				"from SideslipData where jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
-//				SideslipData.SJZT_ZC);
 		
-		Map<String, Object>  adatas = getAData(vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
-
-		if (!CollectionUtils.isEmpty(adatas)) {
+		if("00".equals(vehCheckLogin.getJylb())) {
+			// 路试数据
+			xh = createRoadCheckJudeg(vehCheckLogin, xh);
+			// 制动数据判定
+			xh = createBrakRollerDateJudeg(vehCheckLogin, flagMap, xh);
 			
-			SideslipData sideslipData = (SideslipData)adatas.get("a1");
-			
-			if(sideslipData!=null) {
+			// 驻车制动率判定
+			if (parDataOfAnjian != null) {
 				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-				dcj1.setYqjyxm("第一转向轮横向侧滑值(m/km)");
-				dcj1.setYqjyjg(sideslipData.getSideslip() == null ? "" : sideslipData.getSideslip().toString());
-				dcj1.setYqbzxz(sideslipData.getChxz().replace(",", "~"));
-				dcj1.setYqjgpd(sideslipData.getChpd() == null ? "" : sideslipData.getChpd().toString());
+				dcj1.setYqjyxm("驻车制动率(%)");
+				dcj1.setYqjyjg(parDataOfAnjian.getTczdl() == null ? "" : parDataOfAnjian.getTczdl().toString());
+				dcj1.setYqbzxz(parDataOfAnjian.getTczdxz() == null ? "" : "≥" + parDataOfAnjian.getTczdxz());
+				dcj1.setYqjgpd(parDataOfAnjian.getTczdpd() == null ? "" : parDataOfAnjian.getTczdpd().toString());
 				dcj1.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj1);
 			}
 			
-			SideslipData sideslipData2 = (SideslipData)adatas.get("a2");
-			
-			if(sideslipData2!=null) {
-				DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-				dcj2.setYqjyxm("第二转向轮横向侧滑值(m/km)");
-				dcj2.setYqjyjg(sideslipData2.getSideslip() == null ? "" : sideslipData2.getSideslip().toString());
-				dcj2.setYqbzxz(sideslipData2.getChxz().replace(",", "~"));
-				dcj2.setYqjgpd(sideslipData2.getChpd() == null ? "" : sideslipData2.getChpd().toString());
-				dcj2.setXh(xh);
+			// 整车制动率判定
+			if (otherInfoData != null) {
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setYqjyxm("整车制动率(%)");
+				dcj1.setYqjyjg(otherInfoData.getZczdl() == null ? "" : otherInfoData.getZczdl().toString());
+				dcj1.setYqbzxz(otherInfoData.getZczdlxz() == null ? "" : "≥" + otherInfoData.getZczdlxz());
+				dcj1.setYqjgpd(otherInfoData.getZcpd() == null ? "" : otherInfoData.getZcpd().toString());
+				dcj1.setXh(xh);
 				xh++;
-				this.hibernateTemplate.save(dcj2);
+				this.hibernateTemplate.save(dcj1);
+			}
+			// 灯光数据判定
+			xh = createLightDataJudeg(vehCheckLogin, flagMap, xh);
+			
+			Map<String, Object>  adatas = getAData(vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
+
+			if (!CollectionUtils.isEmpty(adatas)) {
+				SideslipData sideslipData = (SideslipData)adatas.get("a1");
+				
+				if(sideslipData!=null) {
+					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj1.setYqjyxm("第一转向轮横向侧滑值(m/km)");
+					dcj1.setYqjyjg(sideslipData.getSideslip() == null ? "" : sideslipData.getSideslip().toString());
+					dcj1.setYqbzxz(sideslipData.getChxz().replace(",", "~"));
+					dcj1.setYqjgpd(sideslipData.getChpd() == null ? "" : sideslipData.getChpd().toString());
+					dcj1.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj1);
+				}
+				
+				SideslipData sideslipData2 = (SideslipData)adatas.get("a2");
+				
+				if(sideslipData2!=null) {
+					DeviceCheckJudegZJ dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+					dcj2.setYqjyxm("第二转向轮横向侧滑值(m/km)");
+					dcj2.setYqjyjg(sideslipData2.getSideslip() == null ? "" : sideslipData2.getSideslip().toString());
+					dcj2.setYqbzxz(sideslipData2.getChxz().replace(",", "~"));
+					dcj2.setYqjgpd(sideslipData2.getChpd() == null ? "" : sideslipData2.getChpd().toString());
+					dcj2.setXh(xh);
+					xh++;
+					this.hibernateTemplate.save(dcj2);
+				}
+				
+			}
+			// 速度报告判定
+			List<SpeedData> speedDatas = (List<SpeedData>) this.hibernateTemplate.find(
+					"from SpeedData where   jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
+					SideslipData.SJZT_ZC);
+
+			if (speedDatas != null && !speedDatas.isEmpty()) {
+				SpeedData speedData = speedDatas.get(0);
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setYqjyxm("■车速表指示误差(km/h)");
+				dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
+				dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
+				dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
+				dcj1.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj1);
 			}
 			
+			
 		}
-
-		// 速度报告判定
-		List<SpeedData> speedDatas = (List<SpeedData>) this.hibernateTemplate.find(
-				"from SpeedData where   jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
-				SideslipData.SJZT_ZC);
-
-		if (speedDatas != null && !speedDatas.isEmpty()) {
-			SpeedData speedData = speedDatas.get(0);
-			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-			dcj1.setYqjyxm("■车速表指示误差(km/h)");
-			dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
-			dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
-			dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
-			dcj1.setXh(xh);
-			xh++;
-			this.hibernateTemplate.save(dcj1);
-		}
-		
-//		CurbWeightData curbWeightData = this.vehManager.getLastCurbWeightDataOfJylsh(vehCheckLogin.getJylsh());
-//
-//		if (vehCheckLogin.getJylb().equals("00") && curbWeightData != null&&vehCheckLogin.getJyxm().indexOf("Z1")>=0) {
-//			String cllx=vehCheckLogin.getCllx();
-//			int xzgj=100;
-//			String temp1="±3%或±";
-//			if(cllx.indexOf("H1")==0||cllx.indexOf("H2")==0||cllx.indexOf("Z1")==0||cllx.indexOf("Z2")==0||cllx.indexOf("Z5")==0||cllx.indexOf("G")==0||cllx.indexOf("B")==0){
-//				xzgj=500;
-//			}else if(cllx.indexOf("H3")==0||cllx.indexOf("H4")==0||cllx.indexOf("Z3")==0||cllx.indexOf("Z4")==0){
-//				xzgj=100;
-//			}else if(cllx.indexOf("N")==0){
-//				xzgj=100;
-//				temp1="±5%或±";
-//			}else if(cllx.indexOf("M")==0){
-//				xzgj=10;
-//			}
-//			
-//			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-//			dcj1.setXh(xh);
-//			dcj1.setYqjyxm("整备质量(KG)");
-//			dcj1.setYqjyjg(curbWeightData.getZbzl()==null ? "" : curbWeightData.getZbzl().toString());
-//			dcj1.setYqbzxz(temp1+xzgj+"KG");
-//			dcj1.setYqjgpd(curbWeightData.getZbzlpd().toString());
-//			dcj1.setXh(xh);
-//			xh++;
-//			this.hibernateTemplate.save(dcj1);
-//		}
-//		
 		if(testResult!=null) {
 			
 			if(testResult.getDlx_pd()!=null) {
 				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
-				dcj1.setYqjyxm("●动力性（km/h）");
+				dcj1.setYqjyxm("●驱动轮轮边稳定车速（km/h）");
 				dcj1.setYqjyjg(testResult.getDlx_wdcs()==null ? "" : testResult.getDlx_wdcs().toString());
 				dcj1.setYqbzxz("≥"+testResult.getDlx_edcs());
 				
@@ -781,10 +749,8 @@ public class ZHCheckDataManager {
 			
 			Map<String, Map<String, Object>>  pfxData =  getPFXData(vehCheckLogin);
 			
-			if(pfxData!=null) {
-				
+			if(pfxData!=null && "00".equals(vehCheckLogin.getJylb())) {
 				if(pfxData.get("sds")!=null) {
-					
 					Map<String, Object> sds = pfxData.get("sds");
 					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 					dcj1.setXh(xh);
@@ -1182,7 +1148,7 @@ public class ZHCheckDataManager {
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("喇叭声压级(dB(A))");
 			dcj1.setYqjyjg(volumeData.getFb());
-			dcj1.setYqbzxz("90dB(A)~115bD(A)");
+			dcj1.setYqbzxz("90dB(A)~115dD(A)");
 			boolean pd =Float.parseFloat(volumeData.getFb().trim())>=90&&Float.parseFloat(volumeData.getFb().trim())<=115;
 			dcj1.setYqjgpd(pd?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 			dcj1.setXh(xh);
@@ -1256,8 +1222,6 @@ public class ZHCheckDataManager {
 							xh++;
 							this.hibernateTemplate.save(dcj3);
 						}
-						
-						
 						
 					//}
 				}

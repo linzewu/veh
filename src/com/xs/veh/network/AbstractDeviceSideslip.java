@@ -59,7 +59,6 @@ public abstract class AbstractDeviceSideslip extends AbstractDevice {
 		while (temp.remove(0)!=beginByte) {
 			
 		}
-		
 		contex[0]=beginByte;
 		for (int i = 1; i < contex.length; i++) {
 			while (temp.isEmpty()) {
@@ -67,12 +66,6 @@ public abstract class AbstractDeviceSideslip extends AbstractDevice {
 			}
 			contex[i] = temp.remove(0);
 		}
-		StringBuffer ss = new StringBuffer("");
-		for(int i=0;i<contex.length;i++) {
-			ss.append(contex[i]+"  ");
-		}
-		logger.info("getDevData() :"+ss);
-
 		return contex;
 	}
 

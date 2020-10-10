@@ -26,6 +26,9 @@ public class CheckLog  {
 	@Column(name = "id")
 	private Integer id;
 	
+	@Column
+	private Integer jycs;
+	
 	@Column(name = "code",length=64)
 	private String code;
 	
@@ -58,6 +61,16 @@ public class CheckLog  {
 	@Column(name = "hpzl")
 	private String hpzl;
 	
+	
+	
+
+	public Integer getJycs() {
+		return jycs;
+	}
+
+	public void setJycs(Integer jycs) {
+		this.jycs = jycs;
+	}
 
 	public String getHmph() {
 		return hmph;

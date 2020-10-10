@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -260,7 +261,7 @@ public class PDAServiceController {
 			
 			vehCheckProcess.setKssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-	
+			
 			
 	
 			if (vehCheckProcess.getJyxm().equals("C1")) {
@@ -429,8 +430,19 @@ public class PDAServiceController {
 	public @ResponseBody String relohin(@RequestParam String jylsh,@RequestParam Integer id,
 			@RequestParam String fjjyxm,@RequestParam Integer jcxdh,@RequestParam Integer reloginWeigth) {
 		
-		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
 		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		
+		Message message = this.vehManager.checkUpLine(jcxdh, vehCheckLogin);
+		
+		if(message!=null) {
+			JSONObject json = new JSONObject();
+			json.put("state", "-1");
+			json.put("message", message.getMessage());
+			return json.toString();
+		}
+		
+		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
+		
 		if(vehCheckLogin.getVehsxzt()==VehCheckLogin.ZT_WKS) {
 			pushVehOnLine(id,jcxdh);
 		}

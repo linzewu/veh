@@ -308,7 +308,7 @@ public class Sql2WordUtil {
 		}
 		
 		if(obj==null) {
-			return "—";
+			return "";
 		}
 		
 		if(obj instanceof String) {

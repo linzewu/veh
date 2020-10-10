@@ -744,7 +744,7 @@ var veh = {
 							false);
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
 							true);
-				}else if(i >1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0||cllx.indexOf("H")>=0||cllx.indexOf("Z")>=0)){
+				}else if(i >1 &&(cllx.indexOf("G")>=0||cllx.indexOf("B")>=0||cllx.indexOf("H")>=0||cllx.indexOf("Z")>=0||cllx.indexOf("Q")>=0)){
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("disabled",
 							false);
 					$(":checkbox[name=jyxm][value=L" + i + "]").prop("checked",
@@ -1542,6 +1542,9 @@ var report={
 			$("#report4").panel({"href":"/veh/html/report/report4.html","onLoad":report.getReport4,baseInfo:row});
 			$("#upimage").panel({"href":"/veh/html/report/upimage.html",baseInfo:row});
 			$("#process").panel({"href":"/veh/html/report/process.html",baseInfo:row});
+			
+			$("#sqprocess").panel({"href":"/veh/html/report/sqprocess.html",baseInfo:row});
+			
 			$("#online").panel({"href":"/veh/html/report/online.html",baseInfo:row});
 			$("#commit").panel({"href":"/veh/html/report/commit.html",baseInfo:row});
 			$("#roadCheck").panel({"href":"/veh/html/report/roadCheck.html",baseInfo:row});
@@ -1553,7 +1556,7 @@ var report={
 			$("#relogin").panel({"href":"/veh/html/report/relogin.html","onLoad":report.getPlateApply,baseInfo:row});
 			
 			$("#outLine").panel({"href":"/veh/html/report/outline.html",baseInfo:row});
-			
+			$("#zjline").panel({"href":"/veh/html/report/zjline.html",baseInfo:row});
 		}
 	},
 	getReport1:function(panelObj,intjycs){
@@ -1624,7 +1627,6 @@ var report={
 					
 					switch (n) {
 					case "1":
-						 alert(n)
 						newStr+="+一轴"
 						break;
 					case "2":

@@ -7,8 +7,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
@@ -65,9 +68,16 @@ public class ExtendManage {
 	
 	public void saveQkdOutLine(VehCheckLogin vehCheckLogin) throws InterruptedException {
 		
-		List<Map<String, Object>> list = qkdJdbcTemplate.queryForList("select * from CarRemoteExchange where VehicleSN=? and StateCode=255 ",new Object[]{vehCheckLogin.getJylsh()});
+		List<Map<String, Object>> list = qkdJdbcTemplate.queryForList("select * from CarRemoteExchange where VehicleSN=? and StateCode=255 and TestTimes=?",new Object[]{vehCheckLogin.getJylsh(),vehCheckLogin.getJycs()});
 		
 		if(!CollectionUtils.isEmpty(list)) {
+			
+			List<Outline> outlines = (List<Outline>) this.hibernateTemplate.find("from Outline where jylsh=? ", vehCheckLogin.getJylsh());
+			for(Outline out : outlines) {
+				out.setSjzt(Outline.SJZT_FJ);
+				this.hibernateTemplate.saveOrUpdate(out);
+			}
+			
 			Map<String, Object> data = list.get(0);
 			Outline out=new Outline();
 			out.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), "M1");
@@ -96,7 +106,6 @@ public class ExtendManage {
 		Thread.sleep(200);
 		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C81", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
 				vp.getClsbdh(),vehCheckLogin.getVehcsbj());
-		
 		Thread.sleep(200);
 		checkEventManger.createEvent(vp.getJylsh(), vp.getJycs(), "18C58", vp.getJyxm(), vp.getHphm(), vp.getHpzl(),
 				vp.getClsbdh(),vehCheckLogin.getVehcsbj());

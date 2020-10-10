@@ -779,6 +779,47 @@ public class VehManager {
 	}
 	
 	
+	public Message checkUpLine(Integer jcxdh,VehCheckLogin vehCheckLogin) {
+		
+		Message message = new Message();
+		
+		if (vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JCZ) {
+			message.setState(Message.STATE_ERROR);
+			message.setMessage("引车上线失败，该流水已上线！");
+			return message;
+		}
+		
+		Flow flow = flowManager.getFlow(jcxdh, vehCheckLogin.getCheckType());
+		
+		List<VehCheckProcess> process = this.getVehCheckPrcoessByJylsh(vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
+		
+		List<VehFlow> oldVehFlows =  (List<VehFlow>) this.hibernateTemplate.find("from VehFlow where jylsh=? and jycs=?", vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
+		
+		if(CollectionUtils.isEmpty(oldVehFlows)) {
+			addVehFlow(vehCheckLogin, process, flow);
+			vehCheckLogin.setJcxdh(jcxdh.toString());
+		}
+		// 获取第一顺序流程
+		VehFlow firstVehFlow = (VehFlow) this.hibernateTemplate
+				.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
+						vehCheckLogin.getJycs())
+				.get(0);
+
+		int gwxs = firstVehFlow.getGwsx();
+
+		List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
+				.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
+
+		if (checkQueues != null && !checkQueues.isEmpty()) {
+			message.setState(Message.STATE_ERROR);
+			message.setMessage("线上有车，请稍等！");
+			return message;
+		}
+		
+		return null;
+		
+	}
+	
 
 	public Message upLine(Integer id,Integer jcxdh) {
 

@@ -108,29 +108,37 @@
 			}
 		});
 		$("#info_hphm").val(playInfo[0].hphm);
+		
+		var arry=[];
+		
+		var map={};
+		
 		$.each(playInfo,function(i,n){
-			var li=$("<li> <input  type=\"button\"  value='"+(getjyxm(n.jyxm)+"  "+n.jycs)+"' style=\"width:180px;\" /></li>");
+			if(map[n.jyxm]){
+				if(n.jycs>map[n.jyxm].jycs){
+					map[n.jyxm]=n;
+				}
+			}else{
+				map[n.jyxm]=n;
+			}
+		});
+		$.each(map,function(i,n){
+			var li=$("<li> <input  type=\"button\"  value='"+(getjyxm(n.jyxm))+"' style=\"width:180px;\" /></li>");
 			$(".check-menu").append(li);
 			//$.parser.parse('.check-menu');
 			var channel=n.channel==null?"0":n.channel;
 			
-			var itemId = vlc.playlist.add("http://192.168.51.201:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
+			var itemId = vlc.playlist.add("http://192.168.3.126:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
 			
 			li.find("input").click(function(){
 				vlc.playlist.playItem(itemId);
 			});
-		});
-		
-		$(".check-menu li input").each(function(i,n){
-			
-			$(n).val();
 			
 		});
-		
 		
 		setTimeout(function(){
 			$(".check-menu li:eq(0) input").click();
-		},1000);
+		},1000)
 		
 	});
 	
@@ -174,7 +182,7 @@
 			<div style="float: left;">
 				<!--[if IE]>
 				   <object type='application/x-vlc-plugin' id='vlc' events='True'
-				       classid='clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921' width="1024" height="580">
+				       classid='clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921' width="750" height="580">
 				          <param name='mrl' value='' />
 				          <param name='volume' value='50' />
 				          <param name='autoplay' value='false' />
@@ -186,7 +194,7 @@
 				    </object>
 				<![endif]-->
 				<!--[if !IE]><!-->
-				    <object type='application/x-vlc-plugin' id='vlc' events='True' style="width: 1024px;height: 580px;">
+				    <object type='application/x-vlc-plugin' id='vlc' events='True' style="width: 750px;height: 580px;">
 				        <param name='mrl' value='' />
 				        <param name='volume' value='50' />
 				        <param name='autoplay' value='true' />

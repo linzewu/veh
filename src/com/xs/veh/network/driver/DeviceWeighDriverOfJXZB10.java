@@ -32,8 +32,8 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 	@Override
 	public BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException{
 		
-		deviceWeigh.sendMessage(ql);
-		logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		//deviceWeigh.sendMessage(ql);
+	//	logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 		String zs = vehFlow.getJyxm().substring(1, 2);
 		String hphm = vehFlow.getHphm();
 	
@@ -72,7 +72,6 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 	
 	
 	public BrakRollerData  check(String zs,String hphm) throws IOException, InterruptedException {
-		
 
 		// 开始新的一次检测
 		createNew();
@@ -102,7 +101,6 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 					i=0;
 					this.getTemp().clear();
 				}
-				
 			} else {
 				this.display.sendMessage(hphm, DeviceDisplay.SP);
 				this.display.sendMessage(zs + "轴称重请到位", DeviceDisplay.XP);

@@ -224,7 +224,6 @@ public class WorkPointManager {
 			param[i] = vehFlow.getSx();
 			i++;
 		}
-
 		DetachedCriteria dc = DetachedCriteria.forClass(CheckQueue.class);
 
 		dc.add(Restrictions.eq("jylsh", vehCheckLogin.getJylsh()));

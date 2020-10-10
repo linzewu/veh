@@ -562,12 +562,14 @@ public class CheckedInfoTaskJob {
 					uploadImage(e);
 					continue;
 				}
+				
+				
 				if(!CollectionUtils.isEmpty(paams)
 						&&"true".equals(paams.get(0).getParamValue())
 						&&"M1".equals(e.getJyxm())) {
 					
 					 SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(e.getJylsh());
+					 VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(e.getJylsh());
 					 StringBuilder sb=new StringBuilder();
 					 sb.append("^^zpzp^^");
 					 sb.append(vehCheckLogin.getJylsh());
@@ -601,14 +603,11 @@ public class CheckedInfoTaskJob {
 					} catch (IOException e2) {
 						logger.error("深圳平台拍照指令异常",e2);
 					}
-					
 				}
-
 				
 				if ((RCAConstant.V18C53.equals(e.getEvent()) || RCAConstant.V18C80.equals(e.getEvent())
 						|| RCAConstant.V18C81.equals(e.getEvent()) || RCAConstant.V18C64.equals(e.getEvent()))
 						&& checkItem != null && !"".equals(checkItem)) {
-
 					viewName += "_" + checkItem;
 				}
 
@@ -629,7 +628,6 @@ public class CheckedInfoTaskJob {
 						if (docYqjg != null) {
 							data.put("yqsbjyjgs", docYqjg.asXML());
 						}
-
 						// 人工检验项目结果
 						List rgjg = checkDataManager.getExternalCheckJudge(e.getJylsh());
 						if (rgjg != null) {
@@ -639,7 +637,6 @@ public class CheckedInfoTaskJob {
 						data.put("pzrxm", pzrxm);
 						VehCheckLogin info = vehManager.getVehCheckLoginByJylsh(jyjgbh, e.getJylsh());
 						data.put("jyjl", info.getJyjl());
-
 					}
 
 					Document document = this.write(e, data);

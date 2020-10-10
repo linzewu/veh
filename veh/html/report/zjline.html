@@ -1,0 +1,89 @@
+<!-- <form id="form-testveh" class="userInfo-form" method="post">
+<div style="margin:0 auto;width:96%;padding-top: 10px;">
+<table class="simpletable"  cellpadding="0" cellspacing="0">
+	<tr>
+		<td class="simpletable-l"><label >检验流水号：</label></td>
+		<td class="simpletable-r"><input id="jylsh" name="jylsh" readonly="readonly" class="easyui-textbox"></td>
+		<td class="simpletable-l"><label >号牌号码：</label></td>
+		<td class="simpletable-r"><input id="hphm" name="hphm" readonly="readonly" class="easyui-textbox"></td>
+	</tr>
+	<tr>
+		<td class="simpletable-l"><label>错误码：</label></td>
+		<td class="simpletable-r"><input id="errorCode" name="errorCode" readonly="readonly" class="easyui-textbox"></td>
+		<td class="simpletable-l"><label>错误信息：</label></td>
+		<td class="simpletable-r"><input id="errorMsg" name="errorMsg" readonly="readonly" class="easyui-textbox"></td>
+	</tr>
+</table>
+<br/>
+<div align="center" ><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="zjRecordAdd()">上传检测记录</a>&nbsp;&nbsp;
+	</div>
+	
+</div>
+</div>
+</form>-->
+
+<table id="testVehManager" class="easyui-datagrid"
+	data-options="fitColumns:true,singleSelect:true,fit:true,toolbar:'#testVehManagerToolbar'">
+	<thead> 
+		<tr>
+			<th data-options="field:'jylsh',width:100">检验流水号</th>
+			<th data-options="field:'hphm',width:60">号牌号码</th>
+			<th data-options="field:'errorCode',width:60">错误码</th>
+			<th data-options="field:'errorMsg',width:60">错误信息</th>
+	
+		</tr>
+	</thead>
+</table>
+<div id="testVehManagerToolbar">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="zjRecordAdd()">联网</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="photoUpload()">照片上传</a>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+	$('#testVehManager').datagrid({"url":"/veh/testVeh/getTestVeh"});
+	$('#testVehManager').datagrid("reload",{jylsh:baseInfo.jylsh});
+})
+
+//loaddata();
+
+function loaddata(){
+	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+	$.post("/veh/testVeh/getTestVeh",{jylsh:baseInfo.jylsh}, function(data) {
+		//alert(data);
+		$("#form-testveh").form("load",data);
+	}).complete(function() {
+		$.messager.progress("close");
+	}).error(function(){
+		$.messager.alert("错误","系统错误，请联系管理员！","error");
+	});
+}
+
+function zjRecordAdd(){
+	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+	//var row = $("#blackListManager").datagrid("getSelected");
+
+		$.post("/veh/testVeh/zjRecordAdd",{lsh:baseInfo.jylsh}, function(data) {
+			$('#testVehManager').datagrid("reload",{jylsh:baseInfo.jylsh});
+		}).complete(function() {
+			$.messager.progress("close");
+		}).error(function(){
+			$.messager.alert("错误","系统错误，请联系管理员！","error");
+		});
+}
+
+function photoUpload(){
+	
+	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+	//var row = $("#blackListManager").datagrid("getSelected");
+
+		$.post("/veh/testVeh/photoUppload",{lsh:baseInfo.jylsh}, function(data) {
+			$.messager.alert("提示","上传成功","info");
+		}).complete(function() {
+			$.messager.progress("close");
+		}).error(function(){
+			$.messager.alert("错误","系统错误，请联系管理员！","error");
+		});
+}
+</script>

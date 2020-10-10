@@ -100,6 +100,7 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 
 	private void createNew() {
 		this.speedData = new SpeedData();
+		this.getTemp().clear();
 	}
 
 	@Override

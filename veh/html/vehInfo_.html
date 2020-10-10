@@ -376,13 +376,19 @@
 	<tr>
 		<td class="tl"><label>综检车辆用途：</label></td >
 		<td class="tc">
-			<label></label><input class="easyui-textbox vehInfoInput"  name="zjclyt" id="zjclyt">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('zjclyt'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="zjclyt" id="zjclyt">
 		</td>
 		<td class="tl"><label>驱动轴空载质量：</label></td >
 		<td class="tc">
 			<label></label><input class="easyui-numberbox vehInfoInput"  name="qdzkzzl" id="qdzkzzl">
 		</td>
-		<td class="tc" colspan="2">			
+		<td class="tc" >
+			<label>综检类别：</label>		
+		</td>
+		<td class="tc">
+			<input data-options="editable:false,data:comm.getBaseParames('zjlb'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="zjlb" id="zjlb">
 		</td>		
 	</tr>
 	

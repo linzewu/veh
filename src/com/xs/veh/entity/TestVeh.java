@@ -165,6 +165,12 @@ public class TestVeh extends BaseEntity {
 	//报告单编号
 	private String bgdbh;
 	
+	//错误码
+	private String errorCode;
+	
+	//错误信息
+	private String errorMsg;
+	
 	
 
 	public String getBgdbh() {
@@ -679,6 +685,22 @@ public class TestVeh extends BaseEntity {
 		}
 		this.yhxz=yhxz;
 		return yhxz;
+	}
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
 	}
 
 

@@ -128,39 +128,54 @@ public class CheckReportController {
 			
 			
 			Date date = vehCheckLogin.getUpLineDate();
+			
+			if(date==null) {
+				date=new Date();
+			}
+			
 			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			SimpleDateFormat sdf2 =new SimpleDateFormat("yyyy年MM月dd");
+			
 			dataMap.put("uplinedate", sdf.format(date));
+			
+			dataMap.put("uplinedate2", sdf2.format(date));
 			
 			dataMap.put("qdzs", vehCheckLogin.getQdxs());
 			
-			//灯光
-			Map<String, Object>  dgData = zhCheckDataManager.getHData(lsh, vehCheckLogin.getJycs());
-			Map<String, Object>  zjcheckeData = new HashMap<String, Object>();
-			for(String key:dgData.keySet()) {
-				zjcheckeData.put(key.toLowerCase(), dgData.get(key));
+			if("00".equals(vehCheckLogin.getJylb())) {
+				//灯光
+				Map<String, Object>  dgData = zhCheckDataManager.getHData(lsh, vehCheckLogin.getJycs());
+				Map<String, Object>  zjcheckeData = new HashMap<String, Object>();
+				for(String key:dgData.keySet()) {
+					zjcheckeData.put(key.toLowerCase(), dgData.get(key));
+				}
+				JSONObject dgjo =(JSONObject) JSON.toJSON(zjcheckeData);
+				dataMap.putAll(dgjo);
+				
+				//速度
+				Map<String, Object>  s1Data = zhCheckDataManager.getS1Data(lsh, vehCheckLogin.getJycs());
+				JSONObject s1jo =(JSONObject) JSON.toJSON(s1Data);
+				dataMap.putAll(s1jo);
+				
+				//侧滑
+				Map<String, Object>  aData = zhCheckDataManager.getAData(lsh, vehCheckLogin.getJycs());
+				JSONObject ajo =(JSONObject) JSON.toJSON(aData);
+				dataMap.putAll(ajo);
+				
+				//制动
+				Map<String, Object>  bData = zhCheckDataManager.getBData(vehCheckLogin, vehCheckLogin.getJycs());
+				JSONObject bjo =(JSONObject) JSON.toJSON(bData);
+				dataMap.putAll(bjo);
+				
+				createLineImage(bData, dataMap);
+				//路试
+				Map<String, Object>  rData = zhCheckDataManager.getRData(vehCheckLogin, vehCheckLogin.getJycs());
+				JSONObject rjo =(JSONObject) JSON.toJSON(rData);
+				dataMap.putAll(rjo);
 			}
-			JSONObject dgjo =(JSONObject) JSON.toJSON(zjcheckeData);
-			dataMap.putAll(dgjo);
 			
-			//速度
-			Map<String, Object>  s1Data = zhCheckDataManager.getS1Data(lsh, vehCheckLogin.getJycs());
-			JSONObject s1jo =(JSONObject) JSON.toJSON(s1Data);
-			dataMap.putAll(s1jo);
-			
-			//侧滑
-			Map<String, Object>  aData = zhCheckDataManager.getAData(lsh, vehCheckLogin.getJycs());
-			JSONObject ajo =(JSONObject) JSON.toJSON(aData);
-			dataMap.putAll(ajo);
-			
-			//制动
-			Map<String, Object>  bData = zhCheckDataManager.getBData(vehCheckLogin, vehCheckLogin.getJycs());
-			JSONObject bjo =(JSONObject) JSON.toJSON(bData);
-			dataMap.putAll(bjo);
-			
-			//路试
-			Map<String, Object>  rData = zhCheckDataManager.getRData(vehCheckLogin, vehCheckLogin.getJycs());
-			JSONObject rjo =(JSONObject) JSON.toJSON(rData);
-			dataMap.putAll(rjo);
+		
 			
 			//动力性性
 			Map<String, Object>  dlxData =  zhCheckDataManager.getDLXData(vehCheckLogin, vehCheckLogin.getJycs());
@@ -193,7 +208,7 @@ public class CheckReportController {
 			
 			logger.info("pfxjo:"+pfxjo);
 			
-			if(pfxjo!=null) {
+			if(pfxjo!=null&&"00".equals(vehCheckLogin.getJcxlb())) {
 				
 				if(pfxjo.containsKey("sds")) {
 					dataMap.put("pfx1pd", pfxjo.getJSONObject("sds").getString("SFHG").equals("true")?"○":"X");
@@ -223,8 +238,6 @@ public class CheckReportController {
 			InputStream dggwzp = zhCheckDataManager.getIamge(lsh, "0321");
 			InputStream dlxjygwzp = zhCheckDataManager.getIamge(lsh, "0999");
 			
-			
-			
 			if(zdgwzp!=null) {
 				dataMap.put("zdgwzp", zdgwzp);
 			}
@@ -240,10 +253,6 @@ public class CheckReportController {
 			if(!StringUtils.isEmpty(dpjyy)) {
 				dataMap.put("dpjyy", dpjyy);
 			}
-			
-			
-			createLineImage(bData, dataMap);
-			
 			
 			Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
 			String template = "道路运输车辆性能检验记录单.docx";
@@ -355,7 +364,7 @@ public class CheckReportController {
 	
 	private String getPD(String pd) {
 		if(pd.equals(BaseDeviceData.PDJG_HG.toString())) {
-			return "⚪";
+			return "O";
 		}else if(pd.equals(BaseDeviceData.PDJG_BHG.toString())) {
 			return "X";
 		}else if(pd.equals(BaseDeviceData.PDJG_WJ.toString())) {
@@ -386,6 +395,10 @@ public class CheckReportController {
 		Date date = vehCheckLogin.getUpLineDate();
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		dataMap.put("uplinedate", sdf.format(date));
+		
+		
+		SimpleDateFormat sdf2 =new SimpleDateFormat("yyyy 年 MM 月  dd");
+		dataMap.put("uplinedate2", sdf2.format(date));
 		  
 		if(testVeh!=null) {
 			JSONObject testVehMap = (JSONObject)JSON.toJSON(testVeh);
@@ -395,8 +408,24 @@ public class CheckReportController {
 		
 		List<DeviceCheckJudegZJ> reports = zhCheckDataManager.getDeviceCheckJudegZJ(lsh);
 		
-		TestResult testResult = zhCheckDataManager.getTestResultBylsh(lsh);
+		String jl="壹级车";
 		
+		for(DeviceCheckJudegZJ dzj:reports) {
+			if(BaseDeviceData.PDJG_BHG.toString().equals(dzj.getYqjgpd())) {
+				jl="不合格";
+				break;
+			}
+		}
+		if(jl.equals("壹级车")) {
+			for(DeviceCheckJudegZJ dzj:reports) {
+				if(dzj.getYqjgpd().equals("2级")||dzj.getYqjgpd().equals("二级")) {
+					jl="贰级车";
+					break;
+				}
+			}
+		}
+		dataMap.put("zjjl",jl);
+		TestResult testResult = zhCheckDataManager.getTestResultBylsh(lsh);
 		if(testResult!=null) {
 			dataMap.put("hjwd",testResult.getHjwd());
 			dataMap.put("hjsd",testResult.getHjsd());
