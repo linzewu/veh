@@ -1,6 +1,7 @@
 package com.xs.veh.network.driver;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
@@ -12,7 +13,6 @@ import com.xs.veh.network.AbstractDeviceSpeed;
 import com.xs.veh.network.DeviceDisplay;
 import com.xs.veh.network.DeviceSpeed;
 import com.xs.veh.network.TakePicture;
-import com.xs.veh.network.SimpleRead.ProtocolType;
 import com.xs.veh.network.data.SpeedData;
 
 public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
@@ -65,7 +65,8 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 			}
 			Thread.sleep(500);
 		}
-
+		
+		this.setDwDate(new Date());
 		// 速度台下降
 		deviceSpeed.sendMessage(down);
 		this.getDevData(new byte[4]);

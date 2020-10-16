@@ -84,7 +84,7 @@ public class CheckReportController {
 	
 	@Autowired
 	private ZHCheckDataManager zhCheckDataManager;
-	
+	 
 	@UserOperation(code = "printJyReport", name = "打印道路运输车辆性能检验记录单")
 	@RequestMapping(value = "printJyReport", method = RequestMethod.POST)
 	public @ResponseBody Map printJyReport(String lsh) throws Exception {
@@ -128,12 +128,12 @@ public class CheckReportController {
 			
 			
 			Date date = vehCheckLogin.getUpLineDate();
-			
+			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			if(date==null) {
-				date=new Date();
+				date=sdf.parse(vehCheckLogin.getCreateTime());
 			}
 			
-			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
 			
 			SimpleDateFormat sdf2 =new SimpleDateFormat("yyyy年MM月dd");
 			
@@ -143,7 +143,9 @@ public class CheckReportController {
 			
 			dataMap.put("qdzs", vehCheckLogin.getQdxs());
 			
-			if("00".equals(vehCheckLogin.getJylb())) {
+			boolean syxzIsShow=getIsShow(vehCheckLogin.getSyxz());
+			
+			if(((Integer)1)==vehCheckLogin.getZjlb()||syxzIsShow) {
 				//灯光
 				Map<String, Object>  dgData = zhCheckDataManager.getHData(lsh, vehCheckLogin.getJycs());
 				Map<String, Object>  zjcheckeData = new HashMap<String, Object>();
@@ -208,7 +210,7 @@ public class CheckReportController {
 			
 			logger.info("pfxjo:"+pfxjo);
 			
-			if(pfxjo!=null&&"00".equals(vehCheckLogin.getJcxlb())) {
+			if(pfxjo!=null&&(((Integer)1)==vehCheckLogin.getZjlb()||syxzIsShow)) {
 				
 				if(pfxjo.containsKey("sds")) {
 					dataMap.put("pfx1pd", pfxjo.getJSONObject("sds").getString("SFHG").equals("true")?"○":"X");
@@ -269,6 +271,16 @@ public class CheckReportController {
 	}
 	
 	
+	private boolean getIsShow(String syxz) {
+		
+		if("B".equals(syxz)||"C".equals(syxz)||"D".equals(syxz)||"E".equals(syxz)||"N".equals(syxz)) {
+			return true;
+		}
+		
+		return false;
+	}
+
+
 	private void createLineImage(Map<String, Object>  bData,JSONObject dataMap) {
 		
 		if(bData!=null) {
@@ -321,6 +333,8 @@ public class CheckReportController {
 	
 	public  void prcessTable(Table table,JSONArray jo) throws Exception {
 		
+		int rowNum=0;
+		
 		for(int i=0;i<jo.size();i++) {
 			
 			 String xh =  jo.getJSONObject(i).get("xh").toString();
@@ -356,8 +370,26 @@ public class CheckReportController {
 				 cells.get(8).getRange().replace("yqbzxz", "—", true, true);
 				 cells.get(9).getRange().replace("yqjgpd", "—", true, true);
 			 }
-			 
 			 table.getRows().add(deepClone);
+			 rowNum++;
+		} 
+		
+		if(15-rowNum>0) {
+			for(int i=0;i<15-rowNum;i++) {
+				 Node deepClone = table.getLastRow().deepClone(true);
+				 CellCollection cells = table.getLastRow().getCells();
+				 cells.get(0).getRange().replace("xh", "—", true, true);
+				 cells.get(1).getRange().replace("yqjyxm", "—", true, true);
+				 cells.get(2).getRange().replace("yqjyjg", "—", true, true);
+				 cells.get(3).getRange().replace("yqbzxz", "—", true, true);
+				 cells.get(4).getRange().replace("yqjgpd", "—", true, true);
+				 cells.get(5).getRange().replace("xh", "—", true, true);
+				 cells.get(6).getRange().replace("yqjyxm", "—", true, true);
+				 cells.get(7).getRange().replace("yqjyjg", "—", true, true);
+				 cells.get(8).getRange().replace("yqbzxz", "—", true, true);
+				 cells.get(9).getRange().replace("yqjgpd", "—", true, true);
+				 table.getRows().add(deepClone);
+			}
 		}
 		table.getLastRow().remove();
 	}
@@ -393,9 +425,13 @@ public class CheckReportController {
 		}
 		
 		Date date = vehCheckLogin.getUpLineDate();
-		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		dataMap.put("uplinedate", sdf.format(date));
 		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if(date==null) {
+			date=sdf.parse(vehCheckLogin.getCreateTime());
+		}
+		
+		dataMap.put("uplinedate", sdf.format(date));
 		
 		SimpleDateFormat sdf2 =new SimpleDateFormat("yyyy 年 MM 月  dd");
 		dataMap.put("uplinedate2", sdf2.format(date));
@@ -408,7 +444,7 @@ public class CheckReportController {
 		
 		List<DeviceCheckJudegZJ> reports = zhCheckDataManager.getDeviceCheckJudegZJ(lsh);
 		
-		String jl="壹级车";
+		String jl="";
 		
 		for(DeviceCheckJudegZJ dzj:reports) {
 			if(BaseDeviceData.PDJG_BHG.toString().equals(dzj.getYqjgpd())) {
@@ -416,7 +452,7 @@ public class CheckReportController {
 				break;
 			}
 		}
-		if(jl.equals("壹级车")) {
+		if(jl.equals("")) {
 			for(DeviceCheckJudegZJ dzj:reports) {
 				if(dzj.getYqjgpd().equals("2级")||dzj.getYqjgpd().equals("二级")) {
 					jl="贰级车";
@@ -424,12 +460,28 @@ public class CheckReportController {
 				}
 			}
 		}
+		
+		if(jl.equals("")) {
+			for(DeviceCheckJudegZJ dzj:reports) {
+				if(dzj.getYqjgpd().equals("1级")||dzj.getYqjgpd().equals("一级")) {
+					jl="壹级车";
+					break;
+				}
+			}
+		}
+		
 		dataMap.put("zjjl",jl);
 		TestResult testResult = zhCheckDataManager.getTestResultBylsh(lsh);
 		if(testResult!=null) {
 			dataMap.put("hjwd",testResult.getHjwd());
 			dataMap.put("hjsd",testResult.getHjsd());
 			dataMap.put("dqy",testResult.getDqy());
+		}
+		
+		InputStream zdgwzp = zhCheckDataManager.getIamge(lsh, "9998");
+		
+		if(zdgwzp!=null) {
+			dataMap.put("zjewm", zdgwzp);
 		}
 		
 		Map<String, List<BaseParams>> bpsMap = (Map<String, List<BaseParams>>) servletContext.getAttribute("bpsMap");
@@ -465,6 +517,12 @@ public class CheckReportController {
 		
 		
 		return ResultHandler.toMyJSON(Constant.ConstantState.STATE_SUCCESS, "打印道路运输车辆性能检验报告单成功", fileName);
+	}
+	
+	
+	public static void main(String[] age) {
+		Integer a=1;
+		System.out.println(a==(Integer)(1));
 	}
 
 }

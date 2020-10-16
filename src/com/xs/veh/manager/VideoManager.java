@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.transform.Transformers;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,16 @@ public class VideoManager {
 	
 	public void deleteConfig(VideoConfig vc){
 		this.hibernateTemplate.delete(vc);
+	}
+	
+	
+	public List<Map<String, Object>> getTempVideo(final String jylsh) {
+		return this.hibernateTemplate.execute(new HibernateCallback<List<Map<String,Object>>>() {
+			@Override
+			public List<Map<String, Object>> doInHibernate(Session session) throws HibernateException {
+				return session.createSQLQuery("select * from tm_process_temp where jylsh=:jylsh").setParameter("jylsh", jylsh).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+			}
+		});
 	}
 
 }

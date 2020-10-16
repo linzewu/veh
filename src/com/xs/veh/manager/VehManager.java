@@ -782,42 +782,27 @@ public class VehManager {
 	public Message checkUpLine(Integer jcxdh,VehCheckLogin vehCheckLogin) {
 		
 		Message message = new Message();
-		
 		if (vehCheckLogin.getVehsxzt() == VehCheckLogin.ZT_JCZ) {
 			message.setState(Message.STATE_ERROR);
 			message.setMessage("引车上线失败，该流水已上线！");
 			return message;
 		}
-		
-		Flow flow = flowManager.getFlow(jcxdh, vehCheckLogin.getCheckType());
-		
-		List<VehCheckProcess> process = this.getVehCheckPrcoessByJylsh(vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
-		
-		List<VehFlow> oldVehFlows =  (List<VehFlow>) this.hibernateTemplate.find("from VehFlow where jylsh=? and jycs=?", vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
-		
-		if(CollectionUtils.isEmpty(oldVehFlows)) {
-			addVehFlow(vehCheckLogin, process, flow);
-			vehCheckLogin.setJcxdh(jcxdh.toString());
-		}
-		// 获取第一顺序流程
-		VehFlow firstVehFlow = (VehFlow) this.hibernateTemplate
+		List<VehFlow> vfs = (List<VehFlow>) this.hibernateTemplate
 				.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
-						vehCheckLogin.getJycs())
-				.get(0);
+						vehCheckLogin.getJycs());
+		if(CollectionUtils.isEmpty(vfs)) {
+			VehFlow firstVehFlow = vfs.get(0);
+			int gwxs = firstVehFlow.getGwsx();
+			List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
+					.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
 
-		int gwxs = firstVehFlow.getGwsx();
-
-		List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
-				.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
-
-		if (checkQueues != null && !checkQueues.isEmpty()) {
-			message.setState(Message.STATE_ERROR);
-			message.setMessage("线上有车，请稍等！");
-			return message;
-		}
-		
+			if (checkQueues != null && !checkQueues.isEmpty()) {
+				message.setState(Message.STATE_ERROR);
+				message.setMessage("线上有车，请稍等！");
+				return message;
+			}
+		}	
 		return null;
-		
 	}
 	
 
@@ -1001,7 +986,6 @@ public class VehManager {
 								vehCheckLogin.getVehcsbj());
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else {
@@ -1012,7 +996,6 @@ public class VehManager {
 									vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
 									vehCheckLogin.getVehcsbj());
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						try {
@@ -1020,7 +1003,6 @@ public class VehManager {
 									vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
 									vehCheckLogin.getVehcsbj());
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -1229,6 +1211,15 @@ public class VehManager {
 			if (vehCheckLogin.getJyxm().indexOf("B5") >= 0) {
 				fjjyxm += "B5,";
 			}
+			
+			// 加载复检
+			List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
+					"from BrakRollerData where jylsh=? and sjzt=? and jyxm in ('L1','L2','L3','L4') and zpd=?", jylsh,
+					BaseDeviceData.SJZT_ZC, BaseDeviceData.PDJG_BHG);
+			for (BrakRollerData brakRollerData : brakRollerDatas) {
+				logger.info(brakRollerData.getJyxm() + "不合格");
+				fjjyxm += brakRollerData.getJyxm() + ",";
+			}
 
 		} else {
 			// 制动复检
@@ -1305,7 +1296,7 @@ public class VehManager {
 		vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
 
 		if (fjjyxm.indexOf("B") > -1 || fjjyxm.indexOf("H") > -1 || fjjyxm.indexOf("S") > -1
-				|| fjjyxm.indexOf("A") > -1) {
+				|| fjjyxm.indexOf("A") > -1||fjjyxm.indexOf("L") > -1) {
 			vehCheckLogin.setVehsxzt(VehCheckLogin.ZT_WKS);
 		}
 
@@ -1332,6 +1323,7 @@ public class VehManager {
 		if (fjjyxm.indexOf("M") > -1) {
 			vehCheckLogin.setVehwkzt(VehCheckLogin.ZT_WKS);
 		}
+		
 
 		vehCheckLogin.setJycs(vehCheckLogin.getJycs() + 1);
 		vehCheckLogin.setFjjyxm(fjjyxm);
@@ -1341,7 +1333,7 @@ public class VehManager {
 		vehCheckLogin.setReloginWeigth(reloginWeigth);
 		vehCheckLogin.setPrintStatus(0);
 
-		Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
+//	    Flow flow = flowManager.getFlow(Integer.parseInt(vehCheckLogin.getJcxdh()), vehCheckLogin.getCheckType());
 
 		String[] jyxmArray = fjjyxm.split(",");
 		List<VehCheckProcess> processArray = new ArrayList<VehCheckProcess>();
@@ -1370,6 +1362,18 @@ public class VehManager {
 					this.hibernateTemplate.save(brakRollerData);
 				}
 			}
+			
+			if(jyxmItem.indexOf("L") > -1) {
+				// 制动复检
+				List<BrakRollerData> brakRollerDatas = (List<BrakRollerData>) this.hibernateTemplate.find(
+						"from BrakRollerData where jylsh=? and sjzt=? and jyxm=?", jylsh, BaseDeviceData.SJZT_ZC,
+						jyxmItem);
+				for (BrakRollerData brakRollerData : brakRollerDatas) {
+					brakRollerData.setSjzt(BaseDeviceData.SJZT_FJ);
+					this.hibernateTemplate.save(brakRollerData);
+				}
+			}
+			
 
 			if (jyxmItem.equals("B0")) {
 				List<ParDataOfAnjian> parDataOfAnjian = (List<ParDataOfAnjian>) this.hibernateTemplate
@@ -1411,21 +1415,17 @@ public class VehManager {
 				}
 			}
 		}
-
-		checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C65", null,
-				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
-				vehCheckLogin.getVehcsbj());
-
 		try {
-			Thread.sleep(500);
+			checkEventManger.createEvent(0,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C65", null,
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+					vehCheckLogin.getVehcsbj());
+			checkEventManger.createEvent(500,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C52", null,
+					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+					vehCheckLogin.getVehcsbj());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C52", null,
-				vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
-				vehCheckLogin.getVehcsbj());
 
 	}
 

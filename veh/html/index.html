@@ -235,7 +235,13 @@
 		
 	function formatterHphm(value,row){
 		if(row.checkType==1){
-			return value+"(综)";
+			if(row.zjlb==1){
+				return value+"(综)";
+			}else{
+				return value+"(综安)";
+			}
+		}else{
+			return value+"(安)";
 		}
 		return value;
 	}

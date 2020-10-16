@@ -999,6 +999,12 @@ public class BrakRollerData extends BaseDeviceData {
 		if (this.kzzdlxz == null || this.kzxczdl == null) {
 			return;
 		}
+		
+		if(kzxczdl>=100) {
+			this.kzzdlpd = CheckDataManager.PDJG_BHG;
+			return;
+		}
+		
 		if (kzxczdl >= this.kzzdlxz) {
 			this.kzzdlpd = CheckDataManager.PDJG_HG;
 		} else {

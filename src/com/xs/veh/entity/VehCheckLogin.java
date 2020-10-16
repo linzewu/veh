@@ -341,10 +341,24 @@ public class VehCheckLogin extends BaseEntity implements Serializable {
 	@Column
 	private Integer printStatus;
 	
+	//综检类别
+	@Column
+	private Integer zjlb;
+	
 	@Column(length=6,precision=1)
 	private Float pl;
 	
 	
+
+	public Integer getZjlb() {
+		return zjlb;
+	}
+
+
+	public void setZjlb(Integer zjlb) {
+		this.zjlb = zjlb;
+	}
+
 
 	public Float getPl() {
 		return pl;

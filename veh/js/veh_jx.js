@@ -1518,6 +1518,13 @@ var report={
 	},
 	loadVehCheckInfo:function(index,row){
 		if(row){
+			$.post("/veh/report/getCheckEvents?jylsh="+row.jylsh ,function(data){
+				console.log(data)
+				if(data.length>0){
+					$.messager.alert("提示","该车存在未完成事件，请进入联网上传查看！");
+				}
+			},"json");
+			
 			try {
 				if(ScanCtrl){
 					ScanCtrl.StopPreviewEx();

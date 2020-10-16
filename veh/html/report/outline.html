@@ -41,6 +41,7 @@ $(function(){
 			iconCls: 'icon-cut',
 			text:'拍照出',
 			handler: function(){
+				
 				if(reportData.vehwkzt==1){
 					 $.post("/veh/extend/qkdOutlinePicture",{jylsh:reportData.jylsh,zpzl:"0361"},function(data){
 						 $.messager.alert("提示",data.message);

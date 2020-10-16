@@ -467,7 +467,7 @@ public class LightData extends BaseDeviceData {
 	
 	public void setZhCzpypd(String cllx) {
 
-		if (this.czpc == null || this.zhczpyxz == null) {
+		if (this.czpy == null || this.zhczpyxz == null) {
 			return;
 		}
 

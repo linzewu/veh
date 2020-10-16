@@ -245,7 +245,13 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				String ygspcc= new String(new byte[] {bd[2],bd[3],bd[4],bd[5],bd[6]});
 				String ygczpc = new String(new byte[] {bd[7],bd[8],bd[9],bd[10],bd[11]});
 				Integer yggq = Integer.parseInt(new String(new byte[] {bd[12],bd[13],bd[14],bd[15]}));
-				Integer ygdg = Integer.parseInt(new String(new byte[] {bd2[1],bd2[2],bd2[3]}));
+				Integer ygdg =null;
+				try {
+					ygdg = Integer.parseInt(new String(new byte[] {bd2[1],bd2[2],bd2[3]}));
+				}catch (Exception e) {
+					ygdg=1;
+				}
+				
 				
 				logger.info("ygspcc="+ygspcc);
 				logger.info("ygczpc="+ygczpc);
@@ -294,7 +300,12 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				String ygspcc= new String(new byte[] {bd[2],bd[3],bd[4],bd[5],bd[6]});
 				String ygczpc = new String(new byte[] {bd[7],bd[8],bd[9],bd[10],bd[11]});
 				Integer yggq = Integer.parseInt(new String(new byte[] {bd[12],bd[13],bd[14],bd[15]}));
-				Integer ygdg = Integer.parseInt(new String(new byte[] {bd2[1],bd2[2],bd2[3]}));
+				Integer ygdg =null;
+				try {
+					ygdg = Integer.parseInt(new String(new byte[] {bd2[1],bd2[2],bd2[3]}));
+				}catch (Exception e) {
+					ygdg=1;
+				}
 				
 				Integer jgdg= Integer.parseInt(new String(new byte[] {bd[16],bd[17],bd[18]}));
 				String jgspcc= new String(new byte[] {bd[19],bd[20],bd[21],bd[22],bd[23]});

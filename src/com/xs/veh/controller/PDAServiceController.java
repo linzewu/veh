@@ -49,6 +49,7 @@ import com.xs.veh.manager.VehManager;
 import com.xs.veh.network.DeviceManyWeigh;
 import com.xs.veh.network.TakePicture;
 import com.xs.veh.network.data.CurbWeightData;
+import com.xs.veh.util.RCAConstant;
 
 import net.sf.json.JSONObject;
 
@@ -79,6 +80,7 @@ public class PDAServiceController {
 	
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
+	
 	
 	
 	
@@ -429,22 +431,38 @@ public class PDAServiceController {
 	@RequestMapping(value = "relogin", method = RequestMethod.POST)
 	public @ResponseBody String relohin(@RequestParam String jylsh,@RequestParam Integer id,
 			@RequestParam String fjjyxm,@RequestParam Integer jcxdh,@RequestParam Integer reloginWeigth) {
-		
 		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
 		
-		Message message = this.vehManager.checkUpLine(jcxdh, vehCheckLogin);
-		
-		if(message!=null) {
+		boolean flag = this.checkEventManger.isExtendCehckEvent(jylsh,new String[] {RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
+				RCAConstant.V18C58,RCAConstant.V18C54,RCAConstant.V18C82,RCAConstant.V18C59});
+		if(flag) {
 			JSONObject json = new JSONObject();
 			json.put("state", "-1");
-			json.put("message", message.getMessage());
+			json.put("message", "该过程存在数据未上传，请先上传过程数据");
 			return json.toString();
 		}
 		
-		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
+//		if(fjjyxm.indexOf("B")>-1||fjjyxm.indexOf("L")>-1||fjjyxm.indexOf("H")>-1||fjjyxm.indexOf("A")>-1||fjjyxm.indexOf("S")>-1) {
+//			logger.info("开始复检登陆");
+//			Message message = this.vehManager.checkUpLine(jcxdh, vehCheckLogin);
+//			logger.info("检验是否可以复检");
+//			if(message!=null) {
+//				JSONObject json = new JSONObject();
+//				json.put("state", "-1");
+//				json.put("message", message.getMessage());
+//				return json.toString();
+//			}
+//		}
 		
+		logger.info("开始复检登陆");
+		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
+		logger.info("复检登陆完成");
 		if(vehCheckLogin.getVehsxzt()==VehCheckLogin.ZT_WKS) {
-			pushVehOnLine(id,jcxdh);
+			logger.info("引车上线");
+			if(fjjyxm.indexOf("B")>-1||fjjyxm.indexOf("L")>-1||fjjyxm.indexOf("H")>-1||fjjyxm.indexOf("A")>-1||fjjyxm.indexOf("S")>-1) {
+				Message message = this.vehManager.upLine(id,jcxdh);
+			}
+			logger.info("引车完成");
 		}
 		JSONObject json = new JSONObject();
 		json.put("state", "OK");

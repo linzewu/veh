@@ -254,6 +254,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			// 加载不平衡率判定
 			brakRollerData.setJzbphlpd();
 			brakRollerData.setZpd();
+			
 		}
 		
 		

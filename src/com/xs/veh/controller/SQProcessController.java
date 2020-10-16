@@ -63,7 +63,7 @@ public class SQProcessController {
 
       Calendar cc1 = Calendar.getInstance();
       sqvpc.setKssj(cc1.getTime());
-      cc1.add(13, 30);
+      cc1.add(13, 15);
       sqvpc.setJssj(cc1.getTime());
       sqvpc.setJycs(vehInfo.getJycs());
       sqvpc.setStatus(0);

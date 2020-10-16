@@ -18,6 +18,7 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
@@ -210,5 +211,40 @@ public class CheckEventManger {
 		return "";
 		
 	}
+	
+	public boolean isEventOK(String jylsh,Integer jycs,String jyxm,String event) {
+		
+		List<CheckLog> logs = (List<CheckLog>) this.hibernateTemplate.find("from CheckLog where jylsh=? and jycs=? and jkbmc=?", jylsh,jycs,event+"_"+jyxm);
+		for(CheckLog log:logs) {
+			
+			if("1".equals(log.getCode())) {
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	public boolean isExtendCehckEvent(final String jylsh,final String[] jyxm) {
+		List datas =  this.hibernateTemplate.execute(new HibernateCallback<List>() {
+			@Override
+			public List doInHibernate(Session session) throws HibernateException {
+				return  session.createQuery("from CheckEvents where jylsh=:jylsh and event in (:ev)")
+				.setParameter("jylsh", jylsh)
+				.setParameterList("ev", jyxm).list();
+			}
+		});
+		
+		if(CollectionUtils.isEmpty(datas)) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	
+	
+	
 
 }

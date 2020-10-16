@@ -60,9 +60,6 @@ public class CheckEvents {
 	
 	@Column
 	private Integer jycs;
-	
-	
-	
 
 	
 	public Integer getJycs() {

@@ -1,6 +1,7 @@
 package com.xs.veh.network;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public abstract class AbstractDeviceSpeed extends AbstractDevice{
 	protected Integer s1;
 	
 	private List<Byte> temp = new LinkedList<Byte>();
+	
+	//到位时间
+	protected Date dwDate;
 	
 	public abstract SpeedData startCheck(VehCheckLogin vehCheckLogin,VehFlow vehFlow) throws IOException, InterruptedException;
 
@@ -52,6 +56,16 @@ public abstract class AbstractDeviceSpeed extends AbstractDevice{
 
 		return contex;
 	}
+
+	public Date getDwDate() {
+		return dwDate;
+	}
+
+	public void setDwDate(Date dwDate) {
+		this.dwDate = dwDate;
+	}
+	
+	
 
 
 }

@@ -42,8 +42,6 @@ import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
-import com.xs.veh.entity.TaskPicture;
-import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
@@ -255,6 +253,7 @@ public class CheckedInfoTaskJob {
 			sbrz.setMessage(message.getText());
 			sbrz.setCode(code.getText());
 			sbrz.setXml(document.asXML());
+			sbrz.setJycs(event.getJycs());
 			if (!"18C63".equals(jkid)) {
 				if (xml.asXML().length() < 8000) {
 					sbrz.setBo(xml.asXML());
@@ -552,11 +551,41 @@ public class CheckedInfoTaskJob {
 		List<CheckEvents> list = (List<CheckEvents>) eventManger.getEvents();
 		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
 		for (CheckEvents e : list) {
+			VehCheckLogin vehCheckLogin=  this.checkDataManager.getVehCheckLogin(e.getJylsh());
+			if(vehCheckLogin.getZjlb()!=null&&vehCheckLogin.getZjlb()==1) {
+				eventManger.delete(e);
+				continue;
+			}
 			Thread.sleep(1000);
 			try {
 				String viewName = "V" + e.getEvent();
-
 				String checkItem = e.getJyxm();
+				
+				if(RCAConstant.V18C58.equals(e.getEvent())) {
+					boolean flag = eventManger.isEventOK(e.getJylsh(), e.getJycs(), e.getJyxm(), RCAConstant.V18C81);
+					boolean flag2 =  eventManger.isEventOK(e.getJylsh(), e.getJycs(), e.getJyxm(), RCAConstant.V18C80);
+					
+					if(!flag&&!flag2) {
+						e.setState(2);
+						e.setMessage("无法找到18C81或180C80上传成功记录，无法上传过程结束");
+						eventManger.update(e);
+						continue;
+					}
+				}
+				
+				if(RCAConstant.V18C82.equals(e.getEvent())||RCAConstant.V18C59.equals(e.getEvent())) {
+					boolean flag = eventManger.isExtendCehckEvent(e.getJylsh(), new String[] {
+							RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
+							RCAConstant.V18C58,RCAConstant.V18C54
+						});
+					if(flag) {
+						e.setState(2);
+						e.setMessage("存在未处理的上传事件，请先传承过程数据");
+						eventManger.update(e);
+						continue;
+					}
+				}
+				
 
 				if (RCAConstant.V18C63.equals(e.getEvent())) {
 					uploadImage(e);
@@ -569,7 +598,6 @@ public class CheckedInfoTaskJob {
 						&&"M1".equals(e.getJyxm())) {
 					
 					 SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					 VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(e.getJylsh());
 					 StringBuilder sb=new StringBuilder();
 					 sb.append("^^zpzp^^");
 					 sb.append(vehCheckLogin.getJylsh());

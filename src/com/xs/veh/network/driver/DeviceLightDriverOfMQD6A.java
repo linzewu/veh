@@ -708,6 +708,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 		}
 
 	}
+	
+	
 
 	@Override
 	public void device2pc(byte[] data) throws IOException, InterruptedException {

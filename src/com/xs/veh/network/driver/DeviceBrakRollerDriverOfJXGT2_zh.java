@@ -32,8 +32,6 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 	// 举升器下降
 	private String jsqxj = "41046457";
 
-	// 仪表清零
-	private String ybql = "41046259";
 
 	// 开始检测
 	private String ksjc = "41046655";
@@ -45,7 +43,6 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 	private String ttjs="4104704B";
 	
 	private String ttxj="4104714A";
-
 
 	private String scMessage;
 	
@@ -215,7 +212,6 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 	
 	
 	private void fhcz() throws InterruptedException, IOException, SystemException {
-
 		// 开始称重命令
 		int i = 0;
 		int zlh = 0;

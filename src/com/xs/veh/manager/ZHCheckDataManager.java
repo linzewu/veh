@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -35,6 +36,7 @@ import com.xs.veh.entity.RoadCheck;
 import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
+import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.LightData;
@@ -277,15 +279,15 @@ public class ZHCheckDataManager {
 		Map data=new HashMap<String, Object>();
 		if (dlxList != null && !dlxList.isEmpty()) {
 			if("合格".equals(dlxList.get(0).getDlx_pd())) {
-				dlxList.get(0).setDlx_pd("○");
+				data.put("dlx_pd", "○");
 			}else if("不合格".equals(dlxList.get(0).getDlx_pd())) {
-				dlxList.get(0).setDlx_pd("X");
+				data.put("dlx_pd", "X");
 			}
 			
 			if("合格".equals(dlxList.get(0).getYh_pd())) {
-				dlxList.get(0).setYh_pd("○");
+				data.put("yh_pd", "○");
 			}else if("不合格".equals(dlxList.get(0).getYh_pd())) {
-				dlxList.get(0).setYh_pd("X");
+				data.put("yh_pd", "X");
 			}
 			data.put("dlx", dlxList.get(0));
 		}
@@ -624,7 +626,9 @@ public class ZHCheckDataManager {
 			}
 		});
 		
-		if("00".equals(vehCheckLogin.getJylb())) {
+		boolean syxzIsShow=getIsShow(vehCheckLogin.getSyxz());
+		
+		if(((Integer)1)==vehCheckLogin.getZjlb()||syxzIsShow) {
 			// 路试数据
 			xh = createRoadCheckJudeg(vehCheckLogin, xh);
 			// 制动数据判定
@@ -746,10 +750,11 @@ public class ZHCheckDataManager {
 				xh++;
 				this.hibernateTemplate.save(dcj1);
 			}
-			
+			 
 			Map<String, Map<String, Object>>  pfxData =  getPFXData(vehCheckLogin);
-			
-			if(pfxData!=null && "00".equals(vehCheckLogin.getJylb())) {
+			logger.info("测试："+pfxData!=null); 
+			if(pfxData!=null && (((Integer)1)==vehCheckLogin.getZjlb()||syxzIsShow)) {
+				logger.info("pfxData"+pfxData); 
 				if(pfxData.get("sds")!=null) {
 					Map<String, Object> sds = pfxData.get("sds");
 					DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
@@ -1039,7 +1044,7 @@ public class ZHCheckDataManager {
 //		if(outline!=null){
 //			DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 //			dcj1.setXh(xh);
-//			dcj1.setYqjyxm("外廓尺寸(mmxmmxmm)");
+//			dcj1.setYqjyxm("外廓尺寸(mmxmmxmm)"); 
 //			dcj1.setYqjyjg(outline.getCwkc()+"x"+outline.getCwkk()+"x"+outline.getCwkg());
 //			
 //			if(vehCheckLogin.getJylb().equals("00")){
@@ -1052,7 +1057,7 @@ public class ZHCheckDataManager {
 //			xh++;
 //			this.hibernateTemplate.save(dcj1);
 //		}
-		
+		 
 		Map<String,Object> xjMap =  getXJData(vehCheckLogin, vehCheckLogin.getJycs());
 		SuspensionData xj1 = (SuspensionData)xjMap.get("xj1");
 		SuspensionData xj2 = (SuspensionData)xjMap.get("xj2");
@@ -1148,7 +1153,7 @@ public class ZHCheckDataManager {
 			dcj1.setXh(xh);
 			dcj1.setYqjyxm("喇叭声压级(dB(A))");
 			dcj1.setYqjyjg(volumeData.getFb());
-			dcj1.setYqbzxz("90dB(A)~115dD(A)");
+			dcj1.setYqbzxz("90~115");
 			boolean pd =Float.parseFloat(volumeData.getFb().trim())>=90&&Float.parseFloat(volumeData.getFb().trim())<=115;
 			dcj1.setYqjgpd(pd?BaseDeviceData.PDJG_HG.toString():BaseDeviceData.PDJG_BHG.toString());
 			dcj1.setXh(xh);
@@ -1159,6 +1164,13 @@ public class ZHCheckDataManager {
 		
 	}
 	
+	private boolean getIsShow(String syxz) {
+		if("B".equals(syxz)||"C".equals(syxz)||"D".equals(syxz)||"E".equals(syxz)||"N".equals(syxz)) {
+			return true;
+		}
+		return false;
+	}
+
 	private Integer createLightDataJudeg(final VehCheckLogin vehCheckLogin, Map<String, Object> flagMap, Integer xh) {
 		List<LightData> lightDatas = (List<LightData>) this.hibernateTemplate.find(
 				"from LightData where  jylsh=? and sjzt=? order by jycs desc", vehCheckLogin.getJylsh(),
@@ -1363,7 +1375,7 @@ public class ZHCheckDataManager {
 				xh++;
 				this.hibernateTemplate.save(deviceCheckJudegZcpd);
 			}
-
+ 
 			if (vehCheckLogin.getJyxm().indexOf("R3") >= 0) {
 				DeviceCheckJudegZJ deviceCheckJudegcsb = new DeviceCheckJudegZJ();
 				setDeviceCheckJudeg(deviceCheckJudegcsb, vehCheckLogin);
@@ -1416,9 +1428,9 @@ public class ZHCheckDataManager {
 				
 				if(testVeh!=null&&"等级评定".equals(testVeh.getJcxz())) {
 					if(djpd==1) {
-						yqjgpd="一级";
+						yqjgpd="1级";
 					}else if(djpd==2) {
-						yqjgpd="二级";
+						yqjgpd="2级";
 					}else {
 						yqjgpd ="不合格";
 					}
@@ -1588,5 +1600,132 @@ public class ZHCheckDataManager {
 		
 	}
 	
+	public List<VehCheckProcess> getVehProcessByLsh(String lsh,String jyxm){
+		List<VehCheckProcess> datas = (List<VehCheckProcess>) this.hibernateTemplate.find("from VehCheckProcess where jycs = 1 and jylsh = ? and CHARINDEX(?,jyxm) = 1 order by kssj",lsh,jyxm);
+		return datas;
+	}
+	
+	public Date getImageTime(String lsh,String zpzl) {
+		
+		String sql="from CheckPhoto where jylsh=? and zpzl=?";
+		List<CheckPhoto> list = (List<CheckPhoto>) hibernateTemplate.find(sql, lsh,zpzl);
+		
+		if(!CollectionUtils.isEmpty(list)) {
+			InputStream sbs = new ByteArrayInputStream(list.get(0).getZp());
+			return list.get(0).getPssj();
+		}
+		return null;
+	}
+	
+	public static void main(String[] age) {
+		 List<Integer> b1 = test(500,143,1017);
+		 List<Integer> b2 =  test(500,152,961);
+		 System.out.println(list2str(b1));
+		 System.out.println(list2str(b2));
+		 Integer index = getMaxcd(b1, b2, 236);
+		 
+		 System.out.println("左："+b1.get(index));
+		 System.out.println("右："+b2.get(index));
+		 
+		 VehCheckLogin vehCheckLogin =new VehCheckLogin();
+		 
+		 vehCheckLogin.setQdxs("3");
+		 
+		 BrakRollerData b=new BrakRollerData();
+		 
+		 b.setZlh(1464);
+		 b.setYlh(1456);
+		 
+		 b.setZzdl(1017);
+		 b.setYzdl(961);
+		 
+		 b.setZzdlcd(b1.get(index));
+		 b.setYzdlcd(b2.get(index));
+		 
+		 b.setZw(1);
+		 
+		 b.setKzbphl(vehCheckLogin);
+		 
+		 b.setKzxczdl(vehCheckLogin);
+		 
+		 System.out.println(b.getKzxczdl());
+		 System.out.println(b.getKzbphl());
+		 
+	}
+	
+	public static String list2str(List<Integer> b1) {
+		
+		String str="";
+		
+		for(Integer i:b1) {
+			str+=i+",";
+		}
+		return str;
+	}
+	
+	
+	public static Integer getMaxcd(List<Integer> b1,List<Integer> b2,Integer sx) {
+		int cd =0;
+		int index=0;
+		
+		for(int i=0;i<=sx;i++) {
+			int temp =  Math.abs(b1.get(i)-b2.get(i));
+			if(temp>cd) {
+				cd=temp;
+				index=i;
+			}
+		}
+		return index;
+		
+	}
+	
+	public static List<Integer> test(int count,int max,int value) {
+		
+		Random rand = new Random();
+		int c=0;
+		int valueOld =value;
+		List<Integer> left=new ArrayList<Integer>();
+		List<Integer> rigth=new ArrayList<Integer>();
+		
+		left.add(value);
+		
+		for(int i=max-1;i>0;i--) {
+			if(c<50) {
+				value-=rand.nextInt(5);
+			}else {
+				value-=rand.nextInt(30);
+			}
+			if(value<50) {
+				value=rand.nextInt(20)+10;
+			}
+			
+			left.add(value);
+			c++;
+			
+		}
+		
+		c=0;
+		for(int i=max;i<count;i++) {
+			if(c<50) {
+				valueOld-=rand.nextInt(5);
+			}else {
+				valueOld-=rand.nextInt(30);
+			}
+			if(valueOld<50) {
+				valueOld=rand.nextInt(20)+10;
+			}
+			rigth.add(valueOld);
+			c++;
+		}
+		
+		
+		Collections.reverse(left);
+		
+		left.addAll(rigth);
+		
+		
+		return left;
+		
+	}
 
 }

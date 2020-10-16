@@ -110,7 +110,14 @@ public class VideoController {
 	@UserOperation(code="play2",name="视频地址",userOperationEnum=CommonUserOperationEnum.NoLogin)
 	public String getPlayInfo2(HttpServletRequest request ,String jylsh) {
 		
+		
 		List<Map> list = videoManager.getProcessDataByLsh(jylsh);
+		
+		
+		
+		List<Map<String,Object>> tempVideo = this.videoManager.getTempVideo(jylsh);
+		JSONArray ja2 =JSONArray.fromObject(tempVideo);
+		request.setAttribute("tempVideo", ja2.toString());
 		
 		if(list==null||list.isEmpty()){
 			return "video2";
@@ -155,9 +162,7 @@ public class VideoController {
 							JSONObject jo = JSONObject.fromObject(vc);
 							Date kssj=(Date)item.get("KSSJ");
 							Date jssj=(Date)item.get("JSSJ");
-							
 							Integer jycs=(Integer)item.get("JYCS");
-							
 							String fzjg=(String)item.get("FZJG");
 							String hphm=(String)item.get("HPHM");
 							if(fzjg!=null){
@@ -175,12 +180,15 @@ public class VideoController {
 						}
 					}
 				}
-				
-				
 			}
 		}
+		
 		request.setAttribute("playInfo", ja.toString());
-		System.out.println("video2");
+		
+		
+		
+		
+		
 		return "video2";
 	}
 	

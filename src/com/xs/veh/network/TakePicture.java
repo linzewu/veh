@@ -257,11 +257,8 @@ public class TakePicture implements Runnable {
 				fis =new FileInputStream(file);
 				
 				byte[] zp=new byte[fis.available()];
-				
 				fis.read(zp);
-				
 				CheckPhoto checkPhoto =new CheckPhoto();
-				
 				checkPhoto.setJcxdh(vehCheckLogin.getJcxdh());
 				checkPhoto.setClsbdh(vehCheckLogin.getClsbdh());
 				checkPhoto.setHphm(vehCheckLogin.getHphm());
@@ -280,10 +277,10 @@ public class TakePicture implements Runnable {
 					zpzl=getZPZL(jyxm);
 					checkPhoto.setZpzl(zpzl);
 				}
-				
 				checkDataManager.saveCheckPhoto(checkPhoto);
-				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
-				
+				if(!jyxm.equals("EP")&&!jyxm.equals("PF")&&!jyxm.equals("OC")&&!jyxm.equals("VL")) {
+					checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C63", jyxm, vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),zpzl,0);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally {

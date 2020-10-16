@@ -242,7 +242,6 @@ function init(){
 					$.post("/veh/report/getCheckPhoto",{id:n.id},function(data){
 						$("#image"+n.zpzl).attr("src","data:image/jpeg;base64,"+data);
 						$("#"+temp+n.zpzl).attr("zid",n.id);
-						
 					});
 				},100*i);
 				
@@ -422,7 +421,7 @@ function queryJDCZT(){
     		<label>扫描尺寸：</label><input class="easyui-combobox" id="upimageScanSize" data-options="onChange:scanSizeChange,editable:false" >
     	</div>
     	<div class="upimage-cam-top">
-    		<label>分辨率：</label><input class="easyui-combobox" id="upimageResolution" data-options="onChange:resolutionChange,editable:false" >
+    		<label>分辨率：</label><input class="easyui-combobox" id="upimageResolution" data-options="onChange:resolutionChange,editable:false" value="">
     	</div>
     	<div class="upimage-cam-top">
     		<form action="/veh/report/uploadFileImag" method="post" enctype="multipart/form-data" id="imgfileForm">

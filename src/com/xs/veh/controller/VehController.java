@@ -527,9 +527,5 @@ public class VehController {
 	public @ResponseBody String getBhgJyxm(String jylsh) {
 		return this.vehManager.getFjxm(jylsh);
 	}
-	
-	
-	
-
 
 }

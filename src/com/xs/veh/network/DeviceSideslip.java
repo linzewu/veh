@@ -162,7 +162,7 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(),
 				vehFlow.getJyxm());
-		process.setKssj(new Date());
+		//process.setKssj(new Date());
 		
 		SideslipData sideslipData =check(vehCheckLogin,vehFlow,otherParam,1);
 		
@@ -194,8 +194,12 @@ public class DeviceSideslip extends SimpleRead implements ICheckDevice {
 		}
 		
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND)+5);
+		calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND)+10);
 		process.setJssj(calendar.getTime());
+		
+		calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND)-20);
+		
+		process.setKssj(calendar.getTime());
 		
 		process.setJcxdh(this.getDevice().getJcxxh());
 		this.checkDataManager.updateProcess(process);

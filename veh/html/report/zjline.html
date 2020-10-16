@@ -35,17 +35,84 @@
 	</thead>
 </table>
 <div id="testVehManagerToolbar">
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="zjRecordAdd()">联网</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="openJsdj()">联网上传</a>
 	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="photoUpload()">照片上传</a>
 </div>
 
+<div id="djsjdlg" class="easyui-dialog" style="width:400px;height:200px;padding:10px 20px"
+           closed="true" buttons="#djsjdlg-buttons">
+        技术等级有效期限期至：<input class="easyui-datebox vehInfoInput" name="techLevelEndDate" id="techLevelEndDate" required="true">   
+</div>
+<div id="djsjdlg-buttons">
+       <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="zjRecordAdd()" style="width:90px">确定</a>
+       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#djsjdlg').dialog('close')" style="width:90px">取消</a>
+   </div>
 <script type="text/javascript">
 $(function(){
 	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
 	$('#testVehManager').datagrid({"url":"/veh/testVeh/getTestVeh"});
 	$('#testVehManager').datagrid("reload",{jylsh:baseInfo.jylsh});
+	
+	
+	$('#techLevelEndDate').datebox({
+	       //显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
+	       onShowPanel: function () {
+	          //触发click事件弹出月份层
+	          span.trigger('click'); 
+	          if (!tds)
+	            //延时触发获取月份对象，因为上面的事件触发和对象生成有时间间隔
+	            setTimeout(function() { 
+	                tds = p.find('div.calendar-menu-month-inner td');
+	                tds.click(function(e) {
+	                   //禁止冒泡执行easyui给月份绑定的事件
+	                   e.stopPropagation(); 
+	                   //得到年份
+	                   var year = /\d{4}/.exec(span.html())[0] ,
+	                   //月份
+	                   //之前是这样的month = parseInt($(this).attr('abbr'), 10) + 1; 
+	                   month = parseInt($(this).attr('abbr'), 10);  
+
+	         //隐藏日期对象                     
+	         $('#techLevelEndDate').datebox('hidePanel') 
+	           //设置日期的值
+	           .datebox('setValue', year + '-' + month); 
+	                        });
+	                    }, 0);
+	            },
+	            //配置parser，返回选择的日期
+	            parser: function (s) {
+	                if (!s) return new Date();
+	                var arr = s.split('-');
+	                return new Date(parseInt(arr[0], 10), parseInt(arr[1], 10) - 1, 1);
+	            },
+	            //配置formatter，只返回年月 之前是这样的d.getFullYear() + '-' +(d.getMonth()); 
+	            formatter: function (d) { 
+	                var currentMonth = (d.getMonth()+1);
+	                var currentMonthStr = currentMonth < 10 ? ('0' + currentMonth) : (currentMonth + '');
+	                return d.getFullYear() + '-' + currentMonthStr; 
+	            }
+	        });
+
+	        //日期选择对象
+	        var p = $('#techLevelEndDate').datebox('panel'), 
+	        //日期选择对象中月份
+	        tds = false, 
+	        //显示月份层的触发控件
+	        span = p.find('span.calendar-text'); 
+	        var curr_time = new Date();
+	        curr_time.setMonth(curr_time.getMonth() + 6);
+	        //设置前当月
+	        $("#techLevelEndDate").datebox("setValue", myformatter(curr_time));
 })
 
+//格式化日期
+function myformatter(date) {
+    //获取年份
+    var y = date.getFullYear();
+    //获取月份
+    var m = date.getMonth() + 1;
+    return y + '-' + m;
+}
 //loaddata();
 
 function loaddata(){
@@ -60,11 +127,20 @@ function loaddata(){
 	});
 }
 
+function openJsdj(){	
+	var curr_time = new Date();
+    curr_time.setMonth(curr_time.getMonth() + 6);
+    //设置前当月
+    $("#techLevelEndDate").datebox("setValue", myformatter(curr_time));
+	$('#djsjdlg').dialog('open').dialog('center').dialog('setTitle','技术等级有效期限期至');
+}
+
 function zjRecordAdd(){
+	var djsj = $("#techLevelEndDate").datebox("getValue");
 	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
 	//var row = $("#blackListManager").datagrid("getSelected");
-
-		$.post("/veh/testVeh/zjRecordAdd",{lsh:baseInfo.jylsh}, function(data) {
+	$('#djsjdlg').dialog('close');
+		$.post("/veh/testVeh/zjRecordAdd",{lsh:baseInfo.jylsh,djsj:djsj}, function(data) {
 			$('#testVehManager').datagrid("reload",{jylsh:baseInfo.jylsh});
 		}).complete(function() {
 			$.messager.progress("close");
@@ -77,13 +153,19 @@ function photoUpload(){
 	
 	var baseInfo = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
 	//var row = $("#blackListManager").datagrid("getSelected");
-
-		$.post("/veh/testVeh/photoUppload",{lsh:baseInfo.jylsh}, function(data) {
-			$.messager.alert("提示","上传成功","info");
-		}).complete(function() {
-			$.messager.progress("close");
-		}).error(function(){
-			$.messager.alert("错误","系统错误，请联系管理员！","error");
-		});
+		var rows = $("#testVehManager").datagrid('getRows').length;
+		if(rows > 0){
+			$.post("/veh/testVeh/photoUppload",{lsh:baseInfo.jylsh}, function(data) {
+				$.messager.alert("提示","上传成功","info");
+			}).complete(function() {
+				$.messager.progress("close");
+			}).error(function(){
+				$.messager.alert("提示","请求已发送，照片上传中！","info");
+			});
+		}else{
+			$.messager.alert("提示","未查到数据，无法进行照片上传！","info");
+		}
 }
+
+
 </script>

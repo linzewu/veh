@@ -61,78 +61,108 @@
 <script type="text/javascript">
 
 	var playInfo='${playInfo}';
-	
-
-	var cIP=null;
-
-	var zkjms=0;
-	
-	var currentPlayIndex=null;
-	
-	var currentIp;
-	var currentParam;
-	
-	var longTime;
-	
-	var autoPlay=true;
-
-	$(function () {
+	var tempInfo=${tempVideo};
+	if((playInfo==""||playInfo=="[]")&&tempInfo.length>0){
 		
-		
-		var  vlc=document.getElementById("vlc");
-		var vlcSound; // vlc音量大小（初始化默认为50）
-		var videoLength; // 视频总时长
-		var then_time; // 播放开始时间(播放开始的日期，看下面实现代码，它是毫秒哦)
-		var isPlaying=0; // 是否播放状态 （0 未播放 1 播放）
-		
-		
-
-		var name = getjczmc('${param.jyjgbh}');
-		$("#jyjgbh").val(name);
-		
-		if($.trim(playInfo)==""){
-			LogMessage("无法获取车辆播放信息");
-			return;
-		}
-		playInfo=$.parseJSON(playInfo);
-		playInfo = playInfo.sort(function(a,b){
-			if(a.jyxm.localeCompare(b.jyxm)!=0){
-				return a.jyxm.localeCompare(b.jyxm);
-			}else{
+		$(function(){
 			
-				if(a.jycs>b.jycs){
-					return 1;
-				}else{
-					return -1;
-				}
-			}
-		});
-		$("#info_hphm").val(playInfo[0].hphm);
-		$.each(playInfo,function(i,n){
-			var li=$("<li> <input  type=\"button\"  value='"+(getjyxm(n.jyxm)+"  "+n.jycs)+"' style=\"width:180px;\" /></li>");
-			$(".check-menu").append(li);
-			//$.parser.parse('.check-menu');
-			var channel=n.channel==null?"0":n.channel;
-			
-			var itemId = vlc.playlist.add("http://192.168.51.201:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
-			
-			li.find("input").click(function(){
-				vlc.playlist.playItem(itemId);
+			var  vlc=document.getElementById("vlc");
+			var vlcSound; // vlc音量大小（初始化默认为50）
+			var videoLength; // 视频总时长
+			var then_time; // 播放开始时间(播放开始的日期，看下面实现代码，它是毫秒哦)
+			var isPlaying=0; // 是否播放状态 （0 未播放 1 播放）
+			$.each(tempInfo,function(i,n){
+				$("#info_hphm").val(n.hphm);
+				var li=$("<li> <input  type=\"button\"  value='"+n.title+"' style=\"width:180px;\" /></li>");
+				$(".check-menu").append(li);
+				var urlList =n.url.split("\\");
+				alert("http://192.168.51.201:8080/video2/"+ urlList[4]+"/"+ urlList[5]);
+				var itemId = vlc.playlist.add(n.url);
+				li.find("input").click(function(){
+					vlc.playlist.playItem(itemId);
+				});
 			});
-		});
-		
-		$(".check-menu li input").each(function(i,n){
 			
-			$(n).val();
+		})
+		
+	}else{
+		var cIP=null;
+
+		var zkjms=0;
+		
+		var currentPlayIndex=null;
+		
+		var currentIp;
+		var currentParam;
+		
+		var longTime;
+		
+		var autoPlay=true;
+
+		$(function () {
+			var  vlc=document.getElementById("vlc");
+			var vlcSound; // vlc音量大小（初始化默认为50）
+			var videoLength; // 视频总时长
+			var then_time; // 播放开始时间(播放开始的日期，看下面实现代码，它是毫秒哦)
+			var isPlaying=0; // 是否播放状态 （0 未播放 1 播放）
+
+			var name = getjczmc('${param.jyjgbh}');
+			$("#jyjgbh").val(name);
+			
+			if($.trim(playInfo)==""){
+				LogMessage("无法获取车辆播放信息");
+				return;
+			}
+			playInfo=$.parseJSON(playInfo);
+			playInfo = playInfo.sort(function(a,b){
+				if(a.jyxm.localeCompare(b.jyxm)!=0){
+					return a.jyxm.localeCompare(b.jyxm);
+				}else{
+				
+					if(a.jycs>b.jycs){
+						return 1;
+					}else{
+						return -1;
+					}
+				}
+			});
+			$("#info_hphm").val(playInfo[0].hphm);
+			
+			playInfo=playInfo.sort(function(a,b){
+				if(a.jyxm=="F1"){
+					return -1;
+				}else{
+					return 0;
+				}
+			});
+			
+			$.each(playInfo,function(i,n){
+				var li=$("<li> <input  type=\"button\"  value='"+(getjyxm(n.jyxm)+"  "+n.jycs)+"' style=\"width:180px;\" /></li>");
+				$(".check-menu").append(li);
+				//$.parser.parse('.check-menu');
+				var channel=n.channel==null?"0":n.channel;
+				
+				var itemId = vlc.playlist.add("http://192.168.51.201:8080/video/${param.jylsh}_"+n.jycs+"_"+n.jyxm+"_"+channel+".mp4");
+				
+				li.find("input").click(function(){
+					vlc.playlist.playItem(itemId);
+				});
+			});
+			
+			$(".check-menu li input").each(function(i,n){
+				$(n).val();
+			});
+			
+			
+			setTimeout(function(){
+				$(".check-menu li:eq(0) input").click();
+			},1000);
 			
 		});
-		
-		
-		setTimeout(function(){
-			$(".check-menu li:eq(0) input").click();
-		},1000);
-		
-	});
+	}
+	
+
+	
 	
 
 	function LogMessage(msg){
