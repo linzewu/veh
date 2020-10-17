@@ -1418,7 +1418,7 @@ public class VehManager {
 		try {
 			checkEventManger.createEvent(0,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C65", null,
 					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
-					vehCheckLogin.getVehcsbj());
+					vehCheckLogin.getVehcsbj(),vehCheckLogin.getFjjyxm());
 			checkEventManger.createEvent(500,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C52", null,
 					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
 					vehCheckLogin.getVehcsbj());

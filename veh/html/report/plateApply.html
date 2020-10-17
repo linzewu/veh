@@ -35,7 +35,12 @@
 	</table>
 </div>
 <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveSQB()" >保存</a>
-<a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_plateApply'))">打印</a></div>
+<a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_plateApply'))">打印申请表</a>
+<a  class="easyui-linkbutton"   data-options="iconCls:'icon-print'" onclick="report.createReport($('#print_area_hgzm'))">打印检验合格证明</a>
+
+</div>
+
+
 <DIV id="print_plateApply">
 <DIV style="MARGIN-BOTTOM: 10px; FONT-SIZE: 30px; FONT-WEIGHT: bold; TEXT-ALIGN: center; MARGIN-TOP: 15px"><span id="report3_jyjgmc"></span>机动车牌证申请表 </DIV>
 <table class="tg" style="table-layout: fixed; width: 720px; text-align: center;">
@@ -167,6 +172,69 @@
   	<div  style="text-align: right;" id="plate_date">年        &nbsp;&nbsp;&nbsp;&nbsp; 月         &nbsp;&nbsp;&nbsp;&nbsp; 日</div></td>
   </tr>
 </table>
+</DIV>
+
+<DIV id="print_area_hgzm" style="display: none;">
+
+<style>
+.pirnt_hgzm {
+width: 700px;margin: 0 auto;
+}
+.pirnt_hgzm h1{
+ text-align: center;
+letter-spacing: 20px;
+font-size:26px;
+}
+
+.pirnt_text{
+	font-size: 20px;
+	letter-spacing: 8px;
+	line-height:40px;
+}
+
+.print_jczmc{
+	font-size: 20px;
+	letter-spacing: 4px;
+	line-height:40px;
+	text-align: right;
+}
+
+.pirnt_dw{
+font-weight:bold;
+font-size: 20px;
+}
+
+
+#hgzm_hphm{
+
+}
+
+#hgzm_clsbdh{
+
+}
+
+
+</style>
+
+<div class="pirnt_hgzm" >
+	<br><br><br>
+	<h1>检验合格证明</h1>
+	<br><br>
+	<p class="pirnt_dw">沭阳县公安局交通警察支队车辆管理所：</p>
+	<p class="pirnt_text" style="text-indent:2em;">
+		现有<span id="hgzm_hphm"></span>(号牌号码)  小型汽车，车辆识别代号为<span id="hgzm_clsbdh"></span>,经我站检测，该车辆符合国家相关的标准要求，检验合格。
+	</p>
+	<p class="pirnt_text">
+		特此证明。
+	</p>
+	<p class="print_jczmc">
+		沭阳县汽车综合性能检测有限公司
+	</p>
+	<p class="print_jczmc">
+		<span id="print_zmsj"></span>
+	</p>
+</div>
+</DIV>
 
 
 <script type="text/javascript">
@@ -175,8 +243,14 @@ var reportData = $("#checkingVeh").datagrid("getSelected");
 
 var jylsh = reportData.jylsh;
 
+var now = new Date()
+
+$("#print_zmsj").text(now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日");
+
+$("#hgzm_hphm").text(reportData.hphm);
+$("#hgzm_clsbdh").text(reportData.clsbdh);
+
 $.post("/veh/report/getPlateApplyTable",{"jylsh":jylsh},function(data){
-	console.log(data);
 	if(data){
 		$("#sqbid_sjhm").textbox("setValue",data.sjhm);
 		$("#sqbid_gddh").textbox("setValue",data.gddh);
@@ -227,7 +301,6 @@ function saveSQB(){
 	console.log(param);
 	
 	$.post("/veh/report/savePlateApplyTable",param,function(data){
-		console.log(data);
 		$("#sqbid_id").val(data.id);
 		
 		setDate(data);

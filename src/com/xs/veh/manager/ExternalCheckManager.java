@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.xs.common.BaseParamsUtil;
 import com.xs.common.Message;
+import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
@@ -330,11 +333,17 @@ public class ExternalCheckManager {
 					vehCheckLogin.getJycs(), "F1");
 			vehCheckProcess.setJssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "F1",
-					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(1000);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "F1",
-					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			
+			
+			List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+			
+			if(CollectionUtils.isEmpty(paams)||"false".equals(paams.get(0).getParamValue())) {
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "F1",
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(1000);
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "F1",
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			}
 
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
@@ -372,11 +381,18 @@ public class ExternalCheckManager {
 					vehCheckLogin.getJycs(), "DC");
 			vehCheckProcess.setJssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "DC",
-					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(1000);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "DC",
-					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			
+			List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+			
+			if(CollectionUtils.isEmpty(paams)||"false".equals(paams.get(0).getParamValue())) {
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "DC",
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(1000);
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "DC",
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			}
+			
+			
 
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
 
@@ -412,11 +428,17 @@ public class ExternalCheckManager {
 					vehCheckLogin.getJycs(), "C1");
 			vehCheckProcess.setJssj(new Date());
 			this.checkDataManager.updateProcess(vehCheckProcess);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "C1",
-					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(1000);
-			checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1",
-					vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			
+			List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
+			
+			if(CollectionUtils.isEmpty(paams)||"false".equals(paams.get(0).getParamValue())) {
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C80", "C1",
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+				Thread.sleep(1000);
+				checkEventManger.createEvent(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C58", "C1",
+						vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
+			}
+			
 
 			// 判断项目的状态
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());

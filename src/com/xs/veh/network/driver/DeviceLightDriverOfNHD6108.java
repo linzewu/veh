@@ -100,7 +100,6 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				this.deviceLight.sendMessage(new byte[] {0x43});
 				logger.info("返回命令："+CharUtil.byte2HexOfString(getDevData(new byte[1])));
 			}
-			checkVolume();
 			if(qzdz.equals("03")) {
 				logger.info("设置成2灯制 44");
 				this.deviceLight.sendMessage(new byte[] {0x44});
@@ -157,16 +156,53 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 			}
 			
 			boolean checking=true;
+			
+			if(jyxmArray.contains("H3")) {
+				TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H3",1000);
+				while(checking) {
+					String rt = CharUtil.byte2HexOfString(getDevData(new byte[1]));
+					logger.info("返回命令："+ rt);
+					//48
+					if("55".equals(rt)) {
+						this.deviceLight.getDisplay().sendMessage("检测右副灯,请开启右副灯", DeviceDisplay.XP);
+					}
+					
+					if("4F".equals(rt)) {
+						break;
+					}
+				}
+			}
+				
+			if(jyxmArray.contains("H4")) {
+				TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4",1000);
+				while(checking) {
+					String rt = CharUtil.byte2HexOfString(getDevData(new byte[1]));
+					logger.info("返回命令："+ rt);
+					//49
+					if("56".equals(rt)) {
+						this.deviceLight.getDisplay().sendMessage("检测右主远光灯,请打开远光灯", DeviceDisplay.XP);
+					}
+					//4A
+					if("58".equals(rt)) {
+						this.deviceLight.getDisplay().sendMessage("检测右主近光灯,请打开近光灯", DeviceDisplay.XP);
+					}
+					
+					if("4F".equals(rt)) {
+						break;
+					}
+				}
+			}
 		
+			checkVolume();
+			
 			if(jyxmArray.contains("H2")) {
 				TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H2",1000);
 				while(checking) {
 					String rt = CharUtil.byte2HexOfString(getDevData(new byte[1]));
 					logger.info("返回命令："+ rt);
-					
-					if("55".equals(rt)) {
+					//55
+					if("48".equals(rt)) {
 						this.deviceLight.getDisplay().sendMessage("请开启左副灯", DeviceDisplay.XP);
-						
 					}
 					
 					if("4F".equals(rt)) {
@@ -182,11 +218,13 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				while(checking) {
 					String rt = CharUtil.byte2HexOfString(getDevData(new byte[1]));
 					logger.info("返回命令："+ rt);
-					if("56".equals(rt)) {
+					
+					//56
+					if("49".equals(rt)) {
 						this.deviceLight.getDisplay().sendMessage("检测左主远光灯,请开启远光灯", DeviceDisplay.XP);
 					}
-					
-					if("58".equals(rt)) {
+					//58
+					if("4A".equals(rt)) {
 						this.deviceLight.getDisplay().sendMessage("检测左主近光灯,请开启近光灯", DeviceDisplay.XP);
 					}
 					if("4F".equals(rt)) {
@@ -196,47 +234,15 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				this.deviceLight.getDisplay().sendMessage("左主灯检测结束", DeviceDisplay.XP);
 			}
 			
-			if(jyxmArray.contains("H3")) {
-				TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H3",1000);
-				while(checking) {
-					String rt = CharUtil.byte2HexOfString(getDevData(new byte[1]));
-					logger.info("返回命令："+ rt);
-					
-					if("48".equals(rt)) {
-						this.deviceLight.getDisplay().sendMessage("检测右副灯,请开启右副灯", DeviceDisplay.XP);
-					}
-					
-					if("4F".equals(rt)) {
-						break;
-					}
-				}
-			}
-				
-			if(jyxmArray.contains("H4")) {
-				TakePicture.createNew(this.deviceLight.getVehCheckLogin(), "H4",1000);
-				while(checking) {
-					String rt = CharUtil.byte2HexOfString(getDevData(new byte[1]));
-					logger.info("返回命令："+ rt);
-					
-					if("49".equals(rt)) {
-						this.deviceLight.getDisplay().sendMessage("检测右主远光灯,请打开远光灯", DeviceDisplay.XP);
-					}
-					
-					if("4A".equals(rt)) {
-						this.deviceLight.getDisplay().sendMessage("检测右主近光灯,请打开近光灯", DeviceDisplay.XP);
-					}
-					
-					if("4F".equals(rt)) {
-						break;
-					}
-				}
-			}
+			
 			
 			
 			if(jyxmArray.contains("H1")) {
 				logger.info("取左主灯数据(四灯制)或取左灯数据(两灯制)命令");
 				this.deviceLight.sendMessage(new byte[] {0x4D});
 				byte[] bd = getDevData(new byte[34]);
+				
+				logger.info("左主灯："+  new String(bd));
 				
 				logger.info("取左主灯灯高70");
 				this.deviceLight.sendMessage(new byte[] {0x70});
@@ -293,6 +299,8 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				this.deviceLight.sendMessage(new byte[] {0x4E});
 				byte[] bd = getDevData(new byte[34]);
 				
+				logger.info("右主灯："+  new String(bd));
+				
 				logger.info("取左主灯灯高71");
 				this.deviceLight.sendMessage(new byte[] {0x71});
 				byte[] bd2= getDevData(new byte[9]);
@@ -334,14 +342,14 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				data2=extend(data2);
 				lightDatas.add(data);
 				
-				
-				
 			}
 			
 			if(jyxmArray.contains("H2")) {
 				logger.info("取左副灯数据命令.");
 				this.deviceLight.sendMessage(new byte[] {0x4F});
 				byte[] bd = getDevData(new byte[34]);
+				
+				logger.info("左副灯："+  new String(bd));
 				
 				String ygspcc= new String(new byte[] {bd[2],bd[3],bd[4],bd[5],bd[6]});
 				String ygczpc = new String(new byte[] {bd[7],bd[8],bd[9],bd[10],bd[11]});
@@ -366,6 +374,8 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 				logger.info("取右副灯数据命令。");
 				this.deviceLight.sendMessage(new byte[] {0x50});
 				byte[] bd = getDevData(new byte[34]);
+				
+				logger.info("右副灯："+  new String(bd));
 				
 				String ygspcc= new String(new byte[] {bd[2],bd[3],bd[4],bd[5],bd[6]});
 				String ygczpc = new String(new byte[] {bd[7],bd[8],bd[9],bd[10],bd[11]});

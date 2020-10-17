@@ -1512,6 +1512,7 @@ var report={
 		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
 		LODOP.SET_PRINT_STYLE("FontSize",14);
 		LODOP.SET_PRINT_STYLE("Bold",1);
+		LODOP.SET_PRINT_MODE("PRINT_PAGE_PERCENT","Width:95%;Height:95%");
 		LODOP.ADD_PRINT_HTM("8mm",34,"RightMargin:0.9cm","BottomMargin:9mm",strStyleCSS+"<body>"+area.html()+"</body>");
 		LODOP.PRINT();
 		

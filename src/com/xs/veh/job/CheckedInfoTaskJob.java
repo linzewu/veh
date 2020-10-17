@@ -574,10 +574,22 @@ public class CheckedInfoTaskJob {
 				}
 				
 				if(RCAConstant.V18C82.equals(e.getEvent())||RCAConstant.V18C59.equals(e.getEvent())) {
-					boolean flag = eventManger.isExtendCehckEvent(e.getJylsh(), new String[] {
-							RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
-							RCAConstant.V18C58,RCAConstant.V18C54
-						});
+					
+					boolean flag;
+					
+					if(RCAConstant.V18C59.equals(e.getEvent())) {
+						flag = eventManger.isExtendCehckEvent(e.getJylsh(), new String[] {
+								RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
+								RCAConstant.V18C58,RCAConstant.V18C54,RCAConstant.V18C82
+							});
+						
+					}else {
+						flag = eventManger.isExtendCehckEvent(e.getJylsh(), new String[] {
+								RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
+								RCAConstant.V18C58,RCAConstant.V18C54
+							});
+					}
+					
 					if(flag) {
 						e.setState(2);
 						e.setMessage("存在未处理的上传事件，请先传承过程数据");
