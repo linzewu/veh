@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 @Service("testVehManager")
@@ -54,6 +55,24 @@ public class TestVehManager {
 			return array.get(0);
 		}
 		return null;
+	}
+	
+	
+	public List<TestResult> getTestResultOfNullStatus() {
+		List<TestResult> testResults = (List<TestResult>) this.hibernateTemplate.find("from TestResult where status is null");
+		return testResults;
+	}
+	
+	public void updateTestResult(TestResult testResult) {
+		
+		this.hibernateTemplate.saveOrUpdate(testResult);
+		
+	}
+	
+	public void updateVehCheckLogin(VehCheckLogin vehCheckLogin) {
+		
+		this.hibernateTemplate.saveOrUpdate(vehCheckLogin);
+		
 	}
 
 }

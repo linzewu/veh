@@ -438,7 +438,9 @@ public class PDAServiceController {
 		if(flag) {
 			JSONObject json = new JSONObject();
 			json.put("state", "-1");
-			json.put("message", "该过程存在数据未上传，请先上传过程数据");
+			json.put("message", "该过程存在数据未上传，正在重新上传平台数据，请等待15-30秒后重试，如果长时间无法复检登陆，请检查平台网络是否通畅！");
+			checkDataManager.resetEventState(jylsh);
+			
 			return json.toString();
 		}
 		

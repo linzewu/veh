@@ -141,6 +141,28 @@ public class CheckEventManger {
 	}
 	
 	@Async
+	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
+			String clsbdh,Integer csbj,String remarks) {
+
+		CheckEvents e = new CheckEvents();
+		e.setJylsh(jylsh);
+		e.setJycs(jycs);
+		e.setEvent(event);
+		e.setJyxm(jyxm);
+		e.setHphm(hphm);
+		e.setHpzl(hpzl);
+		e.setClsbdh(clsbdh);
+		e.setState(csbj);
+		e.setRemarks(remarks);
+		e.setCreateDate(new Date());
+		this.hibernateTemplate.save(e);
+		this.hibernateTemplate.flush();
+		this.hibernateTemplate.clear();
+
+	}
+	
+	
+	@Async
 	public void createEvent(Integer later,String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
 			String clsbdh,Integer csbj) throws InterruptedException {
 		
@@ -149,6 +171,14 @@ public class CheckEventManger {
 		createEvent(jylsh, jycs, event, jyxm, hphm, hpzl, clsbdh,csbj);
 
 	}
+	
+	@Async
+	public void createEvent(Integer later,String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,
+			String clsbdh,Integer csbj,String remarks) throws InterruptedException {
+		Thread.sleep(later);
+		createEvent(jylsh, jycs, event, jyxm, hphm, hpzl, clsbdh,csbj,remarks);
+	}
+	
 	
 	@Async
 	public void createEvent(String jylsh, Integer jycs, String event, String jyxm, String hphm, String hpzl,

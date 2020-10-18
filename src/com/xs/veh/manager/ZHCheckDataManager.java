@@ -1270,7 +1270,7 @@ public class ZHCheckDataManager {
 		return dcj;
 	}
 	
-	public static boolean isInteger(String str) {  
+	public static boolean isInteger(String str) {
         Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  
         return pattern.matcher(str).matches();  
 	}
@@ -1718,12 +1718,8 @@ public class ZHCheckDataManager {
 			c++;
 		}
 		
-		
 		Collections.reverse(left);
-		
 		left.addAll(rigth);
-		
-		
 		return left;
 		
 	}

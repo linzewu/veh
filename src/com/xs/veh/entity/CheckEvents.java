@@ -60,8 +60,19 @@ public class CheckEvents {
 	
 	@Column
 	private Integer jycs;
+	
+	@Column(name = "remarks")
+	private String  remarks;
 
 	
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
 	public Integer getJycs() {
 		return jycs;
 	}
