@@ -60,7 +60,15 @@
 		</div>
 	</div>											    
 </div>
-
+<div id="sjEditdlg" class="easyui-dialog" style="width:400px;height:200px;padding:10px 20px"
+	           closed="true" buttons="#sjEditdlg-buttons">
+	       	开始时间：<input class="easyui-datetimebox" name="beginTime" id="beginTime" required="true"><br/>
+	       	结束时间：<input class="easyui-datetimebox" name="endTime" id="endTime" required="true"> 
+	</div>
+<div id="sjEditdlg-buttons">
+       <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="editSPTime()" style="width:90px">确定</a>
+       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#sjEditdlg').dialog('close')" style="width:90px">取消</a>
+   </div>
 <div id="process_tb">
 <a href="#" class="easyui-linkbutton" data-options="plain:true,onClick:redowload">重新下载</a>
 </div>
@@ -71,6 +79,10 @@ var jcxdh;
 //图片展示
 function showImg(value, row, index){
 		return "<img style='' border='0' src='/veh/images/play.ico' onclick='openPlayWin(\""+row.jylsh+"\",\""+row.hphm+"\",\""+row.jycs+"\",\""+row.jyxm+"\",\""+row.kssj+"\",\""+row.jssj+"\")'/>";
+}
+
+function showEditImg(value, row, index){
+	return "<img style='' border='0' src='/veh/images/videoedit.png' onclick='openEditPage(\""+row.jylsh+"\",\""+row.hphm+"\",\""+row.jycs+"\",\""+row.jyxm+"\",\""+row.kssj+"\",\""+row.jssj+"\")'/>";
 }
 
 function redowload(){
@@ -123,6 +135,7 @@ $(function(){
 	        {field:'kssj',title:'开始时间',width:100},
 	        {field:'jssj',title:'结束时间',width:100},
 	        {field:'id',title:'视频播放',width:60,formatter:showImg,align:'center'},
+	        {field:'bj',title:'编辑',width:60,formatter:showEditImg,align:'center'},
 	        {field:'jygcxrsj',title:'检验过程写入时间',width:110},
 	        {field:'jysbbh',title:'检验设备编码',width:120},
 	        {field:'jyzt',title:'检验状态',width:60},
@@ -152,6 +165,37 @@ $(function(){
 		
 		window.open("/veh/video/play2?jylsh="+jylsh+"&jyjgbh="+reportData.jyjgbh);
 			
+	}
+	var editJylsh = "";
+	var editHphm = "";
+	var editJycs = 0;
+	var editJyxm = "";
+	function openEditPage(jylsh,hphm,jycs,jyxm,kssj,jssj){
+		editJylsh = jylsh;
+		editHphm = hphm;
+		editJycs = jycs;
+		editJyxm = jyxm;
+		if(kssj != ""){
+			$("#beginTime").datetimebox("setValue",kssj);
+		}
+		if(jssj != ""){
+			$("#endTime").datetimebox("setValue",jssj);
+		}
+		$('#sjEditdlg').dialog('open').dialog('center').dialog('setTitle','编辑时间');
+	}
+	
+	function editSPTime(){
+		var videoObj = {};
+		videoObj.jylsh = editJylsh;
+		videoObj.jycs = editJycs;
+		videoObj.jyxm = editJyxm;
+		videoObj.kssj = $("#beginTime").datetimebox("getValue");
+		videoObj.jssj = $("#endTime").datetimebox("getValue");
+		$.post("/veh/report/updateVideoTime",videoObj,function(data){
+			$.messager.alert("提示","过程时间已修改，视频正在重新下载");
+			$("#grid_process").datagrid("reload");
+			$('#sjEditdlg').dialog('close')
+		},"json");
 	}
 	
 	

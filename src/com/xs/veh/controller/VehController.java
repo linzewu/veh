@@ -2,6 +2,7 @@ package com.xs.veh.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.xs.annotation.Modular;
 import com.xs.annotation.UserOperation;
 import com.xs.common.BaseParamsUtil;
+import com.xs.common.ResultHandler;
 import com.xs.veh.entity.BaseParams;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.TestVeh;
@@ -40,7 +43,9 @@ import com.xs.veh.entity.VehInfo;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.ExtendManage;
+import com.xs.veh.manager.TestVehManager;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.manager.ZHCheckDataManager;
 import com.xs.veh.util.PlayUtil;
 
 import net.sf.json.JSON;
@@ -75,7 +80,10 @@ public class VehController {
 	private CheckDataManager checkDataManager;
 	@Autowired
 	private ExtendManage et;
-	
+	@Autowired
+	private ZHCheckDataManager zhCheckDataManager;
+	@Autowired
+	private TestVehManager testVehManager;
 
 	/**
 	 * 注册时间类型的属性编辑器，将String转化为Date
@@ -526,6 +534,97 @@ public class VehController {
 	@RequestMapping(value = "getBhgJyxm", method = RequestMethod.POST)
 	public @ResponseBody String getBhgJyxm(String jylsh) {
 		return this.vehManager.getFjxm(jylsh);
+	}
+	
+	
+	@UserOperation(code="updateVehCheckLogin",name="修改基本信息")
+	@RequestMapping(value = "updateVehCheckLogin")
+	public @ResponseBody Map updateVehCheckLogin(@RequestParam Map map) throws ParseException {
+		VehCheckLogin checkLogin = checkDataManager.getVehCheckLogin(map.get("jylsh").toString());//(vehCheckLogin.getJylsh());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if(!StringUtils.isEmpty(map.get("ccrq"))) {			
+			checkLogin.setCcrq(sdf.parse(String.valueOf(map.get("ccrq"))));
+		}
+		if(!StringUtils.isEmpty(map.get("ccdjrq"))) {			
+			checkLogin.setCcdjrq(sdf.parse(String.valueOf(map.get("ccdjrq"))));
+		}
+		
+		//checkLogin.setHphm(vehCheckLogin.getHphm());
+		//checkLogin.setHpzl(vehCheckLogin.getHpzl());
+		
+		checkLogin.setZzl(Integer.parseInt(String.valueOf(map.get("zzl"))));
+		checkLogin.setZbzl(Integer.parseInt(String.valueOf(map.get("zbzl"))));
+		checkLogin.setCwkc(Integer.parseInt(String.valueOf(map.get("cwkc"))));
+		checkLogin.setCwkk(Integer.parseInt(String.valueOf(map.get("cwkk"))));
+		checkLogin.setCwkg(Integer.parseInt(String.valueOf(map.get("cwkg"))));
+		checkLogin.setHdzk(Integer.parseInt(String.valueOf(map.get("hdzk"))));
+		checkLogin.setCsys(String.valueOf(map.get("csys")));
+		checkLogin.setRlzl(String.valueOf(map.get("rlzl")));
+		checkLogin.setSyr(String.valueOf(map.get("syr")));
+		if(!StringUtils.isEmpty(map.get("gl"))) {
+			checkLogin.setGl(Float.valueOf(String.valueOf(map.get("gl"))));
+		}
+		if(!StringUtils.isEmpty(map.get("pl"))) {
+			checkLogin.setPl(Float.valueOf(String.valueOf(map.get("pl"))));
+		}
+		this.vehManager.saveOrUpdateVehCheckLogin(checkLogin);
+		if(checkLogin.getCheckType() == 1) {
+			TestVeh testVeh = zhCheckDataManager.getTestVehbyJylsh(map.get("jylsh").toString());
+			if(testVeh != null) {
+				testVeh.setJcxz(String.valueOf(map.get("jcxz")));
+				testVeh.setJqfs(String.valueOf(map.get("jqfs")));
+				if(!StringUtils.isEmpty(map.get("jgl"))) {
+					testVeh.setJgl(Integer.parseInt(String.valueOf(map.get("jgl"))));
+				}
+				if(!StringUtils.isEmpty(map.get("edzs"))) {
+					testVeh.setEdzs(Integer.parseInt(String.valueOf(map.get("edzs"))));
+				}
+				if(!StringUtils.isEmpty(map.get("ednj"))) {
+					testVeh.setEdnj(Integer.parseInt(String.valueOf(map.get("ednj"))));
+				}
+				if(!StringUtils.isEmpty(map.get("ednjgl"))) {
+					testVeh.setEdnjgl(Integer.parseInt(String.valueOf(map.get("ednjgl"))));
+				}
+				testVeh.setEdyh(String.valueOf(map.get("edyh")));
+				if(!StringUtils.isEmpty(map.get("ltlx"))) {
+					testVeh.setLtlx(Integer.parseInt(String.valueOf(map.get("ltlx"))));
+				}
+				testVeh.setLtxh(String.valueOf(map.get("ltxh")));
+				if(!StringUtils.isEmpty(map.get("hccsxs"))) {
+					testVeh.setHccsxs(Integer.parseInt(String.valueOf(map.get("hccsxs"))));
+				}
+				if(!StringUtils.isEmpty(map.get("kczws"))) {
+					testVeh.setKczws(Integer.parseInt(String.valueOf(map.get("kczws"))));
+				}
+				if(!StringUtils.isEmpty(map.get("bzzs"))) {
+					testVeh.setBzzs(Integer.parseInt(String.valueOf(map.get("bzzs"))));
+				}
+				if(!StringUtils.isEmpty(map.get("ltdmkd"))) {
+					testVeh.setLtdmkd(Integer.parseInt(String.valueOf(map.get("ltdmkd"))));
+				}
+				testVeh.setKcdj(String.valueOf(map.get("kcdj")));
+				testVeh.setQychphm(String.valueOf(map.get("qychphm")));
+				testVeh.setFdjxh(String.valueOf(map.get("fdjxh")));
+				if(!StringUtils.isEmpty(map.get("pfhzz"))) {
+					testVeh.setPfhzz(Integer.parseInt(String.valueOf(map.get("pfhzz"))));
+				}
+				testVeh.setBzzxs(String.valueOf(map.get("bzzxs")));
+				if(!StringUtils.isEmpty(map.get("cxlbgd"))) {
+					testVeh.setCxlbgd(Integer.parseInt(String.valueOf(map.get("cxlbgd"))));
+				}
+				testVeh.setCpys(String.valueOf(map.get("cpys")));
+				testVeh.setZjclyt(String.valueOf(map.get("zjclyt")));
+				if(!StringUtils.isEmpty(map.get("qdzkzzl"))) {
+					testVeh.setQdzkzzl(Integer.parseInt(String.valueOf(map.get("qdzkzzl"))));
+				}
+				testVeh.setDlyxzh(String.valueOf(map.get("dlyxzh")));
+				testVeh.setZjwtr(String.valueOf(map.get("zjwtr")));
+				testVehManager.updateTestVeh(testVeh);
+			}
+		}
+		
+		
+		return ResultHandler.toSuccessJSON("修改成功");
 	}
 
 }

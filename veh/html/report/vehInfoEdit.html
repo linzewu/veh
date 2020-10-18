@@ -1,0 +1,267 @@
+<form id="form-veh-info" class="userInfo-form" method="post">
+<div style="margin:0 auto;width:96%;padding-top: 10px;">
+<table class="basetable" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="tl"><label>出厂日期：</label></td>
+		<td class="tc">
+			<input class="easyui-datebox vehInfoInput" " prompt='请选择出厂日期' name="ccrq" required="true">
+		</td>		
+		<td class="tl"><label>初次登记日期：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-datebox vehInfoInput" prompt='请输入登记日期'  name="ccdjrq" " required="true">
+		</td>
+		<td class="tl"><label>总质量：</label></td >
+		<td class="tc">
+			<input  name="zzl" class="easyui-numberbox vehInfoInput" prompt='请输入总质量'  required="true">
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>整备质量：</label>
+		</td>
+			<td class="tc"><input  name="zbzl" sid="zbzl" prompt='请输入整备质量'  class="easyui-numberbox vehInfoInput"  required="true">
+		</td>
+		<td class="tl"><label>机动车所有人：</label></td>
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput"  name="syr" >
+		</td>
+		<td class="tl"><label>额定功率：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="gl">
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>车外廓长：</label></td>
+		<td class="tc">
+			<input class="easyui-numberbox vehInfoInput" " prompt='请输入车外廓长' name="cwkc" required="true">
+		</td>
+		<td class="tl"><label>车外廓宽：</label></td >
+		<td class="tc">
+			<input  name="cwkk" class="easyui-numberbox vehInfoInput"  prompt='请输入车外廓宽' required="true" >
+		</td>		
+		<td class="tl"><label>车外廓高：</label>
+		</td>
+			<td class="tc"><input  name="cwkg" class="easyui-numberbox vehInfoInput"  prompt='请输入车外廓高' required="true">
+		</td>
+	<tr>
+		<td class="tl"><label>核定载客：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput" prompt='请输入核定载客'  name="hdzk" " required="true">
+		</td>
+		<td class="tl"><label>车身颜色：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('csys'),	valueField: 'id',
+		textField: 'value'" class="easyui-combobox vehInfoInput"  name="csys" >
+		</td>
+		<td class="tl"><label>燃料种类：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('rlzl'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="rlzl">
+		</td>
+	</tr>
+	<tr>		
+		<td class="tl"><label>排量(ml)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="pl" precision=1 >
+		</td>
+		<td class="tl"></td>
+		<td class="tc"></td>
+		<td class="tl"></td>
+		<td class="tc"></td>
+	</tr>
+	</table>
+	<div class="line_01" id="lab_zjedit"  style="display: none;" >综合检测信息</div>
+	<div  id="tab_zjxx">
+	<table  class="basetable" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="tl"><label>检测性质：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-combobox vehInfoInput" data-options="editable:false,data:comm.getBaseParames('jcxz'),	valueField: 'id',
+		textField: 'value'"  name="jcxz">
+		</td>
+		<td class="tl"><label>进气方式：</label></td>
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('jqfs'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="jqfs" >
+		</td>
+		<td class="tl"><label>净功率(kw)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="jgl" >
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>点燃式额定转速(r/min)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="edzs" >
+		</td>
+		<td class="tl"><label>点燃式额定扭矩(NM)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednj" >
+		</td>
+		<td class="tl"><label>额定扭矩功率(kw)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ednjgl" >
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>额定油耗：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="edyh" >
+		</td>
+		
+		<td class="tl"><label>轮胎类型：</label></td >
+		<td class="tc">
+			<input data-options="editable:false,data:comm.getBaseParames('ltlx'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="ltlx"  >
+		</td>
+		<td class="tl"><label>轮胎型号：</label></td>
+		<td class="tc">
+			<input   class="easyui-combobox vehInfoInput" class="easyui-textbox vehInfoInput"   name="ltxh"  >
+		</td>
+		
+	</tr>
+	<tr>
+		<td class="tl"><label>货车车身型：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('hccsxs'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="hccsxs"  >
+		</td>
+		<td class="tl"><label>客车座位(铺)数：</label></td >
+		<td class="tc">
+			<label></label><input   class="easyui-numberbox vehInfoInput"  name="kczws"  >
+		</td>
+		
+		<td class="tl"><label>并装轴数据：</label></td >
+		<td class="tc">
+			<label></label><input   class="easyui-numberbox vehInfoInput"  name="bzzs"  >
+		</td>
+	</tr>
+	<tr>
+		<td class="tl"><label>轮胎断面宽度(mm)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="ltdmkd" id="ltdmkd">
+		</td>
+		<td class="tl"><label>客车等级：</label></td >
+		<td class="tc" >
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('kcdj'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="kcdj"  >
+		</td>
+		<td class="tl"><label>委托人：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput"  name="zjwtr" >
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="tl"><label>牵引车的号牌号码：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="qychphm" id="qychphm">
+		</td>
+		<td class="tl"><label>发动机(电动机)型号：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="fdjxh" id="fdjxh">
+		</td>
+		<td class="tl"><label>排放核准值：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="pfhzz" id="pfhzz">
+		</td>		
+	</tr>
+	<tr>
+		<td class="tl"><label>并装轴形式：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="bzzxs" id="bzzxs">
+		</td>
+		<td class="tl"><label>车厢栏板高度(mm)：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="cxlbgd" id="cxlbgd">
+		</td>
+		<td class="tl"><label>车牌颜色：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('cpys'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="cpys"  >
+		</td>
+		
+	</tr>
+	<tr>
+		<td class="tl"><label>综检车辆用途：</label></td >
+		<td class="tc">
+			<label></label><input data-options="editable:false,data:comm.getBaseParames('zjclyt'),	valueField: 'id',
+		textField: 'value'"  class="easyui-combobox vehInfoInput"  name="zjclyt" id="zjclyt">
+		</td>
+		<td class="tl"><label>驱动轴空载质量：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-numberbox vehInfoInput"  name="qdzkzzl" id="qdzkzzl">
+		</td>
+		<td class="tl"><label>道路运输证号：</label></td >
+		<td class="tc">
+			<label></label><input class="easyui-textbox vehInfoInput"  name="dlyxzh" >
+		</td>
+	</tr>
+	
+</table>
+</div>
+<br/>
+<div align="center" ><a href="#" id="btnOk" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="editVehCheckLogin()">确定</a>
+	<input type="hidden" name="id" >
+</div>
+</div>
+</form>
+
+<script type="text/javascript">
+$(function(){
+	//$("#checkingVeh").datagrid("reload");
+	
+	$('#form-veh-info').form('clear');
+	var reportData = $("#checkingVeh").datagrid("getSelected");
+	if(reportData.checkType == "1"){
+		$("#lab_zjedit").css("display","block");
+		$("#tab_zjxx").css("display","block");
+		
+		$.post("/veh/testVeh/getTestVeh",{jylsh:reportData.jylsh},function(data){
+			console.log(data);
+			if(data != null){
+				var loadDa = data[0];
+				loadDa.ccrq = formatCCrq(loadDa.ccrq);
+				loadDa.ccdjrq = formatCCrq(loadDa.ccdjrq);
+				$("#form-veh-info").form("load",loadDa);
+			}
+			
+		},"json");
+	}else{
+		$("#lab_zjedit").css("display","none");
+		$("#tab_zjxx").css("display","none");
+		$("#form-veh-info").form("load",reportData);
+	}
+	
+	console.log("ffffffffffff");
+});
+
+function formatCCrq(str){
+	var oDate = new Date(str);
+	var oYear = oDate.getFullYear();
+	var oMonth = oDate.getMonth()+1; 
+	var oDay = oDate.getDate(); 
+   
+	var oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) ;//最后拼接时间  
+    return oTime;   
+}
+//补0操作  
+function getzf(num){  
+    if(parseInt(num) < 10){  
+        num = '0'+num;  
+    }  
+    return num;  
+} 
+
+	function editVehCheckLogin(){
+		var reportData = $("#checkingVeh").datagrid("getSelected");
+		//var obj = {};
+		//obj.jylsh = reportData.jylsh;
+		var param=$("#form-veh-info").serializeJson();
+		 param['hphm'] = param['sf']+param['hphm'];
+		 param.jylsh = reportData.jylsh;
+		 $.post("/veh/veh/updateVehCheckLogin",param,function(data){
+				$.messager.alert("提示","修改成功");
+			
+			},"json");
+	}
+</script>

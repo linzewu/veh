@@ -392,5 +392,16 @@ public class ReportController {
 		return info;
 	}
 	
+	
+	@UserOperation(code="updateVideoTime",name="修改视频时间")
+	@RequestMapping(value = "updateVideoTime")
+	public @ResponseBody Map updateVideoTime(VehCheckProcess checkProcess) {
+		VehCheckProcess vehCheckProcess = this.checkDataManager.getVehCheckProces(checkProcess.getJylsh(),checkProcess.getJycs(),checkProcess.getJyxm());
+		vehCheckProcess.setKssj(checkProcess.getKssj());
+		vehCheckProcess.setJssj(checkProcess.getJssj());
+		vehCheckProcess.setVoideSate(0);
+		this.checkDataManager.updateProcess(vehCheckProcess);
+		return ResultHandler.toSuccessJSON("修改成功");
+	}
 
 }

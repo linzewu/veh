@@ -63,6 +63,7 @@ import com.xs.veh.entity.DeviceCheckJudeg;
 import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.ExternalCheckJudge;
 import com.xs.veh.entity.Flow;
+import com.xs.veh.entity.Insurance;
 import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.User;
 import com.xs.veh.entity.VehCheckLog;
@@ -1702,5 +1703,11 @@ public class VehManager {
 		return fjjyxm;
 		
 	}
+	
+	public void saveOrUpdateVehCheckLogin(VehCheckLogin vehCheckLogin) {
+
+		this.hibernateTemplate.saveOrUpdate(vehCheckLogin);
+	}
+
 
 }

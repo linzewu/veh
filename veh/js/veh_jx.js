@@ -1564,6 +1564,7 @@ var report={
 			
 			$("#outLine").panel({"href":"/veh/html/report/outline.html",baseInfo:row});
 			$("#zjline").panel({"href":"/veh/html/report/zjline.html",baseInfo:row});
+			$("#vehInfoEdit").panel({"href":"/veh/html/report/vehInfoEdit.html",baseInfo:row});
 		}
 	},
 	getReport1:function(panelObj,intjycs){
