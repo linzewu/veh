@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +43,7 @@ import com.xs.veh.entity.CheckEvents;
 import com.xs.veh.entity.CheckLog;
 import com.xs.veh.entity.CheckPhoto;
 import com.xs.veh.entity.ExternalCheck;
+import com.xs.veh.entity.TestResult;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VideoConfig;
@@ -49,6 +51,7 @@ import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.ExternalCheckManager;
+import com.xs.veh.manager.TestVehManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.VehProcessManager;
 import com.xs.veh.manager.VideoManager;
@@ -92,6 +95,9 @@ public class CheckedInfoTaskJob {
 
 	@Resource(name = "vehManager")
 	private VehManager vehManager;
+	
+	@Resource(name = "testVehManager")
+	private TestVehManager  testVehManager;
 
 	@Value("${isNetwork}")
 	private boolean isNetwork;
@@ -274,7 +280,6 @@ public class CheckedInfoTaskJob {
 	}
 
 	public boolean getUploadSwitch() {
-
 		String uploadSwitch = (String) servletContext.getAttribute("uploadSwitch");
 		if (uploadSwitch != null && uploadSwitch.equals("1")) {
 			return false;
@@ -856,11 +861,62 @@ public class CheckedInfoTaskJob {
 						vcp.setVoideSate(2);
 						vehProcessManager.saveVehProcessSync(vcp);
 					}
+				}
+			}
+		}
+	}
+	
+	@Scheduled(fixedDelay = 1000*30)
+	public void ZJchecked() throws ParseException {
+		
+		List<TestResult>  datas = this.testVehManager.getTestResultOfNullStatus();
+		
+		SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+		
+		for(TestResult r:datas) {
+			
+			VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(r.getJylsh());
+			if("合格".equals(r.getDlx_pd())) {
+				VehCheckProcess epp = this.checkDataManager.getVehCheckProces(r.getJylsh(), 1, "EP");
+				
+				
+				if(epp!=null&&r.getKssj()!=null&&r.getJssj()!=null) {
+					epp.setKssj(sdf.parse(r.getKssj()));
+					epp.setJssj(sdf.parse(r.getJssj()));
+					epp.setVoideSate(2);
+					this.vehProcessManager.saveVehProcessSync(epp);
+				}
+			}
+			if("合格".equals(r.getYh_pd())) {
+				VehCheckProcess ocp = this.checkDataManager.getVehCheckProces(r.getJylsh(), 1, "OC");
+				if(ocp!=null&&r.getKssj()!=null&&r.getJssj()!=null) {
+					ocp.setKssj(sdf.parse(r.getKssj()));
+					ocp.setJssj(sdf.parse(r.getJssj()));
+					ocp.setVoideSate(2);
+					this.vehProcessManager.saveVehProcessSync(ocp);
+				}
+			}
+			
+			if("合格".equals(r.getDlx_pd())&&"合格".equals(r.getYh_pd())) {
+				
+				if(vehCheckLogin.getVehdpzt()==-1&&vehCheckLogin.getVehdtdpzt()==-1
+						&&vehCheckLogin.getVehlszt()==-1&&vehCheckLogin.getVehsxzt()==-1
+						&&vehCheckLogin.getVehwjzt()==-1&&vehCheckLogin.getVehwkzt()==-1
+						&&vehCheckLogin.getVehzbzlzt()==-1) {
+					vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYJS);
+					vehCheckLogin.setVehzhjz(2);
+					r.setStatus(2);
 					
+					this.testVehManager.updateTestResult(r);
+					this.testVehManager.updateVehCheckLogin(vehCheckLogin);
+					logger.info("更新流水状态");
 					
 				}
 				
+				
 			}
+			
+			
 			
 			
 		}
