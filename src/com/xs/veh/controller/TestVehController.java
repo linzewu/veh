@@ -89,6 +89,26 @@ public class TestVehController {
 		return map;
 	}
 	
+	@UserOperation(code="getTestVehAndCheckLogin",name="查询机动车综检基本信息")
+	@RequestMapping(value = "getTestVehAndCheckLogin", method = RequestMethod.POST)
+	public @ResponseBody List<Map> getTestVehAndCheckLogin(@RequestParam String jylsh) {
+		System.out.println("jylsh:"+jylsh);
+		TestVeh testVeh = zhCheckDataManager.getTestVehbyJylsh(jylsh);
+		
+		VehCheckLogin checkLogin = this.testVehManager.getVehCheckLogin(jylsh);
+		JSONObject dataMap =(JSONObject)JSON.toJSON(testVeh);
+		if(dataMap == null) {
+			dataMap = (JSONObject)JSON.toJSON(checkLogin);
+		}else {
+			JSONObject checkLoginMap =(JSONObject)JSON.toJSON(checkLogin);
+			dataMap.putAll(checkLoginMap);
+		}
+		System.out.println(dataMap);
+		List<Map> map = new ArrayList();
+		map.add(dataMap);
+		return map;
+	}
+	
 	/**
      * 获取指定年月的最后一天
      * @param year

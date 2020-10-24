@@ -216,7 +216,7 @@ $(function(){
 		$("#lab_zjedit").css("display","block");
 		$("#tab_zjxx").css("display","block");
 		
-		$.post("/veh/testVeh/getTestVeh",{jylsh:reportData.jylsh},function(data){
+		$.post("/veh/testVeh/getTestVehAndCheckLogin",{jylsh:reportData.jylsh},function(data){
 			console.log(data);
 			if(data != null){
 				var loadDa = data[0];
