@@ -153,20 +153,21 @@ public class DeviceBrakRollerDriverOfJXGT2CZ extends AbstractDeviceBrakRoller {
 				logger.info("台体下降：" + ttxj);
 				deviceBrakRoller.sendMessage(ttxj);
 				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4])));
+				Thread.sleep(2000);
 			}
 		}
 	}
 	
 	public boolean getSignal(int type) throws IOException, InterruptedException{
 		
-			/*logger.info("开始获取光电状态："+dwzt);*/
+			logger.info("开始获取光电状态："+dwzt);
 			deviceBrakRoller.sendMessage(dwzt);
-		/*	logger.info("光电类型："+type);*/
+			logger.info("光电类型："+type);
 			int index=type==0?3:4;
 			byte[] dwzt = this.getDevData(new byte[12]);
-			/*logger.info("光电返回"+CharUtil.byte2HexOfString(dwzt));*/
+			logger.info("光电返回"+CharUtil.byte2HexOfString(dwzt));
 			if(dwzt[index]==0x4F){
-				/*logger.info("光电到位");*/
+				logger.info("光电到位");
 				return true;
 			}else{
 				return false;

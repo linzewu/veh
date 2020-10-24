@@ -59,7 +59,7 @@ public class DeviceSpeedDriverOfTLCH10 extends AbstractDeviceSpeed {
 				this.display.sendMessage(vehCheckLogin.getHphm(), DeviceDisplay.SP);
 				this.display.sendMessage("速度上线检测", DeviceDisplay.XP);
 				i = 0;
-			} 
+			}
 			if (i >= 6) {
 				break;
 			}

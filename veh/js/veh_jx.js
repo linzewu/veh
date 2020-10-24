@@ -1363,41 +1363,53 @@ var system = {
 	}
 }
 
+//{
+//	"icon" : "/veh/images/statistics.png",
+//	"title" : "车辆类型合格率汇总",
+//	href : "/veh/html/statistics/vehicleTypeStatistics.html",
+//	target : "#reportContex"
+//},{
+//	"icon" : "/veh/images/report2.png",
+//	"title" : "检验类别合格率汇总",
+//	href : "/veh/html/statistics/inspectionCategoryStatistics.html",
+//	target : "#reportContex"
+//},{
+//	"icon" : "/veh/images/report3.png",
+//	"title" : "区县分类合格率汇总",
+//	href : "/veh/html/statistics/countryStatistics.html",
+//	target : "#reportContex"
+//},{
+//	"icon" : "/veh/images/report4.png",
+//	"title" : "检验项目合格率汇总",
+//	href : "/veh/html/statistics/inspectionProjectStatistics.html",
+//	target : "#reportContex"
+//},{
+//	"icon" : "/veh/images/statsyear.png",
+//	"title" : "客车和危货车辆检验月报表",
+//	href : "/veh/html/statistics/yearReport.html",
+//	target : "#reportContex"
+//},{
+//	"icon" : "/veh/images/stats.png",
+//	"title" : "检测线车辆数分布统计",
+//	href : "/veh/html/statistics/vehicleDistributionStatistics.html",
+//	target : "#reportContex"
+//},{
+//	"icon" : "/veh/images/workuser.png",
+//	"title" : "人员工作量统计表",
+//	href : "/veh/html/statistics/workEstimate.html",
+//	target : "#reportContex"
+//}
+
 var statisticalReport = {
 		menus1 : [{
 			"icon" : "/veh/images/statistics.png",
-			"title" : "车辆类型合格率汇总",
-			href : "/veh/html/statistics/vehicleTypeStatistics.html",
-			target : "#reportContex"
-		},{
-			"icon" : "/veh/images/report2.png",
-			"title" : "检验类别合格率汇总",
-			href : "/veh/html/statistics/inspectionCategoryStatistics.html",
-			target : "#reportContex"
-		},{
-			"icon" : "/veh/images/report3.png",
-			"title" : "区县分类合格率汇总",
-			href : "/veh/html/statistics/countryStatistics.html",
-			target : "#reportContex"
-		},{
-			"icon" : "/veh/images/report4.png",
-			"title" : "检验项目合格率汇总",
-			href : "/veh/html/statistics/inspectionProjectStatistics.html",
-			target : "#reportContex"
-		},{
-			"icon" : "/veh/images/statsyear.png",
-			"title" : "客车和危货车辆检验月报表",
-			href : "/veh/html/statistics/yearReport.html",
+			"title" : "登陆业务量统计",
+			href : "/veh/html/statistics/business.html",
 			target : "#reportContex"
 		},{
 			"icon" : "/veh/images/stats.png",
-			"title" : "检测线车辆数分布统计",
-			href : "/veh/html/statistics/vehicleDistributionStatistics.html",
-			target : "#reportContex"
-		},{
-			"icon" : "/veh/images/workuser.png",
-			"title" : "人员工作量统计表",
-			href : "/veh/html/statistics/workEstimate.html",
+			"title" : "检测业务量统计",
+			href : "/veh/html/statistics/business2.html",
 			target : "#reportContex"
 		},{
 			"icon" : "/veh/images/workuser.png",

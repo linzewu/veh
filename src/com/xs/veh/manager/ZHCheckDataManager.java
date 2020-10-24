@@ -317,15 +317,15 @@ public class ZHCheckDataManager {
 				c.setTime(vehCheckLogin.getDlsj());
 				c.add(Calendar.MONTH, 1);
 				
-				SQLQuery wtQuery = session.createSQLQuery("select * from QCPFWQ2018.dbo.ASMCLSJB where JCRQ>=? and JCRQ<? and cphm=? and CPYS=?");
+				SQLQuery wtQuery = session.createSQLQuery("select * from QCPFWQ2018.dbo.ASMCLSJB where JCRQ>=? and JCRQ<? and cphm=? and hplx=? order by JCRQ desc ");
 				wtQuery.setParameter(0, c1)
 				.setParameter(1, c.getTime()).setParameter(2, vehCheckLogin.getHphm())
-				.setParameter(3, getCpysByhpzl(vehCheckLogin.getHpzl()));
+				.setParameter(3, vehCheckLogin.getHpzl());
 				wtQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 				List<Map<String,Object>> wtList  =  wtQuery.list();
 				Map<String,Object> wtMap=null;
 				if(!CollectionUtils.isEmpty(wtList)) {
-					wtMap= wtList.get(wtList.size()-1);
+					wtMap= wtList.get(0);
 				}
 				
 				
@@ -701,7 +701,7 @@ public class ZHCheckDataManager {
 				dcj1.setYqjyxm("■车速表指示误差(km/h)");
 				dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
 				dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
-				dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
+				dcj1.setYqjgpd("0");
 				dcj1.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj1);
@@ -1411,9 +1411,16 @@ public class ZHCheckDataManager {
 				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 				dcj1.setXh(xh);
 				dcj1.setYqjyxm(getZW(brd.getZw()) +temp+ "制动率(%)");
-				dcj1.setYqjyjg(brd.getKzxczdl() == null ? "" : brd.getKzxczdl().toString());
+				Float kzxczdl =brd.getKzxczdl();
+				Integer Kzzdlpd = brd.getKzzdlpd();
+				
+				if(Kzzdlpd!=null&&kzxczdl>100) {
+					Kzzdlpd=BrakRollerData.PDJG_HG;
+				}
+				
+				dcj1.setYqjyjg(kzxczdl == null ? "" : brd.getKzxczdl().toString());
 				dcj1.setYqbzxz(brd.getKzzdlxz() == null ? "" : "≥" + brd.getKzzdlxz().toString()+".0");
-				dcj1.setYqjgpd(brd.getKzzdlpd() == null ? "" : brd.getKzzdlpd().toString());
+				dcj1.setYqjgpd(Kzzdlpd == null ? "" : brd.getKzzdlpd().toString());
 				dcj1.setXh(xh);
 				xh++;
 
@@ -1432,15 +1439,15 @@ public class ZHCheckDataManager {
 					}else if(djpd==2) {
 						yqjgpd="2级";
 					}else {
-						yqjgpd ="不合格";
+						yqjgpd ="2";
 					}
 				}else {
 					if(djpd==1) {
-						yqjgpd="合格";
+						yqjgpd="1";
 					}else if(djpd==2) {
-						yqjgpd="合格";
+						yqjgpd="1";
 					}else {
-						yqjgpd ="不合格";
+						yqjgpd ="2";
 					}
 				}
 				
@@ -1617,41 +1624,41 @@ public class ZHCheckDataManager {
 		return null;
 	}
 	
-	public static void main(String[] age) {
-		 List<Integer> b1 = test(500,143,1017);
-		 List<Integer> b2 =  test(500,152,961);
-		 System.out.println(list2str(b1));
-		 System.out.println(list2str(b2));
-		 Integer index = getMaxcd(b1, b2, 236);
-		 
-		 System.out.println("左："+b1.get(index));
-		 System.out.println("右："+b2.get(index));
-		 
-		 VehCheckLogin vehCheckLogin =new VehCheckLogin();
-		 
-		 vehCheckLogin.setQdxs("3");
-		 
-		 BrakRollerData b=new BrakRollerData();
-		 
-		 b.setZlh(1464);
-		 b.setYlh(1456);
-		 
-		 b.setZzdl(1017);
-		 b.setYzdl(961);
-		 
-		 b.setZzdlcd(b1.get(index));
-		 b.setYzdlcd(b2.get(index));
-		 
-		 b.setZw(1);
-		 
-		 b.setKzbphl(vehCheckLogin);
-		 
-		 b.setKzxczdl(vehCheckLogin);
-		 
-		 System.out.println(b.getKzxczdl());
-		 System.out.println(b.getKzbphl());
-		 
-	}
+//	public static void main(String[] age) {
+//		 List<Integer> b1 = test(500,143,1017);
+//		 List<Integer> b2 =  test(500,152,961);
+//		 System.out.println(list2str(b1));
+//		 System.out.println(list2str(b2));
+//		 Integer index = getMaxcd(b1, b2, 236);
+//		 
+//		 System.out.println("左："+b1.get(index));
+//		 System.out.println("右："+b2.get(index));
+//		 
+//		 VehCheckLogin vehCheckLogin =new VehCheckLogin();
+//		 
+//		 vehCheckLogin.setQdxs("3");
+//		 
+//		 BrakRollerData b=new BrakRollerData();
+//		 
+//		 b.setZlh(1464);
+//		 b.setYlh(1456);
+//		 
+//		 b.setZzdl(1017);
+//		 b.setYzdl(961);
+//		 
+//		 b.setZzdlcd(b1.get(index));
+//		 b.setYzdlcd(b2.get(index));
+//		 
+//		 b.setZw(1);
+//		 
+//		 b.setKzbphl(vehCheckLogin);
+//		 
+//		 b.setKzxczdl(vehCheckLogin);
+//		 
+//		 System.out.println(b.getKzxczdl());
+//		 System.out.println(b.getKzbphl());
+//		 
+//	}
 	
 	public static String list2str(List<Integer> b1) {
 		
@@ -1722,6 +1729,14 @@ public class ZHCheckDataManager {
 		left.addAll(rigth);
 		return left;
 		
+	}
+	
+	public static void main(String[] age) {
+		
+		BrakRollerData bd=new BrakRollerData();
+		Float f=3.5f;
+		bd.setZzzlxz(3.5f);
+		System.out.println("≤" + bd.getZzzlxz().toString());
 	}
 
 }

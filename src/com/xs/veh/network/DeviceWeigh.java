@@ -14,6 +14,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.Device;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -181,8 +182,9 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 	 * @param vehFlow
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @throws SystemException 
 	 */
-	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws IOException, InterruptedException {
+	public void startCheck(VehCheckLogin vehCheckLogin, VehFlow vehFlow,Map<String,Object> otherParam) throws IOException, InterruptedException, SystemException {
 		
 		this.vehCheckLogin=vehCheckLogin;
 		dw.getTemp().clear();

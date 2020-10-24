@@ -35,7 +35,19 @@ public class TaskPicture {
 	@Column(length=20)
 	private String status;
 	
+	@Column(length=10)
+	private String jcxdh;
 	
+	
+	
+
+	public String getJcxdh() {
+		return jcxdh;
+	}
+
+	public void setJcxdh(String jcxdh) {
+		this.jcxdh = jcxdh;
+	}
 
 	public String getStatus() {
 		return status;

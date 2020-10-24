@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xs.common.BaseParamsUtil;
@@ -30,18 +31,24 @@ public class TestVehJob {
 	@Autowired
 	private CheckDataManager checkDataManager;
 	
-	@Resource(name="qkdJdbcTemplate")
-	private JdbcTemplate jdbcTemplate;
 
 	@Scheduled(fixedDelay = 1000)
 	public void scanTaskPic() throws Exception {
 
 		List<TaskPicture> tps = (List<TaskPicture>) hibernateTemplate.find("from TaskPicture where status='0'");
 		List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("sxtpz");
+		
+		
 
 		for (TaskPicture t : tps) {
 
 			VehCheckLogin vehCheckLogin = checkDataManager.getVehCheckLogin(t.getJylsh());
+			
+			String vehJcxdh =t.getJcxdh();
+			
+			if(StringUtils.isEmpty(vehJcxdh)) {
+				vehJcxdh = vehCheckLogin.getJcxdh();
+			}
 			
 			BaseParams param = null;
 			for (BaseParams bp : params) {
@@ -53,10 +60,10 @@ public class TestVehJob {
 					jcxdh = paramName[1];
 				}
 				
-				if(t.getJyxm().equals(pzjyxm)&&jcxdh.equals(vehCheckLogin.getJcxdh())) {
+				if(t.getJyxm().equals(pzjyxm)&&jcxdh.equals(vehJcxdh)) {
 					param = bp;
 					break;
-				}else if(t.getJyxm().equals(pzjyxm)&&jcxdh.equals(vehCheckLogin.getJcxdh())) {
+				}else if(t.getJyxm().equals(pzjyxm)&&jcxdh.equals(vehJcxdh)) {
 					param = bp;
 					break;
 				}
@@ -114,12 +121,5 @@ public class TestVehJob {
 			t.setStatus("1");
 			this.checkDataManager.updateTaskPaice(t);
 		}
-	}
-	
-	//@Scheduled(fixedDelay = 1000*10)
-	public void t1() {
-		Integer o = jdbcTemplate.queryForObject("select count(*) from CarRemoteExchange", Integer.class);
-		
-		System.out.println(o);
 	}
 }

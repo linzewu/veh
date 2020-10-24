@@ -235,7 +235,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setKzxczdl(vehCheckLogin);
 			// 空载制动率限制及判定
 			brakRollerData.setKzzdlxz(vehCheckLogin);
-			brakRollerData.setKzzdlpd();
+			brakRollerData.setKzzdlpd(vehCheckLogin);
 
 			// 设置空载不平衡率
 			brakRollerData.setKzbphl(vehCheckLogin);
@@ -243,16 +243,16 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			brakRollerData.setBphlxz(vehCheckLogin);
 			// 空载不平衡率判定
 			brakRollerData.setKzbphlpd();
-
-			brakRollerData.setJzzdl();
-			// 加载制动率限制及判定
-			brakRollerData.setJzzdlxz(vehCheckLogin);
-			brakRollerData.setJzzdlpd();
-
-			// 设置加载不平衡率
-			brakRollerData.setJzbphl(vehCheckLogin);
-			// 加载不平衡率判定
-			brakRollerData.setJzbphlpd();
+//
+//			brakRollerData.setJzzdl();
+//			// 加载制动率限制及判定
+//			brakRollerData.setJzzdlxz(vehCheckLogin);
+//			brakRollerData.setJzzdlpd();
+//
+//			// 设置加载不平衡率
+//			brakRollerData.setJzbphl(vehCheckLogin);
+//			// 加载不平衡率判定
+//			brakRollerData.setJzbphlpd();
 			brakRollerData.setZpd();
 			
 		}
@@ -269,22 +269,23 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		if (nextVehFlow != null && nexzw==intZw) {
 			if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
 				display.sendMessage("检判定结果：O", DeviceDisplay.SP);
-				Thread.sleep(10000);
+				Thread.sleep(5000);
 			} else {
 				display.sendMessage("检判定结果：X", DeviceDisplay.SP);
-				Thread.sleep(10000);
-				//display.sendMessage("等待是否复位,20秒", DeviceDisplay.XP);
-//				// 不合格等待15秒
-				//Thread.sleep(20000);
+				Thread.sleep(5000);
+				display.sendMessage("等待是否复位,12秒", DeviceDisplay.XP);
+				Thread.sleep(12000);
 			}
 		} else {
 			if (!vehFlow.getJyxm().equals("B0")) {
 				if (brakRollerData.getZpd() == BrakRollerData.PDJG_HG) {
 					display.sendMessage("检判定结果：O", DeviceDisplay.SP);
+					Thread.sleep(5000);
 				} else {
 					display.sendMessage("检判定结果：X", DeviceDisplay.SP);
+					Thread.sleep(5000);
 				}
-				Thread.sleep(10000);
+				
 			}else{
 				String zczw = vehCheckLogin.getZczw();
 				Integer maxzw = this.getMaxZw(zczw);
@@ -367,7 +368,6 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		}else {
 			logger.info("B0驻车过程不发送数据。");
 		}
-		
 	}
 
 	@Override

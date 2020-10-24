@@ -41,6 +41,7 @@ import com.xs.veh.entity.ExternalCheck;
 import com.xs.veh.entity.TestVeh;
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
+import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.DeviceManager;
@@ -80,6 +81,9 @@ public class PDAServiceController {
 	
 	@Resource(name = "hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
+	
+	@Resource(name = "baseParamsManager")
+	private BaseParamsManager baseParamsManager;
 	
 	
 	
@@ -344,6 +348,7 @@ public class PDAServiceController {
 	@UserOperation(code="getZ1Device",name="查询多轴称重台列表")
 	public @ResponseBody String getZ1Device(HttpServletRequest request)
 			throws JsonProcessingException {
+		//List<Device> devices = deviceManager.getDevicesByteType(Device.CZJCSB);
 		List<Device> devices = deviceManager.getDevicesByteType(Device.DZCZT);
 		ObjectMapper om = new ObjectMapper();
 		String jsonp = ResultHandler.parserJSONP(request, om.writeValueAsString(devices));
@@ -433,9 +438,18 @@ public class PDAServiceController {
 			@RequestParam String fjjyxm,@RequestParam Integer jcxdh,@RequestParam Integer reloginWeigth) {
 		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
 		
+		boolean lwscFlag =true;
+		
+		List<BaseParams> bps = baseParamsManager.getBaseParamByType("lwsc");
+		if(!CollectionUtils.isEmpty(bps)) {
+			if("false".equals(bps.get(0).getParamValue())) {
+				lwscFlag=false;
+			}
+		}
+		
 		boolean flag = this.checkEventManger.isExtendCehckEvent(jylsh,new String[] {RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
 				RCAConstant.V18C58,RCAConstant.V18C54,RCAConstant.V18C82,RCAConstant.V18C59});
-		if(flag) {
+		if(flag&&lwscFlag) {
 			JSONObject json = new JSONObject();
 			json.put("state", "-1");
 			json.put("message", "该过程存在数据未上传，正在重新上传平台数据，请等待15-30秒后重试，如果长时间无法复检登陆，请检查平台网络是否通畅！");

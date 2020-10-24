@@ -111,6 +111,9 @@ public class WorkPointThread extends Thread {
 		CheckQueue checkQueue = workPointManager.getQueue(workPoint);
 
 		if (checkQueue != null) {
+			
+			//进入检测时，先停止一秒。
+			Thread.sleep(1000);
 			//setWorkPointState(workPoint, checkQueue);
 			List<VehFlow> vehFlows = workPointManager.getVehFlow(checkQueue);
 			// 灯光检测项目集合

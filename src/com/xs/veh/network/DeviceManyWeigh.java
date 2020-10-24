@@ -210,6 +210,11 @@ public class DeviceManyWeigh extends SimpleRead   {
 			dw.hzdw=true;
 		}
 		
+		if(zw==-1) {
+			dw.zcdw=true;
+			dw.qzdw=true;
+		}
+		
 	}
 
 	@Override

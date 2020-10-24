@@ -340,7 +340,6 @@ public class VehController {
 				testVeh.setSfkc(0);
 			}
 			
-			testVeh.setQdzkzzl(0);
 			//柴油车 必须先做驱动轴称重
 			if(testVeh.getRlzl().equals("B")&&testVeh.getQdzkzzl()==null) {
 				testVeh.setYsjc(0);
@@ -354,7 +353,7 @@ public class VehController {
 				testVeh.setHccsxs(0);
 			}
 			
-			testVeh.setEdnjzs(0);
+			testVeh.setEdnjzs(testVeh.getEdzs());
 			
 			
 			testVeh.setCsbsx("40");
@@ -410,7 +409,7 @@ public class VehController {
 			testVeh.setSfkc(0);
 		}
 		
-		testVeh.setQdzkzzl(1200);
+		testVeh.setQdzkzzl(0);
 		
 		testVeh.setYsjc(1);
 		

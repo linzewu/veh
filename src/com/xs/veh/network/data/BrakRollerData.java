@@ -818,6 +818,10 @@ public class BrakRollerData extends BaseDeviceData {
 		String qdxs=vehCheckLogin.getQdxs();
 		
 		if(this.getJyxm().indexOf("L")== 0) {
+			if((cllx.indexOf("G") == 0)||(cllx.indexOf("B") == 0)){
+				this.kzzdlxz = 45;
+				return;
+			}
 			this.kzzdlxz = 50;
 			return;
 		}
@@ -933,7 +937,13 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		//挂车
 		if((cllx.indexOf("G") == 0)||(cllx.indexOf("B") == 0)){
-			this.kzzdlxz = 55;
+			
+			if(this.getJyxm().indexOf("L")==0) {
+				this.jzzdlxz = 45;
+				return;
+			}
+			
+			this.jzzdlxz = 55;
 			return;
 		}
 
@@ -953,6 +963,8 @@ public class BrakRollerData extends BaseDeviceData {
 	public void setBphlxz(VehCheckLogin vehCheckLogin) {
 
 		String jylb = vehCheckLogin.getJylb();
+		
+		String cllx=vehCheckLogin.getCllx();
 		// 轴荷
 		Integer zh = zlh +ylh;
 		
@@ -969,6 +981,10 @@ public class BrakRollerData extends BaseDeviceData {
 		Integer zw=this.zw;
 		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
 			zw=1;
+		}
+		
+		if(cllx.indexOf("G")==0||cllx.indexOf("B")==0) {
+			zw=2;
 		}
 
 		// 注册登记
@@ -995,12 +1011,12 @@ public class BrakRollerData extends BaseDeviceData {
 		}
 	}
 
-	public void setKzzdlpd() {
+	public void setKzzdlpd(VehCheckLogin vehCheckLogin) {
 		if (this.kzzdlxz == null || this.kzxczdl == null) {
 			return;
 		}
 		
-		if(kzxczdl>=100) {
+		if(((Integer)1)!=vehCheckLogin.getZjlb()&& kzxczdl>=100) {
 			this.kzzdlpd = CheckDataManager.PDJG_BHG;
 			return;
 		}
@@ -1069,11 +1085,15 @@ public class BrakRollerData extends BaseDeviceData {
 		
 		Float zdzdl=null;
 		String qdxs=vehCheckLogin.getQdxs();
+		String cllx=vehCheckLogin.getCllx();
 		Integer zw=this.zw;
 		if(zw==2&&(qdxs.equals("3")||qdxs.equals("4")||qdxs.equals("34"))){
 			zw=1;
+		} 
+		
+		if(cllx.indexOf("G")==0||cllx.indexOf("B")==0) {
+			zw=2;
 		}
-
 		
 		if(zw>1&&kzxczdl<60){
 			zdzdl= (zlh + ylh)*0.98f;
@@ -1326,6 +1346,19 @@ public class BrakRollerData extends BaseDeviceData {
 		}else {
 			return null;
 		}
+	}
+	
+	
+	public static void main(String[] age) {
+		BrakRollerData bd=new BrakRollerData();
+		
+		bd.setZlh(2559);
+		bd.setYlh(2384);
+		
+		Integer a =1;
+		
+		System.out.println((Integer)(1)!=a);
+		
 	}
 
 }

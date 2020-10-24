@@ -20,6 +20,8 @@ public abstract class AbstractDeviceManyWeigh extends AbstractDevice {
 	protected boolean qzdw=false;
 	protected boolean hzdw=false;
 	
+	protected boolean zcdw=false;
+	
 	public abstract CurbWeightData startCheck(VehCheckLogin vc) throws Exception, InterruptedException;
 	
 	public abstract Integer startCheckQdz(VehCheckLogin vc) throws Exception, InterruptedException;

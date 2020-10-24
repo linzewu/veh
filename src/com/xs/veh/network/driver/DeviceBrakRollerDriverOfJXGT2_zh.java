@@ -55,14 +55,13 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			Integer intZw = Integer.parseInt(vehFlow.getJyxm().substring(1, 2));
 			scMessage = vehFlow.getJyxm().equals("B0") ? "请拉手刹" : "请踩刹车";
 			String zw = getZW(intZw);
-			this.getTemp().clear();
-			
-			Thread.sleep(1000);
+			Thread.sleep(500);
 			// 清理数据
 			deviceBrakRoller.clearDate();
+			this.getTemp().clear();
 			dw(vehFlow, zw);
 			int clzs = deviceBrakRoller.getVehCheckLogin().getZs();
-			if(clzs>=3&&vehFlow.getJyxm().indexOf("L")==-1&&!"B0".equals(vehFlow.getJyxm())) {
+			if((deviceBrakRoller.getVehCheckLogin().getReloginWeigth()==1 || vehFlow.getJycs()==1)&& clzs>=3&&vehFlow.getJyxm().indexOf("L")==-1&&!"B0".equals(vehFlow.getJyxm())) {
 				fhcz();
 			}
 			
@@ -159,7 +158,9 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 		} finally {
 			if (nextVehFlow == null || (!nextVehFlow.getJyxm().equals("B0"))
 					|| (nextVehFlow.getJyxm().equals("B0") && vehFlow.getJyxm().equals("B0"))) {
+				logger.info("举升器上升返回："+jsqss);
 				this.deviceBrakRoller.sendMessage(jsqss);
+				logger.info("举升器上升返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
 				Thread.sleep(500);
 			}
 			
@@ -169,6 +170,7 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 				deviceBrakRoller.sendMessage(ttxj);
 				logger.info("台体下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
 			}
+			this.getTemp().clear();
 		}
 	}
 
@@ -237,6 +239,8 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			brakRollerData.setZjzh(zlh + ylh );
 			brakRollerData.setJzzlh(zlh);
 			brakRollerData.setJzylh(ylh);
+			brakRollerData.setZlh(zlh);
+			brakRollerData.setYlh(ylh);
 			Thread.sleep(1000);
 		}
 	}
@@ -244,7 +248,7 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 	private void dw(VehFlow vehFlow, String zw) throws InterruptedException, IOException {
 		// 发送到位延时时间
 		Thread.sleep(200);
-
+		
 		deviceBrakRoller.getDisplay().sendMessage(vehFlow.getHphm(), DeviceDisplay.SP);
 		deviceBrakRoller.getDisplay().sendMessage(zw + "制动请到位", DeviceDisplay.XP);
 
@@ -260,17 +264,17 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 				deviceBrakRoller.getDisplay().sendMessage(zw + "制动请到位", DeviceDisplay.XP);
 				i = 0;
 			}
-			if (i >= 6) {
+			if (i >= 5) {
 				break;
 			}
 			Thread.sleep(500);
 		}
-		logger.info("举升器下降命令：" +jsqxj);
-		deviceBrakRoller.sendMessage(jsqxj);
-		
-		logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
-		
-		Thread.sleep(8000);
+		if(!"驻车".equals(zw)||vehFlow.getJycs()>1) {
+			logger.info("举升器下降命令：" +jsqxj);
+			deviceBrakRoller.sendMessage(jsqxj);
+			logger.info("举升器下降返回：" + CharUtil.byte2HexOfString(getDevData(new byte[4],A)));
+			Thread.sleep(6000);
+		}
 	}
 
 	

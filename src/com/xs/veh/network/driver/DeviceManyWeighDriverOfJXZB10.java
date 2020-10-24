@@ -43,8 +43,8 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 	@Override
 	public CurbWeightData startCheck(VehCheckLogin vehCheckLogin) throws Exception, InterruptedException{
 		
-		deviceManyWeigh.sendMessage(ql);
-		logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
+		//deviceManyWeigh.sendMessage(ql);
+		//logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
 
 		String hphm = vehCheckLogin.getHphm();
 
@@ -53,12 +53,14 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 		
 		Integer qz = check(vehCheckLogin, "前");
 		
-		logger.info("前轴检测完成");
-		Thread.sleep(5000);
-		this.display.sendMessage("请向前行驶", DeviceDisplay.XP);
-		Thread.sleep(2000);
-		
-		Integer hz = check(vehCheckLogin, "后"); 
+		Integer hz =0;
+		if(!zcdw) {
+			logger.info("前轴检测完成");
+			Thread.sleep(5000);
+			this.display.sendMessage("请向前行驶", DeviceDisplay.XP);
+			Thread.sleep(2000);
+			hz = check(vehCheckLogin, "后"); 
+		}
 		
 		CurbWeightData curbWeightData=new CurbWeightData();
 		
@@ -195,6 +197,7 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 			
 			if("前".equals(zw)) {
 				TakePicture.custom(vehCheckLogin, "Z1", 0, "0362",param1);
+				TakePicture.custom(vehCheckLogin, "Z1", 0, "0363",param2);
 			}else if("后".equals(zw)) {
 				TakePicture.custom(vehCheckLogin, "Z1", 0, "0363",param2);
 			}
@@ -229,6 +232,7 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 	private void createNew() {
 		qzdw=false;
 		hzdw=false;
+		zcdw=false;
 		
 	}
 

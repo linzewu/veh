@@ -1330,7 +1330,7 @@ public class CheckDataManager {
 				brakRollerData.setKzxczdl(vehCheckLogin);
 				// 空载制动率限制及判定
 				brakRollerData.setKzzdlxz(vehCheckLogin);
-				brakRollerData.setKzzdlpd();
+				brakRollerData.setKzzdlpd(vehCheckLogin);
 
 				// 设置空载不平衡率
 				brakRollerData.setKzbphl(vehCheckLogin);
@@ -1548,6 +1548,15 @@ public class CheckDataManager {
 	}
 	
 	public void resetEventState(final String jylsh){
+		 
+		List<CheckEvents> events =  (List<CheckEvents>) this.hibernateTemplate.find("from CheckEvents where jylsh=? and event in ('18C81','18C55','18C80','18C58')", jylsh);
+		
+		for(CheckEvents event: events) {
+			List<CheckLog> logs  = (List<CheckLog>) this.hibernateTemplate.find("from CheckLog where code='1' and jylsh=? and jycs=? and jkbmc=?", jylsh,event.getJycs(),event.getEvent()+"_"+event.getJyxm());
+			if(!CollectionUtils.isEmpty(logs)) {
+				this.hibernateTemplate.delete(event);
+			}
+		}
 		
 		this.hibernateTemplate.execute(new HibernateCallback<Integer>() {
 

@@ -1,0 +1,146 @@
+<div id="businessArea">
+<table class="easyui-datagrid" data-options="fitColumns:true,singleSelect:true,toolbar:'#tb',footer:'#ft',title:'业务量统计',rownumbers: true,
+                showFooter: true,pagination:true,onLoadSuccess:businessAreaLoad"  id="businessAreaDatagrid" style="height: 450px;">
+    <thead>
+        <tr> 
+            <th data-options="field:'hphm',width:100">号牌号码</th>
+            <th data-options="field:'hpzl',width:100">号牌种类</th>
+            <th data-options="field:'clsbdh',width:100">车辆识别代号</th>
+            <th data-options="field:'jycs',width:100">检测次数</th>
+        </tr>
+    </thead>
+</table>
+
+	<div id="tb" style="padding:2px 5px;">
+		<div>
+		<select class="easyui-combobox" panelHeight="auto" style="width:100px" data-options="onSelect:areaDateTyepSelect" id="areaDateTyep">
+            <option value="0">当天</option>
+            <option value="1">当周</option>
+            <option value="2">当月</option>
+            <option value="3">当年</option>
+        </select>
+                    日期开始: <input class="easyui-datebox" style="width:110px" id="areaBeginDate">
+                    日期结束: <input class="easyui-datebox" style="width:110px" id="areaEndDate">
+                    检测类别: 
+        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="areaJclb">
+            <option value="0">全部</option>
+            <option value="1">安检</option>
+            <option value="2">综安</option>
+            <option value="3">综检</option>
+        </select>
+                   是否合格: 
+        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="areaSfhg">
+            <option value="0">全部</option>
+            <option value="1">合格</option>
+            <option value="2">不合格</option>
+        </select>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="queryBusiness()">统计</a>
+        </div>
+        <div style="height: 30px; padding-top: 8px;">
+        	<span id="areaText" style="font-size: 16px;"></span>
+        </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+
+function areaDateTyepSelect(data){
+	
+	
+	if(data.value=="0"){
+		var now = new Date();
+		var strDate = now.Format("yyyy-MM-dd")
+		$("#areaBeginDate").datebox("setValue",strDate);
+		$("#areaEndDate").datebox("setValue",strDate);
+	}
+	
+	if(data.value=="1"){
+		var now = new Date();
+		now.setDate(now.getDate() - now.getDay()+1);
+		var strBegin = now.Format("yyyy-MM-dd");
+		now.setDate(now.getDate()+6);
+		var strEnd = now.Format("yyyy-MM-dd");
+		$("#areaBeginDate").datebox("setValue",strBegin);
+		$("#areaEndDate").datebox("setValue",strEnd);
+	}
+	
+	if(data.value=="2"){
+		var now = new Date();
+		now.setDate(1);
+		var strBegin = now.Format("yyyy-MM-dd");
+		
+		now.setMonth(now.getMonth()+1)
+		now.setDate(0);
+		var strEnd = now.Format("yyyy-MM-dd");
+		
+		$("#areaBeginDate").datebox("setValue",strBegin);
+		$("#areaEndDate").datebox("setValue",strEnd);
+	}
+	
+	if(data.value=="3"){
+		var now = new Date();
+		now.setMonth(0);
+		now.setDate(1);
+		var strBegin = now.Format("yyyy-MM-dd");
+		
+		now.setFullYear(now.getFullYear()+1)
+		now.setDate(0);
+		var strEnd = now.Format("yyyy-MM-dd");
+		
+		
+		$("#areaBeginDate").datebox("setValue",strBegin);
+		$("#areaEndDate").datebox("setValue",strEnd);
+	}
+	
+	
+}
+
+function businessAreaLoad(data){
+	
+	var  beginDate = $("#areaBeginDate").datebox("getValue");
+	var  endDate = $("#areaEndDate").datebox("getValue");
+	var jclb = $("#areaJclb").combobox("getText");
+	
+	var sfhg = $("#areaSfhg").combobox("getText");
+	
+	if(sfhg!="全部"){
+		$("#areaText").text(beginDate+"至"+endDate +jclb+"登陆检测"+sfhg+"车辆为：" +data.total);
+	}else{
+		$("#areaText").text(beginDate+"至"+endDate +jclb+"登陆车辆为：" +data.total);
+	}
+}
+
+function initBusinessArea(){
+	var now = new Date();
+	var strDate = now.Format("yyyy-MM-dd")
+	$("#areaBeginDate").datebox("setValue",strDate);
+	$("#areaEndDate").datebox("setValue",strDate);
+	queryBusiness();
+}
+
+
+function queryBusiness(){
+	
+	var  beginDate = $("#areaBeginDate").datebox("getValue");
+	var  endDate = $("#areaEndDate").datebox("getValue");
+	
+	var jclb = $("#areaJclb").combobox("getValue");
+	
+	var sfhg = $("#areaSfhg").combobox("getValue");
+	
+	$("#businessAreaDatagrid").datagrid({
+		url:'/veh/statistic/getBusinessArea',
+		queryParams:{
+			begin: beginDate,
+			end: endDate,
+			jclb:jclb,
+			sfhg:sfhg
+		}
+	});
+}
+
+setTimeout(function(){
+	initBusinessArea()
+},1000);
+
+</script>

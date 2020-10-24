@@ -142,6 +142,7 @@ public class WorkPointManager {
 				return message;
 			}
 		}
+		message.setState(Message.STATE_ERROR);
 		message.setMessage("工位停止失败！");
 		return message;
 
@@ -168,6 +169,7 @@ public class WorkPointManager {
 		} else {
 			return startWorkpoint(id);
 		}
+		message.setState(Message.STATE_ERROR);
 		message.setMessage("工位停止失败！");
 		return message;
 

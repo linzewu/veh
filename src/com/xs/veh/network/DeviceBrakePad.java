@@ -157,7 +157,7 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 				brakRollerData.setKzxczdl(vehCheckLogin);
 				// 空载制动率限制及判定
 				brakRollerData.setKzzdlxz(vehCheckLogin);
-				brakRollerData.setKzzdlpd();
+				brakRollerData.setKzzdlpd(vehCheckLogin);
 
 				// 设置空载不平衡率
 				brakRollerData.setKzbphl(vehCheckLogin);

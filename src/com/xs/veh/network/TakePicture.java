@@ -194,8 +194,8 @@ public class TakePicture implements Runnable {
 	private void createCustom() {
 		
 		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
-		String szdsfpt = paams.get(0).getParamValue();
-		if(!CollectionUtils.isEmpty(paams)&&"true".equals(szdsfpt)) {
+	
+		if(!CollectionUtils.isEmpty(paams)&&"true".equals(paams.get(0).getParamValue())) {
 			 SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			 if(zpzl==null) {
 				 zpzl=getZPZL(jyxm);

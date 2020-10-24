@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -119,6 +120,25 @@ public class StatisticController {
 	}
 	
 	
+	
+	@UserOperation(code="业务量统计",name="业务量统计")
+	@RequestMapping(value = "getBusinessArea", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> getBusinessArea(@RequestParam Map param){
+		
+		Map<String,Object> data = statisticManager.getBusiness(param);
+		return data;
+	}
+	
+	@UserOperation(code="业务量统计2",name="业务量统计2")
+	@RequestMapping(value = "getBusinessArea2", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> getBusinessArea2(@RequestParam Map param){
+		
+		Map<String,Object> data = statisticManager.getBusiness2(param);
+		return data;
+	}
+	
+	
+	
 	public void footCount(Map<String,Object> datas,String[] columns,String[] avgColumns) {
 		
 		List<Map<String,Object>> dataList = (List<Map<String,Object>>) datas.get("rows");
@@ -139,8 +159,6 @@ public class StatisticController {
 						footCount.put(key, Double.parseDouble(data.get(key).toString()));
 					}
 				}
-				
-				
 				
 			}
 		}

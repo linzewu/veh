@@ -222,7 +222,7 @@ font-size: 20px;
 	<br><br>
 	<p class="pirnt_dw">沭阳县公安局交通警察支队车辆管理所：</p>
 	<p class="pirnt_text" style="text-indent:2em;">
-		现有<span id="hgzm_hphm"></span>(号牌号码)  小型汽车，车辆识别代号为<span id="hgzm_clsbdh"></span>,经我站检测，该车辆符合国家相关的标准要求，检验合格。
+		现有<span id="hgzm_hphm"></span>(号牌号码)  <span id="hgzm_hpzl"></span>，车辆识别代号为<span id="hgzm_clsbdh"></span>,经我站检测，该车辆符合国家相关的标准要求，检验合格。
 	</p>
 	<p class="pirnt_text">
 		特此证明。
@@ -243,12 +243,14 @@ var reportData = $("#checkingVeh").datagrid("getSelected");
 
 var jylsh = reportData.jylsh;
 
-var now = new Date()
+var now = new Date();
 
 $("#print_zmsj").text(now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日");
 
 $("#hgzm_hphm").text(reportData.hphm);
 $("#hgzm_clsbdh").text(reportData.clsbdh);
+$("#hgzm_hpzl").text(comm.getParamNameByValue("hpzl",reportData.hpzl));
+
 
 $.post("/veh/report/getPlateApplyTable",{"jylsh":jylsh},function(data){
 	if(data){

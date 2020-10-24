@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.xs.common.CharUtil;
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.AbstractDeviceWeigh;
 import com.xs.veh.network.DeviceDisplay;
@@ -30,7 +31,7 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 		return ProtocolType.DATA;
 	}
 	@Override
-	public BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException{
+	public BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException, SystemException{
 		
 		//deviceWeigh.sendMessage(ql);
 	//	logger.info("清零返回："+CharUtil.byte2HexOfString(this.getDevData(new byte[4])));
@@ -71,7 +72,7 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 	}
 	
 	
-	public BrakRollerData  check(String zs,String hphm) throws IOException, InterruptedException {
+	public BrakRollerData  check(String zs,String hphm) throws IOException, InterruptedException, SystemException {
 
 		// 开始新的一次检测
 		createNew();
@@ -126,6 +127,12 @@ public class DeviceWeighDriverOfJXZB10 extends AbstractDeviceWeigh {
 		this.display.sendMessage(zs + "轴称重结束", DeviceDisplay.SP);
 		this.display.sendMessage((brakRollerData.getZlh() + brakRollerData.getYlh()) + "KG", DeviceDisplay.XP);
 		
+		if((brakRollerData.getZlh() + brakRollerData.getYlh())==0){
+			Thread.sleep(1000);
+			this.display.sendMessage(zs + "称重异常，等待复位", DeviceDisplay.SP);
+			Thread.sleep(4000);
+			throw new  SystemException("称重异常");
+		}
 		
 		return brakRollerData;
 	}

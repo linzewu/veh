@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.xs.common.exception.SystemException;
 import com.xs.veh.entity.VehFlow;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.driver.DeviceWeighDriverOfJXZB10;
@@ -22,7 +23,7 @@ public abstract class AbstractDeviceWeigh extends AbstractDevice {
 	
 	protected Integer s1;
 	
-	public abstract BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException;
+	public abstract BrakRollerData startCheck(VehFlow vehFlow) throws IOException, InterruptedException,SystemException;
 
 	public void device2pc(byte[] ed) throws IOException {
 		for (byte b : ed) {

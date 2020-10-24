@@ -101,7 +101,7 @@ public class DeviceSideslipDriverOfTLCH10 extends AbstractDeviceSideslip {
 					if(StringUtils.isEmpty(strData)) {
 						strData="0";
 					}
-					sideslip=Float.parseFloat(strData);
+					sideslip=Float.parseFloat(strData.trim());
 				}catch (Exception e) {
 					this.getTemp().clear();
 					logger.error("数据异常，跳过！");
