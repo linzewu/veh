@@ -42,11 +42,13 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.entity.VehInfo;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
+import com.xs.veh.manager.CheckEventManger;
 import com.xs.veh.manager.ExtendManage;
 import com.xs.veh.manager.TestVehManager;
 import com.xs.veh.manager.VehManager;
 import com.xs.veh.manager.ZHCheckDataManager;
 import com.xs.veh.util.PlayUtil;
+import com.xs.veh.util.RCAConstant;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -84,6 +86,9 @@ public class VehController {
 	private ZHCheckDataManager zhCheckDataManager;
 	@Autowired
 	private TestVehManager testVehManager;
+	
+	@Resource(name = "checkEventManger")
+	private CheckEventManger checkEventManger;
 
 	/**
 	 * 注册时间类型的属性编辑器，将String转化为Date
@@ -482,7 +487,37 @@ public class VehController {
 	
 	@UserOperation(code="relogin",name="复检登陆")
 	@RequestMapping(value = "relogin", method = RequestMethod.POST)
-	public @ResponseBody String relohin(String jylsh, String fjjyxm,Integer reloginWeigth) {
+	public synchronized @ResponseBody String relohin(String jylsh, String fjjyxm,Integer reloginWeigth) {
+		
+		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		
+		if(vehCheckLogin.getVehjczt()!=VehCheckLogin.JCZT_JYJS) {
+			JSONObject json = new JSONObject();
+			json.put("state", "-1");
+			json.put("message", "检测过程未结束，不能复检，请查看当前流水状态！");
+			checkDataManager.resetEventState(jylsh);
+			return json.toString();
+		}
+		
+		boolean lwscFlag =true;
+		
+		List<BaseParams> bps = baseParamsManager.getBaseParamByType("lwsc");
+		if(!CollectionUtils.isEmpty(bps)) {
+			if("false".equals(bps.get(0).getParamValue())) {
+				lwscFlag=false;
+			}
+		}
+		
+		boolean flag = this.checkEventManger.isExtendCehckEvent(jylsh,new String[] {RCAConstant.V18C55,RCAConstant.V18C81,RCAConstant.V18C80,
+				RCAConstant.V18C58,RCAConstant.V18C54,RCAConstant.V18C82,RCAConstant.V18C59});
+		if(flag&&lwscFlag) {
+			JSONObject json = new JSONObject();
+			json.put("state", "-1");
+			json.put("message", "该过程存在数据未上传，正在重新上传平台数据，请等待15-30秒后重试，如果长时间无法复检登陆，请检查平台网络是否通畅！");
+			checkDataManager.resetEventState(jylsh);
+			return json.toString();
+		}
+		
 		
 		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
 		

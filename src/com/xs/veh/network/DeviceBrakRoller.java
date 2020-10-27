@@ -273,8 +273,13 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			} else {
 				display.sendMessage("检判定结果：X", DeviceDisplay.SP);
 				Thread.sleep(5000);
-				display.sendMessage("等待是否复位,12秒", DeviceDisplay.XP);
-				Thread.sleep(12000);
+				String zczw = vehCheckLogin.getZczw();
+				Integer maxzw = this.getMaxZw(zczw);
+				if(!vehFlow.getJyxm().equals("B0")||maxzw!=brakRollerData.getZw()) {
+					display.sendMessage("等待是否复位,12秒", DeviceDisplay.XP);
+					Thread.sleep(12000);
+				}
+				
 			}
 		} else {
 			if (!vehFlow.getJyxm().equals("B0")) {

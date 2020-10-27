@@ -628,6 +628,49 @@ public class ZHCheckDataManager {
 		
 		boolean syxzIsShow=getIsShow(vehCheckLogin.getSyxz());
 		
+		if(testResult!=null) {
+			if(testResult.getDlx_pd()!=null) {
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setXh(xh);
+				dcj1.setYqjyxm("●驱动轮轮边稳定车速（km/h）");
+				dcj1.setYqjyjg(testResult.getDlx_wdcs()==null ? "" : testResult.getDlx_wdcs().toString());
+				dcj1.setYqbzxz("≥"+testResult.getDlx_edcs());
+				
+				String pd=BaseDeviceData.PDJG_WJ.toString();
+				
+				if("不合格".equals(testResult.getDlx_pd())) {
+					pd=BaseDeviceData.PDJG_BHG.toString();
+				}else if("合格".equals(testResult.getDlx_pd())) {
+					if("等级评定".equals(testVeh.getJcxz())) {
+						if("0.82".equals(testResult.getDlx_bzxs())) {
+							pd="1级";
+						}else if("0.75".equals(testResult.getDlx_bzxs())){
+							pd="2级";
+						}
+					}else {
+						pd=BaseDeviceData.PDJG_HG.toString();
+					}
+				}
+				dcj1.setYqjgpd(pd);
+				dcj1.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj1);
+			}
+			logger.info(!testResult.getYh_pd().equals("0"));
+			if(testResult.getYh_pd()!=null&& !testResult.getYh_pd().equals("0")) {
+				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
+				dcj1.setXh(xh);
+				dcj1.setYqjyxm("经济性（L/100 km）");
+				dcj1.setYqjyjg(testResult.getYh_scz()==null ? "" : testResult.getYh_scz().toString());
+				dcj1.setYqbzxz("≤"+testResult.getYh_bzxz());
+				dcj1.setYqjgpd(testResult.getYh_pd().toString());
+				dcj1.setXh(xh);
+				xh++;
+				this.hibernateTemplate.save(dcj1);
+			}
+		}
+		
+		
 		if(((Integer)1)==vehCheckLogin.getZjlb()||syxzIsShow) {
 			// 路试数据
 			xh = createRoadCheckJudeg(vehCheckLogin, xh);
@@ -702,6 +745,7 @@ public class ZHCheckDataManager {
 				dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
 				dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
 				dcj1.setYqjgpd("0");
+			//	dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
 				dcj1.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj1);
@@ -710,47 +754,6 @@ public class ZHCheckDataManager {
 			
 		}
 		if(testResult!=null) {
-			
-			if(testResult.getDlx_pd()!=null) {
-				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-				dcj1.setXh(xh);
-				dcj1.setYqjyxm("●驱动轮轮边稳定车速（km/h）");
-				dcj1.setYqjyjg(testResult.getDlx_wdcs()==null ? "" : testResult.getDlx_wdcs().toString());
-				dcj1.setYqbzxz("≥"+testResult.getDlx_edcs());
-				
-				String pd=BaseDeviceData.PDJG_WJ.toString();
-				
-				if("不合格".equals(testResult.getDlx_pd())) {
-					pd=BaseDeviceData.PDJG_BHG.toString();
-				}else if("合格".equals(testResult.getDlx_pd())) {
-					if("等级评定".equals(testVeh.getJcxz())) {
-						if("0.82".equals(testResult.getDlx_bzxs())) {
-							pd="1级";
-						}else if("0.75".equals(testResult.getDlx_bzxs())){
-							pd="2级";
-						}
-					}else {
-						pd=BaseDeviceData.PDJG_HG.toString();
-					}
-				}
-				dcj1.setYqjgpd(pd);
-				dcj1.setXh(xh);
-				xh++;
-				this.hibernateTemplate.save(dcj1);
-			}
-			logger.info(!testResult.getYh_pd().equals("0"));
-			if(testResult.getYh_pd()!=null&& !testResult.getYh_pd().equals("0")) {
-				DeviceCheckJudegZJ dcj1 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
-				dcj1.setXh(xh);
-				dcj1.setYqjyxm("经济性（L/100 km）");
-				dcj1.setYqjyjg(testResult.getYh_scz()==null ? "" : testResult.getYh_scz().toString());
-				dcj1.setYqbzxz("≤"+testResult.getYh_bzxz());
-				dcj1.setYqjgpd(testResult.getYh_pd().toString());
-				dcj1.setXh(xh);
-				xh++;
-				this.hibernateTemplate.save(dcj1);
-			}
-			 
 			Map<String, Map<String, Object>>  pfxData =  getPFXData(vehCheckLogin);
 			logger.info("测试："+pfxData!=null); 
 			if(pfxData!=null && (((Integer)1)==vehCheckLogin.getZjlb()||syxzIsShow)) {
@@ -1577,7 +1580,7 @@ public class ZHCheckDataManager {
 	
 	
 	public List<DeviceCheckJudegZJ> getDeviceCheckJudegZJ(String jylsh) {
-		List<DeviceCheckJudegZJ> datas = (List<DeviceCheckJudegZJ>) this.hibernateTemplate.find("from DeviceCheckJudegZJ where jylsh=?", jylsh);
+		List<DeviceCheckJudegZJ> datas = (List<DeviceCheckJudegZJ>) this.hibernateTemplate.find("from DeviceCheckJudegZJ where jylsh=? order by xh asc", jylsh);
 		return datas;
 	}
 	

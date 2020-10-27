@@ -46,8 +46,14 @@ function relogin(){
 	
 	$.messager.progress();
 	$.post("/veh//veh/relogin",param,function(data){
-		$.messager.alert("提示","复检登陆成功！");
-	}).complete(function(){
+		data = $.parseJSON(data);
+		if(data.state=="OK"){
+			$.messager.alert("提示","复检登陆成功！");
+		}else{
+			$.messager.alert("提示",data.message);
+		}
+		
+	},"json").complete(function(){
 		$.messager.progress('close');
 	}).error(function(e){
 		$.messager.alert("错误","复检登陆失败！");

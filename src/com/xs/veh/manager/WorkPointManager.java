@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -209,9 +210,10 @@ public class WorkPointManager {
 		// 检测完成，删除队列
 		this.hibernateTemplate.delete(checkQueue);
 		// 创建一条新队列
-		checkQueue = createNextQueue(vehFlow, vehCheckLogin);
+		//checkQueue = createNextQueue(vehFlow, vehCheckLogin);
+		CheckQueue nextCheckQueue=getNextQueue(vehCheckLogin);
 		// 如果队列为空，则检测过程结束
-		if (checkQueue == null) {
+		if (nextCheckQueue == null) {
 			checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
 			//checkDataManager.createCheckEventOnLine(vehCheckLogin.getJylsh(), vehCheckLogin.getJycs());
 			vehManager.updateVehCheckLoginState(vehCheckLogin.getJylsh());
@@ -239,10 +241,10 @@ public class WorkPointManager {
 		}
 
 		// 创建一条新队列
-		CheckQueue checkQueue = createNextQueue(vehFlows.get(vehFlows.size() - 1), vehCheckLogin);
+		//CheckQueue checkQueue = createNextQueue(vehFlows.get(vehFlows.size() - 1), vehCheckLogin);
 		// 如果队列为空，则检测过程结束
-		
-		if (checkQueue == null) {
+		CheckQueue nextCheckQueue=getNextQueue(vehCheckLogin);
+		if (nextCheckQueue == null) {
 			try {
 				logger.info("开始计算其他数据");
 				checkDataManager.createOtherDataOfAnjian(vehCheckLogin.getJylsh());
@@ -445,7 +447,7 @@ public class WorkPointManager {
 			return null;
 		} else {
 
-			// CheckQueue firstQueues = queues.get(0);
+			 CheckQueue firstQueues = queues.get(0);
 			//
 			// DetachedCriteria dc1 =
 			// DetachedCriteria.forClass(CheckQueue.class);
@@ -457,11 +459,31 @@ public class WorkPointManager {
 			//
 			// List<CheckQueue> gwQueues = (List<CheckQueue>)
 			// hibernateTemplate.findByCriteria(dc1);
-
-			return queues.get(0);
+			
+			List<CheckQueue> firxQueues = (List<CheckQueue>) 
+					this.hibernateTemplate.find("from CheckQueue where gwsx<? and jylsh=? and jycs =?",firstQueues.getGwsx() ,firstQueues.getJylsh(),firstQueues.getJycs());
+			
+			if(CollectionUtils.isEmpty(firxQueues)) {
+				return queues.get(0);
+			}else {
+				return null;
+			}
 		}
 
 	}
+	
+	
+	public CheckQueue getNextQueue(VehCheckLogin vehCheckLogin) {
+		List<CheckQueue> checkQueues = (List<CheckQueue>) 
+				this.hibernateTemplate.find("from CheckQueue where jylsh=? and jycs=? order by pdxh asc", vehCheckLogin.getJylsh(),vehCheckLogin.getJycs());
+		
+		if(CollectionUtils.isEmpty(checkQueues)) {
+			return null;
+		}else {
+			return checkQueues.get(0);
+		}
+	}
+	
 
 	public CheckQueue createNextQueue(VehFlow vehFlow, VehCheckLogin vehCheckLogin) {
 

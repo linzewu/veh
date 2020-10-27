@@ -44,6 +44,7 @@ import com.xs.veh.entity.VehCheckProcess;
 import com.xs.veh.manager.BaseParamsManager;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.CheckEventManger;
+import com.xs.veh.manager.CheckQueueManager;
 import com.xs.veh.manager.DeviceManager;
 import com.xs.veh.manager.ExternalCheckManager;
 import com.xs.veh.manager.VehManager;
@@ -84,6 +85,9 @@ public class PDAServiceController {
 	
 	@Resource(name = "baseParamsManager")
 	private BaseParamsManager baseParamsManager;
+	
+	@Resource(name = "checkQueueManager")
+	private CheckQueueManager checkQueueManager;
 	
 	
 	
@@ -434,9 +438,17 @@ public class PDAServiceController {
 	
 	@UserOperation(code="relogin",name="复检引车")
 	@RequestMapping(value = "relogin", method = RequestMethod.POST)
-	public @ResponseBody String relohin(@RequestParam String jylsh,@RequestParam Integer id,
+	public synchronized @ResponseBody String relohin(@RequestParam String jylsh,@RequestParam Integer id,
 			@RequestParam String fjjyxm,@RequestParam Integer jcxdh,@RequestParam Integer reloginWeigth) {
 		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		
+		if(vehCheckLogin.getVehjczt()!=VehCheckLogin.JCZT_JYJS) {
+			JSONObject json = new JSONObject();
+			json.put("state", "-1");
+			json.put("message", "检测过程未结束，不能复检，请查看当前流水状态！");
+			checkDataManager.resetEventState(jylsh);
+			return json.toString();
+		}
 		
 		boolean lwscFlag =true;
 		
@@ -458,17 +470,6 @@ public class PDAServiceController {
 			return json.toString();
 		}
 		
-//		if(fjjyxm.indexOf("B")>-1||fjjyxm.indexOf("L")>-1||fjjyxm.indexOf("H")>-1||fjjyxm.indexOf("A")>-1||fjjyxm.indexOf("S")>-1) {
-//			logger.info("开始复检登陆");
-//			Message message = this.vehManager.checkUpLine(jcxdh, vehCheckLogin);
-//			logger.info("检验是否可以复检");
-//			if(message!=null) {
-//				JSONObject json = new JSONObject();
-//				json.put("state", "-1");
-//				json.put("message", message.getMessage());
-//				return json.toString();
-//			}
-//		}
 		
 		logger.info("开始复检登陆");
 		this.vehManager.saveRelogin2(jylsh, fjjyxm,reloginWeigth);
@@ -517,13 +518,19 @@ public class PDAServiceController {
 						json.put("jzFlag", true);
 					}
 				}
-				
 				ja.add(json);
 			}
 		}
 		return ja.toString();
 	
 	}
+	
+	
+//	public @ResponseBody String getQiutLine(String hphm) {
+//		
+//		this.checkQueueManager.
+//		
+//	}
 	
 
 }

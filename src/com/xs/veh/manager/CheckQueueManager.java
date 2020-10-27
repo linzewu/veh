@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
+import com.xs.veh.entity.CheckQueue;
+
 @Service("checkQueueManager")
 @Scope("singleton")
 public class CheckQueueManager {
@@ -26,5 +28,12 @@ public class CheckQueueManager {
 			return ((Integer)o)+1;
 		}
 	}
+	
+	
+//	public List<CheckQueue> getCheckQueue() {
+//		
+//		this.hibernateTemplate.find("from CheckQueue where ", "");
+//		
+//	}
 
 }

@@ -1709,6 +1709,21 @@ public class CheckDataManager {
 		
 	}
 	
+	public Outline getOutLine(String jylsh){
+		List<Outline> outlines=(List<Outline>) this.hibernateTemplate.find("from Outline where jylsh=? order by id desc", jylsh);
+		if(!CollectionUtils.isEmpty(outlines)){
+			
+			return outlines.get(0);
+		}else {
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 }

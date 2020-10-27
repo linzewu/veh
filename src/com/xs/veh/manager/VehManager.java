@@ -807,7 +807,7 @@ public class VehManager {
 	}
 	
 
-	public Message upLine(Integer id,Integer jcxdh) {
+	public synchronized Message upLine(Integer id,Integer jcxdh) {
 
 		VehCheckLogin vehCheckLogin = this.hibernateTemplate.load(VehCheckLogin.class, id);
 		User user = (User) session.getAttribute("user");
@@ -832,26 +832,25 @@ public class VehManager {
 				vehCheckLogin.setJcxdh(jcxdh.toString());
 			}
 			// 获取第一顺序流程
-			VehFlow firstVehFlow = (VehFlow) this.hibernateTemplate
-					.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
-							vehCheckLogin.getJycs())
-					.get(0);
+//			VehFlow firstVehFlow = (VehFlow) this.hibernateTemplate
+//					.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
+//							vehCheckLogin.getJycs())
+//					.get(0);
 
-			int gwxs = firstVehFlow.getGwsx();
+//			int gwxs = firstVehFlow.getGwsx();
 
-			List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
-					.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
+//			List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
+//					.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
+//
+//			if (checkQueues != null && !checkQueues.isEmpty()) {
+//				message.setState(Message.STATE_ERROR);
+//				message.setMessage("线上有车，请稍等！");
+//				return message
+//			}
 
-			if (checkQueues != null && !checkQueues.isEmpty()) {
-				message.setState(Message.STATE_ERROR);
-				message.setMessage("线上有车，请稍等！");
-				return message;
-			}
-
-			// 获取同一工位的流程
 			List<VehFlow> vehFlows = (List<VehFlow>) this.hibernateTemplate.find(
-					"from VehFlow where jylsh=? and jycs=? and gw=? order by sx asc", vehCheckLogin.getJylsh(),
-					vehCheckLogin.getJycs(), firstVehFlow.getGw());
+					"from VehFlow where jylsh=? and jycs=?  order by sx asc", vehCheckLogin.getJylsh(),
+					vehCheckLogin.getJycs());
 
 			for (VehFlow vehFlow : vehFlows) {
 				CheckQueue queue = new CheckQueue();
@@ -1293,6 +1292,7 @@ public class VehManager {
 	public void saveRelogin2(String jylsh, String fjjyxm, Integer reloginWeigth) {
 
 		VehCheckLogin vehCheckLogin = this.checkDataManager.getVehCheckLogin(jylsh);
+		
 
 		vehCheckLogin.setVehjczt(VehCheckLogin.JCZT_JYZ);
 

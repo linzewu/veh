@@ -46,6 +46,7 @@ import com.xs.veh.entity.VehInfoTemp;
 import com.xs.veh.manager.CheckDataManager;
 import com.xs.veh.manager.RoadCheackManager;
 import com.xs.veh.manager.VehManager;
+import com.xs.veh.network.data.Outline;
 import com.xs.veh.util.HKVisionUtil;
 
 import net.sf.json.JSON;
@@ -402,6 +403,12 @@ public class ReportController {
 		vehCheckProcess.setVoideSate(0);
 		this.checkDataManager.updateProcess(vehCheckProcess);
 		return ResultHandler.toSuccessJSON("修改成功");
+	}
+	
+	@UserOperation(code="getOutLine",name="获取外廓尺寸数据")
+	@RequestMapping(value = "getOutLine")
+	public @ResponseBody Outline  getOutLine(String jylsh) {
+		return this.checkDataManager.getOutLine(jylsh);
 	}
 
 }
