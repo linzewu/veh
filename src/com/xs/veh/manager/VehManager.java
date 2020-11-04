@@ -831,22 +831,6 @@ public class VehManager {
 				addVehFlow(vehCheckLogin, process, flow);
 				vehCheckLogin.setJcxdh(jcxdh.toString());
 			}
-			// 获取第一顺序流程
-//			VehFlow firstVehFlow = (VehFlow) this.hibernateTemplate
-//					.find("from VehFlow where jylsh=? and jycs=? and sx=1 order by sx asc", vehCheckLogin.getJylsh(),
-//							vehCheckLogin.getJycs())
-//					.get(0);
-
-//			int gwxs = firstVehFlow.getGwsx();
-
-//			List<CheckQueue> checkQueues = (List<CheckQueue>) this.hibernateTemplate
-//					.find("from CheckQueue where gwsx<? and jcxdh=?", gwxs, Integer.parseInt(vehCheckLogin.getJcxdh()));
-//
-//			if (checkQueues != null && !checkQueues.isEmpty()) {
-//				message.setState(Message.STATE_ERROR);
-//				message.setMessage("线上有车，请稍等！");
-//				return message
-//			}
 
 			List<VehFlow> vehFlows = (List<VehFlow>) this.hibernateTemplate.find(
 					"from VehFlow where jylsh=? and jycs=?  order by sx asc", vehCheckLogin.getJylsh(),
@@ -862,6 +846,7 @@ public class VehManager {
 				queue.setJylsh(vehFlow.getJylsh());
 				queue.setPdxh(checkQueueManager.getPdxh(vehCheckLogin.getJcxdh(), vehFlow.getGwsx()));
 				queue.setLcsx(vehFlow.getSx());
+				queue.setStatus(0);
 				this.hibernateTemplate.save(queue);
 			}
 

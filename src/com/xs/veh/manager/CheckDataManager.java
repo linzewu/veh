@@ -50,6 +50,7 @@ import com.xs.veh.network.data.ParDataOfAnjian;
 import com.xs.veh.network.data.SideslipData;
 import com.xs.veh.network.data.SpeedData;
 import com.xs.veh.util.HKVisionUtil;
+import com.xs.veh.util.RCAConstant;
 
 import net.sf.json.JSONObject;
 
@@ -1549,10 +1550,15 @@ public class CheckDataManager {
 	
 	public void resetEventState(final String jylsh){
 		 
-		List<CheckEvents> events =  (List<CheckEvents>) this.hibernateTemplate.find("from CheckEvents where jylsh=? and event in ('18C81','18C55','18C80','18C58')", jylsh);
-		
+		List<CheckEvents> events =  (List<CheckEvents>) this.hibernateTemplate.find("from CheckEvents where jylsh=? and event in ('18C81','18C55','18C80','18C58','18C59')", jylsh);
+		 
 		for(CheckEvents event: events) {
-			List<CheckLog> logs  = (List<CheckLog>) this.hibernateTemplate.find("from CheckLog where code='1' and jylsh=? and jycs=? and jkbmc=?", jylsh,event.getJycs(),event.getEvent()+"_"+event.getJyxm());
+			List<CheckLog> logs =null;
+			if(event.getEvent().equals(RCAConstant.V18C59)) {
+				logs  = (List<CheckLog>) this.hibernateTemplate.find("from CheckLog where code='1' and jylsh=? and jycs=? and jkbmc=?", jylsh,event.getJycs(),event.getEvent());
+			}else {
+				logs  = (List<CheckLog>) this.hibernateTemplate.find("from CheckLog where code='1' and jylsh=? and jycs=? and jkbmc=?", jylsh,event.getJycs(),event.getEvent()+"_"+event.getJyxm());
+			}
 			if(!CollectionUtils.isEmpty(logs)) {
 				this.hibernateTemplate.delete(event);
 			}

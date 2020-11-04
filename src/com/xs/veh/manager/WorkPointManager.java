@@ -441,25 +441,12 @@ public class WorkPointManager {
 		dc.addOrder(Order.asc("pdxh"));
 		dc.add(Restrictions.eq("jcxdh", workPoint.getJcxdh()));
 		dc.add(Restrictions.eq("gwsx", workPoint.getSort()));
+		dc.add(Restrictions.eq("status", 0));
 		List<CheckQueue> queues = (List<CheckQueue>) hibernateTemplate.findByCriteria(dc, 0, 1);
-
 		if (queues == null || queues.isEmpty()) {
 			return null;
 		} else {
-
-			 CheckQueue firstQueues = queues.get(0);
-			//
-			// DetachedCriteria dc1 =
-			// DetachedCriteria.forClass(CheckQueue.class);
-			// dc1.addOrder(Order.asc("pdxh"));
-			// dc1.add(Restrictions.eq("jcxdh", workPoint.getJcxdh()));
-			// dc1.add(Restrictions.eq("gwsx", workPoint.getSort()));
-			// dc1.add(Restrictions.eq("jylsh", firstQueues.getJylsh()));
-			// dc1.add(Restrictions.eq("jycs", firstQueues.getJycs()));
-			//
-			// List<CheckQueue> gwQueues = (List<CheckQueue>)
-			// hibernateTemplate.findByCriteria(dc1);
-			
+			CheckQueue firstQueues = queues.get(0);
 			List<CheckQueue> firxQueues = (List<CheckQueue>) 
 					this.hibernateTemplate.find("from CheckQueue where gwsx<? and jylsh=? and jycs =?",firstQueues.getGwsx() ,firstQueues.getJylsh(),firstQueues.getJycs());
 			

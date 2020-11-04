@@ -21,14 +21,14 @@ public class VehLineCheckController {
 	@Resource(name="vehLineCheckManager")
 	private VehLineCheckManager vehLineCheckManager;
 	
-	@RequestMapping(value = "upLine", method = RequestMethod.POST)
-	public @ResponseBody Map upLine(@RequestParam String jylsh,@RequestParam Integer jccs){
-		
-		Message message = vehLineCheckManager.upLine(jylsh, jccs);
-		
-		return ResultHandler.toMessage(message);
-	} 
-	
+//	@RequestMapping(value = "upLine", method = RequestMethod.POST)
+//	public @ResponseBody Map upLine(@RequestParam String jylsh,@RequestParam Integer jccs){
+//		
+//		Message message = vehLineCheckManager.upLine(jylsh, jccs);
+//		
+//		return ResultHandler.toMessage(message);
+//	} 
+//	
 	
 
 }

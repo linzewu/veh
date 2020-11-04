@@ -104,7 +104,7 @@ public class PDAServiceController {
 
 	@UserOperation(code="pushVehOnLine",name="引车上线")
 	@RequestMapping(value = "pushVehOnLine")
-	public @ResponseBody Map pushVehOnLine(@RequestParam Integer id,@RequestParam Integer jcxdh) {
+	public synchronized @ResponseBody Map pushVehOnLine(@RequestParam Integer id,@RequestParam Integer jcxdh) {
 		Message message = this.vehManager.upLine(id,jcxdh);
 		return ResultHandler.toMessage(message);
 	}
@@ -525,12 +525,37 @@ public class PDAServiceController {
 	
 	}
 	
+	@UserOperation(code="getCheckQueueVeh",name="获取退线上线列表")
+	@RequestMapping(value = "getCheckQueueVeh", method = RequestMethod.POST)
+	public @ResponseBody String getCheckQueueVeh(@RequestParam Integer status) throws JsonProcessingException {
+		ObjectMapper om = new ObjectMapper();
+		List<Map<String,Object>> datas = this.checkQueueManager.getCheckQueueVeh(status);
+		return om.writeValueAsString(datas);
+		
+	}
 	
-//	public @ResponseBody String getQiutLine(String hphm) {
-//		
-//		this.checkQueueManager.
-//		
-//	}
+	@UserOperation(code="downLine",name="车辆退线")
+	@RequestMapping(value = "downLine", method = RequestMethod.POST)
+	public @ResponseBody String downLine(@RequestParam String jylsh) {
+		
+		this.checkQueueManager.downLine(jylsh);
+		
+		JSONObject json = new JSONObject();
+		json.put("state", "OK");
+		return json.toString();
+		
+	}
+	
+	@UserOperation(code="reUpLine",name="车辆重新上线")
+	@RequestMapping(value = "reUpLine", method = RequestMethod.POST)
+	public synchronized @ResponseBody String reUpLine(@RequestParam String jylsh) {
+		
+		this.checkQueueManager.reUpLine(jylsh);
+		JSONObject json = new JSONObject();
+		json.put("state", "OK");
+		return json.toString();
+		
+	}
 	
 
 }
