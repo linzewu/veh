@@ -27,6 +27,7 @@ import com.xs.veh.network.data.BaseDeviceData;
 import com.xs.veh.network.data.BrakRollerData;
 import com.xs.veh.network.data.CurbWeightData;
 import com.xs.veh.network.driver.DeviceWeighDriverOfJXZB10_SZ;
+import com.xs.veh.network.driver.DeviceWeighDriverOfJXZB10_Z1;
 
 import gnu.io.SerialPortEvent;
 
@@ -202,7 +203,7 @@ public class DeviceWeigh extends SimpleRead implements ICheckDevice {
 		this.checkDataManager.saveData(brakRollerData);
 		display.setDefault();
 		
-		if(dw instanceof DeviceWeighDriverOfJXZB10_SZ) {
+		if(dw instanceof DeviceWeighDriverOfJXZB10_SZ || dw instanceof DeviceWeighDriverOfJXZB10_Z1) {
 			
 			String zs = vehFlow.getJyxm().substring(1, 2);
 			

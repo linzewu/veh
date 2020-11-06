@@ -988,7 +988,7 @@ public class CheckDataManager {
 
 				if (!((cllx.indexOf("K3") == 0 || cllx.indexOf("K4") == 0 || cllx.indexOf("N") == 0)
 						&& syxz.equals("A"))) {
-					//if(lightData.getGx() == LightData.GX_JGD) {
+					if(lightData.getGx() == LightData.GX_JGD) {
 						DeviceCheckJudeg dcj2 = createDeviceCheckJudegBaseInfo(vehCheckLogin);
 						dcj2.setYqjyxm(
 								getLight(jyxm) + (lightData.getGx() == LightData.GX_YGD ? "远光灯" : "近光灯") + "垂直偏移量(mm/10m)");
@@ -1003,6 +1003,7 @@ public class CheckDataManager {
 							}
 						}
 						
+						
 						String czpd = lightData.getCzpypd().toString();
 						
 						if("0".equals(czpd)) {
@@ -1015,7 +1016,7 @@ public class CheckDataManager {
 						dcj2.setXh(xh);
 						xh++;
 						this.hibernateTemplate.save(dcj2);
-					//}
+					}
 				}
 
 			}
