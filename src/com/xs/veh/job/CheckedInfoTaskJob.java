@@ -843,10 +843,15 @@ public class CheckedInfoTaskJob {
 			String jcxdh = vcp.getJcxdh()==null?vehCheckLogin.getJcxdh():String.valueOf(vcp.getJcxdh());
 			
 			for(VideoConfig config: configs) {
-				if(config.getJyxm().indexOf(vcp.getJyxm())!=-1&&config.getJcxdh().equals(jcxdh)) {
+				
+				String[] jyxmArray=vcp.getJyxm().split("-");
+				
+				String jyxm=jyxmArray[0];
+				
+				if(config.getJyxm().indexOf(jyxm)!=-1&&config.getJcxdh().equals(jcxdh)) {
 					try {
 						Date  kssj =vcp.getKssj();
-						if(vcp.getJyxm().equals("H4")&&vcp.getJycs()==1) {
+						if(jyxm.equals("H4")&&vcp.getJycs()==1) {
 							
 							Calendar calendar = Calendar.getInstance();
 							calendar.setTime(vcp.getKssj());

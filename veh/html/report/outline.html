@@ -55,10 +55,54 @@ $(function(){
 			text:'过程结束（上传平台）',
 			handler: function(){
 				if(reportData.vehwkzt==1){
-					 $.post("/veh/extend/saveQkdOutLine",{jylsh:reportData.jylsh},function(data){
+					
+					var rows = $("#grid_outLineWaitList").datagrid("getRows");
+					var flag =false;
+					$.eahc(rows,function(i,n){
+						if(n.TestTimes==reportData.jycs&&n.StateCode==255){
+							flag=true;
+							return false;
+						}
+					});
+					
+					if(flag){
+						 $.post("/veh/extend/saveQkdOutLine",{jylsh:reportData.jylsh},function(data){
+							 $.messager.alert("提示",data.message);
+							 reportData.vehwkzt=2;
+							 $("#checkingVeh").datagrid("reload");
+						});
+					}else{
+						$.messager.alert("提示","检验次数："+reportData.jycs+"无结束状态（255）的外廓尺寸检测数据，无法上传");
+					}
+				}else{
+					$.messager.alert("提示","该车无外廓尺寸项目！");
+				}
+			}
+		},{
+			iconCls: 'icon-redo',
+			text:'强制状态为255',
+			handler: function(){
+				
+				var row = $("#grid_outLineWaitList").datagrid("getSelected");
+				
+				if(row){
+					
+					if(row.StateCode==255){
+						$.messager.alert("提示","该数据状态为255，无法重置！");
+					}else{
+						$.post("/veh/extend/qkdOutlineStateReset",{jylsh:reportData.jylsh,jycs:row.TestTimes},function(data){
+							 $.messager.alert("提示",data.message);
+							 $("#grid_outLineWaitList").datagrid("reload");
+						}) 
+					}
+					
+				}else{
+					$.messager.alert("提示","请选择需要重置的数据");
+				}
+				
+				if(reportData.vehwkzt==1){
+					 $.post("/veh/extend/qkdOutlinePicture",{jylsh:reportData.jylsh,zpzl:"0361"},function(data){
 						 $.messager.alert("提示",data.message);
-						 reportData.vehwkzt=2;
-						 $("#checkingVeh").datagrid("reload");
 					}) 
 				}else{
 					$.messager.alert("提示","该车无外廓尺寸项目！");

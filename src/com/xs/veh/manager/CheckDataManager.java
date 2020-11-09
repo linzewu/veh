@@ -392,50 +392,6 @@ public class CheckDataManager {
 		VehCheckLogin vehCheckLogin = (VehCheckLogin) this.hibernateTemplate
 				.find("from VehCheckLogin where jylsh=?", jylsh).get(0);
 		otherInfoData.setBaseInfo(vehCheckLogin);
-
-		// 获取驻车制动数据
-		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate.find(
-				"from BrakRollerData where jylsh=? and jyxm='B0' and jycs=? and sjzt=? ", jylsh,
-				vehCheckLogin.getJycs(), BrakRollerData.SJZT_ZC);
-		// 处理驻车制动数据
-		ParDataOfAnjian parDataOfAnjian = null;
-		if (brds != null && !brds.isEmpty()) {
-			parDataOfAnjian = new ParDataOfAnjian();
-			for (BrakRollerData brd : brds) {
-				parDataOfAnjian.setJylsh(brd.getJylsh());
-				parDataOfAnjian.setHpzl(brd.getHphm());
-				parDataOfAnjian.setHpzl(brd.getHpzl());
-				parDataOfAnjian.setJycs(brd.getJycs());
-				parDataOfAnjian.setDxcs(brd.getDxcs());
-				parDataOfAnjian.setSjzt(ParDataOfAnjian.SJZT_ZC);
-				int zw = brd.getZw();
-				Integer zczczdl = parDataOfAnjian.getZczczdl();
-				zczczdl = zczczdl == null ? 0 : zczczdl;
-				switch (zw) {
-				case 1:
-					parDataOfAnjian.setYzzczdl(brd.getZzdl() + brd.getYzdl());
-					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
-					break;
-				case 2:
-					parDataOfAnjian.setEzzczdl(brd.getZzdl() + brd.getYzdl());
-					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
-					break;
-				case 3:
-					parDataOfAnjian.setSanzzczdl(brd.getZzdl() + brd.getYzdl());
-					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
-					break;
-				case 4:
-					parDataOfAnjian.setSizzczdl(brd.getZzdl() + brd.getYzdl());
-					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
-					break;
-				case 5:
-					parDataOfAnjian.setWzzczdl(brd.getZzdl() + brd.getYzdl());
-					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
-					break;
-				}
-			}
-		}
-		
 		logger.info("current Session2="+this.hibernateTemplate.getSessionFactory().getCurrentSession());
 		
 		final String tjylsh=jylsh;
@@ -479,6 +435,88 @@ public class CheckDataManager {
 			Float zczdl = (float) ((zdlh * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			otherInfoData.setZczdl(MathRound1(zczdl));
 		}
+		
+		otherInfoData.setZczdlxz();
+		otherInfoData.setZczdlpd();
+
+		otherInfoData.setZjccs(vehCheckLogin.getJycs());
+		this.hibernateTemplate.save(otherInfoData);
+		
+		// 修改上线状态
+		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
+		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
+		this.hibernateTemplate.update(vehInfo);
+	}
+	
+	
+	public void createParDataOfAnjian(String jylsh) {
+		VehCheckLogin vehCheckLogin = (VehCheckLogin) this.hibernateTemplate
+				.find("from VehCheckLogin where jylsh=?", jylsh).get(0);
+		// 获取驻车制动数据
+		List<BrakRollerData> brds = (List<BrakRollerData>) this.hibernateTemplate.find(
+				"from BrakRollerData where jylsh=? and jyxm='B0' and jycs=? and sjzt=? ", jylsh,
+				vehCheckLogin.getJycs(), BrakRollerData.SJZT_ZC);
+		// 处理驻车制动数据
+		ParDataOfAnjian parDataOfAnjian = null;
+		if (brds != null && !brds.isEmpty()) {
+			parDataOfAnjian = new ParDataOfAnjian();
+			for (BrakRollerData brd : brds) {
+				parDataOfAnjian.setJylsh(brd.getJylsh());
+				parDataOfAnjian.setHpzl(brd.getHphm());
+				parDataOfAnjian.setHpzl(brd.getHpzl());
+				parDataOfAnjian.setJycs(brd.getJycs());
+				parDataOfAnjian.setDxcs(brd.getDxcs());
+				parDataOfAnjian.setSjzt(ParDataOfAnjian.SJZT_ZC);
+				int zw = brd.getZw();
+				Integer zczczdl = parDataOfAnjian.getZczczdl();
+				zczczdl = zczczdl == null ? 0 : zczczdl;
+				switch (zw) {
+				case 1:
+					parDataOfAnjian.setYzzczdl(brd.getZzdl() + brd.getYzdl());
+					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
+					break;
+				case 2:
+					parDataOfAnjian.setEzzczdl(brd.getZzdl() + brd.getYzdl());
+					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
+					break;
+				case 3:
+					parDataOfAnjian.setSanzzczdl(brd.getZzdl() + brd.getYzdl());
+					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
+					break;
+				case 4:
+					parDataOfAnjian.setSizzczdl(brd.getZzdl() + brd.getYzdl());
+					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
+					break;
+				case 5:
+					parDataOfAnjian.setWzzczdl(brd.getZzdl() + brd.getYzdl());
+					parDataOfAnjian.setZczczdl(zczczdl + brd.getZzdl() + brd.getYzdl());
+					break;
+				}
+			}
+		}
+		
+		List<BrakRollerData> list= (List<BrakRollerData>) this.hibernateTemplate.
+				find("from BrakRollerData where jylsh=? and jyxm<>'B0' and sjzt=? and jyxm<>'L1' and jyxm<>'L2' and jyxm<>'L3' and jyxm<>'L4'", 
+						jylsh, BrakRollerData.SJZT_ZC);
+		// 制动力和
+		Integer zdlh = 0;
+		// 整车轮荷
+		Integer zclh = 0;
+		
+		//判断是否平板设备
+		boolean isRoller=true;
+		
+		for (BrakRollerData brakRollerData : list) {
+			zclh += brakRollerData.getZlh() + brakRollerData.getYlh();
+			Integer zzdl=brakRollerData.getZzdl()==null?0:brakRollerData.getZzdl();
+			Integer yzdl=brakRollerData.getYzdl()==null?0:brakRollerData.getYzdl();
+			zdlh += zzdl + yzdl;
+			if(brakRollerData.getZdtlh()!=null) {
+				isRoller=false;
+			}
+			
+		}
+		
 		if (parDataOfAnjian != null) {
 			Float tczdl = (float) ((parDataOfAnjian.getZczczdl() * 1.0 / (zclh * 0.98 * 1.0)) * 100);
 			parDataOfAnjian.setTczclh(zclh);
@@ -500,16 +538,7 @@ public class CheckDataManager {
 				e.printStackTrace();
 			}
 		}
-		otherInfoData.setZczdlxz();
-		otherInfoData.setZczdlpd();
-
-		otherInfoData.setZjccs(vehCheckLogin.getJycs());
-		this.hibernateTemplate.save(otherInfoData);
 		
-		// 修改上线状态
-		VehCheckLogin vehInfo = this.hibernateTemplate.load(VehCheckLogin.class, vehCheckLogin.getId());
-		vehInfo.setVehsxzt(VehCheckLogin.JCZT_JYJS);
-		this.hibernateTemplate.update(vehInfo);
 	}
 
 	/**
@@ -1462,6 +1491,10 @@ public class CheckDataManager {
 
 	public void updateProcess(VehCheckProcess vehCheckProcess) {
 		this.hibernateTemplate.update(vehCheckProcess);
+	}
+	
+	public void saveProcess(VehCheckProcess vehCheckProcess) {
+		this.hibernateTemplate.save(vehCheckProcess);
 	}
 
 	public void createCheckEventOnLine(String jylsh, Integer jycs) {

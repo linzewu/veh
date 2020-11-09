@@ -583,6 +583,15 @@ public class VehManager {
 			}
 
 		});
+		try {
+			checkEventManger.createEvent(0,vheLogininfo.getJylsh(), vheLogininfo.getJycs(), "18C72", null,
+					vheLogininfo.getHphm(), vheLogininfo.getHpzl(), vheLogininfo.getClsbdh(),
+					vheLogininfo.getVehcsbj());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 		return jo;
 	}

@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.xs.veh.entity.VehCheckLogin;
 import com.xs.veh.entity.VehCheckProcess;
@@ -114,6 +115,10 @@ public class ExtendManage {
 	
 	public  List<Map<String, Object>> getqkdWaitList( String jylsh) {
 		return qkdJdbcTemplate.queryForList("select * from CarRemoteExchange where VehicleSN=? ",new Object[]{jylsh});
+	}
+	
+	public  void qkdOutlineStateReset( String jylsh, String jycs) {
+		qkdJdbcTemplate.update("update CarRemoteExchange set StateCode=255 where VehicleSN=? and TestTimes=?",jylsh,jycs);
 	}
 
 }

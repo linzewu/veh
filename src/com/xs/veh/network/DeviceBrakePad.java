@@ -311,6 +311,8 @@ public class DeviceBrakePad extends SimpleRead implements ICheckDevice {
 			
 		}
 		
+		this.checkDataManager.createParDataOfAnjian(vehCheckLogin.getJylsh());
+		
 	}
 	
 	private List<String> notJYXM(List<BrakRollerData> datas) {

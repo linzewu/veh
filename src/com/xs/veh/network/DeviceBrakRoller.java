@@ -2,6 +2,7 @@ package com.xs.veh.network;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import java.util.TooManyListenersException;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -223,9 +226,8 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			Thread.sleep(5000);
 			throw new SystemException("获取不到制动力");
 		}
-
+		to300Point(brakRollerData);
 		// setInfoData(brakRollerData);
-
 		// 设置基础数据
 		brakRollerData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), vehFlow.getJyxm());
 
@@ -279,7 +281,6 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 					display.sendMessage("等待是否复位,12秒", DeviceDisplay.XP);
 					Thread.sleep(12000);
 				}
-				
 			}
 		} else {
 			if (!vehFlow.getJyxm().equals("B0")) {
@@ -290,7 +291,6 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 					display.sendMessage("检判定结果：X", DeviceDisplay.SP);
 					Thread.sleep(5000);
 				}
-				
 			}else{
 				String zczw = vehCheckLogin.getZczw();
 				Integer maxzw = this.getMaxZw(zczw);
@@ -347,8 +347,26 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		}
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), vehFlow.getJyxm());
-		process.setJssj(new Date());
 		
+		if(process.getJyxm().equals("B0")&&process.getKssj()!=null&&process.getJssj()!=null) {
+			VehCheckProcess  vcp=new VehCheckProcess();
+			vcp.setClsbdh(process.getClsbdh());
+			vcp.setHphm(process.getHphm());
+			vcp.setHpzl(process.getHpzl());
+			vcp.setJcxdh(process.getJcxdh());
+			vcp.setJssj(process.getJssj());
+			vcp.setJygcxrsj(process.getJygcxrsj());
+			vcp.setJycs(process.getJycs());
+			vcp.setJylsh(process.getJylsh());
+			vcp.setJysbbh(process.getJysbbh());
+			vcp.setJyxm(process.getJyxm()+"-"+(Integer.parseInt(vehFlow.getMemo())-1));
+			vcp.setKssj(process.getKssj());
+			vcp.setStatus(0);
+			vcp.setVoideSate(0);
+			this.checkDataManager.saveProcess(vcp);
+		}
+		
+		process.setJssj(new Date());
 		if(brakRollerData.getGckssj()!=null) {
 			process.setKssj(brakRollerData.getGckssj());
 		}else {
@@ -358,6 +376,9 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		process.setJcxdh(this.getDevice().getJcxxh());
 		
 		this.checkDataManager.updateProcess(process);
+		
+		
+		
 		this.checkDataManager.saveData(brakRollerData);
 		
 		Thread.sleep(200);
@@ -373,6 +394,55 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		}else {
 			logger.info("B0驻车过程不发送数据。");
 		}
+		
+		if(nextVehFlow==null||(nextVehFlow.getJyxm().indexOf("B")==-1&&nextVehFlow.getJyxm().indexOf("L")==-1)) {
+			this.checkDataManager.createParDataOfAnjian(vehCheckLogin.getJylsh());
+		}
+		
+	}
+
+	public static void to300Point(BrakRollerData brakRollerData) {
+		String leftStr = brakRollerData.getLeftDataStr();
+		if(leftStr!=null) {
+			String[] leftArray = leftStr.split(",");
+			if(leftArray.length<300) {
+				List<String> leftList =new ArrayList<String>();
+				CollectionUtils.addAll(leftList,leftArray);
+				while(leftList.size()<300) {
+					leftList.add("0");
+				}
+				String newLeftStr = StringUtils.join(leftList,",");
+				brakRollerData.setLeftDataStr(newLeftStr);
+			}
+		}
+		String rigthStr = brakRollerData.getRigthDataStr();
+		if(rigthStr!=null) {
+			String[] rigthtArray = rigthStr.split(",");
+			if(rigthtArray.length<300) {
+				List<String> rigthList =new ArrayList<String>();
+				CollectionUtils.addAll(rigthList,rigthtArray);
+				while(rigthList.size()<300) {
+					rigthList.add("0");
+				}
+				String newrigthStr = StringUtils.join(rigthList,",");
+				brakRollerData.setRigthDataStr(newrigthStr);
+			}
+		}
+	}
+	
+	public static void main(String[] age) {
+		
+		BrakRollerData b=new BrakRollerData();
+		
+		b.setLeftDataStr("1");
+		b.setRigthDataStr("2");
+		
+		to300Point(b);
+		
+		System.out.println(b.getLeftDataStr());
+		
+		System.out.println(b.getRigthDataStr());
+		
 	}
 
 	@Override

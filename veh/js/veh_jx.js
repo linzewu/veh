@@ -528,9 +528,12 @@ var veh = {
 			 }
 		}
 	},
-	vehUnlogin:function(){
+	vehUnlogin:function(gridId){
 		
-		var row = $("#checkingVehList").datagrid("getSelected");
+		if(!gridId){
+			gridId="#checkingVehList";
+		}
+		var row = $(gridId).datagrid("getSelected");
 		if(row){
 			$.messager.confirm("请确认","您是否要退办："+row.hphm,function(r){
 				if(r){
@@ -541,7 +544,7 @@ var veh = {
 					$.post("/veh/veh/vheUnLogin",row,function(data){
 					},"json").complete(function(data){
 						$.messager.progress("close");
-						 $("#checkingVehList").datagrid("reload");
+						 $(gridId).datagrid("reload");
 					}).error(veh.error);
 				}
 			});

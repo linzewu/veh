@@ -80,5 +80,15 @@ public class ExtendController {
 	}
 	
 	
+	@UserOperation(code="qkdOutlineStateReset",name="强科达外廓拍照")
+	@RequestMapping(value = "qkdOutlineStateReset", method = RequestMethod.POST)
+	public @ResponseBody Map qkdOutlineStateReset(@RequestParam String jylsh,@RequestParam String jycs){
+		
+		extendManage.qkdOutlineStateReset(jylsh, jycs);
+		
+		return ResultHandler.toSuccessJSON("重置成功！");
+	}
+	
+	
 
 }

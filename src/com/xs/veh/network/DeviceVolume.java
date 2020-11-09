@@ -117,7 +117,7 @@ public class DeviceVolume extends SimpleRead  {
 		this.vehCheckLogin=vehCheckLogin;
 		//VolumeData volumeData = dv.startCheck(vehCheckLogin);
 		VolumeData volumeData =new VolumeData();
-		volumeData.setFb(String.format("%.1f", (int)(Math.random()*(115-90+1)+90)));
+		volumeData.setFb(String.format("%.1f", (float)(int)(Math.random()*(115-90+1)+90)));
 		volumeData.setZpd(VolumeData.PDJG_HG);
 		volumeData.setBaseDeviceData(vehCheckLogin, 0, "VL");
 		this.checkDataManager.saveData(volumeData);
@@ -138,7 +138,7 @@ public class DeviceVolume extends SimpleRead  {
 	public static void main(String[] age) {
 		
 		for(int i=0;i<100;i++) {
-			System.out.println((int)(Math.random()*(115-90+1)+90));
+			System.out.println(String.format("%.1f", (float)(int)(Math.random()*(115-90+1)+90)));
 		}
 		
 		
