@@ -557,7 +557,7 @@ public class CheckedInfoTaskJob {
 		List<BaseParams> paams = BaseParamsUtil.getBaseParamsByType("szdsfpt");
 		for (CheckEvents e : list) {
 			VehCheckLogin vehCheckLogin=  this.checkDataManager.getVehCheckLogin(e.getJylsh());
-			if(vehCheckLogin.getZjlb()!=null&&vehCheckLogin.getZjlb()==1) {
+			if((vehCheckLogin.getZjlb()!=null&&vehCheckLogin.getZjlb()==1)||vehCheckLogin.getJylb().equals("99")) {
 				eventManger.delete(e);
 				continue;
 			}
@@ -858,7 +858,6 @@ public class CheckedInfoTaskJob {
 							calendar.add(Calendar.SECOND, 20);
 							kssj=calendar.getTime();
 						}
-						
 						hkUtil.downLoad(config, hkUtil.convert(kssj), hkUtil.convert(vcp.getJssj()), vcp.getJylsh()+"_"+vcp.getJycs()+"_"+vcp.getJyxm()+"_"+config.getChannel()); 
 						vcp.setVoideSate(1);
 						vehProcessManager.saveVehProcessSync(vcp);

@@ -54,7 +54,7 @@ public class DeviceManyWeighDriverOfKLD20 extends AbstractDeviceManyWeigh {
 		
 		curbWeightData.setBaseDeviceData(vehCheckLogin, vehCheckLogin.getJycs(), "Z1");
 		
-		curbWeightData.setZbzl((zbzl)-65);
+		curbWeightData.setZbzl((zbzl));
 		
 		String cllx=vehCheckLogin.getCllx();
 		int xzgj=100;

@@ -420,7 +420,16 @@
 				head = data[0];
 			} else {
 				head = data["head"];
-				body = data["body"].vehispara;
+				
+				if(data["body"].vehispara){
+					body = data["body"].vehispara;
+				}
+				
+				if($.isArray(data["body"])){
+					body=data["body"][0]
+				}
+				
+				
 			}
 			if (head["code"] == 1) {
 				$.messager.progress("close");

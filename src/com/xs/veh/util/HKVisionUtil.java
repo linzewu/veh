@@ -67,6 +67,8 @@ public class HKVisionUtil {
 		} else {
 			log.info("初始化成功");
 		}
+		
+		//hCNetSDK.NET_DVR_SetLogToFile(3, "D:\\sdkLog\\", true);
 	}
 
 	// 注册
@@ -171,7 +173,16 @@ public class HKVisionUtil {
 		try {
 			log.info("视频地址："+getConfigPath());
 			FileUtil.createDirectory(getConfigPath()+"\\video\\");
-			NativeLong lChannel =new NativeLong(vc.getChannel());
+			
+			int channel =  vc.getChannel();
+			
+			List<BaseParams> params = BaseParamsUtil.getBaseParamsByType("channelStart");
+			if(!CollectionUtils.isEmpty(params)) {
+				Integer start = Integer.parseInt(params.get(0).getParamValue());
+				channel=channel+start;
+			}
+			
+			NativeLong lChannel =new NativeLong(channel);
 			// 指定下载的文件
 			NativeLong tRet = hCNetSDK.NET_DVR_GetFileByTime(lUserID, lChannel, lpStartTime, lpStopTime, getConfigPath()+"\\video\\"+saveFile+".mp4");
 			int tError = hCNetSDK.NET_DVR_GetLastError();

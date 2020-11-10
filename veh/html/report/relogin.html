@@ -8,6 +8,14 @@ $.each(jyxmArray,function(i,n){
 	$("#relogin_jyxm").append("<li><input type='checkbox' id='relogin_jyxm_item_"+n+"' name='relogin_jyxm_item' value="+n+" onChange='changeItemJyxm(this)' /><label for='relogin_jyxm_item_"+n+"'>"+comm.getParamNameByValue('jyxm',n)+"</label></li>");
 });
 
+$.post("/veh/veh/getBhgJyxm", { jylsh: reportData.jylsh }, function(data) {
+    var fjxms = data.split(",");
+    $.each(fjxms, function(i, n) {
+        $("#relogin_jyxm_item_" + n).prop("checked", true);
+
+    });
+})
+
 
 function relogin(){
 	

@@ -61,7 +61,7 @@
 <script type="text/javascript">
 
 	var playInfo='${playInfo}';
-	var tempInfo=${tempVideo};
+	var tempInfo='${tempVideo}';
 	if((playInfo==""||playInfo=="[]")&&tempInfo.length>0){
 		
 		$(function(){

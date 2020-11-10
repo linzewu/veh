@@ -115,9 +115,11 @@ public class VideoController {
 		
 		
 		
-		List<Map<String,Object>> tempVideo = this.videoManager.getTempVideo(jylsh);
-		JSONArray ja2 =JSONArray.fromObject(tempVideo);
-		request.setAttribute("tempVideo", ja2.toString());
+//		List<Map<String,Object>> tempVideo = this.videoManager.getTempVideo(jylsh);
+//		JSONArray ja2 =JSONArray.fromObject(tempVideo);
+//		request.setAttribute("tempVideo", ja2.toString());
+		
+		request.setAttribute("tempVideo", "");
 		
 		if(list==null||list.isEmpty()){
 			return "video2";

@@ -70,7 +70,13 @@ public class DeviceManyWeighDriverOfJXZB10 extends AbstractDeviceManyWeigh {
 		
 		curbWeightData.setHzzl(hz);
 		
-		curbWeightData.setZbzl((qz+hz)-65);
+		if(zcdw) {
+			curbWeightData.setZbzl((qz+hz));
+		}else {
+			curbWeightData.setZbzl((qz+hz)-65);
+		}
+		
+		
 		
 		String cllx=vehCheckLogin.getCllx();
 		int xzgj=100;

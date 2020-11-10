@@ -91,10 +91,10 @@
 			</tr>
 			<tr>
 				<td style="width: 360px;height:180px;border-right: 1px solid;border-bottom: 1px solid;">
-					<img alt="" src="" style="width: 360px;height:180px;">
+					<img alt="" src="" style="width: 360px;height:180px;" id="curb_img_0362">
 				</td>
 				<td style="width: 360px;height:180px;border-right: 1px solid;border-bottom: 1px solid;">
-					<img alt="" src="" style="width: 360px;height:180px;">
+					<img alt="" src="" style="width: 360px;height:180px;" id="curb_img_0363">
 				</td>
 			</tr>
 		</tbody>
@@ -197,13 +197,9 @@
 
 <script type="text/javascript">
 function printCurbWeight(){
-	
 	var temp =$("#curbReportTemp2").html();
-	
 	$("#curbWeightPrintArae").html(temp);
-	
 	report.createReport($("#curbWeightPrintArae"));
-	
 	
 }
 
@@ -275,6 +271,17 @@ $("#commit_zbzl").text(reportData.zbzl);
 			$(n).text(baseInfo[name]==null?"":comm.getParamNameByValue(name, baseInfo[name]));
 		});
 		
+		$.post("/veh/report/getCheckPhotos",{jylsh:reportData.jylsh},function(data){
+			$.each(data,function(i,n){
+				if(n.zpzl=='0362'||n.zpzl=='0363'){
+					setTimeout(function(){
+						$.post("/veh/report/getCheckPhoto",{id:n.id},function(data){
+							$("#curb_img_"+n.zpzl).attr("src","data:image/jpeg;base64,"+data);
+						});
+					},100*i);
+				}
+			});
+		});
 		
 		
 	});

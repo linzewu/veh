@@ -114,31 +114,28 @@ public class RoadCheackManager {
 		}
 		
 		jyxm=jyxm.substring(1,jyxm.length());
-		checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C55_R", "R", vehCheckLogin.getHphm(),
+		checkEventManger.createEvent(0,jylsh, vehCheckLogin.getJycs(), "18C55_R", "R", vehCheckLogin.getHphm(),
 				vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-		Thread.sleep(200);
-		checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C54", jyxm, vehCheckLogin.getHphm(),
+		
+		checkEventManger.createEvent(1000,jylsh, vehCheckLogin.getJycs(), "18C54", jyxm, vehCheckLogin.getHphm(),
 				vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-		Thread.sleep(200);
+		
 		if(vehCheckLogin.getJyxm().indexOf("R1")>=0){
-			checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C58", "R1", vehCheckLogin.getHphm(),
+			checkEventManger.createEvent(1500,jylsh, vehCheckLogin.getJycs(), "18C58", "R1", vehCheckLogin.getHphm(),
 					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(200);
 		}
 		
 		if(vehCheckLogin.getJyxm().indexOf("R2")>=0){
-			checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C58", "R2", vehCheckLogin.getHphm(),
+			checkEventManger.createEvent(2000,jylsh, vehCheckLogin.getJycs(), "18C58", "R2", vehCheckLogin.getHphm(),
 					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(200);
 		}
 		
 		if(vehCheckLogin.getJyxm().indexOf("R3")>=0){
-			checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C58", "R3", vehCheckLogin.getHphm(),
+			checkEventManger.createEvent(2500,jylsh, vehCheckLogin.getJycs(), "18C58", "R3", vehCheckLogin.getHphm(),
 					vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
-			Thread.sleep(200);
 		}
 		
-		checkEventManger.createEvent(jylsh, vehCheckLogin.getJycs(), "18C58_R","R", vehCheckLogin.getHphm(),
+		checkEventManger.createEvent(6000,jylsh, vehCheckLogin.getJycs(), "18C58_R","R", vehCheckLogin.getHphm(),
 				vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),vehCheckLogin.getVehcsbj());
 		
 		vehManager.updateVehCheckLoginState(jylsh);

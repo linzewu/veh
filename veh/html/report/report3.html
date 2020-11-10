@@ -262,7 +262,7 @@
     <td class="tg-yw4l"></td>
   </tr>
   <tr>
-    <td class="tg-yw4l" colspan="8">车辆外廓尺寸（mm×mm×mm）：<label id="report3_wkcc"></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;整备质量（kg）：</td>
+    <td class="tg-yw4l" colspan="8">车辆外廓尺寸（mm×mm×mm）：<label id="report3_wkcc"></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;整备质量（kg）：<label id="report3_zbzl"></label></td>
   </tr>
   <tr>
     <td class="tg-yw4l" colspan="8">机动车所有人： <span name="report-baseInfo-syr"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 手机电话：<span id="r3_sjhm"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 地址/邮编：<span id="r3_yjdz"></span></td>
@@ -295,5 +295,12 @@ $.post("/veh/report/getOutLine",{"jylsh":jylsh},function(data){
 		$("#report3_wkcc").text(data.cwkc+"X"+data.cwkk+"X"+data.cwkg);
 	}
 });
+
+$.post("/veh/pda/getCurbWeight",{jylsh:reportData.jylsh},function(data){
+	if(data){
+		 $("#report3_zbzl").text(data.zbzl);
+	}
+	
+},"json");
 
 </script>
