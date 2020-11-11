@@ -575,6 +575,8 @@ public class DeviceLightDriverOfMQD6A extends AbstractDeviceLight {
 			}
 			Thread.sleep(500);
 		}
+		
+		this.dwKssj=new Date();
 	}
 
 	private void reset() {

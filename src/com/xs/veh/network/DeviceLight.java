@@ -178,7 +178,7 @@ public class DeviceLight extends SimpleRead implements ICheckDevice {
 		List<LightData> datas = dld.startCheck(vehCheckLogin, vheFlows);
 		
 		if(dld.getKssj()!=null) {
-			kssj=dld.getKssj();
+			kssj=dld.dwKssj;
 		}
 		
 		String jg = (datas == null || datas.size() == 0) ? "X" : "O";

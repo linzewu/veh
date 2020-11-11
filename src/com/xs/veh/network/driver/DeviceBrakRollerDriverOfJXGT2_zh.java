@@ -1,7 +1,7 @@
 package com.xs.veh.network.driver;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -269,6 +269,9 @@ public class DeviceBrakRollerDriverOfJXGT2_zh extends AbstractDeviceBrakRoller {
 			}
 			Thread.sleep(500);
 		}
+		
+		this.dwKssj=new Date();
+		
 		if(!"驻车".equals(zw)||vehFlow.getJycs()>1) {
 			logger.info("举升器下降命令：" +jsqxj);
 			deviceBrakRoller.sendMessage(jsqxj);

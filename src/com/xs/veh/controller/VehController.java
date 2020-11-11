@@ -276,7 +276,7 @@ public class VehController {
 				this.vehManager.saveTestVeh(testVeh);
 			}
 			
-			if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0&&vehCheckLogin.getZs()>=3) {
+			if(vehCheckLogin.getCheckType()== 0&&sdFlag&&vehCheckLogin.getJyxm().indexOf("S1")>=0) {
 				processTestVehS1(vehCheckLogin,testVeh);
 				if(testVeh.getQlj()==null) {
 					testVeh.setQlj(0);

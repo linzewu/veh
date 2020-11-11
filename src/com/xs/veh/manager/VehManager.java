@@ -950,9 +950,13 @@ public class VehManager {
 				}
 				try {
 					vehCheckLogin.setJyjl(jyjl);
-					checkEventManger.createEvent(2000,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", null,
-							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
-							vehCheckLogin.getVehcsbj());
+					
+					if(!vehCheckLogin.getJyxm().contains("R")) {
+						checkEventManger.createEvent(2000,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C82", null,
+								vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
+								vehCheckLogin.getVehcsbj());
+					}
+					
 					checkEventManger.createEvent(2300,vehCheckLogin.getJylsh(), vehCheckLogin.getJycs(), "18C59", null,
 							vehCheckLogin.getHphm(), vehCheckLogin.getHpzl(), vehCheckLogin.getClsbdh(),
 							vehCheckLogin.getVehcsbj());
@@ -1490,10 +1494,7 @@ public class VehManager {
 	}
 
 	public static void main(String[] age) {
-
-		VehCheckLogin vcl = new VehCheckLogin();
-
-		System.out.println(vcl.getReloginWeigth() != 1);
+		System.out.println("A1,B1,R1".contains("R"));
 	}
 
 	public CurbWeightData getLastCurbWeightDataOfJylsh(String jylsh) {

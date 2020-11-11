@@ -243,6 +243,7 @@ public class DeviceBrakRollerDriverOfJXGT2_1 extends AbstractDeviceBrakRoller {
 		}
 		
 		this.brakRollerData.setGckssj(new Date());
+		this.dwKssj=new Date();
 		
 		logger.info("举升器下降命令：" +jsqxj);
 		deviceBrakRoller.sendMessage(jsqxj);

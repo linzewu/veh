@@ -215,7 +215,7 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 			dbrd.setBrakRollerData(brakRollerData);
 		}
 
-		Date kssj = new Date();
+	//	Date kssj = new Date();
 
 		brakRollerData = dbrd.startCheck(vehFlow);
 		
@@ -348,29 +348,29 @@ public class DeviceBrakRoller extends SimpleRead implements ICheckDevice {
 		VehCheckProcess process = this.checkDataManager.getVehCheckProces(vehCheckLogin.getJylsh(),
 				vehCheckLogin.getJycs(), vehFlow.getJyxm());
 		
-		if(process.getJyxm().equals("B0")&&process.getKssj()!=null&&process.getJssj()!=null) {
-			VehCheckProcess  vcp=new VehCheckProcess();
-			vcp.setClsbdh(process.getClsbdh());
-			vcp.setHphm(process.getHphm());
-			vcp.setHpzl(process.getHpzl());
-			vcp.setJcxdh(process.getJcxdh());
-			vcp.setJssj(process.getJssj());
-			vcp.setJygcxrsj(process.getJygcxrsj());
-			vcp.setJycs(process.getJycs());
-			vcp.setJylsh(process.getJylsh());
-			vcp.setJysbbh(process.getJysbbh());
-			vcp.setJyxm(process.getJyxm()+"-"+(Integer.parseInt(vehFlow.getMemo())-1));
-			vcp.setKssj(process.getKssj());
-			vcp.setStatus(0);
-			vcp.setVoideSate(0);
-			this.checkDataManager.saveProcess(vcp);
-		}
+//		if(process.getJyxm().equals("B0")&&process.getKssj()!=null&&process.getJssj()!=null) {
+//			VehCheckProcess  vcp=new VehCheckProcess();
+//			vcp.setClsbdh(process.getClsbdh());
+//			vcp.setHphm(process.getHphm());
+//			vcp.setHpzl(process.getHpzl());
+//			vcp.setJcxdh(process.getJcxdh());
+//			vcp.setJssj(process.getJssj());
+//			vcp.setJygcxrsj(process.getJygcxrsj());
+//			vcp.setJycs(process.getJycs());
+//			vcp.setJylsh(process.getJylsh());
+//			vcp.setJysbbh(process.getJysbbh());
+//			vcp.setJyxm(process.getJyxm()+"-"+(Integer.parseInt(vehFlow.getMemo())-1));
+//			vcp.setKssj(process.getKssj());
+//			vcp.setStatus(0);
+//			vcp.setVoideSate(0);
+//			this.checkDataManager.saveProcess(vcp);
+//		}
 		
 		process.setJssj(new Date());
 		if(brakRollerData.getGckssj()!=null) {
 			process.setKssj(brakRollerData.getGckssj());
 		}else {
-			process.setKssj(kssj);
+			process.setKssj(dbrd.dwKssj);
 		}
 		
 		process.setJcxdh(this.getDevice().getJcxxh());

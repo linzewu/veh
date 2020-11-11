@@ -503,6 +503,8 @@ public class DeviceLightDriverOfNHD6108 extends AbstractDeviceLight {
 			throw new SystemException("灯光仪器等待到位异常",e);
 		}
 		
+		this.dwKssj=new Date();
+		
 	}
 
 	private void reset() {

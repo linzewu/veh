@@ -2,6 +2,7 @@ package com.xs.veh.network.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.security.auth.login.LoginContext;
@@ -393,6 +394,8 @@ public class DeviceLightDriverOfMQD13A extends AbstractDeviceLight {
 			}
 			Thread.sleep(500);
 		}
+		
+		this.dwKssj=new Date();
 	}
 
 	private void reset(VehCheckLogin vehCheckLogin) {

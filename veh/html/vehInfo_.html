@@ -434,8 +434,16 @@
 			if (head["code"] == 1) {
 				$.messager.progress("close");
 				body['jyrq'] = body['djrq']
-				body['jyyxqz'] = body['yxqz']
-				$("#vehinfo").form("load", body);
+				body['jyyxqz'] = body['yxqz'];
+				if($.isArray(body['bxzzrq'])){
+					delete body['bxzzrq'];
+				}
+				try{
+					$("#vehinfo").form("load", body[0]);
+				}catch (e) {
+					$("input[sid=clsbdh]").textbox("setValue",body[0].clsbdh);
+					$("input[sid=zbzl]").numberbox("setValue",body[0].zbzl);
+				}
 				if(body['zt']!='A'){
 					$.messager.alert("提示","该机动车状态："+comm.getParamNameByValue('jdczt',body['zt']));
 				}

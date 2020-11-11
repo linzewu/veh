@@ -114,6 +114,13 @@ if(bgbz[0]){
 	$("#report2_bgbz").html(bgbz[0].value);
 }
 
+var reportData = $("#tab-report").tabs("getSelected").panel("options").baseInfo;
+
+if (reportData.jyxm.indexOf("R") != -1) {
+    $.post("/veh/report/getReport3", { jylsh: reportData.jylsh }, function(data) {
+        $("[name=report-baseInfo-upLineDate]").text(data.createTime.split(" ")[0]);
+    });
+}
 
 
 </script>

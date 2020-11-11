@@ -2,6 +2,7 @@ package com.xs.veh.network.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -205,7 +206,7 @@ public class DeviceBrakRollerDriverOfJXFZ extends AbstractDeviceBrakRoller {
 			}
 			Thread.sleep(500);
 		}
-
+		this.dwKssj=new Date();
 		//if (!vehFlow.getJyxm().equals("B0")) {
 			// 举升下降
 			deviceBrakRoller.sendMessage(jsqxj);

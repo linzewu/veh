@@ -566,7 +566,7 @@ public class CheckedInfoTaskJob {
 				String viewName = "V" + e.getEvent();
 				String checkItem = e.getJyxm();
 				
-				if(RCAConstant.V18C58.equals(e.getEvent())) {
+				if(RCAConstant.V18C58.equals(e.getEvent())&&!e.getJyxm().equals("R1")&&!e.getJyxm().equals("R2")&&!e.getJyxm().equals("R3")) {
 					boolean flag = eventManger.isEventOK(e.getJylsh(), e.getJycs(), e.getJyxm(), RCAConstant.V18C81);
 					boolean flag2 =  eventManger.isEventOK(e.getJylsh(), e.getJycs(), e.getJyxm(), RCAConstant.V18C80);
 					

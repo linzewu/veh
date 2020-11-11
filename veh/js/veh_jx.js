@@ -598,11 +598,14 @@ var veh = {
 				$.messager.progress("close");
 				body[0]['jyrq'] = body['djrq']
 				body[0]['jyyxqz'] = body['yxqz'];
+				if(!body[0]['bxzzrq']){
+					delete body[0]['bxzzrq'];
+				}
 				try{
 					$("#vehinfo").form("load", body[0]);
 				}catch (e) {
 					$("input[sid=clsbdh]").textbox("setValue",body[0].clsbdh);
-					$("input[sid=zbzl]").numberbox("setValue",body[0].clsbdh);
+					$("input[sid=zbzl]").numberbox("setValue",body[0].zbzl);
 				}
 				
 				if(body[0]['zt']!='A'){

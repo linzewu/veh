@@ -744,8 +744,8 @@ public class ZHCheckDataManager {
 				dcj1.setYqjyxm("■车速表指示误差(km/h)");
 				dcj1.setYqjyjg(speedData.getSpeed() == null ? "" : speedData.getSpeed().toString());
 				dcj1.setYqbzxz(speedData.getSdxz().replace(",", "~"));
-		//		dcj1.setYqjgpd("0");
-				dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
+				dcj1.setYqjgpd("0");
+				//dcj1.setYqjgpd(speedData.getSdpd() == null ? "" : speedData.getSdpd().toString());
 				dcj1.setXh(xh);
 				xh++;
 				this.hibernateTemplate.save(dcj1);

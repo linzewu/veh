@@ -2,6 +2,7 @@ package com.xs.veh.network.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -320,6 +321,7 @@ public class DeviceBrakRollerDriverOfJXFJZ extends AbstractDeviceBrakRoller {
 		deviceBrakRoller.sendMessage(jsqxj);
 		Thread.sleep(5000);
 		// }
+		this.dwKssj=new Date();
 	}
 
 	@Override
